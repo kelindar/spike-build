@@ -1,0 +1,155 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="SpikeSchema"
+    targetNamespace="http://www.spike-engine.com/2011/spml"
+    elementFormDefault="qualified"
+    xmlns="http://www.spike-engine.com/2011/spml"
+    xmlns:s="http://www.spike-engine.com/2011/spml"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning"
+>
+  <xs:annotation>
+    <xs:documentation xml:lang="en">Spike Network Communication Protocol Schema, this schema is used for defining and parsing the protocol for network generation</xs:documentation>
+  </xs:annotation>
+
+  <!-- Elements of the protocol xml file -->
+  <xs:element name="Protocol" type="Protocol">
+    <xs:unique name="UniqueOperationName">
+      <xs:selector xpath="s:Operation"/>
+      <xs:field xpath="@Name"/>
+    </xs:unique>
+    <xs:unique name="UniqueOperationRef">
+      <xs:selector xpath="s:Operation"/>
+      <xs:field xpath="@Ref"/>
+    </xs:unique>
+  </xs:element>
+
+  <!-- Complex types -->
+  <xs:complexType name="Protocol">
+    <xs:annotation>
+      <xs:documentation>
+        A definition of the protocol, defines a set of operation to be used by the protocol
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Operations" type="OperationsList" />
+    </xs:sequence>
+    
+    <xs:attribute name="Name" use="required" />
+    <xs:attribute name="ServerHandling" use="optional" type="ServerHandlingType" />
+    <xs:attribute name="Namespace" use="optional" type="xs:string" />
+  </xs:complexType>
+
+  <xs:complexType name="OperationsList">
+    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="Operation" type="ProtocolOperation" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ProtocolOperation">
+    <xs:annotation>
+      <xs:documentation>
+        A definition of the operation of the protocol, conforms to a function: 
+           outgoing = f(incoming)
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Incoming" minOccurs="0" maxOccurs="1" type="Packet" />
+      <xs:element name="Outgoing" minOccurs="0" maxOccurs="1" type="Packet" />
+    </xs:sequence>
+    <xs:attribute name="Name" use="required" type="xs:string" />
+    <xs:attribute name="Compression" use="optional" type="Compression" />
+    <xs:attribute name="Role" use="optional" type="xs:string" />
+    <xs:attribute name="SuppressSecurity" use="optional" type="xs:boolean" />
+    <xs:attribute name="Obsolete" use="optional" type="xs:boolean" />
+    <xs:attribute name="Direction" use="optional" type="Direction" />
+    <xs:attribute name="Namespace" use="optional" type="xs:string" />
+    <xs:attribute name="Description" use="optional" type="xs:string" />
+  
+  </xs:complexType>
+
+  <xs:complexType name="Packet">
+    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="Member" type="Element" />
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="Element">
+    <xs:annotation>
+      <xs:documentation>
+        A data member (a primitive or a complex type).
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="Member" type="Element" />
+    </xs:sequence>
+    <xs:attribute name="Name"  use="required" type="xs:string" />
+    <xs:attribute name="Type"  use="required" type="ElementType" />
+    <xs:attribute name="Class" use="optional" type="xs:string" />
+    <xs:attribute name="Restriction" use="optional" type="xs:string" />
+    <xs:attribute name="Namespace" use="optional" type="xs:string" />
+    <xs:attribute name="Description" use="optional" type="xs:string" />
+  </xs:complexType>
+  
+
+  <!-- Enumerations -->
+  <xs:simpleType name = "Compression">
+    <xs:restriction base = "xs:string">
+      <xs:enumeration value = "None"/>
+      <xs:enumeration value = "Both"/>
+      <xs:enumeration value = "Incoming"/>
+      <xs:enumeration value = "Outgoing"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name = "Direction">
+    <xs:restriction base = "xs:string">
+      <xs:enumeration value = "Pull"/>
+      <xs:enumeration value = "Push"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name = "ElementType">
+    <xs:restriction base = "xs:string">
+      <xs:enumeration value = "Enum" />
+      <xs:enumeration value = "Byte"/>
+      <xs:enumeration value = "UInt16"/>
+      <xs:enumeration value = "UInt32"/>
+      <xs:enumeration value = "UInt64"/>
+      <xs:enumeration value = "Int16"/>
+      <xs:enumeration value = "Int32"/>
+      <xs:enumeration value = "Int64"/>
+      <xs:enumeration value = "Boolean"/>
+      <xs:enumeration value = "Single"/>
+      <xs:enumeration value = "Double"/>
+      <xs:enumeration value = "DateTime"/>
+      <xs:enumeration value = "String"/>
+      <xs:enumeration value = "ComplexType"/>
+      <xs:enumeration value = "DynamicType"/>
+
+      <xs:enumeration value = "ListOfEnum" />
+      <xs:enumeration value = "ListOfByte"/>
+      <xs:enumeration value = "ListOfUInt16"/>
+      <xs:enumeration value = "ListOfUInt32"/>
+      <xs:enumeration value = "ListOfUInt64"/>
+      <xs:enumeration value = "ListOfInt16"/>
+      <xs:enumeration value = "ListOfInt32"/>
+      <xs:enumeration value = "ListOfInt64"/>
+      <xs:enumeration value = "ListOfBoolean"/>
+      <xs:enumeration value = "ListOfSingle"/>
+      <xs:enumeration value = "ListOfDouble"/>
+      <xs:enumeration value = "ListOfDateTime"/>
+      <xs:enumeration value = "ListOfString"/>
+      <xs:enumeration value = "ListOfComplexType"/>
+      <xs:enumeration value = "ListOfDynamicType"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name = "ServerHandlingType">
+    <xs:restriction base = "xs:string">
+      <xs:enumeration value = "Events" />
+      <xs:enumeration value = "Delegates" />
+      <xs:enumeration value = "Manual"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+</xs:schema>
