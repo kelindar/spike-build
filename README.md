@@ -1,9 +1,9 @@
 Spike.Build
 ===========
 
-![Spike Engine](https://s3.amazonaws.com/cdn.misakai.com/www-spike/logo.png)
+->![Spike Engine](https://s3.amazonaws.com/cdn.misakai.com/www-spike/logo@2x.png)<-
 
-Spike.Build is the set of libraries that perform parsing and code-generation for creating various client SDKs for Spike Engine.
+Spike.Build is the set of libraries that perform parsing and code-generation for creating various client SDKs for [Spike Engine](http://www.spike-engine.com).
 
 
 * **Spike.Build.Runtime** - The main runtime that performs .spml definition parsing and contains server-side code generation for the particular model.
