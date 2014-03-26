@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+# Visual Studio Express 2013 for Windows Desktop
+VisualStudioVersion = 12.0.30110.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spike.Build", "Spike.Build\Spike.Build.csproj", "{2ACB7B7D-7189-41C7-A064-3E240CD976EF}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spike.Build.CSharp", "Spike.Build.CSharp\Spike.Build.CSharp.csproj", "{B32B9106-02B9-4FE4-9617-D708CBBAA014}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spike.Build.Runtime", "Spike.Build.Runtime\Spike.Build.Runtime.csproj", "{FA18BFE6-73A6-405A-B62C-3B0898B793D4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spike.Build.Java", "Spike.Build.Java\Spike.Build.Java.csproj", "{A912B663-3925-4B3E-9D81-B626C7761031}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,12 @@ Global
 		{FA18BFE6-73A6-405A-B62C-3B0898B793D4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FA18BFE6-73A6-405A-B62C-3B0898B793D4}.Release|x86.ActiveCfg = Release|x86
 		{FA18BFE6-73A6-405A-B62C-3B0898B793D4}.Release|x86.Build.0 = Release|x86
+		{A912B663-3925-4B3E-9D81-B626C7761031}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A912B663-3925-4B3E-9D81-B626C7761031}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A912B663-3925-4B3E-9D81-B626C7761031}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A912B663-3925-4B3E-9D81-B626C7761031}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A912B663-3925-4B3E-9D81-B626C7761031}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A912B663-3925-4B3E-9D81-B626C7761031}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

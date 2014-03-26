@@ -479,7 +479,7 @@ namespace Spike.Build
 			Console.WriteLine();
 			Console.WriteLine(" Parameters: ");
 			Console.WriteLine("  -out:<PATH> Defines the output path");
-			Console.WriteLine("  -builder:<CSharp|AS3|JavaScript> Defines the name of the builder to use to generate the client library");
+			Console.WriteLine("  -builder:<CSharp|AS3|Java|JavaScript> Defines the name of the builder to use to generate the client library");
 
 		}
 
