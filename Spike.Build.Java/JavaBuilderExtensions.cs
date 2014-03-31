@@ -4,19 +4,39 @@ using System.Linq;
 using System.Text;
 
 namespace Spike.Build.Java {
-    static class CodeUtilities {
-        internal static string LowerFirstChar(string text) {
+    static class JavaBuilderExtensions {
+        /// <summary>
+        /// Return the string with the first letter lowered. 
+        /// </summary>        
+        /// <example>
+        /// var text = "MyVariable";
+        /// Console.WriteLine(text.CamelCase()); //Show myVariable
+        /// </example>
+        internal static string CamelCase(this string text)
+        {
             var array = text.ToCharArray();
             array[0] = char.ToLower(array[0]);
-            return new string(array);
+            return new string(array);            
         }
 
-        internal static string UpperFirstChar(string text) {
+        /// <summary>
+        /// Return the string with the first letter uppered. 
+        /// </summary>        
+        /// <example>
+        /// var text = "byte";
+        /// Console.WriteLine(text.PascalCase()); //Show Byte
+        /// </example>
+        internal static string PascalCase(this string text) {
             var array = text.ToCharArray();
             array[0] = char.ToUpper(array[0]);
             return new string(array);
         }
 
+        /// <summary>
+        /// Convert an ElementType to a Java type name.  
+        /// </summary>
+        /// <param name="spikeType">Spike protocol type to convert</param>
+        /// <returns>Java type name</returns>
         internal static string SpikeToJavaType(ElementType spikeType) {
             switch (spikeType) {
                 case ElementType.Byte:

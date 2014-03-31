@@ -40,24 +40,25 @@ namespace Spike.Build.Client
             }
         }
 
-        
-
         internal static void GeneratePacket(Packet packet, TextWriter writer)
         {
             writer.WriteLine(@"package com.misakai.spike.network.packets;");
 
-            if (packet.GetMembers().Count(member => member.Type == ElementType.DateTime) > 0) {
+            //import java.util.Date only if Packet containt a date member 
+            if (packet.GetMembers().Any(member => member.Type == ElementType.DateTime))
+            {
                 writer.WriteLine();
                 writer.WriteLine(@"import java.util.Date;");
             }
             writer.WriteLine();
-            writer.WriteLine(@"public final class {0} {{", packet.Name);
-            foreach (var member in packet.GetMembers()) {
-                writer.WriteLine("\tpublic {0} {1};", 
-                    CodeUtilities.SpikeToJavaType(member.Type),
-                    CodeUtilities.LowerFirstChar(member.Name));
+            writer.WriteLine(@"public final class {0} {{", packet.Name); // Begin package
+            foreach (var member in packet.GetMembers())
+            {
+                writer.WriteLine("\tpublic {0} {1};",
+                    JavaBuilderExtensions.SpikeToJavaType(member.Type),
+                    member.Name.CamelCase());
             }
-            writer.WriteLine(@"}");
+            writer.WriteLine(@"}"); // End class
             writer.WriteLine();
         }
     }

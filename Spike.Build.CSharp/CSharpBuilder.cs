@@ -160,20 +160,16 @@ namespace Spike.Build.Client
                         InitializeElement(element);
 
                     // 2nd step, generate the code
-                    {
-
-                        // All Entities
-                        protocol.GetAllComplexElementsDistinct()
-                            .ForEach(element => BuilderForElement.GenerateCode(element, this));
-
-
-                        // All Packets
-                        protocol.GetAllPackets()
-                            .ForEach(packet => BuilderForPacket.GenerateCode(packet, this));
-                    }
+                    
+                    // All Entities
+                    protocol.GetAllComplexElementsDistinct()
+                        .ForEach(element => BuilderForElement.GenerateCode(element, this));
 
 
-
+                    // All Packets
+                    protocol.GetAllPackets()
+                        .ForEach(packet => BuilderForPacket.GenerateCode(packet, this));                    
+                    
                 }
                 return writer.ToString();
             }

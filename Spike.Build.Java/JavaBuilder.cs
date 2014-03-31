@@ -25,28 +25,34 @@ using System.Text;
 using System.IO;
 using Spike.Build.Runtime.Properties;
 
-namespace Spike.Build.Client {
-    public class JavaBuilder : ClientBuilder {
+namespace Spike.Build.Client
+{
+    public class JavaBuilder : ClientBuilder
+    {
         /// <summary>
         /// Occurs during the build process.
         /// </summary>
         /// <param name="definitions">The protocol definitions to build.</param>
         /// /// <returns>The collection of build outputs.</returns>
-        protected override BuildResult[] OnBuildLibrary() {
+        protected override BuildResult[] OnBuildLibrary()
+        {
             // List of outputs
             var output = new List<BuildResult>();
 
+            // Unzip manually created sources
             UnzipSource(SrcOutputPath, Spike.Build.Java.Properties.Resources.JavaSrc);
 
+            // Build the library
             base.OnBuildLibrary();
 
-            JavaChannelBuilder.GenerateCode(this);
+            // Continue build, global files
+            JavaTcpChannelBuilder.GenerateCode(this);
 
-            // Crate output
+            // Create Source Package
             var package = GenerateSourcePackage(this);
             if (package != null)
                 output.Add(package);
-                        
+
             // Move output to directory
             CopyFilesRecursively(
                 Path.Combine(RootFolder, BinOutputPath),
@@ -55,8 +61,7 @@ namespace Spike.Build.Client {
             // Return the generated info
             return output.ToArray();
         }
-
-
+        
         #region Properties
         private string fSrcOutputPath = @"Generated".AsPath();
         private string fBinOutputPath = @"Output".AsPath();
@@ -65,7 +70,8 @@ namespace Spike.Build.Client {
         /// Gets or sets the output path for generated source-code.
         /// </summary>
         [PropertyPath]
-        public string SrcOutputPath {
+        public string SrcOutputPath
+        {
             get { return fSrcOutputPath; }
             set { fSrcOutputPath = value.AsPath(); }
         }
@@ -74,7 +80,8 @@ namespace Spike.Build.Client {
         /// Gets or sets the output path for compiled library.
         /// </summary>
         [PropertyPath]
-        public string BinOutputPath {
+        public string BinOutputPath
+        {
             get { return fBinOutputPath; }
             set { fBinOutputPath = value.AsPath(); }
         }
@@ -82,7 +89,8 @@ namespace Spike.Build.Client {
         /// <summary>
         /// Gets the output source packets path.
         /// </summary>
-        internal string PacketsPath {
+        internal string PacketsPath
+        {
             get { return fPacketsPath; }
         }
 
@@ -91,7 +99,8 @@ namespace Spike.Build.Client {
         /// code.
         /// </summary>
         [PropertyText]
-        public override string Language {
+        public override string Language
+        {
             get { return "Java"; }
         }
 
@@ -100,7 +109,8 @@ namespace Spike.Build.Client {
         /// code.
         /// </summary>
         [PropertyText]
-        public override string Description {
+        public override string Description
+        {
             get { return @"Java is a computer programming language that is concurrent, class-based, object-oriented, and specifically designed to have as few implementation dependencies as possible. It is intended to let application developers ""write once, run anywhere"" (WORA), meaning that code that runs on one platform does not need to be recompiled to run on another."; }
         }
 
@@ -108,54 +118,40 @@ namespace Spike.Build.Client {
         /// Gets the user-friendly description of the ideal usage the language for which this client builder generates the code.
         /// </summary>
         [PropertyText]
-        public override string Usage {
+        public override string Usage
+        {
             get { return "Jdk, Android"; }
         }
         #endregion
 
         #region IBuilder Members
-        public override string GenerateCode(string inputFileContent) {
+        public override string GenerateCode(string inputFileContent)
+        {
             // Declare builders
-            //var BuilderForElement = new JavaElementBuilder();
             var BuilderForPacket = new JavaPacketBuilder();
 
             // Begin code generation
-            
-            
             var xml = Protocol.Deserialize(inputFileContent);
-            if (xml != null) {
+            if (xml != null)
+            {
                 // Preprocessing: mutate by cloning the protocol and transforming it
                 var protocol = Model.Mutate(xml);
-
-                // 1st step: transform the model for JavaScript Client
-                var elements = protocol.GetAllPackets()
-                    .SelectMany(packet => packet.GetAllMembers()).ToList();
-                    
-                //foreach (var element in elements)
-                    //InitializeElement(element);
-
-                // 2nd step, generate the code
                 
-                // All Entities
-                //protocol.GetAllComplexElementsDistinct()
-                //    .ForEach(element => BuilderForElement.GenerateCode(element, this));
-
-                // All Packets
-                foreach(var packet in protocol.GetAllPackets()){                
-                   BuilderForPacket.GenerateCode(packet, this);
+                // Generate All Packets
+                foreach (var packet in protocol.GetAllPackets())
+                {
+                    BuilderForPacket.GenerateCode(packet, this);
                 }
             }
-                
-            return "";
-            
+            return String.Empty;
         }
-
-        
         #endregion
 
         #region Generate Source Package
-        private static BuildResult GenerateSourcePackage(JavaBuilder builder) {
-            try {
+        private static BuildResult GenerateSourcePackage(JavaBuilder builder)
+        {
+            try
+            {
                 var PackageOutput = String.Format(@"{0}\Client.Java.Source\", Path.Combine(builder.RootFolder, builder.BinOutputPath)).AsPath();
                 if (Directory.Exists(PackageOutput))
                     Directory.Delete(PackageOutput, true);
@@ -166,13 +162,14 @@ namespace Spike.Build.Client {
                 var dst = Path.Combine(PackageOutput, "spike-sdk.java.src.zip");
 
 
-
                 zip.CreateEmptyDirectories = true;
                 zip.CreateZip(dst, src, true, "");
 
                 // Our output
                 return new BuildResult(builder, "Java Source Code Package (.zip)", dst.AsPath());
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 builder.OnError(1, ex.Message, 0, 0);
                 return null;
             }
