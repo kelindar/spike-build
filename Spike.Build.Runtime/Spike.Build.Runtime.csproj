@@ -240,4 +240,8 @@
   </Target>
   -->
   <ItemGroup />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
 </Project>
