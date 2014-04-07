@@ -446,7 +446,7 @@ namespace Spike.Build
 				{
 					AddDefinition(new Uri(argument.ToLower()));
 				}
-				else if (File.Exists(argument)) // Not a parameter, probably an assembly 
+                else if (File.Exists(argument)) // Not a parameter, probably an assembly or a spml file
 				{
 					if (argument.ToLower().EndsWith(".dll") || argument.ToLower().EndsWith(".exe"))
 					{
@@ -454,7 +454,11 @@ namespace Spike.Build
 						Assemblies.Add(assembly);
 						AddDefinition(assembly);
 					}
-					else
+                    else if (argument.ToLower().EndsWith(".spml"))
+                    {
+                        fDefinitions.Add(new ProtocolDefinitionFile(argument, File.ReadAllText(argument)));
+                    }
+                    else
 					{
 						Console.WriteLine("File not supported: " + argument);
 						throw new NotImplementedException();
