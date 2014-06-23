@@ -57,13 +57,13 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\CSharpSrc.zip" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Spike.Build.Runtime\Spike.Build.Runtime.csproj">
       <Project>{FA18BFE6-73A6-405A-B62C-3B0898B793D4}</Project>
       <Name>Spike.Build.Runtime</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\CSharpSrc.zip" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
