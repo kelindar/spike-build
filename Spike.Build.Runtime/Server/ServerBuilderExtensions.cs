@@ -60,8 +60,12 @@ namespace Spike.Build.Server
         {
             var Box = "";
             var Cast = "";
-            if (element.Type == ElementType.Enum && !element.IsList)
-                Box = "(int)";
+
+            // No need to cast here: 
+            //if (element.Type == ElementType.Enum && !element.IsList)
+            //    Box = "(int)";
+
+
             /*else if (element.IsList) // That's a list
             {
                 //Cast = String.Format(".ToList<{0}>()", element.InternalType);
