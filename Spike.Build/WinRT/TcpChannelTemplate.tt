@@ -1,0 +1,81 @@
+﻿<#@ template language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ parameter type="Spike.Build.Model" name="Model" #>
+
+
+using Spike.Network.Packets;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Spike.Network
+{
+	class TcpChannel : TcpChannelBase<TcpChannel>
+	{
+		//Events
+<#		foreach(var receive in Model.Receives)
+		{ #>		
+		public event Action<TcpChannel, <#= receive.Name #>> <#= receive.Name #>; 
+<#		} #>
+		    
+		//Sends
+        
+<#		foreach(var send in Model.Sends)
+		{ #>		
+		public async void <#= send.Name #>(<#	
+			var first = true;
+			foreach(var member in send.Members){
+				if(!first)
+					Write(", ");
+
+				Write(member.Type);
+				Write(" ");
+				Write(member.Name);
+				first = false;
+			}
+		#>)
+		{
+			BeginNewPacket(0x{0});
+<#			foreach(var member in send.Members)
+			{ #>
+			PacketWrite(<#= member.Name #>);
+<#			} #>
+			await SendPacket({0});
+		}		 
+<#		} #>
+
+		//Dispatcher
+		protected override void OnReceive(uint key)
+		{
+			switch (key)
+			{
+<#				foreach(var receive in Model.Receives)
+				{ #>				
+				case 0x<#= receive.Id.ToString("X") #>:
+				{
+					var packet = new <#= receive.Name #>()
+					BeginReadPacket(<#= receive.Compressed #>);
+					
+<#					foreach(var member in receive.Members){ #>
+					packet.<#= member.Name #> = PacketRead<#= member.Type #>();
+<#					} #>
+
+					//Now Call event
+					if (<#= receive.Name #> != null)
+						<#= receive.Name #>(this, packet);
+				}
+<#				} #>
+
+				default:
+					Debug.WriteLine("Unknow packet : {0:X}", key);
+					return;
+			}
+		}
+	}
+}
