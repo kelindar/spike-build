@@ -21,11 +21,9 @@ using System.Collections.Generic;
 
 namespace Spike.Build
 {
-    internal sealed class Operation(uint id, string name, bool compressed)
+    internal sealed class CustomType(string name)
     {
-        internal uint Id { get; } = id; 
         internal string Name { get; } = name;
-        internal bool Compressed { get; } = compressed;
         internal List<Member> Members { get; } = new List<Member>();
     }
 }

@@ -1,10 +1,29 @@
-﻿<#@ template language="C#" #>
+﻿<#
+/************************************************************************
+*
+* Copyright (C) 2009-2014 Misakai Ltd
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* 
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+* 
+*************************************************************************/
+#>
+<#@ template language="C#" #>
 <#@ assembly name="System.Core" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ parameter type="Spike.Build.Model" name="Model" #>
-
 
 using Spike.Network.Packets;
 using System;
@@ -16,7 +35,7 @@ using System.Threading.Tasks;
 
 namespace Spike.Network
 {
-	class TcpChannel : TcpChannelBase<TcpChannel>
+	public class TcpChannel : TcpChannelBase<TcpChannel>
 	{
 		//Events
 <#		foreach(var receive in Model.Receives)
@@ -24,8 +43,7 @@ namespace Spike.Network
 		public event Action<TcpChannel, <#= receive.Name #>> <#= receive.Name #>; 
 <#		} #>
 		    
-		//Sends
-        
+		//Sends        
 <#		foreach(var send in Model.Sends)
 		{ #>		
 		public async void <#= send.Name #>(<#	
@@ -34,19 +52,19 @@ namespace Spike.Network
 				if(!first)
 					Write(", ");
 
-				Write(member.Type);
+				Write(WinRTBuilder.GetNativeType(member));
 				Write(" ");
 				Write(member.Name);
 				first = false;
 			}
 		#>)
 		{
-			BeginNewPacket(0x{0});
+			BeginNewPacket(0x<#= send.Id.ToString("X") #>);
 <#			foreach(var member in send.Members)
 			{ #>
 			PacketWrite(<#= member.Name #>);
 <#			} #>
-			await SendPacket({0});
+			await SendPacket(<#= send.Compressed ? "true" : "false" #>);
 		}		 
 <#		} #>
 
@@ -57,18 +75,20 @@ namespace Spike.Network
 			{
 <#				foreach(var receive in Model.Receives)
 				{ #>				
-				case 0x<#= receive.Id.ToString("X") #>:
+				case 0x<#= receive.Id.ToString("X") #>u:
 				{
-					var packet = new <#= receive.Name #>()
-					BeginReadPacket(<#= receive.Compressed #>);
+					var packet = new <#= receive.Name #>();
+					BeginReadPacket(<#= receive.Compressed ? "true" : "false" #>);
 					
 <#					foreach(var member in receive.Members){ #>
-					packet.<#= member.Name #> = PacketRead<#= member.Type #>();
+					packet.<#= member.Name #> = PacketRead<#= member.IsList ? "ListOf" : string.Empty #><#= member.Type #>();
 <#					} #>
 
 					//Now Call event
 					if (<#= receive.Name #> != null)
 						<#= receive.Name #>(this, packet);
+
+					break;
 				}
 <#				} #>
 

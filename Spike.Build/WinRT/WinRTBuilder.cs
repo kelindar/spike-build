@@ -1,43 +1,132 @@
-﻿using System;
+﻿/************************************************************************
+*
+* Copyright (C) 2009-2014 Misakai Ltd
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* 
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+* 
+*************************************************************************/
+
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Spike.Build.WinRT
 {
-    
-
     internal class WinRTBuilder : IBuilder
-    {        
+    {
+        internal static string GetNativeType(Member member)
+        {
+            switch (member.Type)
+            {
+                case "Byte":
+                    return "byte";
+                case "UInt16":
+                    return "ushort";
+                case "UInt32":
+                    return "uint";
+                case "UInt64":
+                    return "ulong";
+
+                case "SByte":
+                    return "sbyte";
+                case "Int16":
+                    return "short";
+                case "Int32":
+                    return "int";
+                case "Int64":
+                    return "long";
+
+                case "Boolean":
+                    return "bool";
+                case "Single":
+                    return "float";
+                case "Double":
+                    return "double";
+                case "String":
+                    return "string";
+
+                default:
+                    return member.Type;
+            }
+
+        }
+
+
         public void Build(Model model, string output) {
             if (string.IsNullOrEmpty(output))
                 output = @"WinRT";
 
             var networkDirectory = Path.Combine(output, "Spike", "Network");
-            //var entitiesDirectory = Path.Combine(output, "Spike", "Entities");            
-
             if (!Directory.Exists(networkDirectory))
                 Directory.CreateDirectory(networkDirectory);
 
+            var packetsDirectory = Path.Combine(output, "Spike", "Packets");
+            if (!Directory.Exists(packetsDirectory))
+                Directory.CreateDirectory(packetsDirectory);
+
+            //var customTypesDirectory = Path.Combine(output, "Spike", "CustomTypes");
+            //if (!Directory.Exists(customTypesDirectory))
+            //    Directory.CreateDirectory(customTypesDirectory);
+
             Extentions.CopyFromRessources("Spike.Build.WinRT.CLZF.cs", Path.Combine(networkDirectory, @"CLZF.cs"));
             Extentions.CopyFromRessources("Spike.Build.WinRT.TcpChannelBase.cs", Path.Combine(networkDirectory, @"TcpChannelBase.cs"));
-
-            //hostspecific="true"
-
-            var template = new TcpChannelTemplate();
-            var session = new Dictionary<string, object>();
-            template.Session = session;
-
-            session["Model"] = model;
-            template.Initialize();
             
-            var code = template.TransformText();
-            File.WriteAllText("test.cs", code);
+            var tcpChanneltemplate = new TcpChannelTemplate();
+            var tcpChannelsession = new Dictionary<string, object>();
+            tcpChanneltemplate.Session = tcpChannelsession;
 
+            tcpChannelsession["Model"] = model;
+            tcpChanneltemplate.Initialize();
             
+            var code = tcpChanneltemplate.TransformText();
+            File.WriteAllText(Path.Combine(networkDirectory, @"TcpChannel.cs"), code);
+
+            //Make packets
+            var packetTemplate = new PacketTemplate();
+            var packetSession = new Dictionary<string, object>();
+            packetTemplate.Session = packetSession;
+            foreach (var receive in model.Receives) {
+                packetSession["Operation"] = receive;
+                packetTemplate.Initialize();
+
+                code = packetTemplate.TransformText();
+                File.WriteAllText(Path.Combine(packetsDirectory, string.Format(@"{0}.cs", receive.Name)), code);
+            }
+
+            //Make CustomType
+            //var customTypeTemplate = new CustomTypeTemplate();
+            //var customTypeSession = new Dictionary<string, object>();
+            //customTypeTemplate.Session = customTypeSession;
+            //foreach (var customType in model.CustomTypes)
+            //{
+            //    customTypeSession["CustomType"] = customType;
+            //    customTypeTemplate.Initialize();
+
+            //    code = customTypeTemplate.TransformText();
+            //    File.WriteAllText(Path.Combine(customTypesDirectory, string.Format(@"{0}.cs", customType.Name)), code);
+            //}
+
         }
     }
+
+    
 }
+/*
+
+<xs:enumeration value="Enum"/>
+<xs:enumeration value="Byte"/><xs:enumeration value="UInt16"/><xs:enumeration value="UInt32"/><xs:enumeration value="UInt64"/><xs:enumeration value="Int16"/>
+<xs:enumeration value="Int32"/><xs:enumeration value="Int64"/><xs:enumeration value="Boolean"/><xs:enumeration value="Single"/><xs:enumeration value="Double"/>
+<xs:enumeration value="DateTime"/><xs:enumeration value="String"/><xs:enumeration value="ComplexType"/><xs:enumeration value="DynamicType"/>
+<xs:enumeration value="ListOfEnum"/><xs:enumeration value="ListOfByte"/><xs:enumeration value="ListOfUInt16"/><xs:enumeration value="ListOfUInt32"/><xs:enumeration value="ListOfUInt64"/><xs:enumeration value="ListOfInt16"/><xs:enumeration value="ListOfInt32"/><xs:enumeration value="ListOfInt64"/><xs:enumeration value="ListOfBoolean"/><xs:enumeration value="ListOfSingle"/><xs:enumeration value="ListOfDouble"/><xs:enumeration value="ListOfDateTime"/><xs:enumeration value="ListOfString"/><xs:enumeration value="ListOfComplexType"/><xs:enumeration value="ListOfDynamicType"/>
+
+*/

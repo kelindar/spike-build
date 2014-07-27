@@ -69,7 +69,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ComplexType.cs" />
+    <Compile Include="CustomType.cs" />
     <Compile Include="Extentions.cs" />
     <Compile Include="IBuilder.cs" />
     <Compile Include="Member.cs" />
@@ -81,7 +81,17 @@
     <Compile Include="Model.cs" />
     <EmbeddedResource Include="WinRT\CLZF.cs" />
     <EmbeddedResource Include="WinRT\TcpChannelBase.cs" />
-    <Compile Include="WinRT\TcpChannelTemplate1.cs">
+    <Compile Include="WinRT\CustomTypeTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CustomTypeTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WinRT\PacketTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PacketTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WinRT\TcpChannelTemplate.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>TcpChannelTemplate.tt</DependentUpon>
@@ -90,9 +100,17 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="WinRT\CustomTypeTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>CustomTypeTemplate.cs</LastGenOutput>
+    </None>
+    <None Include="WinRT\PacketTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>PacketTemplate.cs</LastGenOutput>
+    </None>
     <None Include="WinRT\TcpChannelTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>TcpChannelTemplate1.cs</LastGenOutput>
+      <LastGenOutput>TcpChannelTemplate.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -1,23 +1,63 @@
-﻿using System;
+﻿/************************************************************************
+*
+* Copyright (C) 2009-2014 Misakai Ltd
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* 
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+* 
+*************************************************************************/
+
+using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
 using System.Xml.Linq;
 
 namespace Spike.Build
 {
     internal sealed class Model
     {
-        internal List<ComplexType> ComplexTypes { get; } = new List<ComplexType>();
+        internal List<CustomType> CustomTypes { get; } = new List<CustomType>();
 
         internal List<Operation> Sends { get; } = new List<Operation>();
 
         internal List<Operation> Receives { get; } = new List<Operation>();
 
+        private Member GetMember(XElement xmember)
+        {
+            var type = xmember.Attribute("Type").Value;
+            var isList = false;
+            if (type.StartsWith("ListOf")) {
+                isList = true;
+                type = type.Substring(6);
+            }
+
+            //TODO Fix Enum
+            if (type == "Enum")
+                type = "Int32";
+
+            if (type == "ComplexType")
+            {
+                type = xmember.Attribute("Class").Value;
+                AddComplexType(xmember); //recursivity
+            }
+
+            return new Member(
+                xmember.Attribute("Name").Value,
+                type,
+                isList
+                );
+        }
 
         private void AddComplexType(XElement element)
         {
@@ -27,54 +67,28 @@ namespace Spike.Build
             //if has definition
             if (definition.Count() > 0)
             {
-                if (ComplexTypes.Any(ct => ct.Name == typeName))
+                if (CustomTypes.Any(ct => ct.Name == typeName))
                     Console.WriteLine("error");
 
-                var complexType = new ComplexType(typeName);
+                var complexType = new CustomType(typeName);
                 
                 foreach (var xmember in element.Descendants().Where(member => member.Name.LocalName == "Member"))
-                {
-                    var type = xmember.Attribute("Type").Value;
-                    //TODO Fix Enum
-                    if (type == "Enum")
-                        type = "Int32";
-
-                    if (type == "ComplexType")
-                    {
-                        type = xmember.Attribute("Class").Value;
-                        AddComplexType(xmember); //recursivity
-                    }
-                    complexType.Members.Add(new Member(
-                        xmember.Attribute("Name").Value,
-                        type
-                        ));
+                {                    
+                    complexType.Members.Add(GetMember(xmember));
                 }
 
-                ComplexTypes.Add(complexType);
+                CustomTypes.Add(complexType);
 
             }
         }
 
+        
 
         private List<Member> GetMembers(XElement element) {          
             var members = new List<Member>();
             foreach (var xmember in element.Descendants().Where(member => member.Name.LocalName == "Member"))
-            {
-                var type = xmember.Attribute("Type").Value;
-
-                //TODO Fix Enum
-                if (type == "Enum")
-                    type = "Int32";
-
-                if (type == "ComplexType")
-                {
-                    type = xmember.Attribute("Class").Value;
-                    AddComplexType(xmember); //recursivity
-                }
-                members.Add(new Member(
-                    xmember.Attribute("Name").Value,
-                    type
-                    ));
+            {                
+                members.Add(GetMember(xmember));
             }
 
             return members;
@@ -85,10 +99,10 @@ namespace Spike.Build
             try
             {
                 var model = new Model();
-                
-                //document.Load(location);
+
+                var document = XDocument.Load(location);
                 //var document = XDocument.Load("http://54.88.210.109/spml?file=MyChatProtocol"); ////http://54.88.210.109/spml/all
-                var document = XDocument.Load("exemple2.spml");
+                //var document = XDocument.Load("exemple2.spml");
                 
 
                 var protocolName = document?.Root.Attribute(@"Name")?.Value;
@@ -170,14 +184,14 @@ namespace Spike.Build
 
                     //add receive
                     if (receiveMembers != null && receiveMembers.Count > 0)
-                        SignBuilder.Append(receiveMembers.Select(member => member.Type).Aggregate((type1, type2) => string.Format("{0}.{1}", type1, type2)));                    
+                        SignBuilder.Append(receiveMembers.Select(member => member.IsList ? string.Format("ListOf{0}", member.Type) : member.Type).Aggregate((type1, type2) => string.Format("{0}.{1}", type1, type2)));                    
 
 
                     SignBuilder.Append("].[");
 
                     //add sends
                     if (sendMembers != null && sendMembers.Count > 0)
-                        SignBuilder.Append(sendMembers.Select(member => member.Type).Aggregate((type1, type2) => string.Format("{0}.{1}", type1, type2)));
+                        SignBuilder.Append(sendMembers.Select(member => member.IsList ? string.Format("ListOf{0}", member.Type) : member.Type).Aggregate((type1, type2) => string.Format("{0}.{1}", type1, type2)));
                     
                     SignBuilder.Append("]");
 
@@ -194,8 +208,7 @@ namespace Spike.Build
                         var operation = new Operation(id, name, compressSend);
                         operation.Members.AddRange(sendMembers);
                         model.Sends.Add(operation);
-                    }
-                    //Console.WriteLine(xoperation.Name);
+                    }                    
                 }
 
                 return model;
@@ -214,7 +227,7 @@ namespace Spike.Build
 }
 
 
-/*
+/* Todo remove this or push to doc
 About spml
 
 en gros PULL:
