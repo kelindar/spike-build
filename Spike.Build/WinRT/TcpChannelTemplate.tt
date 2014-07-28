@@ -26,6 +26,7 @@
 <#@ parameter type="Spike.Build.Model" name="Model" #>
 
 using Spike.Network.Packets;
+using Spike.Network.CustomTypes;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -97,5 +98,41 @@ namespace Spike.Network
 					return;
 			}
 		}
+
+		//Custom Type
+<#		foreach(var customType in Model.CustomTypes)
+		{ #>
+		protected <#= customType.Name #> PacketRead<#= customType.Name #>()
+        {
+            var value = new <#= customType.Name #>();
+<#			foreach(var member in customType.Members)
+			{ #>
+			value.<#= member.Name #> = PacketRead<#= member.IsList ? "ListOf" : string.Empty #><#= member.Type #>();
+<#			} #>
+			return value;
+        }
+        protected void PacketWrite(<#= customType.Name #> value)
+        {
+            <#			foreach(var member in customType.Members)
+			{ #>
+			PacketWrite(value.<#= member.Name #>);
+<#			} #>
+        }
+
+        protected <#= customType.Name #>[] PacketReadListOf<#= customType.Name #>()
+        {
+            var value = new <#= customType.Name #>[PacketReadInt32()];
+            for (int index = 0; index < value.Length; index++)
+                value[index] = PacketRead<#= customType.Name #>();
+            return value;
+        }
+        protected void PacketWrite(<#= customType.Name #>[] value)
+        {
+            PacketWrite(value.Length);
+            foreach (var element in value)
+                PacketWrite(element);
+        }
+<#				} #>
+
 	}
 }

@@ -4,6 +4,7 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ parameter type="Spike.Build.Operation" name="Operation" #>
+using Spike.Network.CustomTypes;
 
 namespace Spike.Network.Packets
 {
@@ -16,3 +17,6 @@ namespace Spike.Network.Packets
 
     }
 }
+<#+ internal void Clear(){
+	GenerationEnvironment.Clear();
+} #>

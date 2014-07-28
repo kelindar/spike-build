@@ -55,7 +55,10 @@ namespace Spike.Build.WinRT
                 case "String":
                     return "string";
 
-                default:
+                case "Dynamic":
+                    return "object";
+
+                default: //CustomType & DateTime
                     return member.Type;
             }
 
@@ -74,12 +77,12 @@ namespace Spike.Build.WinRT
             if (!Directory.Exists(packetsDirectory))
                 Directory.CreateDirectory(packetsDirectory);
 
-            //var customTypesDirectory = Path.Combine(output, "Spike", "CustomTypes");
-            //if (!Directory.Exists(customTypesDirectory))
-            //    Directory.CreateDirectory(customTypesDirectory);
+            var customTypesDirectory = Path.Combine(output, "Spike", "CustomTypes");
+            if (!Directory.Exists(customTypesDirectory))
+                Directory.CreateDirectory(customTypesDirectory);
 
-            Extentions.CopyFromRessources("Spike.Build.WinRT.CLZF.cs", Path.Combine(networkDirectory, @"CLZF.cs"));
-            Extentions.CopyFromRessources("Spike.Build.WinRT.TcpChannelBase.cs", Path.Combine(networkDirectory, @"TcpChannelBase.cs"));
+            Extentions.CopyFromRessources("Spike.Build.WinRT.StaticFiles.CLZF.cs", Path.Combine(networkDirectory, @"CLZF.cs"));
+            Extentions.CopyFromRessources("Spike.Build.WinRT.StaticFiles.TcpChannelBase.cs", Path.Combine(networkDirectory, @"TcpChannelBase.cs"));
             
             var tcpChanneltemplate = new TcpChannelTemplate();
             var tcpChannelsession = new Dictionary<string, object>();
@@ -96,6 +99,7 @@ namespace Spike.Build.WinRT
             var packetSession = new Dictionary<string, object>();
             packetTemplate.Session = packetSession;
             foreach (var receive in model.Receives) {
+                packetTemplate.Clear();
                 packetSession["Operation"] = receive;
                 packetTemplate.Initialize();
 
@@ -104,29 +108,20 @@ namespace Spike.Build.WinRT
             }
 
             //Make CustomType
-            //var customTypeTemplate = new CustomTypeTemplate();
-            //var customTypeSession = new Dictionary<string, object>();
-            //customTypeTemplate.Session = customTypeSession;
-            //foreach (var customType in model.CustomTypes)
-            //{
-            //    customTypeSession["CustomType"] = customType;
-            //    customTypeTemplate.Initialize();
-
-            //    code = customTypeTemplate.TransformText();
-            //    File.WriteAllText(Path.Combine(customTypesDirectory, string.Format(@"{0}.cs", customType.Name)), code);
-            //}
+            var customTypeTemplate = new CustomTypeTemplate();
+            var customTypeSession = new Dictionary<string, object>();
+            customTypeTemplate.Session = customTypeSession;
+            foreach (var customType in model.CustomTypes)
+            {
+                customTypeTemplate.Clear();
+                customTypeSession["CustomType"] = customType;
+                customTypeTemplate.Initialize();
+                code = customTypeTemplate.TransformText();
+                File.WriteAllText(Path.Combine(customTypesDirectory, string.Format(@"{0}.cs", customType.Name)), code);
+            }
 
         }
     }
 
     
 }
-/*
-
-<xs:enumeration value="Enum"/>
-<xs:enumeration value="Byte"/><xs:enumeration value="UInt16"/><xs:enumeration value="UInt32"/><xs:enumeration value="UInt64"/><xs:enumeration value="Int16"/>
-<xs:enumeration value="Int32"/><xs:enumeration value="Int64"/><xs:enumeration value="Boolean"/><xs:enumeration value="Single"/><xs:enumeration value="Double"/>
-<xs:enumeration value="DateTime"/><xs:enumeration value="String"/><xs:enumeration value="ComplexType"/><xs:enumeration value="DynamicType"/>
-<xs:enumeration value="ListOfEnum"/><xs:enumeration value="ListOfByte"/><xs:enumeration value="ListOfUInt16"/><xs:enumeration value="ListOfUInt32"/><xs:enumeration value="ListOfUInt64"/><xs:enumeration value="ListOfInt16"/><xs:enumeration value="ListOfInt32"/><xs:enumeration value="ListOfInt64"/><xs:enumeration value="ListOfBoolean"/><xs:enumeration value="ListOfSingle"/><xs:enumeration value="ListOfDouble"/><xs:enumeration value="ListOfDateTime"/><xs:enumeration value="ListOfString"/><xs:enumeration value="ListOfComplexType"/><xs:enumeration value="ListOfDynamicType"/>
-
-*/

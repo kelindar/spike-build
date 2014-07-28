@@ -37,7 +37,7 @@ namespace Spike.Samples.WinRT
 
             DataContext = this;
 
-            Channel.MyChatMessages += (channel, packet) =>
+            Channel.MyChatMessagesInform += (channel, packet) =>
             {
                 Messages.Add(new Message() { Text = packet.Message });
             };

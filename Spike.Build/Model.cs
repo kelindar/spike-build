@@ -42,7 +42,6 @@ namespace Spike.Build
                 type = type.Substring(6);
             }
 
-            //TODO Fix Enum
             if (type == "Enum")
                 type = "Int32";
 
@@ -61,14 +60,14 @@ namespace Spike.Build
 
         private void AddComplexType(XElement element)
         {
-            var typeName = element.Attribute("Name").Value;
+            var typeName = element.Attribute("Class").Value;
             var definition = element.Descendants();
 
             //if has definition
             if (definition.Count() > 0)
             {
                 if (CustomTypes.Any(ct => ct.Name == typeName))
-                    Console.WriteLine("error");
+                    Console.WriteLine("error2");
 
                 var complexType = new CustomType(typeName);
                 
@@ -102,7 +101,7 @@ namespace Spike.Build
 
                 var document = XDocument.Load(location);
                 //var document = XDocument.Load("http://54.88.210.109/spml?file=MyChatProtocol"); ////http://54.88.210.109/spml/all
-                //var document = XDocument.Load("exemple2.spml");
+                //var document = XDocument.Load("test.spml");
                 
 
                 var protocolName = document?.Root.Attribute(@"Name")?.Value;
@@ -157,7 +156,7 @@ namespace Spike.Build
 
                         //never send
                         if (xsend != null)
-                            Console.WriteLine("error");
+                            Console.WriteLine("error1");
                         sendMembers = null;
                     }
                     else
@@ -198,7 +197,7 @@ namespace Spike.Build
                     var id = SignBuilder.ToString().GetMurmurHash3();
                     if (receiveMembers != null)
                     {
-                        var operation = new Operation(id, name, compressReceive);
+                        var operation = new Operation(id, name + "Inform", compressReceive);
                         operation.Members.AddRange(receiveMembers);
                         model.Receives.Add(operation);
                     }

@@ -28,9 +28,59 @@ namespace Spike.Build.WinRT
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write("\r\n");
+            this.Write("\r\n\r\n\r\n\r\nnamespace Spike.Network.CustomTypes\r\n{\r\n    public partial struct ");
+            
+            #line 13 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\CustomTypeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(CustomType.Name));
+            
+            #line default
+            #line hidden
+            this.Write("\r\n    {\r\n");
+            
+            #line 15 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\CustomTypeTemplate.tt"
+		foreach(var member in CustomType.Members)
+		{ 
+            
+            #line default
+            #line hidden
+            this.Write("\t\r\n\t\tpublic ");
+            
+            #line 17 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\CustomTypeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(WinRTBuilder.GetNativeType(member)));
+            
+            #line default
+            #line hidden
+            
+            #line 17 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\CustomTypeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "[]" : string.Empty));
+            
+            #line default
+            #line hidden
+            this.Write(" ");
+            
+            #line 17 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\CustomTypeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
+            
+            #line default
+            #line hidden
+            this.Write(" { get; set; }\r\n");
+            
+            #line 18 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\CustomTypeTemplate.tt"
+		} 
+            
+            #line default
+            #line hidden
+            this.Write("    }\r\n}\r\n\r\n");
             return this.GenerationEnvironment.ToString();
         }
+        
+        #line 22 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\CustomTypeTemplate.tt"
+ internal void Clear(){
+	GenerationEnvironment.Clear();
+} 
+        
+        #line default
+        #line hidden
         
         #line 1 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\CustomTypeTemplate.tt"
 

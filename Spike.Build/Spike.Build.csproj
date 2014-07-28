@@ -73,14 +73,13 @@
     <Compile Include="Extentions.cs" />
     <Compile Include="IBuilder.cs" />
     <Compile Include="Member.cs" />
-    <Compile Include="MonoDroid\MonodroidBuilder.cs" />
-    <Compile Include="MonoTouch\MonoTouchBuilder.cs" />
     <Compile Include="Operation.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Model.cs" />
-    <EmbeddedResource Include="WinRT\CLZF.cs" />
-    <EmbeddedResource Include="WinRT\TcpChannelBase.cs" />
+    <Compile Include="WinRT\StaticFiles\CLZF.cs" />
+    <Compile Include="Xamarin\XamarinBuilder.cs" />
+    <EmbeddedResource Include="WinRT\StaticFiles\TcpChannelBase.cs" />
     <Compile Include="WinRT\CustomTypeTemplate.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -100,6 +99,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="test.spml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="WinRT\CustomTypeTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>CustomTypeTemplate.cs</LastGenOutput>

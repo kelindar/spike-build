@@ -16,9 +16,12 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Message.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Spike\CustomTypes\MyCustomClass.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Spike\CustomTypes\MyCustomClass2.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Spike\Network\CLZF.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Spike\Network\TcpChannel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Spike\Network\TcpChannelBase.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Spike\Packets\MyChatMessages.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Spike\Packets\MyChatMessagesInform.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Spike\Packets\TestMessageInform.cs" />
   </ItemGroup>
 </Project>

@@ -1,7 +1,8 @@
+using Spike.Network.CustomTypes;
 
 namespace Spike.Network.Packets
 {
-    public sealed class MyChatMessages
+    public sealed class MyChatMessagesInform
     {
 	
 		public byte[] Avatar { get; set; }

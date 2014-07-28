@@ -22,8 +22,7 @@ using System.Collections.Generic;
 using System.Reflection;
 
 using Spike.Build.WinRT;
-using Spike.Build.MonoDroid;
-using Spike.Build.MonoTouch;
+using Spike.Build.Xamarin;
 
 namespace Spike.Build
 {
@@ -31,8 +30,7 @@ namespace Spike.Build
     {
         static private Dictionary<string, IBuilder> Builders = new Dictionary<string, IBuilder>(StringComparer.CurrentCultureIgnoreCase) {
             { "WinRT", new WinRTBuilder() },
-            { "MonoTouch", new MonoTouchBuilder()},
-            { "MonoDroid", new MonoDroidBuilder()}
+            { "Xamarin", new XamarinBuilder()}
         };
 
 

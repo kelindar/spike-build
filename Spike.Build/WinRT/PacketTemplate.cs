@@ -28,16 +28,17 @@ namespace Spike.Build.WinRT
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write("\r\nnamespace Spike.Network.Packets\r\n{\r\n    public sealed class ");
+            this.Write("using Spike.Network.CustomTypes;\r\n\r\nnamespace Spike.Network.Packets\r\n{\r\n    publi" +
+                    "c sealed class ");
             
-            #line 10 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\PacketTemplate.tt"
+            #line 11 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\PacketTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Operation.Name));
             
             #line default
             #line hidden
             this.Write("\r\n    {\r\n");
             
-            #line 12 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\PacketTemplate.tt"
+            #line 13 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\PacketTemplate.tt"
 		foreach(var member in Operation.Members)
 		{ 
             
@@ -45,27 +46,27 @@ namespace Spike.Build.WinRT
             #line hidden
             this.Write("\t\r\n\t\tpublic ");
             
-            #line 14 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\PacketTemplate.tt"
+            #line 15 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\PacketTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(WinRTBuilder.GetNativeType(member)));
             
             #line default
             #line hidden
             
-            #line 14 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\PacketTemplate.tt"
+            #line 15 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\PacketTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "[]" : string.Empty));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 14 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\PacketTemplate.tt"
+            #line 15 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\PacketTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
             
             #line default
             #line hidden
             this.Write(" { get; set; }\r\n");
             
-            #line 15 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\PacketTemplate.tt"
+            #line 16 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\PacketTemplate.tt"
 		} 
             
             #line default
@@ -73,6 +74,14 @@ namespace Spike.Build.WinRT
             this.Write("\r\n    }\r\n}\r\n");
             return this.GenerationEnvironment.ToString();
         }
+        
+        #line 20 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\PacketTemplate.tt"
+ internal void Clear(){
+	GenerationEnvironment.Clear();
+} 
+        
+        #line default
+        #line hidden
         
         #line 1 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\PacketTemplate.tt"
 

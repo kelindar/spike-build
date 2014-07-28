@@ -5,3 +5,20 @@
 <#@ import namespace="System.Collections.Generic" #>
 <#@ parameter type="Spike.Build.CustomType" name="CustomType" #>
 
+
+
+
+namespace Spike.Network.CustomTypes
+{
+    public partial struct <#= CustomType.Name #>
+    {
+<#		foreach(var member in CustomType.Members)
+		{ #>	
+		public <#= WinRTBuilder.GetNativeType(member) #><#= member.IsList ? "[]" : string.Empty #> <#= member.Name #> { get; set; }
+<#		} #>
+    }
+}
+
+<#+ internal void Clear(){
+	GenerationEnvironment.Clear();
+} #>

@@ -55,6 +55,7 @@ namespace Spike.Build.WinRT
             #line hidden
             this.Write(@"
 using Spike.Network.Packets;
+using Spike.Network.CustomTypes;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -69,7 +70,7 @@ namespace Spike.Network
 		//Events
 ");
             
-            #line 41 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            #line 42 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
 		foreach(var receive in Model.Receives)
 		{ 
             
@@ -77,28 +78,28 @@ namespace Spike.Network
             #line hidden
             this.Write("\t\t\r\n\t\tpublic event Action<TcpChannel, ");
             
-            #line 43 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            #line 44 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name));
             
             #line default
             #line hidden
             this.Write("> ");
             
-            #line 43 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            #line 44 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name));
             
             #line default
             #line hidden
             this.Write("; \r\n");
             
-            #line 44 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            #line 45 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
 		} 
             
             #line default
             #line hidden
             this.Write("\t\t    \r\n\t\t//Sends        \r\n");
             
-            #line 47 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            #line 48 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
 		foreach(var send in Model.Sends)
 		{ 
             
@@ -106,14 +107,14 @@ namespace Spike.Network
             #line hidden
             this.Write("\t\t\r\n\t\tpublic async void ");
             
-            #line 49 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            #line 50 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(send.Name));
             
             #line default
             #line hidden
             this.Write("(");
             
-            #line 49 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            #line 50 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
 	
 			var first = true;
 			foreach(var member in send.Members){
@@ -131,14 +132,14 @@ namespace Spike.Network
             #line hidden
             this.Write(")\r\n\t\t{\r\n\t\t\tBeginNewPacket(0x");
             
-            #line 62 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            #line 63 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(send.Id.ToString("X")));
             
             #line default
             #line hidden
             this.Write(");\r\n");
             
-            #line 63 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            #line 64 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
 			foreach(var member in send.Members)
 			{ 
             
@@ -146,28 +147,28 @@ namespace Spike.Network
             #line hidden
             this.Write("\t\t\tPacketWrite(");
             
-            #line 65 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            #line 66 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
             
             #line default
             #line hidden
             this.Write(");\r\n");
             
-            #line 66 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            #line 67 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
 			} 
             
             #line default
             #line hidden
             this.Write("\t\t\tawait SendPacket(");
             
-            #line 67 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            #line 68 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(send.Compressed ? "true" : "false"));
             
             #line default
             #line hidden
             this.Write(");\r\n\t\t}\t\t \r\n");
             
-            #line 69 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            #line 70 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
 		} 
             
             #line default
@@ -175,7 +176,7 @@ namespace Spike.Network
             this.Write("\r\n\t\t//Dispatcher\r\n\t\tprotected override void OnReceive(uint key)\r\n\t\t{\r\n\t\t\tswitch (" +
                     "key)\r\n\t\t\t{\r\n");
             
-            #line 76 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            #line 77 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
 				foreach(var receive in Model.Receives)
 				{ 
             
@@ -183,82 +184,219 @@ namespace Spike.Network
             #line hidden
             this.Write("\t\t\t\t\r\n\t\t\t\tcase 0x");
             
-            #line 78 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            #line 79 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Id.ToString("X")));
             
             #line default
             #line hidden
             this.Write("u:\r\n\t\t\t\t{\r\n\t\t\t\t\tvar packet = new ");
             
-            #line 80 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            #line 81 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name));
             
             #line default
             #line hidden
             this.Write("();\r\n\t\t\t\t\tBeginReadPacket(");
             
-            #line 81 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            #line 82 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Compressed ? "true" : "false"));
             
             #line default
             #line hidden
             this.Write(");\r\n\t\t\t\t\t\r\n");
             
-            #line 83 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            #line 84 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
 					foreach(var member in receive.Members){ 
             
             #line default
             #line hidden
             this.Write("\t\t\t\t\tpacket.");
             
-            #line 84 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            #line 85 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
             
             #line default
             #line hidden
             this.Write(" = PacketRead");
             
-            #line 84 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            #line 85 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "ListOf" : string.Empty));
             
             #line default
             #line hidden
             
-            #line 84 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            #line 85 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Type));
             
             #line default
             #line hidden
             this.Write("();\r\n");
             
-            #line 85 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            #line 86 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
 					} 
             
             #line default
             #line hidden
             this.Write("\r\n\t\t\t\t\t//Now Call event\r\n\t\t\t\t\tif (");
             
-            #line 88 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            #line 89 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name));
             
             #line default
             #line hidden
             this.Write(" != null)\r\n\t\t\t\t\t\t");
             
-            #line 89 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            #line 90 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name));
             
             #line default
             #line hidden
             this.Write("(this, packet);\r\n\r\n\t\t\t\t\tbreak;\r\n\t\t\t\t}\r\n");
             
-            #line 93 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            #line 94 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
 				} 
             
             #line default
             #line hidden
             this.Write("\r\n\t\t\t\tdefault:\r\n\t\t\t\t\tDebug.WriteLine(\"Unknow packet : {0:X}\", key);\r\n\t\t\t\t\treturn;" +
-                    "\r\n\t\t\t}\r\n\t\t}\r\n\t}\r\n}");
+                    "\r\n\t\t\t}\r\n\t\t}\r\n\r\n\t\t//Custom Type\r\n");
+            
+            #line 103 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+		foreach(var customType in Model.CustomTypes)
+		{ 
+            
+            #line default
+            #line hidden
+            this.Write("\t\tprotected ");
+            
+            #line 105 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
+            
+            #line default
+            #line hidden
+            this.Write(" PacketRead");
+            
+            #line 105 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
+            
+            #line default
+            #line hidden
+            this.Write("()\r\n        {\r\n            var value = new ");
+            
+            #line 107 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
+            
+            #line default
+            #line hidden
+            this.Write("();\r\n");
+            
+            #line 108 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+			foreach(var member in customType.Members)
+			{ 
+            
+            #line default
+            #line hidden
+            this.Write("\t\t\tvalue.");
+            
+            #line 110 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
+            
+            #line default
+            #line hidden
+            this.Write(" = PacketRead");
+            
+            #line 110 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "ListOf" : string.Empty));
+            
+            #line default
+            #line hidden
+            
+            #line 110 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(member.Type));
+            
+            #line default
+            #line hidden
+            this.Write("();\r\n");
+            
+            #line 111 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+			} 
+            
+            #line default
+            #line hidden
+            this.Write("\t\t\treturn value;\r\n        }\r\n        protected void PacketWrite(");
+            
+            #line 114 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
+            
+            #line default
+            #line hidden
+            this.Write(" value)\r\n        {\r\n            ");
+            
+            #line 116 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+			foreach(var member in customType.Members)
+			{ 
+            
+            #line default
+            #line hidden
+            this.Write("\t\t\tPacketWrite(value.");
+            
+            #line 118 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
+            
+            #line default
+            #line hidden
+            this.Write(");\r\n");
+            
+            #line 119 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+			} 
+            
+            #line default
+            #line hidden
+            this.Write("        }\r\n\r\n        protected ");
+            
+            #line 122 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
+            
+            #line default
+            #line hidden
+            this.Write("[] PacketReadListOf");
+            
+            #line 122 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
+            
+            #line default
+            #line hidden
+            this.Write("()\r\n        {\r\n            var value = new ");
+            
+            #line 124 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
+            
+            #line default
+            #line hidden
+            this.Write("[PacketReadInt32()];\r\n            for (int index = 0; index < value.Length; index" +
+                    "++)\r\n                value[index] = PacketRead");
+            
+            #line 126 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
+            
+            #line default
+            #line hidden
+            this.Write("();\r\n            return value;\r\n        }\r\n        protected void PacketWrite(");
+            
+            #line 129 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
+            
+            #line default
+            #line hidden
+            this.Write("[] value)\r\n        {\r\n            PacketWrite(value.Length);\r\n            foreach" +
+                    " (var element in value)\r\n                PacketWrite(element);\r\n        }\r\n");
+            
+            #line 135 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build\WinRT\TcpChannelTemplate.tt"
+				} 
+            
+            #line default
+            #line hidden
+            this.Write("\r\n\t}\r\n}");
             return this.GenerationEnvironment.ToString();
         }
         
