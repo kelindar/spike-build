@@ -134,14 +134,7 @@ namespace Spike.Build
             h1 ^= (uint)length;
             h1 = Mix(h1);
             
-            return BitConverter.ToUInt32(BitConverter.GetBytes(h1).Reverse().ToArray(),0);
-            // convert back to 4 bytes
-            /*byte[] key = new byte[4];
-            key[0] = (byte)(h1);
-            key[1] = (byte)(h1 >> 8);
-            key[2] = (byte)(h1 >> 16);
-            key[3] = (byte)(h1 >> 24);
-            return key;*/
+            return BitConverter.ToUInt32(BitConverter.GetBytes(h1).Reverse().ToArray(),0);            
         }
 
         private static uint Rotl32(uint x, byte r)

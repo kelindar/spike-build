@@ -36,42 +36,51 @@ namespace Spike.Build
 
         static void Main(string[] args)
         {
-            // Parse arguments
-            if (args.Length < 2)
+            try
             {
-                PromptUsage();
-                return;
-            }
-
-            // Get Model
-            var model = Model.GetFrom(args[0]);
-            if (model == null)
-            {
-                PromptUsage();
-                return;
-            }
-
-            var separators = new char[] { '-', ':' };
-            for (var index = 1; index < args.Length; index++) {
-                var buildArguments = args[index].Split(separators,StringSplitOptions.RemoveEmptyEntries);
-
-                if (buildArguments.Length <= 0 || buildArguments.Length > 2) {
+                // Parse arguments
+                if (args.Length < 2)
+                {
                     PromptUsage();
                     return;
                 }
-                
-                if(Builders.TryGetValue(buildArguments[0], out var builder))
+
+                // Get Model
+                var model = Model.GetFrom(args[0]);
+                if (model == null)
                 {
-                    if (buildArguments.Length == 2)
-                        builder.Build(model, buildArguments[1]);
+                    PromptUsage();
+                    return;
+                }
+
+                var separators = new char[] { '-', ':' };
+                for (var index = 1; index < args.Length; index++)
+                {
+                    var buildArguments = args[index].Split(separators, StringSplitOptions.RemoveEmptyEntries);
+
+                    if (buildArguments.Length <= 0 || buildArguments.Length > 2)
+                    {
+                        PromptUsage();
+                        return;
+                    }
+
+                    if (Builders.TryGetValue(buildArguments[0], out var builder))
+                    {
+                        if (buildArguments.Length == 2)
+                            builder.Build(model, buildArguments[1]);
+                        else
+                            builder.Build(model);
+                    }
                     else
-                        builder.Build(model);
+                    {
+                        PromptUsage();
+                        return;
+                    }
                 }
-                else
-                {
-                    PromptUsage();
-                    return;
-                }                
+            }
+            catch (Exception e)
+            {
+                Console.Read();
             }
             Console.Read();
         }

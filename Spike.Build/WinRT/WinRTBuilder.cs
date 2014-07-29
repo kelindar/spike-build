@@ -64,7 +64,6 @@ namespace Spike.Build.WinRT
 
         }
 
-
         public void Build(Model model, string output) {
             if (string.IsNullOrEmpty(output))
                 output = @"WinRT";
