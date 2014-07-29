@@ -23,11 +23,27 @@ using System.Reflection;
 
 using Spike.Build.WinRT;
 using Spike.Build.Xamarin;
+using System.IO;
 
 namespace Spike.Build
 {
     internal static class Program
     {
+        static internal void Exit(string message = null)
+        {
+            if (message != null)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write("Error : ");
+                Console.WriteLine(message);
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Gray;
+            }
+            PromptUsage();
+            Console.Read();
+            Environment.Exit(-1);
+        }
+
         static private Dictionary<string, IBuilder> Builders = new Dictionary<string, IBuilder>(StringComparer.CurrentCultureIgnoreCase) {
             { "WinRT", new WinRTBuilder() },
             { "Xamarin", new XamarinBuilder()}
@@ -38,20 +54,22 @@ namespace Spike.Build
         {
             try
             {
+                var currentAssembly = Assembly.GetExecutingAssembly();
+                Console.WriteLine("{0}, Version {1}", currentAssembly.GetCustomAttribute<AssemblyTitleAttribute>().Title, currentAssembly.GetName().Version.ToString());
+                Console.WriteLine(currentAssembly.GetCustomAttribute<AssemblyCopyrightAttribute>().Copyright);
+                Console.WriteLine();
+
+
+
                 // Parse arguments
+                if (args.Length == 0)
+                    Program.Exit();
+
                 if (args.Length < 2)
-                {
-                    PromptUsage();
-                    return;
-                }
+                    Program.Exit("You must define <source> AND <build>");
 
                 // Get Model
                 var model = Model.GetFrom(args[0]);
-                if (model == null)
-                {
-                    PromptUsage();
-                    return;
-                }
 
                 var separators = new char[] { '-', ':' };
                 for (var index = 1; index < args.Length; index++)
@@ -59,10 +77,7 @@ namespace Spike.Build
                     var buildArguments = args[index].Split(separators, StringSplitOptions.RemoveEmptyEntries);
 
                     if (buildArguments.Length <= 0 || buildArguments.Length > 2)
-                    {
-                        PromptUsage();
-                        return;
-                    }
+                        Program.Exit("Syntax error");
 
                     if (Builders.TryGetValue(buildArguments[0], out var builder))
                     {
@@ -72,39 +87,39 @@ namespace Spike.Build
                             builder.Build(model);
                     }
                     else
-                    {
-                        PromptUsage();
-                        return;
-                    }
+                        Program.Exit("Unknown parameter");
                 }
+
             }
+#if DEBUG
             catch (Exception e)
             {
-                Console.Read();
-            }
-            Console.Read();
-        }
+                //Popup in visual studio if attached 
+                if (System.Diagnostics.Debugger.IsAttached)
+                    System.Diagnostics.Debugger.Break();
 
-      
+                Program.Exit(string.Format("Unknown exception : {0}", e.StackTrace));
+            }
+#else
+            catch (Exception)
+            {
+                Program.Exit("An unknown error occurred");  
+            }
+#endif
+        }
 
         private static void PromptUsage()
         {
-            var currentAssembly = Assembly.GetExecutingAssembly();
-
-            Console.WriteLine("{0}, Version {1}", currentAssembly.GetCustomAttribute<AssemblyTitleAttribute>().Title, currentAssembly.GetName().Version.ToString());
-            Console.WriteLine(currentAssembly.GetCustomAttribute<AssemblyCopyrightAttribute>().Copyright);
-            Console.WriteLine();
-            Console.WriteLine(" Usage: ");
+            Console.WriteLine("Usage: ");
             Console.WriteLine(" Spike.Build <source> <build>");
             Console.WriteLine();
             Console.WriteLine(" build: ");
             foreach (var key in Builders.Keys)
-                Console.WriteLine(" {0}[:output path]", key);
+                Console.WriteLine("  -{0}[:output_path]", key);
             Console.WriteLine();
-            Console.WriteLine(" source: ");
-            Console.WriteLine(" Input could be either:");
-            Console.WriteLine(" An URL (ex: http://127.0.0.1:8002/spml/all )");
-            Console.WriteLine(" Or A file");
-        }        
+            Console.WriteLine(" source could be either: ");
+            Console.WriteLine("  URL ( ex: http://54.88.210.109/spml?file=MyChatProtocol )");
+            Console.WriteLine("  File ( ex: test.spml )");
+        }
     }
 }

@@ -19,6 +19,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
@@ -35,24 +36,38 @@ namespace Spike.Build
 
         private Member GetMember(XElement xmember)
         {
-            var type = xmember.Attribute("Type").Value;
+            var type = xmember.Attribute("Type")?.Value;
+            if (string.IsNullOrWhiteSpace(type))
+                Program.Exit("All member must have a Type");
+
+            var name = xmember.Attribute("Name")?.Value;
+            if (string.IsNullOrWhiteSpace(type))
+                Program.Exit("All member must have a Name");
+
             var isList = false;
-            if (type.StartsWith("ListOf")) {
+            if (type.StartsWith("ListOf"))
+            {
                 isList = true;
                 type = type.Substring(6);
             }
 
+            //In client Enum is Int32
             if (type == "Enum")
                 type = "Int32";
 
             if (type == "ComplexType")
             {
-                type = xmember.Attribute("Class").Value;
-                AddComplexType(xmember); //recursivity
+                type = xmember.Attribute("Class")?.Value;
+                if (string.IsNullOrWhiteSpace(type))
+                    Program.Exit("All Type ComplexType/ListOfComplexType must have a Class");
+
+                AddComplexType(xmember);
             }
 
+
+
             return new Member(
-                xmember.Attribute("Name").Value,
+                name,
                 type,
                 isList
                 );
@@ -60,35 +75,36 @@ namespace Spike.Build
 
         private void AddComplexType(XElement element)
         {
-            var typeName = element.Attribute("Class").Value;
-            var definition = element.Descendants();
+            var typeName = element.Attribute("Class")?.Value;
+            if (string.IsNullOrWhiteSpace(typeName))
+                Program.Exit("All Type ComplexType/ListOfComplexType must have a Class");
 
-            //if has definition
-            if (definition.Count() > 0)
+            var members = element.Elements().Where(member => member.Name.LocalName == "Member");
+
+            //if has members
+            if (members.Count() > 0)
             {
                 if (CustomTypes.Any(ct => ct.Name == typeName))
-                    Console.WriteLine("error2");
+                    Program.Exit("Complex type have 2 definitions");
 
                 var complexType = new CustomType(typeName);
-                
-                foreach (var xmember in element.Descendants().Where(member => member.Name.LocalName == "Member"))
-                {                    
+
+                foreach (var xmember in members)
                     complexType.Members.Add(GetMember(xmember));
-                }
 
                 CustomTypes.Add(complexType);
 
             }
         }
 
-        
 
-        private List<Member> GetMembers(XElement element) {          
+
+        private List<Member> GetMembers(XElement element)
+        {
             var members = new List<Member>();
-            foreach (var xmember in element.Descendants().Where(member => member.Name.LocalName == "Member"))
-            {                
+
+            foreach (var xmember in element.Elements().Where(member => member.Name.LocalName == "Member"))
                 members.Add(GetMember(xmember));
-            }
 
             return members;
         }
@@ -98,21 +114,18 @@ namespace Spike.Build
             try
             {
                 var model = new Model();
-
                 var document = XDocument.Load(location);
-                //var document = XDocument.Load("http://54.88.210.109/spml?file=MyChatProtocol"); ////http://54.88.210.109/spml/all
-                //var document = XDocument.Load("test.spml");
-                
+
 
                 var protocolName = document?.Root.Attribute(@"Name")?.Value;
-                if(protocolName == null)
-                    Console.WriteLine("protocolName error");
+                if (protocolName == null)
+                    Program.Exit("No protocol name");
 
 
                 var SignBuilder = new StringBuilder();
                 var operations = document.Descendants()
-                                 .Where(operation => operation.Name.LocalName == "Operation");
-                
+                    .Where(operation => operation.Name.LocalName == "Operation");
+
                 //ProtocolName.Push.OperationName.[MemberTypes].[]
                 foreach (var xoperation in operations)
                 {
@@ -120,8 +133,8 @@ namespace Spike.Build
                     SignBuilder.Append(protocolName);
                     SignBuilder.Append('.');
 
-                    var xreceive = xoperation.Descendants().FirstOrDefault(element => element.Name.LocalName == "Outgoing");
-                    var xsend = xoperation.Descendants().FirstOrDefault(element => element.Name.LocalName == "Incoming");;
+                    var xreceive = xoperation.Elements().FirstOrDefault(element => element.Name.LocalName == "Outgoing");
+                    var xsend = xoperation.Elements().FirstOrDefault(element => element.Name.LocalName == "Incoming"); ;
 
                     List<Member> sendMembers;
                     List<Member> receiveMembers;
@@ -129,7 +142,8 @@ namespace Spike.Build
                     var compressSend = false;
                     var compressReceive = false;
 
-                    switch (xoperation.Attribute("Compression")?.Value) {
+                    switch (xoperation.Attribute("Compression")?.Value)
+                    {
                         case "Both":
                             compressSend = true;
                             compressReceive = true;
@@ -147,11 +161,11 @@ namespace Spike.Build
                     {
                         SignBuilder.Append("Push");
                         SignBuilder.Append('.');
-                        
+
                         //receive always exist
                         if (xreceive == null)
                             receiveMembers = new List<Member>();
-                        else 
+                        else
                             receiveMembers = model.GetMembers(xreceive);
 
                         //never send
@@ -173,25 +187,24 @@ namespace Spike.Build
                         if (xsend == null)
                             sendMembers = new List<Member>();
                         else
-                            sendMembers = model.GetMembers(xsend);      
-                        
+                            sendMembers = model.GetMembers(xsend);
+
                     }
 
                     var name = xoperation.Attribute("Name").Value;
                     SignBuilder.Append(name);
                     SignBuilder.Append(".[");
 
-                    //add receive
+                    //add receive members to signature
                     if (receiveMembers != null && receiveMembers.Count > 0)
-                        SignBuilder.Append(receiveMembers.Select(member => member.IsList ? string.Format("ListOf{0}", member.Type) : member.Type).Aggregate((type1, type2) => string.Format("{0}.{1}", type1, type2)));                    
-
+                        SignBuilder.Append(receiveMembers.Select(member => member.IsList ? string.Format("ListOf{0}", member.Type) : member.Type).Aggregate((type1, type2) => string.Format("{0}.{1}", type1, type2)));
 
                     SignBuilder.Append("].[");
 
-                    //add sends
+                    //add sends members to signature
                     if (sendMembers != null && sendMembers.Count > 0)
                         SignBuilder.Append(sendMembers.Select(member => member.IsList ? string.Format("ListOf{0}", member.Type) : member.Type).Aggregate((type1, type2) => string.Format("{0}.{1}", type1, type2)));
-                    
+
                     SignBuilder.Append("]");
 
                     var id = SignBuilder.ToString().GetMurmurHash3();
@@ -207,17 +220,16 @@ namespace Spike.Build
                         var operation = new Operation(id, name, compressSend);
                         operation.Members.AddRange(sendMembers);
                         model.Sends.Add(operation);
-                    }                    
+                    }
                 }
 
                 return model;
             }
-            catch (Exception e)
+            catch (FileNotFoundException)
             {
-                Console.WriteLine(e.StackTrace);
-                Console.Read();
+                Program.Exit("Spml file unreachable");
             }
-            return null;
+            return null; //dummy code
         }
 
         //Avoid default constructor

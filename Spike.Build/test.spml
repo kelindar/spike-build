@@ -33,6 +33,9 @@
         <Member Name="MyCustom" Type="ComplexType" Class="MyCustomClass">
           <Member Name="Number" Type="Int32" />
           <Member Name="Message" Type="String" />
+          <Member Name="MyCustom3" Type="ComplexType" Class="MyCustomClass3">
+            <Member Name="Number3" Type="Int32" />
+          </Member> 
         </Member>
       </Outgoing>
       <Incoming>
