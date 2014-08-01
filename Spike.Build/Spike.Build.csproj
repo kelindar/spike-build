@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Spike.Build</RootNamespace>
     <AssemblyName>Spike.Build</AssemblyName>
-    <TargetFrameworkVersion>v4.5.3</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <TargetFrameworkProfile />
@@ -70,27 +70,36 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Spike.Build.CSharp5\CustomTypeTemplate.cs">
+      <Link>CSharp\CustomTypeTemplate.cs</Link>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CustomTypeTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="..\Spike.Build.CSharp5\PacketTemplate.cs">
+      <Link>CSharp\PacketTemplate.cs</Link>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PacketTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="..\Spike.Build.CSharp5\StaticFiles\CLZF.cs">
+      <Link>CSharp5\StaticFiles\CLZF.cs</Link>
+    </Compile>
+    <Compile Include="..\Spike.Build.CSharp5\StaticFiles\TcpChannelBase.cs">
+      <Link>CSharp5\StaticFiles\TcpChannelBase.cs</Link>
+    </Compile>
+    <Compile Include="..\Spike.Build.CSharp5\TcpChannelTemplate.cs">
+      <Link>CSharp\TcpChannelTemplate.cs</Link>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TcpChannelTemplate.tt</DependentUpon>
+    </Compile>
     <Compile Include="Java\CustomTypeTemplate.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>CustomTypeTemplate.tt</DependentUpon>
     </Compile>
     <Compile Include="Java\JavaBuilder.cs" />
-    <Compile Include="CSharp\CustomTypeTemplate.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CustomTypeTemplate.tt</DependentUpon>
-    </Compile>
-    <Compile Include="CSharp\PacketTemplate.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>PacketTemplate.tt</DependentUpon>
-    </Compile>
-    <Compile Include="CSharp\TcpChannelTemplate.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>TcpChannelTemplate.tt</DependentUpon>
-    </Compile>
     <Compile Include="CustomType.cs" />
     <Compile Include="Extentions.cs" />
     <Compile Include="IBuilder.cs" />
@@ -110,9 +119,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Model.cs" />
     <EmbeddedResource Include="WinRT\StaticFiles\CLZF.cs" />
-    <EmbeddedResource Include="CSharp\StaticFiles\CLZF.cs" />
-    <EmbeddedResource Include="CSharp\StaticFiles\TcpChannelBase.cs" />
-    <Compile Include="CSharp\CSharpBuilder.cs" />
     <Compile Include="Xamarin\CustomTypeTemplate.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -150,6 +156,21 @@
     <Compile Include="WinRT\WinRTBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Spike.Build.CSharp5\CustomTypeTemplate.tt">
+      <Link>CSharp\CustomTypeTemplate.tt</Link>
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>CustomTypeTemplate.cs</LastGenOutput>
+    </None>
+    <None Include="..\Spike.Build.CSharp5\PacketTemplate.tt">
+      <Link>CSharp\PacketTemplate.tt</Link>
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>PacketTemplate.cs</LastGenOutput>
+    </None>
+    <None Include="..\Spike.Build.CSharp5\TcpChannelTemplate.tt">
+      <Link>CSharp\TcpChannelTemplate.tt</Link>
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>TcpChannelTemplate.cs</LastGenOutput>
+    </None>
     <None Include="App.config" />
     <None Include="Java\CustomTypeTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
@@ -175,18 +196,6 @@
       <LastGenOutput>PacketTemplate.cs</LastGenOutput>
     </None>
     <None Include="WinRT\TcpChannelTemplate.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>TcpChannelTemplate.cs</LastGenOutput>
-    </None>
-    <None Include="CSharp\CustomTypeTemplate.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>CustomTypeTemplate.cs</LastGenOutput>
-    </None>
-    <None Include="CSharp\PacketTemplate.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>PacketTemplate.cs</LastGenOutput>
-    </None>
-    <None Include="CSharp\TcpChannelTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>TcpChannelTemplate.cs</LastGenOutput>
     </None>
