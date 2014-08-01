@@ -31,6 +31,8 @@ using Spike.Build.Java;
 
 namespace Spike.Build
 {
+    //-i http://www.spike-engine.com/spml/MyChatProtocol -p csharp5 -o C:\Users\Fabian\Desktop\Projects\BitBucket\spike.samples\BuilderTestSamples
+    //-i http://www.spike-engine.com/spml/MyChatProtocol -p java -o C:\Users\Fabian\Desktop\Projects\BitBucket\spike.samples\BuilderTestSamples\JavaConsole\JavaConsole\src\com\misakai\spike\network
     internal static class Program
     {
 

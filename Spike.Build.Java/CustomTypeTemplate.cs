@@ -28,7 +28,7 @@ namespace Spike.Build.Java
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write("package com.misakai.spike.network.entities;\r\n\r\npublic final class ");
+            this.Write("package com.misakai.spike.network;\r\n\r\npublic final class ");
             
             #line 9 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Java\CustomTypeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(CustomType.Name));

@@ -7,7 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 // ------------------------------------------------------------------------------
-namespace Spike.Build.CSharp5
+namespace Spike.Build.Java
 {
     using System.Linq;
     using System.Text;
@@ -18,9 +18,9 @@ namespace Spike.Build.CSharp5
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CustomTypeTemplate.tt"
+    #line 1 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Java\ConnectionHandlerTemplate.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "14.0.0.0")]
-    public partial class CustomTypeTemplate : CustomTypeTemplateBase
+    public partial class ConnectionHandlerTemplate : ConnectionHandlerTemplateBase
     {
 #line hidden
         /// <summary>
@@ -28,106 +28,21 @@ namespace Spike.Build.CSharp5
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write("\r\nnamespace Spike.Network\r\n{\r\n    public partial struct ");
-            
-            #line 10 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CustomTypeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(CustomType.Name));
-            
-            #line default
-            #line hidden
-            this.Write("\r\n    {\r\n");
-            
-            #line 12 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CustomTypeTemplate.tt"
-		foreach(var member in CustomType.Members)
-		{ 
-            
-            #line default
-            #line hidden
-            this.Write("\t\r\n\t\tpublic ");
-            
-            #line 14 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CustomTypeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(CSharp5Builder.GetNativeType(member)));
-            
-            #line default
-            #line hidden
-            
-            #line 14 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CustomTypeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "[]" : string.Empty));
-            
-            #line default
-            #line hidden
-            this.Write(" ");
-            
-            #line 14 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CustomTypeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
-            
-            #line default
-            #line hidden
-            this.Write(" { get; set; }\r\n");
-            
-            #line 15 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CustomTypeTemplate.tt"
-		} 
-            
-            #line default
-            #line hidden
-            this.Write("    }\r\n}\r\n\r\n");
+            this.Write(@"package com.misakai.spike.network;
+
+/**
+ * The listener interface for receiving connection events. The class must define a method of no arguments called onConnect. 
+ */
+//@FunctionalInterface //Too soon with android 
+public interface ConnectionHandler {
+	/**
+	 * Invoked when a connection occurs.
+	 */
+	public void onConnect();
+}
+");
             return this.GenerationEnvironment.ToString();
         }
-        
-        #line 19 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CustomTypeTemplate.tt"
- internal void Clear(){
-	GenerationEnvironment.Clear();
-} 
-        
-        #line default
-        #line hidden
-        
-        #line 1 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CustomTypeTemplate.tt"
-
-private global::Spike.Build.CustomType _CustomTypeField;
-
-/// <summary>
-/// Access the CustomType parameter of the template.
-/// </summary>
-private global::Spike.Build.CustomType CustomType
-{
-    get
-    {
-        return this._CustomTypeField;
-    }
-}
-
-
-/// <summary>
-/// Initialize the template
-/// </summary>
-public virtual void Initialize()
-{
-    if ((this.Errors.HasErrors == false))
-    {
-bool CustomTypeValueAcquired = false;
-if (this.Session.ContainsKey("CustomType"))
-{
-    this._CustomTypeField = ((global::Spike.Build.CustomType)(this.Session["CustomType"]));
-    CustomTypeValueAcquired = true;
-}
-if ((CustomTypeValueAcquired == false))
-{
-    object data = global::System.Runtime.Remoting.Messaging.CallContext.LogicalGetData("CustomType");
-    if ((data != null))
-    {
-        this._CustomTypeField = ((global::Spike.Build.CustomType)(data));
-    }
-}
-
-
-    }
-}
-
-
-        
-        #line default
-        #line hidden
     }
     
     #line default
@@ -137,7 +52,7 @@ if ((CustomTypeValueAcquired == false))
     /// Base class for this transformation
     /// </summary>
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "14.0.0.0")]
-    public class CustomTypeTemplateBase
+    public class ConnectionHandlerTemplateBase
     {
         #region Fields
         private global::System.Text.StringBuilder generationEnvironmentField;

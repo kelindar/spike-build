@@ -5,8 +5,6 @@
 <#@ import namespace="System.Collections.Generic" #>
 <#@ parameter type="Spike.Build.Model" name="Model" #>
 
-using Spike.Network.Packets;
-using Spike.Network.CustomTypes;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -33,7 +31,7 @@ namespace Spike.Network
 				if(!first)
 					Write(", ");
 
-				Write(CSharpBuilder.GetNativeType(member));
+				Write(CSharp5Builder.GetNativeType(member));
 				Write(" ");
 				Write(member.Name);
 				first = false;

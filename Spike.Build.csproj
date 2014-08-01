@@ -75,7 +75,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CLZFTemplate.tt</DependentUpon>
     </Compile>
-    <Compile Include="Spike.Build.CSharp5\CSharpBuilder.cs" />
+    <Compile Include="Spike.Build.CSharp5\CSharp5Builder.cs" />
     <Compile Include="Spike.Build.CSharp5\CustomTypeTemplate.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -106,6 +106,31 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>PacketTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Spike.Build.Java\AbstractTcpChannelTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AbstractTcpChannelTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Spike.Build.Java\CLZFTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CLZFTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Spike.Build.Java\ConnectionHandlerTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ConnectionHandlerTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Spike.Build.Java\DisconnectionHandlerTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DisconnectionHandlerTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Spike.Build.Java\PacketHandlerTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PacketHandlerTemplate.tt</DependentUpon>
     </Compile>
     <Compile Include="Spike.Build.Runtime\CustomType.cs" />
     <Compile Include="Spike.Build.Runtime\Extentions.cs" />
@@ -210,6 +235,31 @@
       <LastGenOutput>PacketTemplate.cs</LastGenOutput>
       <CustomToolNamespace>Spike.Build.Java</CustomToolNamespace>
     </None>
+    <None Include="Spike.Build.Java\AbstractTcpChannelTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>AbstractTcpChannelTemplate.cs</LastGenOutput>
+      <CustomToolNamespace>Spike.Build.Java</CustomToolNamespace>
+    </None>
+    <None Include="Spike.Build.Java\CLZFTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>CLZFTemplate.cs</LastGenOutput>
+      <CustomToolNamespace>Spike.Build.Java</CustomToolNamespace>
+    </None>
+    <None Include="Spike.Build.Java\ConnectionHandlerTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>ConnectionHandlerTemplate.cs</LastGenOutput>
+      <CustomToolNamespace>Spike.Build.Java</CustomToolNamespace>
+    </None>
+    <None Include="Spike.Build.Java\DisconnectionHandlerTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>DisconnectionHandlerTemplate.cs</LastGenOutput>
+      <CustomToolNamespace>Spike.Build.Java</CustomToolNamespace>
+    </None>
+    <None Include="Spike.Build.Java\PacketHandlerTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>PacketHandlerTemplate.cs</LastGenOutput>
+      <CustomToolNamespace>Spike.Build.Java</CustomToolNamespace>
+    </None>
     <None Include="Spike.Build.Java\TcpChannelTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>TcpChannelTemplate.cs</LastGenOutput>
@@ -284,21 +334,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Spike.Build.Java\StaticFiles\AbstractTcpChannel.java">
-      <CustomToolNamespace>Spike.Build.Java.StaticFiles</CustomToolNamespace>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Spike.Build.Java\StaticFiles\CLZF.java">
-      <CustomToolNamespace>Spike.Build.Java.StaticFiles</CustomToolNamespace>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Spike.Build.Java\StaticFiles\ConnectionHandler.java">
-      <CustomToolNamespace>Spike.Build.Java.StaticFiles</CustomToolNamespace>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Spike.Build.Java\StaticFiles\DisconnectionHandler.java">
-      <CustomToolNamespace>Spike.Build.Java.StaticFiles</CustomToolNamespace>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Spike.Build.Java\StaticFiles\PacketHandler.java">
-      <CustomToolNamespace>Spike.Build.Java.StaticFiles</CustomToolNamespace>
-    </EmbeddedResource>
     <Content Include="misakai.ico" />
   </ItemGroup>
   <ItemGroup>

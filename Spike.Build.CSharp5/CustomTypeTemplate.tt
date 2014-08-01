@@ -5,16 +5,13 @@
 <#@ import namespace="System.Collections.Generic" #>
 <#@ parameter type="Spike.Build.CustomType" name="CustomType" #>
 
-
-
-
-namespace Spike.Network.Entities
+namespace Spike.Network
 {
     public partial struct <#= CustomType.Name #>
     {
 <#		foreach(var member in CustomType.Members)
 		{ #>	
-		public <#= CSharpBuilder.GetNativeType(member) #><#= member.IsList ? "[]" : string.Empty #> <#= member.Name #> { get; set; }
+		public <#= CSharp5Builder.GetNativeType(member) #><#= member.IsList ? "[]" : string.Empty #> <#= member.Name #> { get; set; }
 <#		} #>
     }
 }

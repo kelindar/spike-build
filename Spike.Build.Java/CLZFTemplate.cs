@@ -7,7 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 // ------------------------------------------------------------------------------
-namespace Spike.Build.CSharp5
+namespace Spike.Build.Java
 {
     using System.Linq;
     using System.Text;
@@ -18,9 +18,9 @@ namespace Spike.Build.CSharp5
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CustomTypeTemplate.tt"
+    #line 1 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Java\CLZFTemplate.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "14.0.0.0")]
-    public partial class CustomTypeTemplate : CustomTypeTemplateBase
+    public partial class CLZFTemplate : CLZFTemplateBase
     {
 #line hidden
         /// <summary>
@@ -28,106 +28,92 @@ namespace Spike.Build.CSharp5
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write("\r\nnamespace Spike.Network\r\n{\r\n    public partial struct ");
-            
-            #line 10 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CustomTypeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(CustomType.Name));
-            
-            #line default
-            #line hidden
-            this.Write("\r\n    {\r\n");
-            
-            #line 12 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CustomTypeTemplate.tt"
-		foreach(var member in CustomType.Members)
-		{ 
-            
-            #line default
-            #line hidden
-            this.Write("\t\r\n\t\tpublic ");
-            
-            #line 14 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CustomTypeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(CSharp5Builder.GetNativeType(member)));
-            
-            #line default
-            #line hidden
-            
-            #line 14 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CustomTypeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "[]" : string.Empty));
-            
-            #line default
-            #line hidden
-            this.Write(" ");
-            
-            #line 14 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CustomTypeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
-            
-            #line default
-            #line hidden
-            this.Write(" { get; set; }\r\n");
-            
-            #line 15 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CustomTypeTemplate.tt"
-		} 
-            
-            #line default
-            #line hidden
-            this.Write("    }\r\n}\r\n\r\n");
+            this.Write("package com.misakai.spike.network;\r\n\r\n/*\r\n * Copyright (c) 2005 Oren J. Maurice <" +
+                    "oymaurice@hazorea.org.il>\r\n *\r\n * Redistribution and use in source and binary fo" +
+                    "rms, with or without modifica-\r\n * tion, are permitted provided that the followi" +
+                    "ng conditions are met:\r\n *\r\n * 1. Redistributions of source code must retain the" +
+                    " above copyright notice,\r\n * this list of conditions and the following disclaime" +
+                    "r.\r\n *\r\n * 2. Redistributions in binary form must reproduce the above copyright\r" +
+                    "\n * notice, this list of conditions and the following disclaimer in the\r\n * docu" +
+                    "mentation and/or other materials provided with the distribution.\r\n *\r\n * 3. The " +
+                    "name of the author may not be used to endorse or promote products\r\n * derived fr" +
+                    "om this software without specific prior written permission.\r\n *\r\n * THIS SOFTWAR" +
+                    "E IS PROVIDED BY THE AUTHOR ``AS IS\'\' AND ANY EXPRESS OR IMPLIED\r\n * WARRANTIES," +
+                    " INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MER-\r\n * CHANTABILITY " +
+                    "AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO\r\n * EVENT SHALL THE A" +
+                    "UTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPE-\r\n * CIAL, EXEMPLARY, " +
+                    "OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,\r\n * PROCUREMENT OF SUBS" +
+                    "TITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;\r\n * OR BUSINESS INTERRU" +
+                    "PTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,\r\n * WHETHER IN CONTRACT, S" +
+                    "TRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTH-\r\n * ERWISE) ARISING IN AN" +
+                    "Y WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED\r\n * OF THE POSSIBILITY OF" +
+                    " SUCH DAMAGE.\r\n *\r\n * Alternatively, the contents of this file may be used under" +
+                    " the terms of\r\n * the GNU General Public License version 2 (the \"GPL\"), in which" +
+                    " case the\r\n * provisions of the GPL are applicable instead of the above. If you " +
+                    "wish to\r\n * allow the use of your version of this file only under the terms of t" +
+                    "he\r\n * GPL and not to allow others to use your version of this file under the\r\n " +
+                    "* BSD license, indicate your decision by deleting the provisions above and\r\n * r" +
+                    "eplace them with the notice and other provisions required by the GPL. If\r\n * you" +
+                    " do not delete the provisions above, a recipient may use your version\r\n * of thi" +
+                    "s file under either the BSD or the GPL.\r\n */\r\n\r\n\r\npublic class CLZF\r\n{\r\n\tstatic " +
+                    "int HLOG=14;\r\n\tstatic int HSIZE=(1<<14);\r\n\r\n\t/*\r\n\t * don\'t play with this unless" +
+                    " you benchmark!\r\n\t * decompression is not dependent on the hash function\r\n\t * th" +
+                    "e hashing function might seem strange, just believe me\r\n\t * it works ;)\r\n\t */\r\n\t" +
+                    "static int MAX_LIT=(1 << 5);\r\n\tstatic int MAX_OFF=(1 << 13);\r\n\tstatic int MAX_RE" +
+                    "F=((1 << 8) + (1 << 3));\r\n\r\n\tstatic int FRST(byte[] Array,int ptr)\r\n\t{\r\n\t\treturn" +
+                    " (int)((((Array[ptr]) << 8) & 0xff00) | (Array[ptr+1] & 0xff));\r\n\t}\r\n\r\n\tstatic i" +
+                    "nt NEXT(int v,byte[] Array,int ptr)\r\n\t{\r\n\t\treturn ((v) << 8) | (Array[ptr+2] & 0" +
+                    "xff);\r\n\t}\r\n\r\n\tstatic int IDX(int h)\r\n\t{\r\n\t\treturn ((((h ^ (h << 5)) >> (int) (3*" +
+                    "8 - HLOG)) - h*5) & (HSIZE - 1));\r\n\t}\r\n\r\n\t/*\r\n\t * compressed format\r\n\t *\r\n\t * 00" +
+                    "0LLLLL <L+1> ; literal\r\n\t * LLLOOOOO oooooooo ; backref L\r\n\t * 111OOOOO LLLLLLLL" +
+                    " oooooooo ; backref L+7\r\n\t *\r\n\t */\r\n\r\n\tpublic static int compress (byte[] in_dat" +
+                    "a, int in_len,byte[] out_data, int out_len)\r\n\t{\r\n\t\tint c;\r\n\t\tint []htab=new int[" +
+                    "1<<14];\r\n\t\tfor (c=0;c<1<<14;c++)\r\n\t\t{\r\n\t\t\thtab[c]=0;\r\n\t\t}\r\n\r\n\t\tint hslot;\r\n\t\tint" +
+                    " iidx = 0;\r\n\t\tint oidx = 0;\r\n\t\t//byte *in_end = ip + in_len;\r\n\t\t//byte *out_end " +
+                    "= op + out_len;\r\n\t\tint reference;\r\n\r\n\t\tint hval = FRST (in_data,iidx);\r\n\t\tint of" +
+                    "f;\r\n\t\tint lit = 0;\r\n\r\n\t\tfor (;;)\r\n\t\t{\r\n\t\t\tif (iidx < in_len - 2)\r\n\t\t\t{\r\n\t\t\t\thval" +
+                    " = NEXT (hval, in_data,iidx);\r\n\t\t\t\thslot = IDX (hval);\r\n\t\t\t\treference = htab[hsl" +
+                    "ot];\r\n\t\t\t\thtab[hslot] = (int)iidx;\r\n\r\n\t\t\t\tif ((off = iidx - reference - 1) < MAX" +
+                    "_OFF\r\n\t\t\t\t\t\t&& iidx + 4 < in_len\r\n\t\t\t\t\t\t&& reference > 0\r\n\t\t\t\t\t\t&& in_data[refer" +
+                    "ence+0] == in_data[iidx+0]\r\n\t\t\t\t\t\t\t\t&& in_data[reference+1] == in_data[iidx+1]\r\n" +
+                    "\t\t\t\t\t\t\t\t\t\t&& in_data[reference+2] == in_data[iidx+2]\r\n\t\t\t\t\t\t)\r\n\t\t\t\t{\r\n\t\t\t\t\t/* ma" +
+                    "tch found at *reference++ */\r\n\t\t\t\t\tint len = 2;\r\n\t\t\t\t\tint maxlen = in_len - iidx" +
+                    " - len;\r\n\t\t\t\t\tmaxlen = maxlen > MAX_REF ? MAX_REF : maxlen;\r\n\r\n\t\t\t\t\tif (oidx + l" +
+                    "it + 1 + 3 >= out_len)\r\n\t\t\t\t\t\treturn 0;\r\n\r\n\t\t\t\t\tdo\r\n\t\t\t\t\t\tlen++;\r\n\t\t\t\t\twhile (le" +
+                    "n < maxlen && in_data[reference+len] == in_data[iidx+len]);\r\n\r\n\t\t\t\t\tif (lit!=0)\r" +
+                    "\n\t\t\t\t\t{\r\n\t\t\t\t\t\tout_data[oidx++] = (byte)(lit - 1);\r\n\t\t\t\t\t\tlit = -lit;\r\n\t\t\t\t\t\tdo\r" +
+                    "\n\t\t\t\t\t\t\tout_data[oidx++] = in_data[iidx+lit];\r\n\t\t\t\t\t\twhile ((++lit)!=0);\r\n\t\t\t\t\t}" +
+                    "\r\n\r\n\t\t\t\t\tlen -= 2;\r\n\t\t\t\t\tiidx++;\r\n\r\n\t\t\t\t\tif (len < 7)\r\n\t\t\t\t\t{\r\n\t\t\t\t\t\tout_data[oi" +
+                    "dx++] = (byte)((off >> 8) + (len << 5));\r\n\t\t\t\t\t}\r\n\t\t\t\t\telse\r\n\t\t\t\t\t{\r\n\t\t\t\t\t\tout_d" +
+                    "ata[oidx++] = (byte)((off >> 8) + ( 7 << 5));\r\n\t\t\t\t\t\tout_data[oidx++] = (byte)(l" +
+                    "en - 7);\r\n\t\t\t\t\t}\r\n\r\n\t\t\t\t\tout_data[oidx++] = (byte)off;\r\n\r\n\t\t\t\t\tiidx += len-1;\r\n\t" +
+                    "\t\t\t\thval = FRST (in_data,iidx);\r\n\r\n\t\t\t\t\thval = NEXT (hval,in_data, iidx);\r\n\t\t\t\t\t" +
+                    "htab[IDX (hval)] = iidx;\r\n\t\t\t\t\tiidx++;\r\n\r\n\t\t\t\t\thval = NEXT (hval, in_data,iidx);" +
+                    "\r\n\t\t\t\t\thtab[IDX (hval)] = iidx;\r\n\t\t\t\t\tiidx++;\r\n\t\t\t\t\tcontinue;\r\n\t\t\t\t}\r\n\t\t\t}\r\n\t\t\te" +
+                    "lse if (iidx == in_len)\r\n\t\t\t\tbreak;\r\n\r\n\t\t\t/* one more literal byte we must copy " +
+                    "*/\r\n\t\t\tlit++;\r\n\t\t\tiidx++;\r\n\r\n\t\t\tif (lit == MAX_LIT)\r\n\t\t\t{\r\n\t\t\t\tif (oidx + 1 + MA" +
+                    "X_LIT >= out_len)\r\n\t\t\t\t\treturn 0;\r\n\r\n\t\t\t\tout_data[oidx++] = (byte)(MAX_LIT - 1);" +
+                    "\r\n\t\t\t\tlit = -lit;\r\n\t\t\t\tdo\r\n\t\t\t\t\tout_data[oidx++] = in_data[iidx+lit];\r\n\t\t\t\twhile" +
+                    " ((++lit)!=0);\r\n\t\t\t}\r\n\t\t}\r\n\r\n\t\tif (lit!=0)\r\n\t\t{\r\n\t\t\tif (oidx + lit + 1 >= out_le" +
+                    "n)\r\n\t\t\t\treturn 0;\r\n\r\n\t\t\tout_data[oidx++] = (byte)(lit - 1);\r\n\t\t\tlit = -lit;\r\n\t\t\t" +
+                    "do\r\n\t\t\t\tout_data[oidx++] = in_data[iidx+lit];\r\n\t\t\twhile ((++lit)!=0);\r\n\t\t}\r\n\r\n\t\t" +
+                    "return (int)oidx;\r\n\t}\r\n\r\n\t/// <summary>\r\n\t/// LZF Decompressor\r\n\t/// </summary>\r" +
+                    "\n\tpublic static int decompress ( byte[] in_data, int in_len, byte[] out_data, in" +
+                    "t out_len)\r\n\t{\r\n\t\tint iidx=0;\r\n\t\tint oidx=0;\r\n\r\n\t\tdo\r\n\t\t{\r\n\t\t\tint ctrl = in_data" +
+                    "[iidx++] & 0xff;\r\n\r\n\t\t\tif (ctrl < (1 << 5)) /* literal run */\r\n\t\t\t{\r\n\t\t\t\tctrl++;" +
+                    "\r\n\r\n\t\t\t\tif (oidx + ctrl > out_len)\r\n\t\t\t\t{\r\n\t\t\t\t\t//SET_ERRNO (E2BIG);\r\n\t\t\t\t\tretur" +
+                    "n 0;\r\n\t\t\t\t}\r\n\r\n\t\t\t\tdo\r\n\t\t\t\t\tout_data[oidx++] = in_data[iidx++];\r\n\t\t\t\twhile ((--c" +
+                    "trl)!=0);\r\n\t\t\t}\r\n\t\t\telse /* back reference */\r\n\t\t\t{\r\n\t\t\t\tint len = ctrl >> 5;\r\n\r" +
+                    "\n\t\t\tint reference = (int)(oidx - ((ctrl & 0x1f) << 8) - 1);\r\n\r\n\t\t\tif (len == 7)\r" +
+                    "\n\t\t\t\tlen += in_data[iidx++] & 0xff;\r\n\t\t\treference -= in_data[iidx++] & 0xff;\r\n\r\n" +
+                    "\t\t\tif (oidx + len + 2 > out_len)\r\n\t\t\t{\r\n\t\t\t\t//SET_ERRNO (E2BIG);\r\n\t\t\t\treturn 0;\r" +
+                    "\n\t\t\t}\r\n\r\n\t\t\tif (reference < 0)\r\n\t\t\t{\r\n\t\t\t\t//SET_ERRNO (EINVAL);\r\n\t\t\t\treturn 0;\r\n" +
+                    "\t\t\t}\r\n\r\n\t\t\tout_data[oidx++]=out_data[reference++];\r\n\t\t\tout_data[oidx++]=out_data" +
+                    "[reference++];\r\n\r\n\t\t\tdo\r\n\t\t\t\tout_data[oidx++]=out_data[reference++];\r\n\t\t\twhile (" +
+                    "(--len)!=0);\r\n\t\t\t}\r\n\t\t}\r\n\t\twhile (iidx < in_len);\r\n\r\n\t\treturn (int)oidx;\r\n\t}\r\n\r\n" +
+                    "\tpublic CLZF()\r\n\t{\r\n\t\t//\r\n\t\t// TODO: Add constructor logic here\r\n\t\t//\r\n\t}\r\n}\r\n");
             return this.GenerationEnvironment.ToString();
         }
-        
-        #line 19 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CustomTypeTemplate.tt"
- internal void Clear(){
-	GenerationEnvironment.Clear();
-} 
-        
-        #line default
-        #line hidden
-        
-        #line 1 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CustomTypeTemplate.tt"
-
-private global::Spike.Build.CustomType _CustomTypeField;
-
-/// <summary>
-/// Access the CustomType parameter of the template.
-/// </summary>
-private global::Spike.Build.CustomType CustomType
-{
-    get
-    {
-        return this._CustomTypeField;
-    }
-}
-
-
-/// <summary>
-/// Initialize the template
-/// </summary>
-public virtual void Initialize()
-{
-    if ((this.Errors.HasErrors == false))
-    {
-bool CustomTypeValueAcquired = false;
-if (this.Session.ContainsKey("CustomType"))
-{
-    this._CustomTypeField = ((global::Spike.Build.CustomType)(this.Session["CustomType"]));
-    CustomTypeValueAcquired = true;
-}
-if ((CustomTypeValueAcquired == false))
-{
-    object data = global::System.Runtime.Remoting.Messaging.CallContext.LogicalGetData("CustomType");
-    if ((data != null))
-    {
-        this._CustomTypeField = ((global::Spike.Build.CustomType)(data));
-    }
-}
-
-
-    }
-}
-
-
-        
-        #line default
-        #line hidden
     }
     
     #line default
@@ -137,7 +123,7 @@ if ((CustomTypeValueAcquired == false))
     /// Base class for this transformation
     /// </summary>
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "14.0.0.0")]
-    public class CustomTypeTemplateBase
+    public class CLZFTemplateBase
     {
         #region Fields
         private global::System.Text.StringBuilder generationEnvironmentField;

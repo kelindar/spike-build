@@ -28,7 +28,7 @@ namespace Spike.Build.Xamarin
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write("\r\n\r\n\r\n\r\nnamespace Spike.Network.Entities\r\n{\r\n    public partial struct ");
+            this.Write("\r\n\r\n\r\n\r\nnamespace Spike.Network\r\n{\r\n    public partial struct ");
             
             #line 13 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Xamarin\CustomTypeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(CustomType.Name));

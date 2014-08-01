@@ -6,13 +6,13 @@
 <#@ parameter type="Spike.Build.Operation" name="Operation" #>
 using Spike.Network.CustomTypes;
 
-namespace Spike.Network.Packets
+namespace Spike.Network
 {
     public sealed class <#= Operation.Name #>
     {
 <#		foreach(var member in Operation.Members)
 		{ #>	
-		public <#= CSharpBuilder.GetNativeType(member) #><#= member.IsList ? "[]" : string.Empty #> <#= member.Name #> { get; set; }
+		public <#= CSharp5Builder.GetNativeType(member) #><#= member.IsList ? "[]" : string.Empty #> <#= member.Name #> { get; set; }
 <#		} #>
 
     }

@@ -28,7 +28,7 @@ namespace Spike.Build.Java
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write("package com.misakai.spike.network.packets;\r\n\r\npublic final class ");
+            this.Write("package com.misakai.spike.network;\r\n\r\npublic final class ");
             
             #line 9 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Java\PacketTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Operation.Name));
@@ -38,12 +38,12 @@ namespace Spike.Build.Java
             this.Write(" {\r\n");
             
             #line 10 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Java\PacketTemplate.tt"
-		foreach(var member in Operation.Members)
-		{ 
+	foreach(var member in Operation.Members)
+	{ 
             
             #line default
             #line hidden
-            this.Write("\t\r\n\t\tpublic ");
+            this.Write("\t\r\n\tpublic ");
             
             #line 12 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Java\PacketTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(JavaBuilder.GetNativeType(member)));
@@ -66,11 +66,11 @@ namespace Spike.Build.Java
             this.Write(";\r\n");
             
             #line 13 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Java\PacketTemplate.tt"
-		} 
+	} 
             
             #line default
             #line hidden
-            this.Write("\t}\r\n}\r\n\r\n");
+            this.Write("\t\r\n}\r\n\r\n");
             return this.GenerationEnvironment.ToString();
         }
         

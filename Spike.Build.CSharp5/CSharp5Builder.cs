@@ -69,25 +69,16 @@ namespace Spike.Build.CSharp5
             if (string.IsNullOrEmpty(output))
                 output = @"CSharp";
 
-            var networkDirectory = Path.Combine(output, "Spike", "Network");
-            if (!Directory.Exists(networkDirectory))
-                Directory.CreateDirectory(networkDirectory);
-
-            var packetsDirectory = Path.Combine(output, "Spike", "Network", "Packets");
-            if (!Directory.Exists(packetsDirectory))
-                Directory.CreateDirectory(packetsDirectory);
-
-            var customTypesDirectory = Path.Combine(output, "Spike", "Network", "Entities");
-            if (!Directory.Exists(customTypesDirectory))
-                Directory.CreateDirectory(customTypesDirectory);
+            if (!Directory.Exists(output))
+                Directory.CreateDirectory(output);
 
             //CLZF.cs
             var clzfTemplate = new CLZFTemplate();
-            File.WriteAllText(Path.Combine(networkDirectory, @"CLZF.cs"), clzfTemplate.TransformText());
+            File.WriteAllText(Path.Combine(output, @"CLZF.cs"), clzfTemplate.TransformText());
 
             //TcpChannelBase.cs
             var tcpChannelBaseTemplate = new TcpChannelBaseTemplate();
-            File.WriteAllText(Path.Combine(networkDirectory, @"TcpChannelBase.cs"), tcpChannelBaseTemplate.TransformText());
+            File.WriteAllText(Path.Combine(output, @"TcpChannelBase.cs"), tcpChannelBaseTemplate.TransformText());
 
             //TcpChannel.cs
             var tcpChanneltemplate = new TcpChannelTemplate();
@@ -98,7 +89,7 @@ namespace Spike.Build.CSharp5
             tcpChanneltemplate.Initialize();
 
             var code = tcpChanneltemplate.TransformText();
-            File.WriteAllText(Path.Combine(networkDirectory, @"TcpChannel.cs"), code);
+            File.WriteAllText(Path.Combine(output, @"TcpChannel.cs"), code);
 
             //Make packets
             var packetTemplate = new PacketTemplate();
@@ -111,7 +102,7 @@ namespace Spike.Build.CSharp5
                 packetTemplate.Initialize();
 
                 code = packetTemplate.TransformText();
-                File.WriteAllText(Path.Combine(packetsDirectory, string.Format(@"{0}.cs", receive.Name)), code);
+                File.WriteAllText(Path.Combine(output, string.Format(@"{0}.cs", receive.Name)), code);
             }
 
             //Make CustomType
@@ -124,7 +115,7 @@ namespace Spike.Build.CSharp5
                 customTypeSession["CustomType"] = customType;
                 customTypeTemplate.Initialize();
                 code = customTypeTemplate.TransformText();
-                File.WriteAllText(Path.Combine(customTypesDirectory, string.Format(@"{0}.cs", customType.Name)), code);
+                File.WriteAllText(Path.Combine(output, string.Format(@"{0}.cs", customType.Name)), code);
             }
 
         }

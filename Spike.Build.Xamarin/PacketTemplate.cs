@@ -28,8 +28,8 @@ namespace Spike.Build.Xamarin
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write("using Spike.Network.CustomTypes;\r\n\r\nnamespace Spike.Network.Packets\r\n{\r\n    publi" +
-                    "c sealed class ");
+            this.Write("using Spike.Network.CustomTypes;\r\n\r\nnamespace Spike.Network\r\n{\r\n    public sealed" +
+                    " class ");
             
             #line 11 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Xamarin\PacketTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Operation.Name));
