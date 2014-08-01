@@ -7,7 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 // ------------------------------------------------------------------------------
-namespace Spike.Build.WinRT
+namespace Spike.Build.Spike.Build.Xamarin
 {
     using System.Linq;
     using System.Text;
@@ -18,7 +18,7 @@ namespace Spike.Build.WinRT
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "D:\Workspace\Spike.Build\Spike.Build\WinRT\CustomTypeTemplate.tt"
+    #line 1 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Xamarin\CustomTypeTemplate.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "12.0.0.0")]
     public partial class CustomTypeTemplate : CustomTypeTemplateBase
     {
@@ -30,14 +30,14 @@ namespace Spike.Build.WinRT
         {
             this.Write("\r\n\r\n\r\n\r\nnamespace Spike.Network.Entities\r\n{\r\n    public partial struct ");
             
-            #line 13 "D:\Workspace\Spike.Build\Spike.Build\WinRT\CustomTypeTemplate.tt"
+            #line 13 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Xamarin\CustomTypeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(CustomType.Name));
             
             #line default
             #line hidden
             this.Write("\r\n    {\r\n");
             
-            #line 15 "D:\Workspace\Spike.Build\Spike.Build\WinRT\CustomTypeTemplate.tt"
+            #line 15 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Xamarin\CustomTypeTemplate.tt"
 		foreach(var member in CustomType.Members)
 		{ 
             
@@ -45,27 +45,27 @@ namespace Spike.Build.WinRT
             #line hidden
             this.Write("\t\r\n\t\tpublic ");
             
-            #line 17 "D:\Workspace\Spike.Build\Spike.Build\WinRT\CustomTypeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(WinRTBuilder.GetNativeType(member)));
+            #line 17 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Xamarin\CustomTypeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(XamarinBuilder.GetNativeType(member)));
             
             #line default
             #line hidden
             
-            #line 17 "D:\Workspace\Spike.Build\Spike.Build\WinRT\CustomTypeTemplate.tt"
+            #line 17 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Xamarin\CustomTypeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "[]" : string.Empty));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 17 "D:\Workspace\Spike.Build\Spike.Build\WinRT\CustomTypeTemplate.tt"
+            #line 17 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Xamarin\CustomTypeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
             
             #line default
             #line hidden
             this.Write(" { get; set; }\r\n");
             
-            #line 18 "D:\Workspace\Spike.Build\Spike.Build\WinRT\CustomTypeTemplate.tt"
+            #line 18 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Xamarin\CustomTypeTemplate.tt"
 		} 
             
             #line default
@@ -74,7 +74,7 @@ namespace Spike.Build.WinRT
             return this.GenerationEnvironment.ToString();
         }
         
-        #line 22 "D:\Workspace\Spike.Build\Spike.Build\WinRT\CustomTypeTemplate.tt"
+        #line 22 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Xamarin\CustomTypeTemplate.tt"
  internal void Clear(){
 	GenerationEnvironment.Clear();
 } 
@@ -82,7 +82,7 @@ namespace Spike.Build.WinRT
         #line default
         #line hidden
         
-        #line 1 "D:\Workspace\Spike.Build\Spike.Build\WinRT\CustomTypeTemplate.tt"
+        #line 1 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Xamarin\CustomTypeTemplate.tt"
 
 private global::Spike.Build.CustomType _CustomTypeField;
 

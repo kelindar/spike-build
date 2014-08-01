@@ -7,7 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 // ------------------------------------------------------------------------------
-namespace Spike.Build.Xamarin
+namespace Spike.Build.Spike.Build.Xamarin
 {
     using System.Linq;
     using System.Text;
@@ -18,7 +18,7 @@ namespace Spike.Build.Xamarin
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "D:\Workspace\Spike.Build\Spike.Build\Xamarin\PacketTemplate.tt"
+    #line 1 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Xamarin\PacketTemplate.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "12.0.0.0")]
     public partial class PacketTemplate : PacketTemplateBase
     {
@@ -31,14 +31,14 @@ namespace Spike.Build.Xamarin
             this.Write("using Spike.Network.CustomTypes;\r\n\r\nnamespace Spike.Network.Packets\r\n{\r\n    publi" +
                     "c sealed class ");
             
-            #line 11 "D:\Workspace\Spike.Build\Spike.Build\Xamarin\PacketTemplate.tt"
+            #line 11 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Xamarin\PacketTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Operation.Name));
             
             #line default
             #line hidden
             this.Write("\r\n    {\r\n");
             
-            #line 13 "D:\Workspace\Spike.Build\Spike.Build\Xamarin\PacketTemplate.tt"
+            #line 13 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Xamarin\PacketTemplate.tt"
 		foreach(var member in Operation.Members)
 		{ 
             
@@ -46,27 +46,27 @@ namespace Spike.Build.Xamarin
             #line hidden
             this.Write("\t\r\n\t\tpublic ");
             
-            #line 15 "D:\Workspace\Spike.Build\Spike.Build\Xamarin\PacketTemplate.tt"
+            #line 15 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Xamarin\PacketTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(XamarinBuilder.GetNativeType(member)));
             
             #line default
             #line hidden
             
-            #line 15 "D:\Workspace\Spike.Build\Spike.Build\Xamarin\PacketTemplate.tt"
+            #line 15 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Xamarin\PacketTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "[]" : string.Empty));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 15 "D:\Workspace\Spike.Build\Spike.Build\Xamarin\PacketTemplate.tt"
+            #line 15 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Xamarin\PacketTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
             
             #line default
             #line hidden
             this.Write(" { get; set; }\r\n");
             
-            #line 16 "D:\Workspace\Spike.Build\Spike.Build\Xamarin\PacketTemplate.tt"
+            #line 16 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Xamarin\PacketTemplate.tt"
 		} 
             
             #line default
@@ -75,7 +75,7 @@ namespace Spike.Build.Xamarin
             return this.GenerationEnvironment.ToString();
         }
         
-        #line 20 "D:\Workspace\Spike.Build\Spike.Build\Xamarin\PacketTemplate.tt"
+        #line 20 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Xamarin\PacketTemplate.tt"
  internal void Clear(){
 	GenerationEnvironment.Clear();
 } 
@@ -83,7 +83,7 @@ namespace Spike.Build.Xamarin
         #line default
         #line hidden
         
-        #line 1 "D:\Workspace\Spike.Build\Spike.Build\Xamarin\PacketTemplate.tt"
+        #line 1 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Xamarin\PacketTemplate.tt"
 
 private global::Spike.Build.Operation _OperationField;
 

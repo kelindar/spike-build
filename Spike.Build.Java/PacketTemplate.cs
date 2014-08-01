@@ -7,7 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 // ------------------------------------------------------------------------------
-namespace Spike.Build.Xamarin
+namespace Spike.Build.Spike.Build.Java
 {
     using System.Linq;
     using System.Text;
@@ -18,9 +18,9 @@ namespace Spike.Build.Xamarin
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "D:\Workspace\Spike.Build\Spike.Build\Xamarin\CustomTypeTemplate.tt"
+    #line 1 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Java\PacketTemplate.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "12.0.0.0")]
-    public partial class CustomTypeTemplate : CustomTypeTemplateBase
+    public partial class PacketTemplate : PacketTemplateBase
     {
 #line hidden
         /// <summary>
@@ -28,53 +28,53 @@ namespace Spike.Build.Xamarin
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write("\r\n\r\n\r\n\r\nnamespace Spike.Network.Entities\r\n{\r\n    public partial struct ");
+            this.Write("package com.misakai.spike.network.packets;\r\n\r\npublic final class ");
             
-            #line 13 "D:\Workspace\Spike.Build\Spike.Build\Xamarin\CustomTypeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(CustomType.Name));
+            #line 9 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Java\PacketTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Operation.Name));
             
             #line default
             #line hidden
-            this.Write("\r\n    {\r\n");
+            this.Write(" {\r\n");
             
-            #line 15 "D:\Workspace\Spike.Build\Spike.Build\Xamarin\CustomTypeTemplate.tt"
-		foreach(var member in CustomType.Members)
+            #line 10 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Java\PacketTemplate.tt"
+		foreach(var member in Operation.Members)
 		{ 
             
             #line default
             #line hidden
             this.Write("\t\r\n\t\tpublic ");
             
-            #line 17 "D:\Workspace\Spike.Build\Spike.Build\Xamarin\CustomTypeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(XamarinBuilder.GetNativeType(member)));
+            #line 12 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Java\PacketTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(JavaBuilder.GetNativeType(member)));
             
             #line default
             #line hidden
             
-            #line 17 "D:\Workspace\Spike.Build\Spike.Build\Xamarin\CustomTypeTemplate.tt"
+            #line 12 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Java\PacketTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "[]" : string.Empty));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 17 "D:\Workspace\Spike.Build\Spike.Build\Xamarin\CustomTypeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
+            #line 12 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Java\PacketTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(member.Name.CamelCase));
             
             #line default
             #line hidden
-            this.Write(" { get; set; }\r\n");
+            this.Write(";\r\n");
             
-            #line 18 "D:\Workspace\Spike.Build\Spike.Build\Xamarin\CustomTypeTemplate.tt"
+            #line 13 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Java\PacketTemplate.tt"
 		} 
             
             #line default
             #line hidden
-            this.Write("    }\r\n}\r\n\r\n");
+            this.Write("\t}\r\n}\r\n\r\n");
             return this.GenerationEnvironment.ToString();
         }
         
-        #line 22 "D:\Workspace\Spike.Build\Spike.Build\Xamarin\CustomTypeTemplate.tt"
+        #line 17 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Java\PacketTemplate.tt"
  internal void Clear(){
 	GenerationEnvironment.Clear();
 } 
@@ -82,18 +82,18 @@ namespace Spike.Build.Xamarin
         #line default
         #line hidden
         
-        #line 1 "D:\Workspace\Spike.Build\Spike.Build\Xamarin\CustomTypeTemplate.tt"
+        #line 1 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Java\PacketTemplate.tt"
 
-private global::Spike.Build.CustomType _CustomTypeField;
+private global::Spike.Build.Operation _OperationField;
 
 /// <summary>
-/// Access the CustomType parameter of the template.
+/// Access the Operation parameter of the template.
 /// </summary>
-private global::Spike.Build.CustomType CustomType
+private global::Spike.Build.Operation Operation
 {
     get
     {
-        return this._CustomTypeField;
+        return this._OperationField;
     }
 }
 
@@ -105,18 +105,18 @@ public virtual void Initialize()
 {
     if ((this.Errors.HasErrors == false))
     {
-bool CustomTypeValueAcquired = false;
-if (this.Session.ContainsKey("CustomType"))
+bool OperationValueAcquired = false;
+if (this.Session.ContainsKey("Operation"))
 {
-    this._CustomTypeField = ((global::Spike.Build.CustomType)(this.Session["CustomType"]));
-    CustomTypeValueAcquired = true;
+    this._OperationField = ((global::Spike.Build.Operation)(this.Session["Operation"]));
+    OperationValueAcquired = true;
 }
-if ((CustomTypeValueAcquired == false))
+if ((OperationValueAcquired == false))
 {
-    object data = global::System.Runtime.Remoting.Messaging.CallContext.LogicalGetData("CustomType");
+    object data = global::System.Runtime.Remoting.Messaging.CallContext.LogicalGetData("Operation");
     if ((data != null))
     {
-        this._CustomTypeField = ((global::Spike.Build.CustomType)(data));
+        this._OperationField = ((global::Spike.Build.Operation)(data));
     }
 }
 
@@ -137,7 +137,7 @@ if ((CustomTypeValueAcquired == false))
     /// Base class for this transformation
     /// </summary>
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "12.0.0.0")]
-    public class CustomTypeTemplateBase
+    public class PacketTemplateBase
     {
         #region Fields
         private global::System.Text.StringBuilder generationEnvironmentField;

@@ -7,7 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 // ------------------------------------------------------------------------------
-namespace Spike.Build.Java
+namespace Spike.Build.Spike.Build.WinRT
 {
     using System.Linq;
     using System.Text;
@@ -18,7 +18,7 @@ namespace Spike.Build.Java
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "D:\Workspace\Spike.Build\Spike.Build\Java\CustomTypeTemplate.tt"
+    #line 1 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.WinRT\CustomTypeTemplate.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "12.0.0.0")]
     public partial class CustomTypeTemplate : CustomTypeTemplateBase
     {
@@ -28,16 +28,16 @@ namespace Spike.Build.Java
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write("package com.misakai.spike.network.entities;\r\n\r\npublic final class ");
+            this.Write("\r\n\r\n\r\n\r\nnamespace Spike.Network.Entities\r\n{\r\n    public partial struct ");
             
-            #line 9 "D:\Workspace\Spike.Build\Spike.Build\Java\CustomTypeTemplate.tt"
+            #line 13 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.WinRT\CustomTypeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(CustomType.Name));
             
             #line default
             #line hidden
-            this.Write(" {\r\n");
+            this.Write("\r\n    {\r\n");
             
-            #line 10 "D:\Workspace\Spike.Build\Spike.Build\Java\CustomTypeTemplate.tt"
+            #line 15 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.WinRT\CustomTypeTemplate.tt"
 		foreach(var member in CustomType.Members)
 		{ 
             
@@ -45,36 +45,36 @@ namespace Spike.Build.Java
             #line hidden
             this.Write("\t\r\n\t\tpublic ");
             
-            #line 12 "D:\Workspace\Spike.Build\Spike.Build\Java\CustomTypeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(JavaBuilder.GetNativeType(member)));
+            #line 17 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.WinRT\CustomTypeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(WinRTBuilder.GetNativeType(member)));
             
             #line default
             #line hidden
             
-            #line 12 "D:\Workspace\Spike.Build\Spike.Build\Java\CustomTypeTemplate.tt"
+            #line 17 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.WinRT\CustomTypeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "[]" : string.Empty));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 12 "D:\Workspace\Spike.Build\Spike.Build\Java\CustomTypeTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(member.Name.CamelCase));
+            #line 17 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.WinRT\CustomTypeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
             
             #line default
             #line hidden
-            this.Write(";\r\n");
+            this.Write(" { get; set; }\r\n");
             
-            #line 13 "D:\Workspace\Spike.Build\Spike.Build\Java\CustomTypeTemplate.tt"
+            #line 18 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.WinRT\CustomTypeTemplate.tt"
 		} 
             
             #line default
             #line hidden
-            this.Write("\t}\r\n}\r\n\r\n");
+            this.Write("    }\r\n}\r\n\r\n");
             return this.GenerationEnvironment.ToString();
         }
         
-        #line 17 "D:\Workspace\Spike.Build\Spike.Build\Java\CustomTypeTemplate.tt"
+        #line 22 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.WinRT\CustomTypeTemplate.tt"
  internal void Clear(){
 	GenerationEnvironment.Clear();
 } 
@@ -82,7 +82,7 @@ namespace Spike.Build.Java
         #line default
         #line hidden
         
-        #line 1 "D:\Workspace\Spike.Build\Spike.Build\Java\CustomTypeTemplate.tt"
+        #line 1 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.WinRT\CustomTypeTemplate.tt"
 
 private global::Spike.Build.CustomType _CustomTypeField;
 

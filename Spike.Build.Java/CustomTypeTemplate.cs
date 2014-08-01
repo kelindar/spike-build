@@ -7,7 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 // ------------------------------------------------------------------------------
-namespace Spike.Build.Java
+namespace Spike.Build.Spike.Build.Java
 {
     using System.Linq;
     using System.Text;
@@ -18,9 +18,9 @@ namespace Spike.Build.Java
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "D:\Workspace\Spike.Build\Spike.Build\Java\PacketTemplate.tt"
+    #line 1 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Java\CustomTypeTemplate.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "12.0.0.0")]
-    public partial class PacketTemplate : PacketTemplateBase
+    public partial class CustomTypeTemplate : CustomTypeTemplateBase
     {
 #line hidden
         /// <summary>
@@ -28,44 +28,44 @@ namespace Spike.Build.Java
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write("package com.misakai.spike.network.packets;\r\n\r\npublic final class ");
+            this.Write("package com.misakai.spike.network.entities;\r\n\r\npublic final class ");
             
-            #line 9 "D:\Workspace\Spike.Build\Spike.Build\Java\PacketTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Operation.Name));
+            #line 9 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Java\CustomTypeTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(CustomType.Name));
             
             #line default
             #line hidden
             this.Write(" {\r\n");
             
-            #line 10 "D:\Workspace\Spike.Build\Spike.Build\Java\PacketTemplate.tt"
-		foreach(var member in Operation.Members)
+            #line 10 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Java\CustomTypeTemplate.tt"
+		foreach(var member in CustomType.Members)
 		{ 
             
             #line default
             #line hidden
             this.Write("\t\r\n\t\tpublic ");
             
-            #line 12 "D:\Workspace\Spike.Build\Spike.Build\Java\PacketTemplate.tt"
+            #line 12 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Java\CustomTypeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(JavaBuilder.GetNativeType(member)));
             
             #line default
             #line hidden
             
-            #line 12 "D:\Workspace\Spike.Build\Spike.Build\Java\PacketTemplate.tt"
+            #line 12 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Java\CustomTypeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "[]" : string.Empty));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 12 "D:\Workspace\Spike.Build\Spike.Build\Java\PacketTemplate.tt"
+            #line 12 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Java\CustomTypeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name.CamelCase));
             
             #line default
             #line hidden
             this.Write(";\r\n");
             
-            #line 13 "D:\Workspace\Spike.Build\Spike.Build\Java\PacketTemplate.tt"
+            #line 13 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Java\CustomTypeTemplate.tt"
 		} 
             
             #line default
@@ -74,7 +74,7 @@ namespace Spike.Build.Java
             return this.GenerationEnvironment.ToString();
         }
         
-        #line 17 "D:\Workspace\Spike.Build\Spike.Build\Java\PacketTemplate.tt"
+        #line 17 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Java\CustomTypeTemplate.tt"
  internal void Clear(){
 	GenerationEnvironment.Clear();
 } 
@@ -82,18 +82,18 @@ namespace Spike.Build.Java
         #line default
         #line hidden
         
-        #line 1 "D:\Workspace\Spike.Build\Spike.Build\Java\PacketTemplate.tt"
+        #line 1 "d:\Workspace\Spike.Build\Spike.Build\Spike.Build.Java\CustomTypeTemplate.tt"
 
-private global::Spike.Build.Operation _OperationField;
+private global::Spike.Build.CustomType _CustomTypeField;
 
 /// <summary>
-/// Access the Operation parameter of the template.
+/// Access the CustomType parameter of the template.
 /// </summary>
-private global::Spike.Build.Operation Operation
+private global::Spike.Build.CustomType CustomType
 {
     get
     {
-        return this._OperationField;
+        return this._CustomTypeField;
     }
 }
 
@@ -105,18 +105,18 @@ public virtual void Initialize()
 {
     if ((this.Errors.HasErrors == false))
     {
-bool OperationValueAcquired = false;
-if (this.Session.ContainsKey("Operation"))
+bool CustomTypeValueAcquired = false;
+if (this.Session.ContainsKey("CustomType"))
 {
-    this._OperationField = ((global::Spike.Build.Operation)(this.Session["Operation"]));
-    OperationValueAcquired = true;
+    this._CustomTypeField = ((global::Spike.Build.CustomType)(this.Session["CustomType"]));
+    CustomTypeValueAcquired = true;
 }
-if ((OperationValueAcquired == false))
+if ((CustomTypeValueAcquired == false))
 {
-    object data = global::System.Runtime.Remoting.Messaging.CallContext.LogicalGetData("Operation");
+    object data = global::System.Runtime.Remoting.Messaging.CallContext.LogicalGetData("CustomType");
     if ((data != null))
     {
-        this._OperationField = ((global::Spike.Build.Operation)(data));
+        this._CustomTypeField = ((global::Spike.Build.CustomType)(data));
     }
 }
 
@@ -137,7 +137,7 @@ if ((OperationValueAcquired == false))
     /// Base class for this transformation
     /// </summary>
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "12.0.0.0")]
-    public class PacketTemplateBase
+    public class CustomTypeTemplateBase
     {
         #region Fields
         private global::System.Text.StringBuilder generationEnvironmentField;
