@@ -70,14 +70,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Spike.Build.CSharp5\CSharpBuilder.cs">
+      <Link>CSharp5\CSharpBuilder.cs</Link>
+    </Compile>
     <Compile Include="..\Spike.Build.CSharp5\CustomTypeTemplate.cs">
-      <Link>CSharp\CustomTypeTemplate.cs</Link>
+      <Link>CSharp5\CustomTypeTemplate.cs</Link>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>CustomTypeTemplate.tt</DependentUpon>
     </Compile>
     <Compile Include="..\Spike.Build.CSharp5\PacketTemplate.cs">
-      <Link>CSharp\PacketTemplate.cs</Link>
+      <Link>CSharp5\PacketTemplate.cs</Link>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>PacketTemplate.tt</DependentUpon>
@@ -89,7 +92,7 @@
       <Link>CSharp5\StaticFiles\TcpChannelBase.cs</Link>
     </Compile>
     <Compile Include="..\Spike.Build.CSharp5\TcpChannelTemplate.cs">
-      <Link>CSharp\TcpChannelTemplate.cs</Link>
+      <Link>CSharp5\TcpChannelTemplate.cs</Link>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>TcpChannelTemplate.tt</DependentUpon>
@@ -157,17 +160,17 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Spike.Build.CSharp5\CustomTypeTemplate.tt">
-      <Link>CSharp\CustomTypeTemplate.tt</Link>
+      <Link>CSharp5\CustomTypeTemplate.tt</Link>
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>CustomTypeTemplate.cs</LastGenOutput>
     </None>
     <None Include="..\Spike.Build.CSharp5\PacketTemplate.tt">
-      <Link>CSharp\PacketTemplate.tt</Link>
+      <Link>CSharp5\PacketTemplate.tt</Link>
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>PacketTemplate.cs</LastGenOutput>
     </None>
     <None Include="..\Spike.Build.CSharp5\TcpChannelTemplate.tt">
-      <Link>CSharp\TcpChannelTemplate.tt</Link>
+      <Link>CSharp5\TcpChannelTemplate.tt</Link>
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>TcpChannelTemplate.cs</LastGenOutput>
     </None>
