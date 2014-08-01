@@ -1,0 +1,647 @@
+package com.misakai.spike.network;
+
+import java.io.IOError;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.nio.channels.ClosedByInterruptException;
+import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
+/**
+ * Represents a TCP/IP network channel
+ */
+public abstract class AbstractTcpChannel {	
+	
+	private Socket socket;
+	protected SocketChannel socketChannel;
+	protected ByteBuffer receiveBuffer;
+	protected ByteBuffer sendBuffer;
+	private Thread backgroundThread; 
+	
+	/**
+	 * List of listener invoke when channel is connected to the remote server
+	 */
+	public final ArrayList<ConnectionHandler> onConnect = new ArrayList<ConnectionHandler>();
+	/**
+	 * List of listener invoke when channel is disconnected to the remote server
+	 */
+	public final ArrayList<DisconnectionHandler> onDisconnect = new ArrayList<DisconnectionHandler>();
+
+	/**
+	 * Constructs a TCP/IP network channel.
+	 */
+	public AbstractTcpChannel(){
+		//ThreadFactory factory = Executors.defaultThreadFactory();
+		//ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
+		
+		backgroundThread = new Thread(new Runnable() {			
+			@Override
+			public void run() {
+				try {
+					while(true){
+						receiveBuffer.clear();
+						
+						socketChannel.read(receiveBuffer);
+						int packetSize = receiveBuffer.getInt(0);						 
+						
+						while(packetSize + 4 > receiveBuffer.position())
+							socketChannel.read(receiveBuffer);
+						
+						onReceive(receiveBuffer.getInt(4)); //give the key
+					}
+				} catch (ClosedByInterruptException e) {
+					//disconnect create an IO exception
+				} catch (IOException e) {
+					disconnect();
+				} 			
+			}
+		});
+	}
+	
+	/**
+	 * Performs a connection to the remote server
+	 * @param host Hostname to connect to
+	 * @param port Destination Port to connect through
+	 * @throws UnknownHostException
+	 * @throws IOException
+	 */
+	public void connect(String host, int port) throws UnknownHostException, IOException{
+		socketChannel = SocketChannel.open();
+		socketChannel.connect(new InetSocketAddress(host, port));
+		socket = socketChannel.socket();
+		receiveBuffer = ByteBuffer.allocate(socket.getReceiveBufferSize());
+		sendBuffer = ByteBuffer.allocate(socket.getSendBufferSize());
+		
+		//Raise IConnectionHandlers
+		for (ConnectionHandler connectionHandler : onConnect)
+			connectionHandler.onConnect();
+		
+		backgroundThread.start();
+	}	
+	
+	/**
+	 * Disconnects from the server
+	 */
+	public void disconnect() {
+		try {
+			if(Thread.currentThread() != backgroundThread && backgroundThread.isAlive())
+				backgroundThread.interrupt();
+			
+			if(socketChannel.isOpen())			
+				socketChannel.close();	
+			
+		} catch (IOException e){
+			e.printStackTrace();
+		}		
+		
+		//Raise IDisconnectionHandlers
+		for (DisconnectionHandler disConnectionHandler : onDisconnect)
+			disConnectionHandler.onDisconnect();
+		
+	}
+	
+	/**
+	 * Uncompress if needed and initialize internal buffer at the start of data 
+	 * @param compressed true if packet use compression 
+	 */
+	protected void beginReadPacket(boolean compressed){
+		if(compressed && receiveBuffer.position() > 8){
+			byte[] compressedData = new byte[receiveBuffer.position() - 8];
+			receiveBuffer.position(8);			
+			receiveBuffer.get(compressedData);
+			
+			byte[] uncompressedData = new byte[4096];
+			int size = CLZF.decompress(compressedData, compressedData.length, uncompressedData, uncompressedData.length);
+			
+			receiveBuffer.position(8);		
+			receiveBuffer.put(uncompressedData, 0, size);
+		}						
+		
+		receiveBuffer.flip();
+		receiveBuffer.position(8); // set buffer position and the data beginning
+	}
+	
+    protected abstract void onReceive(int key);
+    
+    /**
+     * Reads a byte from the current position
+     * @return The byte value  
+     */
+    protected byte packetReadSByte(){
+		return receiveBuffer.get();
+	}
+    
+    /**
+     * Reads a byte from the current position
+     * @return The byte value 
+     */
+    protected byte packetReadByte(){
+		return receiveBuffer.get();
+	}
+    
+    /**
+     * Reads a short (16-bits) from the current position
+     * @return The short value 
+     */
+    protected short packetReadInt16(){
+		return receiveBuffer.getShort();
+	}
+    
+    /**
+     * Reads a short (16-bits) from the current position
+     * @return The short value
+     */
+    protected short packetReadUInt16(){
+		return receiveBuffer.getShort();
+	}
+    
+    /**
+     * Reads an int (32-bits) from the current position
+     * @return The int value 
+     */    
+    protected int packetReadInt32(){
+		return receiveBuffer.getInt();
+	}
+	
+    /**
+     * Reads an int (32-bits) from the current position
+     * @return The int value  
+     */    
+    protected int packetReadUInt32(){
+		return receiveBuffer.getInt();
+	}
+    
+    /**
+     * Reads an long (64-bits) from the current position
+     * @return The long value 
+     */
+    protected long packetReadInt64(){
+		return receiveBuffer.getLong();
+	}
+	
+    /**
+     * Reads an long (64-bits) from the current position
+     * @return The long value 
+     */
+    protected long packetReadUInt64(){
+		return receiveBuffer.getLong();
+	}
+    
+    /**
+     * Reads an boolean (8-bits) from the current position
+     * @return The boolean value 
+     */
+    protected boolean packetReadBoolean(){
+		return receiveBuffer.get() != 0;
+	}
+    
+    /**
+     * Reads an IEEE 754 single-precision (32-bits) floating-point number from the current position
+     * @return The float value
+     */
+    protected float packetReadSingle(){
+		return receiveBuffer.getFloat();
+	}
+    
+    /**
+     * Reads an IEEE 754 double-precision (64-bits) floating-point number from the current position
+     * @return The double value
+     */
+    protected double packetReadDouble(){
+		return receiveBuffer.getDouble();
+	}
+    
+    /**
+     * Reads an Date from the current position
+     * @return The Date value
+     */
+    protected Date packetReadDateTime(){
+    	//make protocol better
+    	short year = receiveBuffer.getShort();
+    	short month = receiveBuffer.getShort();
+    	short day = receiveBuffer.getShort();
+    	short hour = receiveBuffer.getShort();
+    	short minute = receiveBuffer.getShort();
+    	short seconds = receiveBuffer.getShort();
+    	short miliseconds = receiveBuffer.getShort();
+    	
+    	GregorianCalendar calendar = new GregorianCalendar();
+    	calendar.set(year,month,day,hour,minute,seconds);
+    	long totalMilisec = calendar.getTimeInMillis();
+    	totalMilisec += miliseconds;
+		
+    	return new Date(totalMilisec);
+	}
+    
+    /**
+     * Reads a String from the buffer
+     * @return The String value at the current position 
+     */    
+    protected String packetReadString(){
+		int size = receiveBuffer.getInt();
+		if(size > 0){
+			try {
+				byte[] bytes = new byte[size];
+				receiveBuffer.get(bytes);
+				return new String(bytes,"UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+		}
+		return "";
+	}
+    
+    /**
+     * Reads an array of byte from the current position
+     * @return The byte[] value
+     */
+    protected byte[] packetReadListOfByte(){
+    	int size = receiveBuffer.getInt();
+    	if(size > 0){
+    		byte[] bytes = new byte[size];
+			receiveBuffer.get(bytes);
+			return bytes;
+    	}
+    	return null;
+    }
+
+    /**
+     * Reads an array of short from the current position
+     * @return The short[] value
+     */
+    protected short[] packetReadListOfInt16(){
+    	int size = receiveBuffer.getInt();
+    	if(size > 0){
+    		short[] shorts = new short[size];
+    		for(int index = 0; index < size; index++){
+    			shorts[index] = receiveBuffer.getShort();
+    		}    		
+    		return shorts;
+    	}
+    	return null;
+    }
+    
+    /**
+     * Reads an array of short from the current position
+     * @return The short[] value 
+     */
+    protected short[] packetReadListOfUInt16(){
+    	int size = receiveBuffer.getInt();
+    	if(size > 0){
+    		short[] shorts = new short[size];
+    		for(int index = 0; index < size; index++){
+    			shorts[index] = receiveBuffer.getShort();
+    		}    		
+    		return shorts;
+    	}
+    	return null;
+    }
+    
+    /**
+     * Reads an array of int from the current position
+     * @return The int[] value 
+     */
+    protected int[] packetReadListOfInt32(){
+    	int size = receiveBuffer.getInt();
+    	if(size > 0){
+    		int[] ints = new int[size];
+    		for(int index = 0; index < size; index++){
+    			ints[index] = receiveBuffer.getInt();
+    		}    		
+    		return ints;
+    	}
+    	return null;
+    }
+    
+    /**
+     * Reads an array of int from the current position
+     * @return The int[] value
+     */
+    protected int[] packetReadListOfUInt32(){
+    	int size = receiveBuffer.getInt();
+    	if(size > 0){
+    		int[] ints = new int[size];
+    		for(int index = 0; index < size; index++){
+    			ints[index] = receiveBuffer.getInt();
+    		}    		
+    		return ints;
+    	}
+    	return null;
+    }
+    
+    /**
+     * Reads an array of long from the current position
+     * @return The long[] value
+     */
+    protected long[] packetReadListOfInt64(){
+    	int size = receiveBuffer.getInt();
+    	if(size > 0){
+    		long[] longs = new long[size];
+    		for(int index = 0; index < size; index++){
+    			longs[index] = receiveBuffer.getLong();
+    		}    		
+    		return longs;
+    	}
+    	return null;
+    }
+    
+    /**
+     * Reads an array of long from the current position
+     * @return The long[] value
+     */
+    protected long[] packetReadListOfUInt64(){
+    	int size = receiveBuffer.getInt();
+    	if(size > 0){
+    		long[] longs = new long[size];
+    		for(int index = 0; index < size; index++){
+    			longs[index] = receiveBuffer.getLong();
+    		}    		
+    		return longs;
+    	}
+    	return null;
+    }
+    
+    /**
+     * Reads an array of boolean from the current position
+     * @return The boolean[] value
+     */
+    protected boolean[] packetReadListOfBoolean(){
+    	int size = receiveBuffer.getInt();
+    	if(size > 0){
+    		boolean[] booleans = new boolean[size];
+    		for(int index = 0; index < size; index++){
+    			booleans[index] = receiveBuffer.get() != 0;
+    		}    		
+    		return booleans;
+    	}
+    	return null;
+    }
+    
+    /**
+     * Reads an array of float from the current position
+     * @return The float[] value 
+     */
+    protected float[] packetReadListOfSingle(){
+    	int size = receiveBuffer.getInt();
+    	if(size > 0){
+    		float[] floats = new float[size];
+    		for(int index = 0; index < size; index++){
+    			floats[index] = receiveBuffer.getFloat();
+    		}    		
+    		return floats;
+    	}
+    	return null;
+    }
+    
+    /**
+     * Reads an array of double from the current position
+     * @return The double[] value
+     */
+    protected double[] packetReadListOfDouble(){
+    	int size = receiveBuffer.getInt();
+    	if(size > 0){
+    		double[] doubles = new double[size];
+    		for(int index = 0; index < size; index++){
+    			doubles[index] = receiveBuffer.getDouble();
+    		}    		
+    		return doubles;
+    	}
+    	return null;
+    }
+    
+    /**
+     * Reads an array of Date from the current position
+     * @return The Date[] value 
+     */
+    protected Date[] packetReadListOfDateTime(){
+    	int size = receiveBuffer.getInt();
+    	if(size > 0){
+    		Date[] dates = new Date[size];
+    		for(int index = 0; index < size; index++){
+    			dates[index] = packetReadDateTime();
+    		}    		
+    		return dates;
+    	}
+    	return null;
+    }
+    
+    /**
+     * Reads an array of String from the current position
+     * @return The String[] value
+     */    
+    protected String[] packetReadListOfString(){
+    	int size = receiveBuffer.getInt();
+    	if(size > 0){
+    		String[] strings = new String[size];
+    		for(int index = 0; index < size; index++){
+    			strings[index] = packetReadString();
+    		}    		
+    		return strings;
+    	}
+    	return null;
+    }
+    
+    
+	
+	//Write packets	
+    /**
+     * Begin a new packet to write
+     * @param key Packet key 
+     */
+	protected void beginNewPacket(int key){
+		sendBuffer.clear();
+		sendBuffer.position(4); //Skip size
+		sendBuffer.putInt(key);
+	}
+	
+	/**
+	 * Write a byte to the buffer at the current position 
+	 * @param value The byte value to write
+	 */
+	protected void packetWrite(byte value){
+		sendBuffer.put(value);
+	}
+	
+	/**
+	 * Write a short to the buffer at the current position 
+	 * @param value The short value to write
+	 */	
+	protected void packetWrite(short value){
+		sendBuffer.putShort(value);
+	}
+	
+	/**
+	 * Write a int to the buffer at the current position 
+	 * @param value The int value to write
+	 */	
+	protected void packetWrite(int value){
+		sendBuffer.putInt(value);
+	}
+	
+	/**
+	 * Write a long to the buffer at the current position 
+	 * @param value The long value to write
+	 */	
+	protected void packetWrite(long value){
+		sendBuffer.putLong(value);
+	}
+	
+	/**
+	 * Write a float to the buffer at the current position 
+	 * @param value The float value to write
+	 */	
+	protected void packetWrite(float value){
+		sendBuffer.putFloat(value);
+	}
+	
+	/**
+	 * Write a double to the buffer at the current position 
+	 * @param value The double value to write
+	 */	
+	protected void packetWrite(double value){
+		sendBuffer.putDouble(value);
+	}
+	
+	/**
+	 * Write a String to the buffer at the current position 
+	 * @param value The String value to write
+	 */	
+	protected void packetWrite(Date value){	
+		GregorianCalendar calendar = new GregorianCalendar();
+		calendar.setTime(value);
+		sendBuffer.putInt((short)calendar.get(GregorianCalendar.YEAR));
+		sendBuffer.putInt((short)calendar.get(GregorianCalendar.MONTH));
+		sendBuffer.putInt((short)calendar.get(GregorianCalendar.DAY_OF_MONTH));
+		sendBuffer.putInt((short)calendar.get(GregorianCalendar.HOUR_OF_DAY));
+		sendBuffer.putInt((short)calendar.get(GregorianCalendar.MINUTE));
+		sendBuffer.putInt((short)calendar.get(GregorianCalendar.SECOND));
+		sendBuffer.putInt((short)calendar.get(GregorianCalendar.MILLISECOND));		
+	}
+	
+	/**
+	 * Write a String to the buffer at the current position 
+	 * @param value The String value to write
+	 */	
+	protected void packetWrite(String value){		
+		try {
+			packetWrite(value.getBytes("UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+	}	
+		
+	/**
+	 * Write an array of byte to the buffer at the current position 
+	 * @param value The byte[] value to write
+	 */
+	protected void packetWrite(byte[] value){
+		sendBuffer.putInt(value.length);
+		sendBuffer.put(value);
+	}
+	
+	/**
+	 * Write an array of short to the buffer at the current position 
+	 * @param value The short[] value to write
+	 */
+	protected void packetWrite(short[] value){
+		sendBuffer.putInt(value.length);
+		for (short element : value)			
+			packetWrite(element);
+	}
+	
+	/**
+	 * Write an array of int to the buffer at the current position 
+	 * @param value The int[] value to write
+	 */
+	protected void packetWrite(int[] value){
+		sendBuffer.putInt(value.length);
+		for (int element : value)			
+			packetWrite(element);
+	}
+	
+	/**
+	 * Write an array of long to the buffer at the current position 
+	 * @param value The long[] value to write
+	 */
+	protected void packetWrite(long[] value){
+		sendBuffer.putInt(value.length);
+		for (long element : value)			
+			packetWrite(element);
+	}
+	
+	/**
+	 * Write an array of float to the buffer at the current position 
+	 * @param value The float[] value to write
+	 */
+	protected void packetWrite(float[] value){
+		sendBuffer.putInt(value.length);
+		for (float element : value)			
+			packetWrite(element);
+	}
+	
+	/**
+	 * Write an array of double to the buffer at the current position 
+	 * @param value The double[] value to write
+	 */
+	protected void packetWrite(double[] value){
+		sendBuffer.putInt(value.length);
+		for (double element : value)			
+			packetWrite(element);
+	}
+	
+	/**
+	 * Write an array of String to the buffer at the current position 
+	 * @param value The String[] value to write
+	 */
+	protected void packetWrite(String[] value){
+		sendBuffer.putInt(value.length);
+		for (String element : value)			
+			packetWrite(element);
+	}
+	
+	/**
+	 * Write an array of Date to the buffer at the current position 
+	 * @param value The Date[] value to write
+	 */
+	protected void packetWrite(Date[] value){
+		sendBuffer.putInt(value.length);
+		for (Date element : value)			
+			packetWrite(element);
+	}
+	
+	/**
+	 * Send the packet
+	 * @param compressed True if compression must be use
+ 	 */
+	protected void sendPacket(boolean compressed){
+		try {			
+			if(compressed && sendBuffer.position() > 8){		
+				byte[] uncompressedData = new byte[sendBuffer.position() - 8];
+				sendBuffer.position(8);			
+				sendBuffer.get(uncompressedData);
+				
+				byte[] compressedData = new byte[4096];
+				int size = CLZF.compress(uncompressedData, uncompressedData.length, compressedData, compressedData.length);
+				
+				sendBuffer.position(8);		
+				sendBuffer.put(compressedData, 0, size);
+			}
+			
+			sendBuffer.flip();	
+			
+			sendBuffer.putInt(0, sendBuffer.remaining() - 4); //Set the Size (Don't count the size himself)						
+			while(sendBuffer.hasRemaining()) {				
+					socketChannel.write(sendBuffer);				
+			}
+		} catch (IOException e) {
+			disconnect();
+			throw new IOError(e); //make catch optional		
+		}
+	}
+}

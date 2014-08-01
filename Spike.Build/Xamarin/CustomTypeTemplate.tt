@@ -8,7 +8,7 @@
 
 
 
-namespace Spike.Network.CustomTypes
+namespace Spike.Network.Entities
 {
     public partial struct <#= CustomType.Name #>
     {

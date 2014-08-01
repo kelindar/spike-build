@@ -73,11 +73,11 @@ namespace Spike.Build.Xamarin
             if (!Directory.Exists(networkDirectory))
                 Directory.CreateDirectory(networkDirectory);
 
-            var packetsDirectory = Path.Combine(output, "Spike", "Packets");
+            var packetsDirectory = Path.Combine(output, "Spike", "Network", "Packets");
             if (!Directory.Exists(packetsDirectory))
                 Directory.CreateDirectory(packetsDirectory);
 
-            var customTypesDirectory = Path.Combine(output, "Spike", "CustomTypes");
+            var customTypesDirectory = Path.Combine(output, "Spike", "Network", "Entities");
             if (!Directory.Exists(customTypesDirectory))
                 Directory.CreateDirectory(customTypesDirectory);
 

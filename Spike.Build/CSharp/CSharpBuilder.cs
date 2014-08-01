@@ -20,9 +20,9 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Spike.Build.WinRT
+namespace Spike.Build.CSharp
 {
-    internal class WinRTBuilder : IBuilder
+    internal class CSharpBuilder : IBuilder
     {
         internal static string GetNativeType(Member member)
         {
@@ -64,9 +64,10 @@ namespace Spike.Build.WinRT
 
         }
 
-        public void Build(Model model, string output) {
+        public void Build(Model model, string output)
+        {
             if (string.IsNullOrEmpty(output))
-                output = @"WinRT";
+                output = @"CSharp";
 
             var networkDirectory = Path.Combine(output, "Spike", "Network");
             if (!Directory.Exists(networkDirectory))
@@ -80,16 +81,16 @@ namespace Spike.Build.WinRT
             if (!Directory.Exists(customTypesDirectory))
                 Directory.CreateDirectory(customTypesDirectory);
 
-            Extentions.CopyFromRessources("Spike.Build.WinRT.StaticFiles.CLZF.cs", Path.Combine(networkDirectory, @"CLZF.cs"));
-            Extentions.CopyFromRessources("Spike.Build.WinRT.StaticFiles.TcpChannelBase.cs", Path.Combine(networkDirectory, @"TcpChannelBase.cs"));
-            
+            Extentions.CopyFromRessources("Spike.Build.CSharp.StaticFiles.CLZF.cs", Path.Combine(networkDirectory, @"CLZF.cs"));
+            Extentions.CopyFromRessources("Spike.Build.CSharp.StaticFiles.TcpChannelBase.cs", Path.Combine(networkDirectory, @"TcpChannelBase.cs"));
+
             var tcpChanneltemplate = new TcpChannelTemplate();
             var tcpChannelsession = new Dictionary<string, object>();
             tcpChanneltemplate.Session = tcpChannelsession;
 
             tcpChannelsession["Model"] = model;
             tcpChanneltemplate.Initialize();
-            
+
             var code = tcpChanneltemplate.TransformText();
             File.WriteAllText(Path.Combine(networkDirectory, @"TcpChannel.cs"), code);
 
@@ -97,7 +98,8 @@ namespace Spike.Build.WinRT
             var packetTemplate = new PacketTemplate();
             var packetSession = new Dictionary<string, object>();
             packetTemplate.Session = packetSession;
-            foreach (var receive in model.Receives) {
+            foreach (var receive in model.Receives)
+            {
                 packetTemplate.Clear();
                 packetSession["Operation"] = receive;
                 packetTemplate.Initialize();
@@ -121,6 +123,4 @@ namespace Spike.Build.WinRT
 
         }
     }
-
-    
 }

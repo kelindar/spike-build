@@ -20,11 +20,13 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Net.Http;
 
 using Spike.Build.WinRT;
 using Spike.Build.Xamarin;
-using System.IO;
-using System.Net.Http;
+using Spike.Build.CSharp;
+using Spike.Build.Java;
+
 
 namespace Spike.Build
 {
@@ -46,8 +48,10 @@ namespace Spike.Build
         }
 
         static private Dictionary<string, IBuilder> Builders = new Dictionary<string, IBuilder>(StringComparer.CurrentCultureIgnoreCase) {
+            { "Java", new JavaBuilder() },
+            { "CSharp", new CSharpBuilder() },
             { "WinRT", new WinRTBuilder() },
-            { "Xamarin", new XamarinBuilder()}
+            { "Xamarin", new XamarinBuilder() }
         };
 
         static void Main(string[] args)

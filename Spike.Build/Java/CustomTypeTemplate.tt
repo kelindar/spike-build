@@ -4,19 +4,14 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ parameter type="Spike.Build.CustomType" name="CustomType" #>
+package com.misakai.spike.network.entities;
 
-
-
-
-namespace Spike.Network.Entities
-{
-    public partial struct <#= CustomType.Name #>
-    {
+public final class <#= CustomType.Name #> {
 <#		foreach(var member in CustomType.Members)
 		{ #>	
-		public <#= WinRTBuilder.GetNativeType(member) #><#= member.IsList ? "[]" : string.Empty #> <#= member.Name #> { get; set; }
+		public <#= JavaBuilder.GetNativeType(member) #><#= member.IsList ? "[]" : string.Empty #> <#= member.Name.CamelCase #>;
 <#		} #>
-    }
+	}
 }
 
 <#+ internal void Clear(){

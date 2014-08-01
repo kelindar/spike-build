@@ -14,7 +14,7 @@ namespace Spike.Network.Entities
     {
 <#		foreach(var member in CustomType.Members)
 		{ #>	
-		public <#= WinRTBuilder.GetNativeType(member) #><#= member.IsList ? "[]" : string.Empty #> <#= member.Name #> { get; set; }
+		public <#= CSharpBuilder.GetNativeType(member) #><#= member.IsList ? "[]" : string.Empty #> <#= member.Name #> { get; set; }
 <#		} #>
     }
 }

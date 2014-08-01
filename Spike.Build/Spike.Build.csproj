@@ -70,15 +70,49 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Java\CustomTypeTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CustomTypeTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Java\JavaBuilder.cs" />
+    <Compile Include="CSharp\CustomTypeTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CustomTypeTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CSharp\PacketTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PacketTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CSharp\TcpChannelTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TcpChannelTemplate.tt</DependentUpon>
+    </Compile>
     <Compile Include="CustomType.cs" />
     <Compile Include="Extentions.cs" />
     <Compile Include="IBuilder.cs" />
+    <Compile Include="Java\PacketTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PacketTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Java\TcpChannelTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TcpChannelTemplate.tt</DependentUpon>
+    </Compile>
     <Compile Include="Member.cs" />
     <Compile Include="Operation.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Model.cs" />
     <EmbeddedResource Include="WinRT\StaticFiles\CLZF.cs" />
+    <EmbeddedResource Include="CSharp\StaticFiles\CLZF.cs" />
+    <EmbeddedResource Include="CSharp\StaticFiles\TcpChannelBase.cs" />
+    <Compile Include="CSharp\CSharpBuilder.cs" />
     <Compile Include="Xamarin\CustomTypeTemplate.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -117,6 +151,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Java\CustomTypeTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>CustomTypeTemplate.cs</LastGenOutput>
+    </None>
+    <None Include="Java\PacketTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>PacketTemplate.cs</LastGenOutput>
+    </None>
+    <None Include="Java\TcpChannelTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>TcpChannelTemplate.cs</LastGenOutput>
+    </None>
     <None Include="test.spml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -129,6 +175,18 @@
       <LastGenOutput>PacketTemplate.cs</LastGenOutput>
     </None>
     <None Include="WinRT\TcpChannelTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>TcpChannelTemplate.cs</LastGenOutput>
+    </None>
+    <None Include="CSharp\CustomTypeTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>CustomTypeTemplate.cs</LastGenOutput>
+    </None>
+    <None Include="CSharp\PacketTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>PacketTemplate.cs</LastGenOutput>
+    </None>
+    <None Include="CSharp\TcpChannelTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>TcpChannelTemplate.cs</LastGenOutput>
     </None>
@@ -163,6 +221,11 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Java\StaticFiles\AbstractTcpChannel.java" />
+    <EmbeddedResource Include="Java\StaticFiles\CLZF.java" />
+    <EmbeddedResource Include="Java\StaticFiles\ConnectionHandler.java" />
+    <EmbeddedResource Include="Java\StaticFiles\DisconnectionHandler.java" />
+    <EmbeddedResource Include="Java\StaticFiles\PacketHandler.java" />
     <Content Include="misakai.ico" />
   </ItemGroup>
   <ItemGroup>
