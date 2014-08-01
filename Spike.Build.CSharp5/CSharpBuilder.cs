@@ -22,7 +22,7 @@ using System.IO;
 
 namespace Spike.Build.CSharp5
 {
-    internal class CSharpBuilder : IBuilder
+    internal class CSharp5Builder : IBuilder
     {
         internal static string GetNativeType(Member member)
         {
@@ -81,9 +81,15 @@ namespace Spike.Build.CSharp5
             if (!Directory.Exists(customTypesDirectory))
                 Directory.CreateDirectory(customTypesDirectory);
 
-            Extentions.CopyFromRessources("Spike.Build.CSharp.StaticFiles.CLZF.cs", Path.Combine(networkDirectory, @"CLZF.cs"));
-            Extentions.CopyFromRessources("Spike.Build.CSharp.StaticFiles.TcpChannelBase.cs", Path.Combine(networkDirectory, @"TcpChannelBase.cs"));
+            //CLZF.cs
+            var clzfTemplate = new CLZFTemplate();
+            File.WriteAllText(Path.Combine(networkDirectory, @"CLZF.cs"), clzfTemplate.TransformText());
 
+            //TcpChannelBase.cs
+            var tcpChannelBaseTemplate = new TcpChannelBaseTemplate();
+            File.WriteAllText(Path.Combine(networkDirectory, @"TcpChannelBase.cs"), tcpChannelBaseTemplate.TransformText());
+
+            //TcpChannel.cs
             var tcpChanneltemplate = new TcpChannelTemplate();
             var tcpChannelsession = new Dictionary<string, object>();
             tcpChanneltemplate.Session = tcpChannelsession;

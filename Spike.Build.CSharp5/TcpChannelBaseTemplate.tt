@@ -1,11 +1,14 @@
-﻿using LZF.NET;
+﻿<#@ template language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+using LZF.NET;
 using System;
 using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
-using Windows.Networking;
-using Windows.Networking.Sockets;
-using Windows.Storage.Streams;
+using System.Net.Sockets;
 
 namespace Spike.Network
 {
@@ -14,29 +17,26 @@ namespace Spike.Network
         public event Action<T> Connected;
         public event Action<T> Disconnected;
 
-        private StreamSocket socket;
-        private DataWriter SocketWriter;
-        private DataReader SocketReader;
-
+        private Socket socket;
+        
         private byte[] SendBuffer;
         private int SendBufferPosition;
 
         private byte[] ReceiveBuffer;
         private int ReceiveBufferPosition;
-        private uint ReceiveBufferSize;
+        private int ReceiveBufferSize;
 
         public async void Connect(string host, int port)
         {
-            socket = new StreamSocket();
-            await socket.ConnectAsync(new HostName(host), port.ToString());
+			socket = new Socket(AddressFamily.InterNetwork,SocketType.Stream,ProtocolType.Tcp);
+            
 
-            SocketWriter = new DataWriter(socket.OutputStream);
-            SocketReader = new DataReader(socket.InputStream);
-            SocketReader.InputStreamOptions = InputStreamOptions.Partial;
+			await Task.Run(() => socket.Connect (host, port));
 
             SendBuffer = new byte[4096];
             SendBufferPosition = 0;
-            ReceiveBuffer = new byte[4096];
+            
+			ReceiveBuffer = new byte[4096];
             ReceiveBufferPosition = 0;
             ReceiveBufferSize = 0;
 
@@ -47,10 +47,11 @@ namespace Spike.Network
             {
                 while (true)
                 {
-                    ReceiveBufferSize = await SocketReader.LoadAsync(4096);
-                    for (int index = 0; index < ReceiveBufferSize; index++)
-                        ReceiveBuffer[index] = SocketReader.ReadByte();
-                    ReceiveBufferPosition = 0;
+					ReceiveBufferSize = await Task<int>.Run(() => 
+						{return socket.Receive(ReceiveBuffer);}
+					);
+					 
+					ReceiveBufferPosition = 0;
 
                     if (ReceiveBufferSize != (PacketReadInt32() + 4))
                     {
@@ -65,8 +66,6 @@ namespace Spike.Network
             {
                 Disconnect();
             }
-
-
         }
 
         public void Disconnect()
@@ -86,7 +85,7 @@ namespace Spike.Network
                 var cipher = new CLZF();
                 var uncompressedSize = cipher.lzf_decompress(compressedBuffer, compressedBuffer.Length, uncompressedBuffer, uncompressedBuffer.Length);
                 System.Buffer.BlockCopy(uncompressedBuffer, 0, ReceiveBuffer, 8, uncompressedSize);
-                ReceiveBufferSize = (uint)uncompressedSize + 8;
+                ReceiveBufferSize = uncompressedSize + 8;
             }
         }
 
@@ -120,11 +119,10 @@ namespace Spike.Network
             }
 
             SetSize();
-            for (int index = 0; index < SendBufferPosition; index++)
-                SocketWriter.WriteByte(SendBuffer[index]);
-
-            await SocketWriter.StoreAsync();
-            //Debug.WriteLine("Packet send");
+            
+			await Task.Run(() => {
+				socket.Send(SendBuffer, SendBufferPosition, SocketFlags.None);
+			});            
         }
 
         #region Spike Primary Type

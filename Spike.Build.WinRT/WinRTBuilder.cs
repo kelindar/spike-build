@@ -80,9 +80,15 @@ namespace Spike.Build.WinRT
             if (!Directory.Exists(customTypesDirectory))
                 Directory.CreateDirectory(customTypesDirectory);
 
-            Extentions.CopyFromRessources("Spike.Build.WinRT.StaticFiles.CLZF.cs", Path.Combine(networkDirectory, @"CLZF.cs"));
-            Extentions.CopyFromRessources("Spike.Build.WinRT.StaticFiles.TcpChannelBase.cs", Path.Combine(networkDirectory, @"TcpChannelBase.cs"));
-            
+            //CLZF.cs
+            var clzfTemplate = new CLZFTemplate();
+            File.WriteAllText(Path.Combine(networkDirectory, @"CLZF.cs"), clzfTemplate.TransformText());
+
+            //TcpChannelBase.cs
+            var tcpChannelBaseTemplate = new TcpChannelBaseTemplate();
+            File.WriteAllText(Path.Combine(networkDirectory, @"TcpChannelBase.cs"), tcpChannelBaseTemplate.TransformText());
+
+
             var tcpChanneltemplate = new TcpChannelTemplate();
             var tcpChannelsession = new Dictionary<string, object>();
             tcpChanneltemplate.Session = tcpChannelsession;

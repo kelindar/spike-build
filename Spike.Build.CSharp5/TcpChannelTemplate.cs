@@ -96,7 +96,7 @@ namespace Spike.Network
 				if(!first)
 					Write(", ");
 
-				Write(CSharpBuilder.GetNativeType(member));
+				Write(CSharp5Builder.GetNativeType(member));
 				Write(" ");
 				Write(member.Name);
 				first = false;

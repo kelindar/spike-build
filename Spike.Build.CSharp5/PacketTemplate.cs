@@ -47,7 +47,7 @@ namespace Spike.Build.CSharp5
             this.Write("\t\r\n\t\tpublic ");
             
             #line 15 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\PacketTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(CSharpBuilder.GetNativeType(member)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(CSharp5Builder.GetNativeType(member)));
             
             #line default
             #line hidden

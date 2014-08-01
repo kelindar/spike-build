@@ -70,6 +70,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Spike.Build.CSharp5\CLZFTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CLZFTemplate.tt</DependentUpon>
+    </Compile>
     <Compile Include="Spike.Build.CSharp5\CSharpBuilder.cs" />
     <Compile Include="Spike.Build.CSharp5\CustomTypeTemplate.cs">
       <AutoGen>True</AutoGen>
@@ -81,13 +86,16 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>PacketTemplate.tt</DependentUpon>
     </Compile>
+    <Compile Include="Spike.Build.CSharp5\TcpChannelBaseTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TcpChannelBaseTemplate.tt</DependentUpon>
+    </Compile>
     <Compile Include="Spike.Build.CSharp5\TcpChannelTemplate.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>TcpChannelTemplate.tt</DependentUpon>
     </Compile>
-    <Compile Include="Spike.Build.CSharp5\StaticFiles\CLZF.cs" />
-    <Compile Include="Spike.Build.CSharp5\StaticFiles\TcpChannelBase.cs" />
     <Compile Include="Spike.Build.Java\CustomTypeTemplate.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -112,7 +120,21 @@
     <Compile Include="Spike.Build.Runtime\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Spike.Build.Runtime\Model.cs" />
-    <EmbeddedResource Include="Spike.Build.WinRT\StaticFiles\CLZF.cs" />
+    <Compile Include="Spike.Build.WinRT\CLZFTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CLZFTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Spike.Build.WinRT\TcpChannelBaseTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TcpChannelBaseTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Spike.Build.Xamarin\CLZFTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CLZFTemplate.tt</DependentUpon>
+    </Compile>
     <Compile Include="Spike.Build.Xamarin\CustomTypeTemplate.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -123,15 +145,17 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>PacketTemplate.tt</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Spike.Build.Xamarin\StaticFiles\CLZF.cs" />
-    <EmbeddedResource Include="Spike.Build.Xamarin\StaticFiles\TcpChannelBase.cs" />
+    <Compile Include="Spike.Build.Xamarin\TcpChannelBaseTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TcpChannelBaseTemplate.tt</DependentUpon>
+    </Compile>
     <Compile Include="Spike.Build.Xamarin\TcpChannelTemplate.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>TcpChannelTemplate.tt</DependentUpon>
     </Compile>
     <Compile Include="Spike.Build.Xamarin\XamarinBuilder.cs" />
-    <EmbeddedResource Include="Spike.Build.WinRT\StaticFiles\TcpChannelBase.cs" />
     <Compile Include="Spike.Build.WinRT\CustomTypeTemplate.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -151,6 +175,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Spike.Build.CSharp5\CLZFTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>CLZFTemplate.cs</LastGenOutput>
+      <CustomToolNamespace>Spike.Build.CSharp5</CustomToolNamespace>
+    </None>
     <None Include="Spike.Build.CSharp5\CustomTypeTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>CustomTypeTemplate.cs</LastGenOutput>
@@ -159,6 +188,11 @@
     <None Include="Spike.Build.CSharp5\PacketTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>PacketTemplate.cs</LastGenOutput>
+      <CustomToolNamespace>Spike.Build.CSharp5</CustomToolNamespace>
+    </None>
+    <None Include="Spike.Build.CSharp5\TcpChannelBaseTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>TcpChannelBaseTemplate.cs</LastGenOutput>
       <CustomToolNamespace>Spike.Build.CSharp5</CustomToolNamespace>
     </None>
     <None Include="Spike.Build.CSharp5\TcpChannelTemplate.tt">
@@ -180,6 +214,26 @@
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>TcpChannelTemplate.cs</LastGenOutput>
       <CustomToolNamespace>Spike.Build.Java</CustomToolNamespace>
+    </None>
+    <None Include="Spike.Build.WinRT\CLZFTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>CLZFTemplate.cs</LastGenOutput>
+      <CustomToolNamespace>Spike.Build.WinRT</CustomToolNamespace>
+    </None>
+    <None Include="Spike.Build.WinRT\TcpChannelBaseTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>TcpChannelBaseTemplate.cs</LastGenOutput>
+      <CustomToolNamespace>Spike.Build.WinRT</CustomToolNamespace>
+    </None>
+    <None Include="Spike.Build.Xamarin\CLZFTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>CLZFTemplate.cs</LastGenOutput>
+      <CustomToolNamespace>Spike.Build.Xamarin</CustomToolNamespace>
+    </None>
+    <None Include="Spike.Build.Xamarin\TcpChannelBaseTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>TcpChannelBaseTemplate.cs</LastGenOutput>
+      <CustomToolNamespace>Spike.Build.Xamarin</CustomToolNamespace>
     </None>
     <None Include="test.spml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -233,11 +287,21 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Spike.Build.Java\StaticFiles\AbstractTcpChannel.java" />
-    <EmbeddedResource Include="Spike.Build.Java\StaticFiles\CLZF.java" />
-    <EmbeddedResource Include="Spike.Build.Java\StaticFiles\ConnectionHandler.java" />
-    <EmbeddedResource Include="Spike.Build.Java\StaticFiles\DisconnectionHandler.java" />
-    <EmbeddedResource Include="Spike.Build.Java\StaticFiles\PacketHandler.java" />
+    <EmbeddedResource Include="Spike.Build.Java\StaticFiles\AbstractTcpChannel.java">
+      <CustomToolNamespace>Spike.Build.Java.StaticFiles</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Spike.Build.Java\StaticFiles\CLZF.java">
+      <CustomToolNamespace>Spike.Build.Java.StaticFiles</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Spike.Build.Java\StaticFiles\ConnectionHandler.java">
+      <CustomToolNamespace>Spike.Build.Java.StaticFiles</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Spike.Build.Java\StaticFiles\DisconnectionHandler.java">
+      <CustomToolNamespace>Spike.Build.Java.StaticFiles</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Spike.Build.Java\StaticFiles\PacketHandler.java">
+      <CustomToolNamespace>Spike.Build.Java.StaticFiles</CustomToolNamespace>
+    </EmbeddedResource>
     <Content Include="misakai.ico" />
   </ItemGroup>
   <ItemGroup>

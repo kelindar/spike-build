@@ -49,7 +49,7 @@ namespace Spike.Build
 
         static private Dictionary<string, IBuilder> Builders = new Dictionary<string, IBuilder>(StringComparer.CurrentCultureIgnoreCase) {
             { "Java", new JavaBuilder() },
-            { "CSharp", new CSharpBuilder() },
+            { "CSharp5", new CSharp5Builder() },
             { "WinRT", new WinRTBuilder() },
             { "Xamarin", new XamarinBuilder() }
         };
