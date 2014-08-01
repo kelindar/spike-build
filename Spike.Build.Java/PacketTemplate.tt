@@ -9,7 +9,7 @@ package com.misakai.spike.network.packets;
 public final class <#= Operation.Name #> {
 <#		foreach(var member in Operation.Members)
 		{ #>	
-		public <#= JavaBuilder.GetNativeType(member) #><#= member.IsList ? "[]" : string.Empty #> <#= member.Name.CamelCase #>;
+		public <#= JavaBuilder.GetNativeType(member) #><#= member.IsList ? "[]" : string.Empty #> <#= member.Name.CamelCase() #>;
 <#		} #>
 	}
 }

@@ -14,14 +14,14 @@ public final class TcpChannel extends AbstractTcpChannel {
 	//EventHandlers	
 <#	foreach(var receive in Model.Receives)
 	{ #>		
-	public final ArrayList<PacketHandler<<#= receive.Name #>>> <#= receive.Name.CamelCase #> = new ArrayList<PacketHandler<<#= receive.Name #>>>(); 
+	public final ArrayList<PacketHandler<<#= receive.Name #>>> <#= receive.Name.CamelCase() #> = new ArrayList<PacketHandler<<#= receive.Name #>>>(); 
 <#	} #>
 
 
 	//Sends			       
 <#	foreach(var send in Model.Sends)
 		{ #>		
-	public void <#= send.Name.CamelCase #>(<#	
+	public void <#= send.Name.CamelCase() #>(<#	
 		var first = true;
 		foreach(var member in send.Members){
 			if(!first)
@@ -29,14 +29,14 @@ public final class TcpChannel extends AbstractTcpChannel {
 
 			Write(JavaBuilder.GetNativeType(member));
 			Write(" ");
-			Write(member.Name.CamelCase);
+			Write(member.Name.CamelCase());
 			first = false;
 		}
 		#>){
 		beginNewPacket(0x<#= send.Id.ToString("X") #>);
 <#		foreach(var member in send.Members)
 		{ #>
-		packetWrite(<#= member.Name.CamelCase #>);
+		packetWrite(<#= member.Name.CamelCase() #>);
 <#		} #>
 		sendPacket(<#= send.Compressed ? "true" : "false" #>);
 		}		 
@@ -55,11 +55,11 @@ public final class TcpChannel extends AbstractTcpChannel {
 				beginReadPacket(<#= receive.Compressed ? "true" : "false" #>);
 					
 <#		foreach(var member in receive.Members){ #>
-				packet.<#= member.Name.CamelCase #> = packetRead<#= member.IsList ? "ListOf" : string.Empty #><#= member.Type #>();
+				packet.<#= member.Name.CamelCase() #> = packetRead<#= member.IsList ? "ListOf" : string.Empty #><#= member.Type #>();
 <#		} #>
 
 				//Now Call event
-				for (PacketHandler<<#= receive.Name #>> handler : <#= receive.Name.CamelCase #>)
+				for (PacketHandler<<#= receive.Name #>> handler : <#= receive.Name.CamelCase() #>)
 					handler.onReceive(packet);
 				return;
 			}
@@ -80,7 +80,7 @@ public final class TcpChannel extends AbstractTcpChannel {
 		<#= customType.Name #> value = new <#= customType.Name #>();
 <#		foreach(var member in customType.Members)
 		{ #>
-		value.<#= member.Name.CamelCase #> = packetRead<#= member.IsList ? "ListOf" : string.Empty #><#= member.Type #>();
+		value.<#= member.Name.CamelCase() #> = packetRead<#= member.IsList ? "ListOf" : string.Empty #><#= member.Type #>();
 <#		} #>
 		return value;
     }
@@ -89,7 +89,7 @@ public final class TcpChannel extends AbstractTcpChannel {
     {
 <#		foreach(var member in customType.Members)
 	{ #>
-		packetWrite(value.<#= member.Name.CamelCase #>);
+		packetWrite(value.<#= member.Name.CamelCase() #>);
 <#		} #>
 	}
 

@@ -20,7 +20,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Spike.Build.CSharp
+namespace Spike.Build.CSharp5
 {
     internal class CSharpBuilder : IBuilder
     {
