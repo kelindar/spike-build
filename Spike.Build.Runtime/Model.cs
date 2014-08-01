@@ -38,11 +38,11 @@ namespace Spike.Build
         {
             var type = xmember.Attribute("Type")?.Value;
             if (string.IsNullOrWhiteSpace(type))
-                Program.Exit("All member must have a Type");
+                Program.ShowUsageAndExit("All member must have a Type");
 
             var name = xmember.Attribute("Name")?.Value;
             if (string.IsNullOrWhiteSpace(type))
-                Program.Exit("All member must have a Name");
+                Program.ShowUsageAndExit("All member must have a Name");
 
             var isList = false;
             if (type.StartsWith("ListOf"))
@@ -59,7 +59,7 @@ namespace Spike.Build
             {
                 type = xmember.Attribute("Class")?.Value;
                 if (string.IsNullOrWhiteSpace(type))
-                    Program.Exit("All Type ComplexType/ListOfComplexType must have a Class");
+                    Program.ShowUsageAndExit("All Type ComplexType/ListOfComplexType must have a Class");
 
                 AddComplexType(xmember);
             }
@@ -77,7 +77,7 @@ namespace Spike.Build
         {
             var typeName = element.Attribute("Class")?.Value;
             if (string.IsNullOrWhiteSpace(typeName))
-                Program.Exit("All Type ComplexType/ListOfComplexType must have a Class");
+                Program.ShowUsageAndExit("All Type ComplexType/ListOfComplexType must have a Class");
 
             var members = element.Elements().Where(member => member.Name.LocalName == "Member");
 
@@ -85,7 +85,7 @@ namespace Spike.Build
             if (members.Count() > 0)
             {
                 if (CustomTypes.Any(ct => ct.Name == typeName))
-                    Program.Exit("Complex type have 2 definitions");
+                    Program.ShowUsageAndExit("Complex type have 2 definitions");
 
                 var complexType = new CustomType(typeName);
 
@@ -119,7 +119,7 @@ namespace Spike.Build
 
                 var protocolName = document?.Root.Attribute(@"Name")?.Value;
                 if (protocolName == null)
-                    Program.Exit("No protocol name");
+                    Program.ShowUsageAndExit("No protocol name");
 
 
                 var SignBuilder = new StringBuilder();
@@ -227,7 +227,7 @@ namespace Spike.Build
             }
             catch (FileNotFoundException)
             {
-                Program.Exit("Spml file unreachable");
+                Program.ShowUsageAndExit("Spml file unreachable");
             }            
         }        
     }

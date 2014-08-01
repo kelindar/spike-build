@@ -32,13 +32,22 @@ namespace Spike.Build
 {
     internal static class Program
     {
-        static internal void Exit(string message = null)
+
+        internal static bool Verbose = false;
+        internal static IBuilder Builder = null; //--platform -p
+        internal static List<string> Sources { get; } = new List<string>(); // --input -i
+        internal static string Destination = null; // --output -o 
+        internal static string Format = null; // --format -f 
+        internal static string Namespace = null; // --namespace -n
+
+
+        static internal void ShowUsageAndExit(string error = null)
         {
-            if (message != null)
+            if (error != null)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.Write("Error : ");
-                Console.WriteLine(message);
+                Console.WriteLine(error);
                 Console.WriteLine();
                 Console.ForegroundColor = ConsoleColor.Gray;
             }
@@ -48,8 +57,8 @@ namespace Spike.Build
         }
 
         static private Dictionary<string, IBuilder> Builders = new Dictionary<string, IBuilder>(StringComparer.CurrentCultureIgnoreCase) {
-            { "Java", new JavaBuilder() },
             { "CSharp5", new CSharp5Builder() },
+            { "Java", new JavaBuilder() },
             { "WinRT", new WinRTBuilder() },
             { "Xamarin", new XamarinBuilder() }
         };
@@ -63,64 +72,133 @@ namespace Spike.Build
                 Console.WriteLine(currentAssembly.GetCustomAttribute<AssemblyCopyrightAttribute>().Copyright);
                 Console.WriteLine();
 
+                //If arguments parsing become more complex Consider using NDesk.Option
 
-
-                // Parse arguments
                 if (args.Length == 0)
-                    Program.Exit();
+                    ShowUsageAndExit();
 
-                if (args.Length < 2)
-                    Program.Exit("You must define <source> AND <build>");
+                for (int index = 0; index < args.Length;)
+                {
+                    var command = args[index++].ToLower();
+                    switch (command)
+                    {
+                        case "-v":
+                        case "--verbose":
+                            if (index < args.Length && args[index][0] != '-') // no "-v blabla" 
+                                ShowUsageAndExit("--verbose take no parameters");
 
+                            Verbose = true;
+                            break;
+                        case "-h":
+                        case "--help":
+                            ShowUsageAndExit();
+                            break;
+                        case "-p":
+                        case "--platform":
+                            if (index >= args.Length || args[index][0] == '-') //no -p -i
+                                ShowUsageAndExit("You must define a platform after --platform");
+
+                            var builderName = args[index++];
+                            if (Builder != null ||  //no -p java -i file.spml -p xamarin
+                                (index < args.Length && args[index][0] != '-')) //no -p java xamarin
+                                ShowUsageAndExit("Only one builder");
+
+                            if (!Builders.TryGetValue(builderName, out Builder)) //no -p unknown
+                                ShowUsageAndExit("Unknown platform");
+                            break;
+                        case "-i":
+                        case "--input":
+                            if (index >= args.Length || args[index][0] == '-')
+                                ShowUsageAndExit("You must define a input");
+
+                            do
+                                Sources.Add(args[index++]);
+                            while (index < args.Length && args[index][0] != '-');
+
+                            break;
+                        case "-o":
+                        case "--output":
+                            if (index >= args.Length || args[index][0] == '-')
+                                ShowUsageAndExit("You must define a output");
+
+                            var destination = args[index++];
+                            if (Destination != null ||  
+                                (index < args.Length && args[index][0] != '-')) 
+                                ShowUsageAndExit("Only one output");
+
+                            Destination = destination;
+                            break;
+                        case "-f":
+                        case "--format":
+                            if (index >= args.Length || args[index][0] == '-')
+                                ShowUsageAndExit("You must define a format");
+
+                            var format = args[index++];
+                            if (Format != null ||  
+                                (index < args.Length && args[index][0] != '-')) 
+                                ShowUsageAndExit("Only one format");
+
+                            Format = format;
+                            break;
+                        case "-n":
+                        case "--namespace":
+                            if (index >= args.Length || args[index][0] == '-')
+                                ShowUsageAndExit("You must define a namespace");
+
+                            var ns = args[index++];
+                            if (Namespace != null ||  //already set by previex --platform
+                                (index < args.Length && args[index][0] != '-')) //if the next argument is not a command
+                                ShowUsageAndExit("Only one namespace");
+
+                            Namespace = ns;
+                            break;
+                    }
+
+                }
+                
+                if (Builder == null)
+                    ShowUsageAndExit("You must define a platform");
+
+                if (Sources.Count <= 0)
+                    ShowUsageAndExit("You must define a source");
+
+                
                 // Get Model
                 var model = new Model();
-                var modelFile = args[0].TrimEnd('/');
 
-                if (modelFile.EndsWith("/spml/all", StringComparison.CurrentCultureIgnoreCase))
+                foreach (var source in Sources)
                 {
-                    using (var client = new HttpClient()) {
-                        var result = client.GetAsync(modelFile).Result;
-                        if (result.IsSuccessStatusCode) {
-                            var protocols = result.Content.ReadAsStringAsync().Result.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
-                            if (protocols.Length > 0) {
-                                var baseUrl = modelFile.Substring(0, modelFile.Length - 4);
-                                foreach (var protocol in protocols) {
-                                    Console.WriteLine(protocol);
-                                    model.Load(string.Format("{0}?file={1}", baseUrl, protocol));
+                    var modelFile = source.TrimEnd('/');
+
+                    if (modelFile.EndsWith("/spml/all", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        using (var client = new HttpClient())
+                        {
+                            var result = client.GetAsync(modelFile).Result;
+                            if (result.IsSuccessStatusCode)
+                            {
+                                var protocols = result.Content.ReadAsStringAsync().Result.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+                                if (protocols.Length > 0)
+                                {
+                                    var baseUrl = modelFile.Substring(0, modelFile.Length - 4);
+                                    foreach (var protocol in protocols)
+                                    {
+                                        Console.WriteLine(protocol);
+                                        model.Load(string.Format("{0}?file={1}", baseUrl, protocol));
+                                    }
                                 }
+                                else
+                                    ShowUsageAndExit("No Protocols");
                             }
                             else
-                                Program.Exit("No Protocols");
+                                ShowUsageAndExit("Host unreachable");
                         }
-                        else
-                            Program.Exit("Host unreachable");
-                    }
-                }
-                else
-                    model.Load(modelFile);
-                
-
-                var separators = new char[] { '-', ':' };
-                for (var index = 1; index < args.Length; index++)
-                {
-                    var buildArguments = args[index].Split(separators, StringSplitOptions.RemoveEmptyEntries);
-
-                    if (buildArguments.Length <= 0 || buildArguments.Length > 2)
-                        Program.Exit("Syntax error");
-
-                    if (Builders.TryGetValue(buildArguments[0], out var builder))
-                    {
-                        if (buildArguments.Length == 2)
-                            builder.Build(model, buildArguments[1]);
-                        else
-                            builder.Build(model);
-                    }
-                    else if (string.Compare(buildArguments[0],"mode") ==0) {
                     }
                     else
-                        Program.Exit("Unknown parameter");
+                        model.Load(modelFile);
                 }
 
+                Builder.Build(model, Destination);
             }
 #if DEBUG
             catch (Exception e)
@@ -129,7 +207,7 @@ namespace Spike.Build
                 if (System.Diagnostics.Debugger.IsAttached)
                     System.Diagnostics.Debugger.Break();
 
-                Program.Exit(string.Format("Unknown exception : {0}", e.StackTrace));
+                ShowUsageAndExit(string.Format("Unknown exception : {0}", e.StackTrace));
             }
 #else
             catch (Exception)
