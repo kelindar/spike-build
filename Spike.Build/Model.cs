@@ -109,11 +109,11 @@ namespace Spike.Build
             return members;
         }
 
-        internal static Model GetFrom(string location)
+        internal void Load(string location)
         {
             try
             {
-                var model = new Model();
+                //var model = new Model();
                 var document = XDocument.Load(location);
 
 
@@ -166,7 +166,7 @@ namespace Spike.Build
                         if (xreceive == null)
                             receiveMembers = new List<Member>();
                         else
-                            receiveMembers = model.GetMembers(xreceive);
+                            receiveMembers = GetMembers(xreceive);
 
                         //never send
                         if (xsend != null)
@@ -181,13 +181,13 @@ namespace Spike.Build
                         if (xreceive == null)
                             receiveMembers = null;
                         else
-                            receiveMembers = model.GetMembers(xreceive);
+                            receiveMembers = GetMembers(xreceive);
 
                         //add request always
                         if (xsend == null)
                             sendMembers = new List<Member>();
                         else
-                            sendMembers = model.GetMembers(xsend);
+                            sendMembers = GetMembers(xsend);
 
                     }
 
@@ -212,28 +212,24 @@ namespace Spike.Build
                     {
                         var operation = new Operation(id, name + "Inform", compressReceive);
                         operation.Members.AddRange(receiveMembers);
-                        model.Receives.Add(operation);
+
+                        Receives.Add(operation);
                     }
 
                     if (sendMembers != null)
                     {
                         var operation = new Operation(id, name, compressSend);
                         operation.Members.AddRange(sendMembers);
-                        model.Sends.Add(operation);
+
+                        Sends.Add(operation);
                     }
                 }
-
-                return model;
             }
             catch (FileNotFoundException)
             {
                 Program.Exit("Spml file unreachable");
-            }
-            return null; //dummy code
-        }
-
-        //Avoid default constructor
-        private Model() { }
+            }            
+        }        
     }
 }
 

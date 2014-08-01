@@ -24,6 +24,7 @@ using System.Reflection;
 using Spike.Build.WinRT;
 using Spike.Build.Xamarin;
 using System.IO;
+using System.Net.Http;
 
 namespace Spike.Build
 {
@@ -68,7 +69,32 @@ namespace Spike.Build
                     Program.Exit("You must define <source> AND <build>");
 
                 // Get Model
-                var model = Model.GetFrom(args[0]);
+                var model = new Model();
+                var modelFile = args[0].TrimEnd('/');
+
+                if (modelFile.EndsWith("/spml/all", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    using (var client = new HttpClient()) {
+                        var result = client.GetAsync(modelFile).Result;
+                        if (result.IsSuccessStatusCode) {
+                            var protocols = result.Content.ReadAsStringAsync().Result.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+                            if (protocols.Length > 0) {
+                                var baseUrl = modelFile.Substring(0, modelFile.Length - 4);
+                                foreach (var protocol in protocols) {
+                                    Console.WriteLine(protocol);
+                                    model.Load(string.Format("{0}?file={1}", baseUrl, protocol));
+                                }
+                            }
+                            else
+                                Program.Exit("No Protocols");
+                        }
+                        else
+                            Program.Exit("Host unreachable");
+                    }
+                }
+                else
+                    model.Load(modelFile);
+                
 
                 var separators = new char[] { '-', ':' };
                 for (var index = 1; index < args.Length; index++)
@@ -84,6 +110,8 @@ namespace Spike.Build
                             builder.Build(model, buildArguments[1]);
                         else
                             builder.Build(model);
+                    }
+                    else if (string.Compare(buildArguments[0],"mode") ==0) {
                     }
                     else
                         Program.Exit("Unknown parameter");
@@ -117,7 +145,7 @@ namespace Spike.Build
                 Console.WriteLine("  -{0}[:output_path]", key);
             Console.WriteLine();
             Console.WriteLine(" source could be either: ");
-            Console.WriteLine("  URL ( ex: http://54.88.210.109/spml?file=MyChatProtocol )");
+            Console.WriteLine("  URL ( ex: http://www.spike-engine.com/spml?file=MyChatProtocol or http://www.spike-engine.com/spml/all )");
             Console.WriteLine("  File ( ex: test.spml )");
         }
     }
