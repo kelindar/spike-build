@@ -472,6 +472,7 @@ namespace Spike.Network
         protected abstract void OnReceive(uint key);
 
         #region Dynamics
+        [Obsolete("DynamicType is obsolete. Consider using JSON or XML serialized objects instead.", false)]
         protected void PacketWriteDynamic(object value)
         {
             if (value is byte)
@@ -549,6 +550,7 @@ namespace Spike.Network
             else
                 PacketWrite(false);
         }
+        [Obsolete("DynamicType is obsolete. Consider using JSON or XML serialized objects instead.", false)]
         protected object PacketReadDynamic()
         {
             if (PacketReadBoolean())
@@ -583,6 +585,7 @@ namespace Spike.Network
             }
             return null;
         }
+        [Obsolete("DynamicType is obsolete. Consider using JSON or XML serialized objects instead.", false)]
         protected object[] PacketReadListOfDynamic()
         {
             var value = new object[PacketReadInt32()];
@@ -590,6 +593,7 @@ namespace Spike.Network
                 value[index] = PacketReadDynamic();
             return value;
         }
+        [Obsolete("DynamicType is obsolete. Consider using JSON or XML serialized objects instead.", false)]
         protected void PacketWriteDynamic(object[] value)
         {
             PacketWrite(value.Length);

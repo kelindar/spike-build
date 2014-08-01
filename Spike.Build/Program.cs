@@ -49,7 +49,6 @@ namespace Spike.Build
             { "Xamarin", new XamarinBuilder()}
         };
 
-
         static void Main(string[] args)
         {
             try
