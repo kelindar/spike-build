@@ -18,6 +18,7 @@
 *************************************************************************/
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Net.Http;
@@ -219,15 +220,23 @@ namespace Spike.Build
 
         private static void PromptUsage()
         {
-            Console.WriteLine("Usage: ");
-            Console.WriteLine(" Spike.Build <source> <build>");
+            var currentAssembly = Assembly.GetExecutingAssembly();
+            Console.WriteLine("Usage: Spike.Build <options>");
+            Console.WriteLine(currentAssembly.GetCustomAttribute<AssemblyDescriptionAttribute>().Description);
             Console.WriteLine();
-            Console.WriteLine(" build: ");
-            foreach (var key in Builders.Keys)
-                Console.WriteLine("  -{0}[:output_path]", key);
+            Console.WriteLine("options : ");
+
+            Console.WriteLine("\t-h, --help");
+            Console.WriteLine("\t-i, --input <sources>");
+            Console.WriteLine("\t-p, --platform <{0}>",Builders.Keys.Aggregate((platform1, platform2) => { return platform1 + '|' + platform2; }));
+            Console.WriteLine("\t-o, --output <path>");
+            Console.WriteLine("\t-f, --format");
+            Console.WriteLine("\t-n, --namespace");
+            Console.WriteLine("\t-v, --verbose");
+
             Console.WriteLine();
-            Console.WriteLine(" source could be either: ");
-            Console.WriteLine("  URL ( ex: http://www.spike-engine.com/spml?file=MyChatProtocol or http://www.spike-engine.com/spml/all )");
+            Console.WriteLine(" sources could be either: ");
+            Console.WriteLine("  URL ( ex: http://www.spike-engine.com/spml/MyChatProtocol or http://www.spike-engine.com/spml/all )");
             Console.WriteLine("  File ( ex: test.spml )");
         }
     }

@@ -235,9 +235,6 @@
       <LastGenOutput>TcpChannelBaseTemplate.cs</LastGenOutput>
       <CustomToolNamespace>Spike.Build.Xamarin</CustomToolNamespace>
     </None>
-    <None Include="test.spml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Spike.Build.WinRT\CustomTypeTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>CustomTypeTemplate.cs</LastGenOutput>
