@@ -7,7 +7,10 @@
 package com.misakai.spike.network;
 
 import java.util.ArrayList;
-
+<#	if(Model.CustomTypes.Any((customType) => customType.Members.Any((member) => member.Type == "DateTime")))
+	{ #>
+import java.util.Date;
+<#	} #>
 
 public final class TcpChannel extends AbstractTcpChannel {
 	//EventHandlers	

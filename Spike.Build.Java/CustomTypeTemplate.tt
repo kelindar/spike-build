@@ -4,6 +4,12 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ parameter type="Spike.Build.CustomType" name="CustomType" #>
+<#	if(CustomType.Members.Any((member) => member.Type == "DateTime"))
+	{ #>
+import java.util.Date;
+<#	} #>
+
+
 package com.misakai.spike.network;
 
 public final class <#= CustomType.Name #> {

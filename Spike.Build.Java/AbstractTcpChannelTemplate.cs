@@ -202,58 +202,64 @@ namespace Spike.Build.Java
                     "Buffer.putFloat(value);\r\n\t}\r\n\t\r\n\t/**\r\n\t * Write a double to the buffer at the cu" +
                     "rrent position \r\n\t * @param value The double value to write\r\n\t */\t\r\n\tprotected v" +
                     "oid packetWrite(double value){\r\n\t\tsendBuffer.putDouble(value);\r\n\t}\r\n\t\r\n\t/**\r\n\t *" +
-                    " Write a String to the buffer at the current position \r\n\t * @param value The Str" +
-                    "ing value to write\r\n\t */\t\r\n\tprotected void packetWrite(Date value){\t\r\n\t\tGregoria" +
-                    "nCalendar calendar = new GregorianCalendar();\r\n\t\tcalendar.setTime(value);\r\n\t\tsen" +
-                    "dBuffer.putInt((short)calendar.get(GregorianCalendar.YEAR));\r\n\t\tsendBuffer.putIn" +
-                    "t((short)calendar.get(GregorianCalendar.MONTH));\r\n\t\tsendBuffer.putInt((short)cal" +
-                    "endar.get(GregorianCalendar.DAY_OF_MONTH));\r\n\t\tsendBuffer.putInt((short)calendar" +
-                    ".get(GregorianCalendar.HOUR_OF_DAY));\r\n\t\tsendBuffer.putInt((short)calendar.get(G" +
-                    "regorianCalendar.MINUTE));\r\n\t\tsendBuffer.putInt((short)calendar.get(GregorianCal" +
-                    "endar.SECOND));\r\n\t\tsendBuffer.putInt((short)calendar.get(GregorianCalendar.MILLI" +
-                    "SECOND));\t\t\r\n\t}\r\n\t\r\n\t/**\r\n\t * Write a String to the buffer at the current positi" +
-                    "on \r\n\t * @param value The String value to write\r\n\t */\t\r\n\tprotected void packetWr" +
-                    "ite(String value){\t\t\r\n\t\ttry {\r\n\t\t\tpacketWrite(value.getBytes(\"UTF-8\"));\r\n\t\t} cat" +
-                    "ch (UnsupportedEncodingException e) {\r\n\t\t\te.printStackTrace();\r\n\t\t}\r\n\t}\t\r\n\t\t\r\n\t/" +
-                    "**\r\n\t * Write an array of byte to the buffer at the current position \r\n\t * @para" +
-                    "m value The byte[] value to write\r\n\t */\r\n\tprotected void packetWrite(byte[] valu" +
-                    "e){\r\n\t\tsendBuffer.putInt(value.length);\r\n\t\tsendBuffer.put(value);\r\n\t}\r\n\t\r\n\t/**\r\n" +
-                    "\t * Write an array of short to the buffer at the current position \r\n\t * @param v" +
-                    "alue The short[] value to write\r\n\t */\r\n\tprotected void packetWrite(short[] value" +
-                    "){\r\n\t\tsendBuffer.putInt(value.length);\r\n\t\tfor (short element : value)\t\t\t\r\n\t\t\tpac" +
-                    "ketWrite(element);\r\n\t}\r\n\t\r\n\t/**\r\n\t * Write an array of int to the buffer at the " +
-                    "current position \r\n\t * @param value The int[] value to write\r\n\t */\r\n\tprotected v" +
-                    "oid packetWrite(int[] value){\r\n\t\tsendBuffer.putInt(value.length);\r\n\t\tfor (int el" +
-                    "ement : value)\t\t\t\r\n\t\t\tpacketWrite(element);\r\n\t}\r\n\t\r\n\t/**\r\n\t * Write an array of " +
-                    "long to the buffer at the current position \r\n\t * @param value The long[] value t" +
-                    "o write\r\n\t */\r\n\tprotected void packetWrite(long[] value){\r\n\t\tsendBuffer.putInt(v" +
-                    "alue.length);\r\n\t\tfor (long element : value)\t\t\t\r\n\t\t\tpacketWrite(element);\r\n\t}\r\n\t\r" +
-                    "\n\t/**\r\n\t * Write an array of float to the buffer at the current position \r\n\t * @" +
-                    "param value The float[] value to write\r\n\t */\r\n\tprotected void packetWrite(float[" +
-                    "] value){\r\n\t\tsendBuffer.putInt(value.length);\r\n\t\tfor (float element : value)\t\t\t\r" +
-                    "\n\t\t\tpacketWrite(element);\r\n\t}\r\n\t\r\n\t/**\r\n\t * Write an array of double to the buff" +
-                    "er at the current position \r\n\t * @param value The double[] value to write\r\n\t */\r" +
-                    "\n\tprotected void packetWrite(double[] value){\r\n\t\tsendBuffer.putInt(value.length)" +
-                    ";\r\n\t\tfor (double element : value)\t\t\t\r\n\t\t\tpacketWrite(element);\r\n\t}\r\n\t\r\n\t/**\r\n\t *" +
-                    " Write an array of String to the buffer at the current position \r\n\t * @param val" +
-                    "ue The String[] value to write\r\n\t */\r\n\tprotected void packetWrite(String[] value" +
-                    "){\r\n\t\tsendBuffer.putInt(value.length);\r\n\t\tfor (String element : value)\t\t\t\r\n\t\t\tpa" +
-                    "cketWrite(element);\r\n\t}\r\n\t\r\n\t/**\r\n\t * Write an array of Date to the buffer at th" +
-                    "e current position \r\n\t * @param value The Date[] value to write\r\n\t */\r\n\tprotecte" +
-                    "d void packetWrite(Date[] value){\r\n\t\tsendBuffer.putInt(value.length);\r\n\t\tfor (Da" +
-                    "te element : value)\t\t\t\r\n\t\t\tpacketWrite(element);\r\n\t}\r\n\t\r\n\t/**\r\n\t * Send the pack" +
-                    "et\r\n\t * @param compressed True if compression must be use\r\n \t */\r\n\tprotected voi" +
-                    "d sendPacket(boolean compressed){\r\n\t\ttry {\t\t\t\r\n\t\t\tif(compressed && sendBuffer.po" +
-                    "sition() > 8){\t\t\r\n\t\t\t\tbyte[] uncompressedData = new byte[sendBuffer.position() -" +
-                    " 8];\r\n\t\t\t\tsendBuffer.position(8);\t\t\t\r\n\t\t\t\tsendBuffer.get(uncompressedData);\r\n\t\t\t" +
-                    "\t\r\n\t\t\t\tbyte[] compressedData = new byte[4096];\r\n\t\t\t\tint size = CLZF.compress(unc" +
-                    "ompressedData, uncompressedData.length, compressedData, compressedData.length);\r" +
-                    "\n\t\t\t\t\r\n\t\t\t\tsendBuffer.position(8);\t\t\r\n\t\t\t\tsendBuffer.put(compressedData, 0, size" +
-                    ");\r\n\t\t\t}\r\n\t\t\t\r\n\t\t\tsendBuffer.flip();\t\r\n\t\t\t\r\n\t\t\tsendBuffer.putInt(0, sendBuffer.r" +
-                    "emaining() - 4); //Set the Size (Don\'t count the size himself)\t\t\t\t\t\t\r\n\t\t\twhile(s" +
-                    "endBuffer.hasRemaining()) {\t\t\t\t\r\n\t\t\t\t\tsocketChannel.write(sendBuffer);\t\t\t\t\r\n\t\t\t}" +
-                    "\r\n\t\t} catch (IOException e) {\r\n\t\t\tdisconnect();\r\n\t\t\tthrow new IOError(e); //make" +
-                    " catch optional\t\t\r\n\t\t}\r\n\t}\r\n}\r\n");
+                    " Write a boolean to the buffer at the current position \r\n\t * @param value the bo" +
+                    "olean value to write\r\n\t */\r\n\tprotected void packetWrite(boolean value){\r\n\t\tif(va" +
+                    "lue)\r\n\t\t\tsendBuffer.put((byte)1);\t\r\n\t\telse\r\n\t\t\tsendBuffer.put((byte)0);\r\n\t}\r\n\r\n\t" +
+                    "/**\r\n\t * Write a String to the buffer at the current position \r\n\t * @param value" +
+                    " The String value to write\r\n\t */\t\r\n\tprotected void packetWrite(Date value){\t\r\n\t\t" +
+                    "GregorianCalendar calendar = new GregorianCalendar();\r\n\t\tcalendar.setTime(value)" +
+                    ";\r\n\t\tsendBuffer.putInt((short)calendar.get(GregorianCalendar.YEAR));\r\n\t\tsendBuff" +
+                    "er.putInt((short)calendar.get(GregorianCalendar.MONTH));\r\n\t\tsendBuffer.putInt((s" +
+                    "hort)calendar.get(GregorianCalendar.DAY_OF_MONTH));\r\n\t\tsendBuffer.putInt((short)" +
+                    "calendar.get(GregorianCalendar.HOUR_OF_DAY));\r\n\t\tsendBuffer.putInt((short)calend" +
+                    "ar.get(GregorianCalendar.MINUTE));\r\n\t\tsendBuffer.putInt((short)calendar.get(Greg" +
+                    "orianCalendar.SECOND));\r\n\t\tsendBuffer.putInt((short)calendar.get(GregorianCalend" +
+                    "ar.MILLISECOND));\t\t\r\n\t}\r\n\t\r\n\t/**\r\n\t * Write a String to the buffer at the curren" +
+                    "t position \r\n\t * @param value The String value to write\r\n\t */\t\r\n\tprotected void " +
+                    "packetWrite(String value){\t\t\r\n\t\ttry {\r\n\t\t\tpacketWrite(value.getBytes(\"UTF-8\"));\r" +
+                    "\n\t\t} catch (UnsupportedEncodingException e) {\r\n\t\t\te.printStackTrace();\r\n\t\t}\r\n\t}\t" +
+                    "\r\n\t\t\r\n\t/**\r\n\t * Write an array of byte to the buffer at the current position \r\n\t" +
+                    " * @param value The byte[] value to write\r\n\t */\r\n\tprotected void packetWrite(byt" +
+                    "e[] value){\r\n\t\tsendBuffer.putInt(value.length);\r\n\t\tsendBuffer.put(value);\r\n\t}\r\n\t" +
+                    "\r\n\t/**\r\n\t * Write an array of short to the buffer at the current position \r\n\t * " +
+                    "@param value The short[] value to write\r\n\t */\r\n\tprotected void packetWrite(short" +
+                    "[] value){\r\n\t\tsendBuffer.putInt(value.length);\r\n\t\tfor (short element : value)\t\t\t" +
+                    "\r\n\t\t\tpacketWrite(element);\r\n\t}\r\n\t\r\n\t/**\r\n\t * Write an array of int to the buffer" +
+                    " at the current position \r\n\t * @param value The int[] value to write\r\n\t */\r\n\tpro" +
+                    "tected void packetWrite(int[] value){\r\n\t\tsendBuffer.putInt(value.length);\r\n\t\tfor" +
+                    " (int element : value)\t\t\t\r\n\t\t\tpacketWrite(element);\r\n\t}\r\n\t\r\n\t/**\r\n\t * Write an a" +
+                    "rray of long to the buffer at the current position \r\n\t * @param value The long[]" +
+                    " value to write\r\n\t */\r\n\tprotected void packetWrite(long[] value){\r\n\t\tsendBuffer." +
+                    "putInt(value.length);\r\n\t\tfor (long element : value)\t\t\t\r\n\t\t\tpacketWrite(element);" +
+                    "\r\n\t}\r\n\t\r\n\t/**\r\n\t * Write an array of float to the buffer at the current position" +
+                    " \r\n\t * @param value The float[] value to write\r\n\t */\r\n\tprotected void packetWrit" +
+                    "e(float[] value){\r\n\t\tsendBuffer.putInt(value.length);\r\n\t\tfor (float element : va" +
+                    "lue)\t\t\t\r\n\t\t\tpacketWrite(element);\r\n\t}\r\n\t\r\n\t/**\r\n\t * Write an array of double to " +
+                    "the buffer at the current position \r\n\t * @param value The double[] value to writ" +
+                    "e\r\n\t */\r\n\tprotected void packetWrite(double[] value){\r\n\t\tsendBuffer.putInt(value" +
+                    ".length);\r\n\t\tfor (double element : value)\t\t\t\r\n\t\t\tpacketWrite(element);\r\n\t}\r\n\t\r\n\t" +
+                    "/**\r\n\t * Write an array of double to the buffer at the current position \r\n\t * @p" +
+                    "aram value The boolean[] value to write\r\n\t */\r\n\tprotected void packetWrite(boole" +
+                    "an[] value){\r\n\t\tsendBuffer.putInt(value.length);\r\n\t\tfor (boolean element : value" +
+                    ")\t\t\t\r\n\t\t\tpacketWrite(element);\r\n\t}\r\n\r\n\t/**\r\n\t * Write an array of String to the " +
+                    "buffer at the current position \r\n\t * @param value The String[] value to write\r\n\t" +
+                    " */\r\n\tprotected void packetWrite(String[] value){\r\n\t\tsendBuffer.putInt(value.len" +
+                    "gth);\r\n\t\tfor (String element : value)\t\t\t\r\n\t\t\tpacketWrite(element);\r\n\t}\r\n\t\r\n\t/**\r" +
+                    "\n\t * Write an array of Date to the buffer at the current position \r\n\t * @param v" +
+                    "alue The Date[] value to write\r\n\t */\r\n\tprotected void packetWrite(Date[] value){" +
+                    "\r\n\t\tsendBuffer.putInt(value.length);\r\n\t\tfor (Date element : value)\t\t\t\r\n\t\t\tpacket" +
+                    "Write(element);\r\n\t}\r\n\t\r\n\t/**\r\n\t * Send the packet\r\n\t * @param compressed True if" +
+                    " compression must be use\r\n \t */\r\n\tprotected void sendPacket(boolean compressed){" +
+                    "\r\n\t\ttry {\t\t\t\r\n\t\t\tif(compressed && sendBuffer.position() > 8){\t\t\r\n\t\t\t\tbyte[] unco" +
+                    "mpressedData = new byte[sendBuffer.position() - 8];\r\n\t\t\t\tsendBuffer.position(8);" +
+                    "\t\t\t\r\n\t\t\t\tsendBuffer.get(uncompressedData);\r\n\t\t\t\t\r\n\t\t\t\tbyte[] compressedData = ne" +
+                    "w byte[4096];\r\n\t\t\t\tint size = CLZF.compress(uncompressedData, uncompressedData.l" +
+                    "ength, compressedData, compressedData.length);\r\n\t\t\t\t\r\n\t\t\t\tsendBuffer.position(8)" +
+                    ";\t\t\r\n\t\t\t\tsendBuffer.put(compressedData, 0, size);\r\n\t\t\t}\r\n\t\t\t\r\n\t\t\tsendBuffer.flip" +
+                    "();\t\r\n\t\t\t\r\n\t\t\tsendBuffer.putInt(0, sendBuffer.remaining() - 4); //Set the Size (" +
+                    "Don\'t count the size himself)\t\t\t\t\t\t\r\n\t\t\twhile(sendBuffer.hasRemaining()) {\t\t\t\t\r\n" +
+                    "\t\t\t\t\tsocketChannel.write(sendBuffer);\t\t\t\t\r\n\t\t\t}\r\n\t\t} catch (IOException e) {\r\n\t\t" +
+                    "\tdisconnect();\r\n\t\t\tthrow new IOError(e); //make catch optional\t\t\r\n\t\t}\r\n\t}\r\n}\r\n");
             return this.GenerationEnvironment.ToString();
         }
     }

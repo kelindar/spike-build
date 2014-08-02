@@ -514,6 +514,17 @@ public abstract class AbstractTcpChannel {
 	}
 	
 	/**
+	 * Write a boolean to the buffer at the current position 
+	 * @param value the boolean value to write
+	 */
+	protected void packetWrite(boolean value){
+		if(value)
+			sendBuffer.put((byte)1);	
+		else
+			sendBuffer.put((byte)0);
+	}
+
+	/**
 	 * Write a String to the buffer at the current position 
 	 * @param value The String value to write
 	 */	
@@ -600,6 +611,16 @@ public abstract class AbstractTcpChannel {
 			packetWrite(element);
 	}
 	
+	/**
+	 * Write an array of double to the buffer at the current position 
+	 * @param value The boolean[] value to write
+	 */
+	protected void packetWrite(boolean[] value){
+		sendBuffer.putInt(value.length);
+		for (boolean element : value)			
+			packetWrite(element);
+	}
+
 	/**
 	 * Write an array of String to the buffer at the current position 
 	 * @param value The String[] value to write
