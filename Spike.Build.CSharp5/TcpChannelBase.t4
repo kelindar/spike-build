@@ -54,7 +54,7 @@
                     ReceiveBufferSize = await Task.Run(() => { 
 						try
 						{
-							return socket.Receive(ReceiveBuffer);
+                            return socket.Receive(ReceiveBuffer,4,SocketFlags.None);
 						}
 						catch(Exception)
 						{
@@ -65,15 +65,37 @@
 					{
                         Disconnect();
                         return;
-                    }
-						
+                    }						
                     ReceiveBufferPosition = 0;
+                    var size = PacketReadInt32();
 
-                    if (ReceiveBufferSize != (PacketReadInt32() + 4))
+                    ReceiveBufferSize = await Task.Run(() =>
+                    {
+                        try
+                        {
+                            return socket.Receive(ReceiveBuffer, 4,size, SocketFlags.None);
+                        }
+                        catch (Exception)
+                        {
+                            return 0;
+                        }
+                    });
+                    if (ReceiveBufferSize == 0)
                     {
                         Disconnect();
                         return;
                     }
+
+
+
+                    if (ReceiveBufferSize != size )
+                    {
+                        Console.WriteLine("size : {0}/{1}", ReceiveBufferSize, size+4 );
+                        Disconnect();
+                        return;
+                    }
+
+
                     OnReceive(PacketReadUInt32());
                 }
             }
@@ -417,7 +439,8 @@
         }
         protected void PacketWrite(float value)
         {
-            PacketWrite(BitConverter.GetBytes(value));
+            foreach(var currentByte in BitConverter.GetBytes(value))
+                PacketWrite(currentByte);
         }
         protected float[] PacketReadListOfSingle()
         {
@@ -442,7 +465,8 @@
         }
         protected void PacketWrite(double value)
         {
-            PacketWrite(BitConverter.GetBytes(value));
+            foreach(var currentByte in BitConverter.GetBytes(value))
+                PacketWrite(currentByte);
         }
         protected double[] PacketReadListOfDouble()
         {
