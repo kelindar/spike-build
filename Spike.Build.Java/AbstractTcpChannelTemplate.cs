@@ -259,7 +259,49 @@ namespace Spike.Build.Java
                     "();\t\r\n\t\t\t\r\n\t\t\tsendBuffer.putInt(0, sendBuffer.remaining() - 4); //Set the Size (" +
                     "Don\'t count the size himself)\t\t\t\t\t\t\r\n\t\t\twhile(sendBuffer.hasRemaining()) {\t\t\t\t\r\n" +
                     "\t\t\t\t\tsocketChannel.write(sendBuffer);\t\t\t\t\r\n\t\t\t}\r\n\t\t} catch (IOException e) {\r\n\t\t" +
-                    "\tdisconnect();\r\n\t\t\tthrow new IOError(e); //make catch optional\t\t\r\n\t\t}\r\n\t}\r\n}\r\n");
+                    "\tdisconnect();\r\n\t\t\tthrow new IOError(e); //make catch optional\t\t\r\n\t\t}\r\n\t}\r\n\r\n\t@D" +
+                    "eprecated\r\n    protected Object packetReadDynamic()\r\n    {\r\n        if (packetRe" +
+                    "adBoolean())\r\n        {\r\n            switch (packetReadString())\r\n            {\r" +
+                    "\n                case \"Byte\":\r\n                    return packetReadByte();\r\n   " +
+                    "             case \"UInt16\":\r\n                    return packetReadUInt16();\r\n   " +
+                    "             case \"Int16\":\r\n                    return packetReadInt16();\r\n     " +
+                    "           case \"UInt32\":\r\n                    return packetReadUInt32();\r\n     " +
+                    "           case \"Int32\":\r\n                    return packetReadInt32();\r\n       " +
+                    "         case \"UInt64\":\r\n                    return packetReadUInt64();\r\n       " +
+                    "         case \"Int64\":\r\n                    return packetReadInt64();\r\n         " +
+                    "       case \"Single\":\r\n                    return packetReadSingle();\r\n         " +
+                    "       case \"Double\":\r\n                    return packetReadDouble();\r\n         " +
+                    "       case \"Boolean\":\r\n                    return packetReadBoolean();\r\n       " +
+                    "         case \"String\":\r\n                    return packetReadString();\r\n       " +
+                    "         case \"DateTime\":\r\n                    return packetReadDateTime();\r\n   " +
+                    "         }\r\n        }\r\n        return null;\r\n    }\r\n\t\r\n\t@Deprecated\r\n\tprotected " +
+                    "void packetWriteDynamic(Object value){\r\n\t\tif (value instanceof Byte)\r\n        {\r" +
+                    "\n            packetWrite(true);\r\n            packetWrite(\"Byte\");\r\n            p" +
+                    "acketWrite((byte)value);\r\n        }\r\n        else if (value instanceof Short)\r\n " +
+                    "       {\r\n            packetWrite(true);\r\n            packetWrite(\"Int16\");\r\n   " +
+                    "         packetWrite((short)value);\r\n        }\r\n        else if (value instanceo" +
+                    "f Integer)\r\n        {\r\n        \tpacketWrite(true);\r\n        \tpacketWrite(\"Int32\"" +
+                    ");\r\n        \tpacketWrite((int)value);\r\n        }\r\n        else if (value instanc" +
+                    "eof Long)\r\n        {\r\n        \tpacketWrite(true);\r\n        \tpacketWrite(\"Int64\")" +
+                    ";\r\n        \tpacketWrite((long)value);\r\n        }\r\n        else if (value instanc" +
+                    "eof Float)\r\n        {\r\n        \tpacketWrite(true);\r\n            packetWrite(\"Sin" +
+                    "gle\");\r\n            packetWrite((float)value);\r\n        }\r\n        else if (valu" +
+                    "e instanceof Double)\r\n        {\r\n            packetWrite(true);\r\n            pac" +
+                    "ketWrite(\"Double\");\r\n            packetWrite((double)value);\r\n        }\r\n       " +
+                    " else if (value instanceof Boolean)\r\n        {\r\n            packetWrite(true);\r\n" +
+                    "            packetWrite(\"Boolean\");\r\n            packetWrite((boolean)value);\r\n " +
+                    "       }\r\n        else if (value instanceof String)\r\n        {\r\n            pack" +
+                    "etWrite(true);\r\n            packetWrite(\"String\");\r\n            packetWrite((Str" +
+                    "ing)value);\r\n        }\r\n        else if (value instanceof Date)\r\n        {\r\n    " +
+                    "        packetWrite(true);\r\n            packetWrite(\"DateTime\");\r\n            pa" +
+                    "cketWrite((Date)value);\r\n        }\r\n        else\r\n            packetWrite(false)" +
+                    ";\r\n\t}\r\n\t\r\n\t@Deprecated\r\n\tprotected Object[] packetReadListOfDynamic(){\r\n    \tint" +
+                    " size = receiveBuffer.getInt();\r\n    \tif(size > 0){\r\n    \t\tObject[] objects = ne" +
+                    "w Object[size];\r\n    \t\tfor(int index = 0; index < size; index++){\r\n    \t\t\tobject" +
+                    "s[index] = packetReadDynamic();\r\n    \t\t}    \t\t\r\n    \t\treturn objects;\r\n    \t}\r\n " +
+                    "   \treturn null;\r\n    }      \r\n\t\r\n\t@Deprecated\r\n    protected void packetWriteDy" +
+                    "namic(Object[] value)\r\n    {\r\n\t\tsendBuffer.putInt(value.length);\r\n\t\tfor (Object " +
+                    "element : value)\t\t\t\r\n\t\t\tpacketWriteDynamic(element);\r\n    }\r\n\r\n}\r\n");
             return this.GenerationEnvironment.ToString();
         }
     }

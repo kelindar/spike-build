@@ -670,4 +670,122 @@ public abstract class AbstractTcpChannel {
 			throw new IOError(e); //make catch optional		
 		}
 	}
+
+	@Deprecated
+    protected Object packetReadDynamic()
+    {
+        if (packetReadBoolean())
+        {
+            switch (packetReadString())
+            {
+                case "Byte":
+                    return packetReadByte();
+                case "UInt16":
+                    return packetReadUInt16();
+                case "Int16":
+                    return packetReadInt16();
+                case "UInt32":
+                    return packetReadUInt32();
+                case "Int32":
+                    return packetReadInt32();
+                case "UInt64":
+                    return packetReadUInt64();
+                case "Int64":
+                    return packetReadInt64();
+                case "Single":
+                    return packetReadSingle();
+                case "Double":
+                    return packetReadDouble();
+                case "Boolean":
+                    return packetReadBoolean();
+                case "String":
+                    return packetReadString();
+                case "DateTime":
+                    return packetReadDateTime();
+            }
+        }
+        return null;
+    }
+	
+	@Deprecated
+	protected void packetWriteDynamic(Object value){
+		if (value instanceof Byte)
+        {
+            packetWrite(true);
+            packetWrite("Byte");
+            packetWrite((byte)value);
+        }
+        else if (value instanceof Short)
+        {
+            packetWrite(true);
+            packetWrite("Int16");
+            packetWrite((short)value);
+        }
+        else if (value instanceof Integer)
+        {
+        	packetWrite(true);
+        	packetWrite("Int32");
+        	packetWrite((int)value);
+        }
+        else if (value instanceof Long)
+        {
+        	packetWrite(true);
+        	packetWrite("Int64");
+        	packetWrite((long)value);
+        }
+        else if (value instanceof Float)
+        {
+        	packetWrite(true);
+            packetWrite("Single");
+            packetWrite((float)value);
+        }
+        else if (value instanceof Double)
+        {
+            packetWrite(true);
+            packetWrite("Double");
+            packetWrite((double)value);
+        }
+        else if (value instanceof Boolean)
+        {
+            packetWrite(true);
+            packetWrite("Boolean");
+            packetWrite((boolean)value);
+        }
+        else if (value instanceof String)
+        {
+            packetWrite(true);
+            packetWrite("String");
+            packetWrite((String)value);
+        }
+        else if (value instanceof Date)
+        {
+            packetWrite(true);
+            packetWrite("DateTime");
+            packetWrite((Date)value);
+        }
+        else
+            packetWrite(false);
+	}
+	
+	@Deprecated
+	protected Object[] packetReadListOfDynamic(){
+    	int size = receiveBuffer.getInt();
+    	if(size > 0){
+    		Object[] objects = new Object[size];
+    		for(int index = 0; index < size; index++){
+    			objects[index] = packetReadDynamic();
+    		}    		
+    		return objects;
+    	}
+    	return null;
+    }      
+	
+	@Deprecated
+    protected void packetWriteDynamic(Object[] value)
+    {
+		sendBuffer.putInt(value.length);
+		for (Object element : value)			
+			packetWriteDynamic(element);
+    }
+
 }
