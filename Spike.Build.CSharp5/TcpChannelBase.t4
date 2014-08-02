@@ -1,17 +1,4 @@
-﻿<#@ template language="C#" #>
-<#@ assembly name="System.Core" #>
-<#@ import namespace="System.Linq" #>
-<#@ import namespace="System.Text" #>
-<#@ import namespace="System.Collections.Generic" #>
-using LZF.NET;
-using System;
-using System.Diagnostics;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net.Sockets;
-
-namespace Spike.Network
-{
+﻿
     public abstract class TcpChannelBase<T> where T : TcpChannelBase<T>
     {
         public event Action<T> Connected;
@@ -28,14 +15,29 @@ namespace Spike.Network
         private int ReceiveBufferPosition;
         private int ReceiveBufferSize;
 
-        public async void Connect(string host, int port)
+        public async Task Connect(string host, int port)
         {
             try
             {
                 socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-				await Task.Run(() => socket.Connect(host, port));
+				var error = await Task.Run(() => {
+					try
+					{
+						socket.Connect(host, port);
+						return false;
+					}
+					catch(Exception)
+					{
+						return true;
+					}
+				});
 
+				if(error)
+				{
+                    Disconnect();
+                    return;
+                }
 				SendBuffer = new byte[4096];
 				SendBufferPosition = 0;
 
@@ -49,13 +51,26 @@ namespace Spike.Network
             
                 while (true)
                 {
-                    ReceiveBufferSize = await Task.Run(() => { return socket.Receive(ReceiveBuffer); });
-
+                    ReceiveBufferSize = await Task.Run(() => { 
+						try
+						{
+							return socket.Receive(ReceiveBuffer);
+						}
+						catch(Exception)
+						{
+							return 0;
+						} 
+					});
+					if(ReceiveBufferSize == 0)
+					{
+                        Disconnect();
+                        return;
+                    }
+						
                     ReceiveBufferPosition = 0;
 
                     if (ReceiveBufferSize != (PacketReadInt32() + 4))
                     {
-                        Debug.WriteLine("No fragmentation");
                         Disconnect();
                         return;
                     }
@@ -133,7 +148,23 @@ namespace Spike.Network
 
                 SetSize();
 
-                await Task.Run(() => socket.Send(SendBuffer, SendBufferPosition, SocketFlags.None));
+                var error = await Task.Run<bool>(() => 
+				{
+					try 
+					{
+						socket.Send(SendBuffer, SendBufferPosition, SocketFlags.None);
+						return false;
+					}
+					catch(Exception)
+					{
+						return true;
+					}
+				});
+				if(error)
+				{
+                    Disconnect();
+                    return;
+                }
             }
             catch (Exception)
             {
@@ -454,13 +485,13 @@ namespace Spike.Network
         // DateTime
         protected DateTime PacketReadDateTime()
         {
-            short year = PacketReadInt16();
-            short month = PacketReadInt16();
-            short day = PacketReadInt16();
-            short hour = PacketReadInt16();
-            short minute = PacketReadInt16();
-            short second = PacketReadInt16();
-            short millisecond = PacketReadInt16();
+            var year = PacketReadInt16();
+            var month = PacketReadInt16();
+            var day = PacketReadInt16();
+            var hour = PacketReadInt16();
+            var minute = PacketReadInt16();
+            var second = PacketReadInt16();
+            var millisecond = PacketReadInt16();
 
             return new DateTime(year, month, day, hour, minute, second, millisecond);
         }
@@ -494,7 +525,7 @@ namespace Spike.Network
 
         #region Dynamics
         [Obsolete("DynamicType is obsolete. Consider using JSON or XML serialized objects instead.", false)]
-        protected void PacketWriteDynamic(object value)
+        protected void PacketWrite(object value)
         {
             if (value is byte)
             {
@@ -572,7 +603,7 @@ namespace Spike.Network
                 PacketWrite(false);
         }
         [Obsolete("DynamicType is obsolete. Consider using JSON or XML serialized objects instead.", false)]
-        protected object PacketReadDynamic()
+        protected object PacketReadDynamicType()
         {
             if (PacketReadBoolean())
             {
@@ -607,22 +638,22 @@ namespace Spike.Network
             return null;
         }
         [Obsolete("DynamicType is obsolete. Consider using JSON or XML serialized objects instead.", false)]
-        protected object[] PacketReadListOfDynamic()
+        protected object[] PacketReadListOfDynamicType()
         {
             var value = new object[PacketReadInt32()];
             for (int index = 0; index < value.Length; index++)
-                value[index] = PacketReadDynamic();
+                value[index] = PacketReadDynamicType();
             return value;
         }
         [Obsolete("DynamicType is obsolete. Consider using JSON or XML serialized objects instead.", false)]
-        protected void PacketWriteDynamic(object[] value)
+        protected void PacketWrite(object[] value)
         {
             PacketWrite(value.Length);
             foreach (var element in value)
-                PacketWriteDynamic(element);
+                PacketWrite((object)element);
         }
         #endregion
 
 
     }
-}
+

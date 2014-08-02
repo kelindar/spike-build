@@ -19,9 +19,10 @@
 
 namespace Spike.Build
 {
-    internal sealed class Member(string name, string type, bool isList)
+    internal sealed class Member(string name, string type, bool isList, bool isCustom)
     {
         internal bool IsList { get; } = isList;
+        internal bool IsCustom { get; } = isCustom;
         internal string Name { get; } = name;
         internal string Type { get; } = type;        
     }

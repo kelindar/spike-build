@@ -45,6 +45,7 @@ namespace Spike.Build
                 Program.ShowUsageAndExit("All member must have a Name");
 
             var isList = false;
+            var isCustom = false;
             if (type.StartsWith("ListOf"))
             {
                 isList = true;
@@ -57,6 +58,7 @@ namespace Spike.Build
 
             if (type == "ComplexType")
             {
+                isCustom = true;
                 type = xmember.Attribute("Class")?.Value;
                 if (string.IsNullOrWhiteSpace(type))
                     Program.ShowUsageAndExit("All Type ComplexType/ListOfComplexType must have a Class");
@@ -69,7 +71,8 @@ namespace Spike.Build
             return new Member(
                 name,
                 type,
-                isList
+                isList,
+                isCustom
                 );
         }
 
@@ -96,8 +99,7 @@ namespace Spike.Build
 
             }
         }
-
-
+               
 
         private List<Member> GetMembers(XElement element)
         {
@@ -197,16 +199,20 @@ namespace Spike.Build
 
                     //add receive members to signature
                     if (receiveMembers != null && receiveMembers.Count > 0)
-                        SignBuilder.Append(receiveMembers.Select(member => member.IsList ? string.Format("ListOf{0}", member.Type) : member.Type).Aggregate((type1, type2) => string.Format("{0}.{1}", type1, type2)));
+                        SignBuilder.Append(receiveMembers
+                            .Select(member => member.IsList ? string.Format("ListOf{0}", member.IsCustom ? "ComplexType" : member.Type) : member.IsCustom ? "ComplexType" : member.Type).Aggregate((type1, type2) => string.Format("{0}.{1}", type1, type2)));
 
                     SignBuilder.Append("].[");
 
                     //add sends members to signature
                     if (sendMembers != null && sendMembers.Count > 0)
-                        SignBuilder.Append(sendMembers.Select(member => member.IsList ? string.Format("ListOf{0}", member.Type) : member.Type).Aggregate((type1, type2) => string.Format("{0}.{1}", type1, type2)));
+                        SignBuilder.Append(sendMembers
+                            .Select(member => member.IsList ? string.Format("ListOf{0}", member.IsCustom ? "ComplexType" : member.Type) : member.IsCustom ? "ComplexType" : member.Type).Aggregate((type1, type2) => string.Format("{0}.{1}", type1, type2)));
 
                     SignBuilder.Append("]");
 
+                    //Console.WriteLine(SignBuilder.ToString());
+                    
                     var id = SignBuilder.ToString().GetMurmurHash3();
                     if (receiveMembers != null)
                     {

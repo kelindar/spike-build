@@ -33,15 +33,20 @@ namespace Spike.Build
 {
     //-i http://www.spike-engine.com/spml/MyChatProtocol -p csharp5 -o C:\Users\Fabian\Desktop\Projects\BitBucket\spike.samples\BuilderTestSamples
     //-i http://www.spike-engine.com/spml/MyChatProtocol -p java -o C:\Users\Fabian\Desktop\Projects\BitBucket\spike.samples\BuilderTestSamples\JavaConsole\JavaConsole\src\com\misakai\spike\network
+    //-i C:\Users\Fabian\Desktop\Projects\GitHub\spike-bench\Stress.Server\StressProtocol.spml -p csharp5 -o C:\Users\Fabian\Desktop\Projects\GitHub\spike-bench\Stress.CSharp5
+
+
     internal static class Program
     {
 
-        internal static bool Verbose = false;
-        internal static IBuilder Builder = null; //--platform -p
-        internal static List<string> Sources { get; } = new List<string>(); // --input -i
-        internal static string Destination = null; // --output -o 
-        internal static string Format = null; // --format -f 
-        internal static string Namespace = null; // --namespace -n
+        private static bool Verbose = false;
+        private static IBuilder Builder = null; //--platform -p
+        private static List<string> Sources { get; } = new List<string>(); // --input -i
+        private static string Destination = null; // --output -o 
+        private static string Format = null; // --format -f 
+        private static string Namespace = null; // --namespace -n
+
+        private static Model Model = null; 
 
 
         static internal void ShowUsageAndExit(string error = null)
@@ -165,9 +170,9 @@ namespace Spike.Build
                 if (Sources.Count <= 0)
                     ShowUsageAndExit("You must define a source");
 
-                
+
                 // Get Model
-                var model = new Model();
+                Model = new Model();
 
                 foreach (var source in Sources)
                 {
@@ -187,7 +192,7 @@ namespace Spike.Build
                                     foreach (var protocol in protocols)
                                     {
                                         Console.WriteLine(protocol);
-                                        model.Load(string.Format("{0}?file={1}", baseUrl, protocol));
+                                        Model.Load(string.Format("{0}?file={1}", baseUrl, protocol));
                                     }
                                 }
                                 else
@@ -198,10 +203,10 @@ namespace Spike.Build
                         }
                     }
                     else
-                        model.Load(modelFile);
+                        Model.Load(modelFile);
                 }
 
-                Builder.Build(model, Destination);
+                Builder.Build(Model,Destination,Format);
             }
 #if DEBUG
             catch (Exception e)

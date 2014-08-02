@@ -22,6 +22,14 @@ using System.IO;
 
 namespace Spike.Build.WinRT
 {
+    partial class WinRTTemplate
+    {
+        internal string Target { get; set; }
+        internal Model Model { get; set; }
+        internal Operation TargetOperation { get; set; }
+        internal CustomType TargetType { get; set; }
+    }
+
     internal class WinRTBuilder : IBuilder
     {
         internal static string GetNativeType(Member member)
@@ -64,58 +72,65 @@ namespace Spike.Build.WinRT
 
         }
 
-        public void Build(Model model, string output) {
-            if (string.IsNullOrEmpty(output))
-                output = @"WinRT";
-
-            if (!Directory.Exists(output))
-                Directory.CreateDirectory(output);
-
-            //CLZF.cs
-            var clzfTemplate = new CLZFTemplate();
-            File.WriteAllText(Path.Combine(output, @"CLZF.cs"), clzfTemplate.TransformText());
-
-            //TcpChannelBase.cs
-            var tcpChannelBaseTemplate = new TcpChannelBaseTemplate();
-            File.WriteAllText(Path.Combine(output, @"TcpChannelBase.cs"), tcpChannelBaseTemplate.TransformText());
-
-
-            var tcpChanneltemplate = new TcpChannelTemplate();
-            var tcpChannelsession = new Dictionary<string, object>();
-            tcpChanneltemplate.Session = tcpChannelsession;
-
-            tcpChannelsession["Model"] = model;
-            tcpChanneltemplate.Initialize();
-            
-            var code = tcpChanneltemplate.TransformText();
-            File.WriteAllText(Path.Combine(output, @"TcpChannel.cs"), code);
-
-            //Make packets
-            var packetTemplate = new PacketTemplate();
-            var packetSession = new Dictionary<string, object>();
-            packetTemplate.Session = packetSession;
-            foreach (var receive in model.Receives) {
-                packetTemplate.Clear();
-                packetSession["Operation"] = receive;
-                packetTemplate.Initialize();
-
-                code = packetTemplate.TransformText();
-                File.WriteAllText(Path.Combine(output, string.Format(@"{0}.cs", receive.Name)), code);
-            }
-
-            //Make CustomType
-            var customTypeTemplate = new CustomTypeTemplate();
-            var customTypeSession = new Dictionary<string, object>();
-            customTypeTemplate.Session = customTypeSession;
-            foreach (var customType in model.CustomTypes)
+        public void Build(Model model, string output, string format) {
+            if (format == "single")
             {
-                customTypeTemplate.Clear();
-                customTypeSession["CustomType"] = customType;
-                customTypeTemplate.Initialize();
-                code = customTypeTemplate.TransformText();
-                File.WriteAllText(Path.Combine(output, string.Format(@"{0}.cs", customType.Name)), code);
-            }
+                var template = new WinRTTemplate();
+                template.Target = null;
+                template.Model = model;
 
+                if (string.IsNullOrEmpty(output))
+                    output = @"WinRT";
+
+                if (!Directory.Exists(output))
+                    Directory.CreateDirectory(output);
+
+                File.WriteAllText(Path.Combine(output, @"Network.cs"), template.TransformText());
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(output))
+                    output = @"WinRT";
+
+                if (!Directory.Exists(output))
+                    Directory.CreateDirectory(output);
+
+                var template = new WinRTTemplate();
+                template.Model = model;
+
+                //CLZF.cs
+                template.Target = "LZF";
+                File.WriteAllText(Path.Combine(output, @"CLZF.cs"), template.TransformText());
+                template.Clear();
+
+                //TcpChannelBase.cs
+                template.Target = "TcpChannelBase";
+                File.WriteAllText(Path.Combine(output, @"TcpChannelBase.cs"), template.TransformText());
+                template.Clear();
+
+                //TcpChannel.cs
+                template.Target = "TcpChannel";
+                File.WriteAllText(Path.Combine(output, @"TcpChannel.cs"), template.TransformText());
+                template.Clear();
+
+                //Make packets
+                template.Target = "Packet";
+                foreach (var receive in model.Receives)
+                {
+                    template.TargetOperation = receive;
+                    File.WriteAllText(Path.Combine(output, string.Format(@"{0}.cs", receive.Name)), template.TransformText());
+                    template.Clear();
+                }
+
+                //Make CustomType
+                template.Target = "ComplexType";
+                foreach (var customType in model.CustomTypes)
+                {
+                    template.TargetType = customType;
+                    File.WriteAllText(Path.Combine(output, string.Format(@"{0}.cs", customType.Name)), template.TransformText());
+                    template.Clear();
+                }
+            }
         }
     }
 

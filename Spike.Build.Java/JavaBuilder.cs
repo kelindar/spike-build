@@ -62,7 +62,7 @@ namespace Spike.Build.Java
 
         }
 
-        public void Build(Model model, string output)
+        public void Build(Model model, string output, string format)
         {
             if (string.IsNullOrEmpty(output))
                 output = @"Java";

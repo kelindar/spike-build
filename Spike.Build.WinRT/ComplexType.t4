@@ -1,0 +1,7 @@
+﻿    public partial struct <#= TargetType.Name #>
+    {
+<#		foreach(var member in TargetType.Members)
+		{ #>	
+		public <#= WinRTBuilder.GetNativeType(member) #><#= member.IsList ? "[]" : string.Empty #> <#= member.Name #> { get; set; }
+<#		} #>
+    }

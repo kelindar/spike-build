@@ -1,20 +1,4 @@
-﻿<#@ template language="C#" #>
-<#@ assembly name="System.Core" #>
-<#@ import namespace="System.Linq" #>
-<#@ import namespace="System.Text" #>
-<#@ import namespace="System.Collections.Generic" #>
-<#@ parameter type="Spike.Build.Model" name="Model" #>
-
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Spike.Network
-{
-	public class TcpChannel : TcpChannelBase<TcpChannel>
+﻿	public class TcpChannel : TcpChannelBase<TcpChannel>
 	{
 		//Events
 <#		foreach(var receive in Model.Receives)
@@ -25,20 +9,20 @@ namespace Spike.Network
 		//Sends        
 <#		foreach(var send in Model.Sends)
 		{ #>		
-		public async void <#= send.Name #>(<#	
+		public async Task <#= send.Name #>(<#	
 			var first = true;
 			foreach(var member in send.Members){
 				if(!first)
 					Write(", ");
 
-				Write(WinRTBuilder.GetNativeType(member));
+				Write(CSharp5Builder.GetNativeType(member));
 				Write(" ");
 				Write(member.Name);
 				first = false;
 			}
 		#>)
 		{
-			BeginNewPacket(0x<#= send.Id.ToString("X") #>);
+			BeginNewPacket(0x<#= send.Id.ToString("X") #>u);
 <#			foreach(var member in send.Members)
 			{ #>
 			PacketWrite(<#= member.Name #>);
@@ -113,4 +97,3 @@ namespace Spike.Network
 <#				} #>
 
 	}
-}
