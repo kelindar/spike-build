@@ -1,8 +1,17 @@
-﻿
+﻿	
+	public enum ConnectionError
+    {
+        Unknown,
+		User,
+        Connection,
+        Receive,
+        Send
+    }
+
     public abstract class TcpChannelBase<T> where T : TcpChannelBase<T>
     {
         public event Action<T> Connected;
-        public event Action<T> Disconnected;
+        public event Action<T,ConnectionError> Disconnected;
         
         private Socket socket;
         private object mutext = new object();
@@ -15,98 +24,95 @@
         private int ReceiveBufferPosition;
         private int ReceiveBufferSize;
 
+		public int BufferSize { get; protected set; } 
+
+		public TcpChannelBase(int bufferSize)
+		{
+			BufferSize = bufferSize;
+		}
+
         public async Task Connect(string host, int port)
         {
             try
             {
                 socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-				var error = await Task.Run(() => {
+				var success = await Task.Run(() => {
 					try
 					{
 						socket.Connect(host, port);
-						return false;
-					}
-					catch(Exception)
-					{
 						return true;
 					}
+					catch(Exception)
+					{					
+						return false;
+					}
 				});
-
-				if(error)
+				if(!success)
 				{
-                    Disconnect();
+                    Disconnect(ConnectionError.Connection);
                     return;
                 }
-				SendBuffer = new byte[4096];
+
+				SendBuffer = new byte[BufferSize];
 				SendBufferPosition = 0;
 
-				ReceiveBuffer = new byte[4096];
+				ReceiveBuffer = new byte[BufferSize];
 				ReceiveBufferPosition = 0;
 				ReceiveBufferSize = 0;
 
 				if (Connected != null)
 					Connected((T)this);
 
-            
+				
                 while (true)
                 {
-                    ReceiveBufferSize = await Task.Run(() => { 
-						try
-						{
-                            return socket.Receive(ReceiveBuffer,4,SocketFlags.None);
-						}
-						catch(Exception)
-						{
-							return 0;
-						} 
-					});
-					if(ReceiveBufferSize == 0)
+					//Read Size
+					ReceiveBufferPosition = 0;
+                    ReceiveBufferSize = await Task.Run(() => Fill(sizeof(int)));
+					if(ReceiveBufferSize != sizeof(int))
 					{
-                        Disconnect();
+                        Disconnect(ConnectionError.Receive);
                         return;
                     }						
-                    ReceiveBufferPosition = 0;
-                    var size = PacketReadInt32();
+                    
+					//read packet data
+					ReceiveBufferPosition = 0;
+					ReceiveBufferSize = PacketReadInt32() + sizeof(int);
 
-                    ReceiveBufferSize = await Task.Run(() =>
-                    {
-                        try
-                        {
-                            return socket.Receive(ReceiveBuffer, 4,size, SocketFlags.None);
-                        }
-                        catch (Exception)
-                        {
-                            return 0;
-                        }
-                    });
-                    if (ReceiveBufferSize == 0)
-                    {
-                        Disconnect();
-                        return;
-                    }
+					do{
+						var readed = await Task.Run(() => Fill(ReceiveBufferSize - ReceiveBufferPosition));
+						if(readed == 0)
+						{
+							Disconnect(ConnectionError.Receive);
+							return;
+						}
+						ReceiveBufferPosition += readed;
+					}while(ReceiveBufferPosition < ReceiveBufferSize);
 
-
-
-                    if (ReceiveBufferSize != size )
-                    {
-                        Console.WriteLine("size : {0}/{1}", ReceiveBufferSize, size+4 );
-                        Disconnect();
-                        return;
-                    }
-
-
+					ReceiveBufferPosition = sizeof(int);                    
+					
                     OnReceive(PacketReadUInt32());
                 }
             }
             catch (Exception)
             {
-                Debug.WriteLine("Exception");
-                Disconnect();
+                Disconnect(ConnectionError.Unknown);
             }
         }
 
-        public void Disconnect()
+		private int Fill(int size){
+			try
+			{
+				return socket.Receive(ReceiveBuffer,ReceiveBufferPosition,size,SocketFlags.None);
+			}
+			catch(Exception)
+			{
+				return 0;
+			}
+		}
+
+        private void Disconnect(ConnectionError error)
         {
             var mustRaise = false;
             lock (socket)
@@ -120,7 +126,7 @@
             }
 
             if (mustRaise && Disconnected != null)
-                Disconnected((T)this);
+                Disconnected((T)this, error);
         }
 
         protected void BeginReadPacket(bool compressed)
@@ -128,7 +134,7 @@
             if (compressed)
             {
                 var compressedBuffer = new byte[ReceiveBufferSize - 8];
-                var uncompressedBuffer = new byte[4096];
+                var uncompressedBuffer = new byte[BufferSize];
                 Buffer.BlockCopy(ReceiveBuffer, 8, compressedBuffer, 0, compressedBuffer.Length);
                 var cipher = new CLZF();
                 var uncompressedSize = cipher.lzf_decompress(compressedBuffer, compressedBuffer.Length, uncompressedBuffer, uncompressedBuffer.Length);
@@ -162,7 +168,7 @@
                     var cipher = new CLZF();
                     var uncompressedBytes = new byte[SendBufferPosition - 8];
                     Buffer.BlockCopy(SendBuffer, 8, uncompressedBytes, 0, uncompressedBytes.Length);
-                    var compressedBytes = new byte[4096];
+                    var compressedBytes = new byte[BufferSize];
                     var size = cipher.lzf_compress(uncompressedBytes, uncompressedBytes.Length, compressedBytes, compressedBytes.Length);
                     Buffer.BlockCopy(compressedBytes, 0, SendBuffer, 8, size);
                     SendBufferPosition = size + 8;
@@ -170,27 +176,27 @@
 
                 SetSize();
 
-                var error = await Task.Run<bool>(() => 
+                var success = await Task.Run<bool>(() => 
 				{
 					try 
 					{
 						socket.Send(SendBuffer, SendBufferPosition, SocketFlags.None);
-						return false;
+						return true;
 					}
 					catch(Exception)
 					{
-						return true;
+						return false;
 					}
 				});
-				if(error)
+				if(!success)
 				{
-                    Disconnect();
+                    Disconnect(ConnectionError.Send);
                     return;
                 }
             }
             catch (Exception)
             {
-                Disconnect();
+                Disconnect(ConnectionError.Unknown);
             }
         }
 
@@ -242,9 +248,8 @@
         protected void PacketWrite(ushort[] value)
         {
             PacketWrite(value.Length);
-            var byteSize = Buffer.ByteLength(value);
-            Buffer.BlockCopy(SendBuffer, SendBufferPosition, value, 0, byteSize);
-            SendBufferPosition += byteSize;
+            foreach (var element in value)
+                PacketWrite(element);
         }
 
         // Int16

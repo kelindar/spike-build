@@ -17,6 +17,7 @@
 * 
 *************************************************************************/
 
+using Spike.Build.CSharp5;
 using System.Collections.Generic;
 using System.IO;
 
@@ -32,51 +33,13 @@ namespace Spike.Build.Xamarin
 
     internal class XamarinBuilder : IBuilder
     {
-        internal static string GetNativeType(Member member)
-        {
-            switch (member.Type)
-            {
-                case "Byte":
-                    return "byte";
-                case "UInt16":
-                    return "ushort";
-                case "UInt32":
-                    return "uint";
-                case "UInt64":
-                    return "ulong";
-
-                case "SByte":
-                    return "sbyte";
-                case "Int16":
-                    return "short";
-                case "Int32":
-                    return "int";
-                case "Int64":
-                    return "long";
-
-                case "Boolean":
-                    return "bool";
-                case "Single":
-                    return "float";
-                case "Double":
-                    return "double";
-                case "String":
-                    return "string";
-
-                case "Dynamic":
-                    return "object";
-
-                default: //CustomType & DateTime
-                    return member.Type;
-            }
-
-        }
+        
 
         public void Build(Model model, string output, string format)
         {
             if (format == "single")
             {
-                var template = new XamarinTemplate();
+                var template = new CSharp5Template();
                 template.Target = null;
                 template.Model = model;
 
@@ -96,7 +59,7 @@ namespace Spike.Build.Xamarin
                 if (!Directory.Exists(output))
                     Directory.CreateDirectory(output);
 
-                var template = new XamarinTemplate();
+                var template = new CSharp5Template();
                 template.Model = model;
 
                 //CLZF.cs

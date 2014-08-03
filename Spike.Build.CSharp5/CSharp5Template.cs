@@ -31,7 +31,7 @@ namespace Spike.Build.CSharp5
             this.Write("\r\n\r\nusing System;\r\nusing System.Diagnostics;\r\nusing System.Text;\r\nusing System.Th" +
                     "reading.Tasks;\r\nusing System.Net.Sockets;\r\n\r\nnamespace Spike.Network\r\n{\r\n");
             
-            #line 16 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 17 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CSharp5Template.tt"
 	if(Target == null || Target == "LZF")
 	{ 
             
@@ -172,331 +172,331 @@ namespace Spike.Build.CSharp5
                     "\t{\r\n\t\t\t//\r\n\t\t\t// TODO: Add ructor logic here\r\n\t\t\t//\r\n\t\t}\r\n\t}\r\n\r\n\r\n");
             this.Write("\r\n");
             
-            #line 19 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 20 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CSharp5Template.tt"
 	} 
             
             #line default
             #line hidden
             this.Write("\r\n");
             
-            #line 21 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 22 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CSharp5Template.tt"
 	if(Target == null || Target == "TcpChannelBase")
 	{ 
             
             #line default
             #line hidden
             this.Write(" \r\n\t");
-            this.Write("    public abstract class TcpChannelBase<T> where T : TcpChannelBase<T>\r\n    {\r\n " +
-                    "       public event Action<T> Connected;\r\n        public event Action<T> Disconn" +
-                    "ected;\r\n        \r\n        private Socket socket;\r\n        private object mutext " +
-                    "= new object();\r\n        private bool disposed = false;\r\n\r\n        private byte[" +
-                    "] SendBuffer;\r\n        private int SendBufferPosition;\r\n\r\n        private byte[]" +
-                    " ReceiveBuffer;\r\n        private int ReceiveBufferPosition;\r\n        private int" +
-                    " ReceiveBufferSize;\r\n\r\n        public async Task Connect(string host, int port)\r" +
-                    "\n        {\r\n            try\r\n            {\r\n                socket = new Socket(" +
-                    "AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);\r\n\r\n\t\t\t\tvar err" +
-                    "or = await Task.Run(() => {\r\n\t\t\t\t\ttry\r\n\t\t\t\t\t{\r\n\t\t\t\t\t\tsocket.Connect(host, port);" +
-                    "\r\n\t\t\t\t\t\treturn false;\r\n\t\t\t\t\t}\r\n\t\t\t\t\tcatch(Exception)\r\n\t\t\t\t\t{\r\n\t\t\t\t\t\treturn true;" +
-                    "\r\n\t\t\t\t\t}\r\n\t\t\t\t});\r\n\r\n\t\t\t\tif(error)\r\n\t\t\t\t{\r\n                    Disconnect();\r\n  " +
-                    "                  return;\r\n                }\r\n\t\t\t\tSendBuffer = new byte[4096];\r\n" +
-                    "\t\t\t\tSendBufferPosition = 0;\r\n\r\n\t\t\t\tReceiveBuffer = new byte[4096];\r\n\t\t\t\tReceiveB" +
-                    "ufferPosition = 0;\r\n\t\t\t\tReceiveBufferSize = 0;\r\n\r\n\t\t\t\tif (Connected != null)\r\n\t\t" +
-                    "\t\t\tConnected((T)this);\r\n\r\n            \r\n                while (true)\r\n          " +
-                    "      {\r\n                    ReceiveBufferSize = await Task.Run(() => { \r\n\t\t\t\t\t\t" +
-                    "try\r\n\t\t\t\t\t\t{\r\n                            return socket.Receive(ReceiveBuffer,4," +
-                    "SocketFlags.None);\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t\tcatch(Exception)\r\n\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\treturn 0;\r\n" +
-                    "\t\t\t\t\t\t} \r\n\t\t\t\t\t});\r\n\t\t\t\t\tif(ReceiveBufferSize == 0)\r\n\t\t\t\t\t{\r\n                   " +
-                    "     Disconnect();\r\n                        return;\r\n                    }\t\t\t\t\t\t" +
-                    "\r\n                    ReceiveBufferPosition = 0;\r\n                    var size =" +
-                    " PacketReadInt32();\r\n\r\n                    ReceiveBufferSize = await Task.Run(()" +
-                    " =>\r\n                    {\r\n                        try\r\n                       " +
-                    " {\r\n                            return socket.Receive(ReceiveBuffer, 4,size, Soc" +
-                    "ketFlags.None);\r\n                        }\r\n                        catch (Excep" +
-                    "tion)\r\n                        {\r\n                            return 0;\r\n       " +
-                    "                 }\r\n                    });\r\n                    if (ReceiveBuff" +
-                    "erSize == 0)\r\n                    {\r\n                        Disconnect();\r\n    " +
-                    "                    return;\r\n                    }\r\n\r\n\r\n\r\n                    if" +
-                    " (ReceiveBufferSize != size )\r\n                    {\r\n                        Co" +
-                    "nsole.WriteLine(\"size : {0}/{1}\", ReceiveBufferSize, size+4 );\r\n                " +
-                    "        Disconnect();\r\n                        return;\r\n                    }\r\n\r" +
-                    "\n\r\n                    OnReceive(PacketReadUInt32());\r\n                }\r\n      " +
-                    "      }\r\n            catch (Exception)\r\n            {\r\n                Debug.Wri" +
-                    "teLine(\"Exception\");\r\n                Disconnect();\r\n            }\r\n        }\r\n\r" +
-                    "\n        public void Disconnect()\r\n        {\r\n            var mustRaise = false;" +
-                    "\r\n            lock (socket)\r\n            {\r\n                if (!disposed)\r\n    " +
-                    "            {\r\n                    mustRaise = true;\r\n                    dispos" +
-                    "ed = true;\r\n                    socket.Dispose();                    \r\n         " +
-                    "       }\r\n            }\r\n\r\n            if (mustRaise && Disconnected != null)\r\n " +
-                    "               Disconnected((T)this);\r\n        }\r\n\r\n        protected void Begin" +
-                    "ReadPacket(bool compressed)\r\n        {\r\n            if (compressed)\r\n           " +
-                    " {\r\n                var compressedBuffer = new byte[ReceiveBufferSize - 8];\r\n   " +
-                    "             var uncompressedBuffer = new byte[4096];\r\n                Buffer.Bl" +
-                    "ockCopy(ReceiveBuffer, 8, compressedBuffer, 0, compressedBuffer.Length);\r\n      " +
-                    "          var cipher = new CLZF();\r\n                var uncompressedSize = ciphe" +
-                    "r.lzf_decompress(compressedBuffer, compressedBuffer.Length, uncompressedBuffer, " +
-                    "uncompressedBuffer.Length);\r\n                Buffer.BlockCopy(uncompressedBuffer" +
-                    ", 0, ReceiveBuffer, 8, uncompressedSize);\r\n                ReceiveBufferSize = u" +
-                    "ncompressedSize + 8;\r\n            }\r\n        }\r\n\r\n        protected void BeginNe" +
-                    "wPacket(uint key)\r\n        {\r\n            SendBufferPosition = 4;\r\n            P" +
-                    "acketWrite(key);\r\n        }\r\n\r\n        private void SetSize()\r\n        {\r\n      " +
-                    "      var size = SendBufferPosition - 4;\r\n            SendBuffer[0] = ((byte)(si" +
-                    "ze >> 24));\r\n            SendBuffer[1] = ((byte)(size >> 16));\r\n            Send" +
-                    "Buffer[2] = ((byte)(size >> 8));\r\n            SendBuffer[3] = ((byte)size);\r\n   " +
-                    "     }\r\n\r\n        protected async Task SendPacket(bool compressed)\r\n        {\r\n " +
-                    "           try\r\n            {\r\n                if (compressed && SendBufferPosit" +
-                    "ion > 8)\r\n                {\r\n                    //TODO make this better\r\n      " +
-                    "              var cipher = new CLZF();\r\n                    var uncompressedByte" +
-                    "s = new byte[SendBufferPosition - 8];\r\n                    Buffer.BlockCopy(Send" +
-                    "Buffer, 8, uncompressedBytes, 0, uncompressedBytes.Length);\r\n                   " +
-                    " var compressedBytes = new byte[4096];\r\n                    var size = cipher.lz" +
-                    "f_compress(uncompressedBytes, uncompressedBytes.Length, compressedBytes, compres" +
-                    "sedBytes.Length);\r\n                    Buffer.BlockCopy(compressedBytes, 0, Send" +
-                    "Buffer, 8, size);\r\n                    SendBufferPosition = size + 8;\r\n         " +
-                    "       }\r\n\r\n                SetSize();\r\n\r\n                var error = await Task" +
-                    ".Run<bool>(() => \r\n\t\t\t\t{\r\n\t\t\t\t\ttry \r\n\t\t\t\t\t{\r\n\t\t\t\t\t\tsocket.Send(SendBuffer, SendB" +
-                    "ufferPosition, SocketFlags.None);\r\n\t\t\t\t\t\treturn false;\r\n\t\t\t\t\t}\r\n\t\t\t\t\tcatch(Excep" +
-                    "tion)\r\n\t\t\t\t\t{\r\n\t\t\t\t\t\treturn true;\r\n\t\t\t\t\t}\r\n\t\t\t\t});\r\n\t\t\t\tif(error)\r\n\t\t\t\t{\r\n      " +
-                    "              Disconnect();\r\n                    return;\r\n                }\r\n   " +
-                    "         }\r\n            catch (Exception)\r\n            {\r\n                Discon" +
-                    "nect();\r\n            }\r\n        }\r\n\r\n        #region Spike Primary Type\r\n       " +
-                    " // Byte\r\n        protected void PacketWrite(byte value)\r\n        {\r\n           " +
-                    " SendBuffer[SendBufferPosition++] = value;\r\n        }\r\n        protected byte Pa" +
-                    "cketReadByte()\r\n        {\r\n            return ReceiveBuffer[ReceiveBufferPositio" +
-                    "n++];\r\n        }\r\n        protected byte[] PacketReadListOfByte()\r\n        {\r\n  " +
-                    "          var value = new byte[PacketReadInt32()];\r\n            Buffer.BlockCopy" +
-                    "(ReceiveBuffer, ReceiveBufferPosition, value, 0, value.Length);\r\n            Rec" +
-                    "eiveBufferPosition += value.Length;\r\n            return value;\r\n        }\r\n     " +
-                    "   protected void PacketWrite(byte[] value)\r\n        {\r\n            PacketWrite(" +
-                    "value.Length);\r\n            Buffer.BlockCopy(value, 0, SendBuffer, SendBufferPos" +
-                    "ition, value.Length);\r\n            SendBufferPosition += value.Length;\r\n        " +
-                    "}\r\n\r\n        // SByte\r\n        //Don\'t existe in spike protocol\r\n\r\n        // UI" +
-                    "nt16\r\n        protected ushort PacketReadUInt16()\r\n        {\r\n            return" +
-                    " (ushort)((ReceiveBuffer[ReceiveBufferPosition++] << 8)\r\n                | Recei" +
-                    "veBuffer[ReceiveBufferPosition++]);\r\n        }\r\n        protected void PacketWri" +
-                    "te(ushort value)\r\n        {\r\n            PacketWrite((byte)(value >> 8));\r\n     " +
-                    "       PacketWrite((byte)value);\r\n        }\r\n        protected ushort[] PacketRe" +
-                    "adListOfUInt16()\r\n        {\r\n            var value = new ushort[PacketReadInt32(" +
-                    ")];\r\n            for (int index = 0; index < value.Length; index++)\r\n           " +
-                    "     value[index] = PacketReadUInt16();\r\n            return value;\r\n        }\r\n " +
-                    "       protected void PacketWrite(ushort[] value)\r\n        {\r\n            Packet" +
-                    "Write(value.Length);\r\n            var byteSize = Buffer.ByteLength(value);\r\n    " +
-                    "        Buffer.BlockCopy(SendBuffer, SendBufferPosition, value, 0, byteSize);\r\n " +
-                    "           SendBufferPosition += byteSize;\r\n        }\r\n\r\n        // Int16\r\n     " +
-                    "   protected short PacketReadInt16()\r\n        {\r\n            return (short)((Rec" +
-                    "eiveBuffer[ReceiveBufferPosition++] << 8)\r\n                | ReceiveBuffer[Recei" +
-                    "veBufferPosition++]);\r\n        }\r\n        protected void PacketWrite(short value" +
-                    ")\r\n        {\r\n            PacketWrite((byte)(value >> 8));\r\n            PacketWr" +
-                    "ite((byte)value);\r\n        }\r\n        protected short[] PacketReadListOfInt16()\r" +
-                    "\n        {\r\n            var value = new short[PacketReadInt32()];\r\n            f" +
-                    "or (int index = 0; index < value.Length; index++)\r\n                value[index] " +
-                    "= PacketReadInt16();\r\n            return value;\r\n        }\r\n        protected vo" +
-                    "id PacketWrite(short[] value)\r\n        {\r\n            PacketWrite(value.Length);" +
-                    "\r\n            foreach (var element in value)\r\n                PacketWrite(elemen" +
-                    "t);\r\n        }\r\n\r\n        // UInt32\r\n        protected uint PacketReadUInt32()\r\n" +
-                    "        {\r\n            return (uint)(ReceiveBuffer[ReceiveBufferPosition++] << 2" +
-                    "4\r\n                 | (ReceiveBuffer[ReceiveBufferPosition++] << 16)\r\n          " +
-                    "       | (ReceiveBuffer[ReceiveBufferPosition++] << 8)\r\n                 | (Rece" +
-                    "iveBuffer[ReceiveBufferPosition++]));\r\n        }\r\n        protected void PacketW" +
-                    "rite(uint value)\r\n        {\r\n            PacketWrite((byte)(value >> 24));\r\n    " +
-                    "        PacketWrite((byte)(value >> 16));\r\n            PacketWrite((byte)(value " +
-                    ">> 8));\r\n            PacketWrite((byte)value);\r\n        }\r\n        protected uin" +
-                    "t[] PacketReadListOfUInt32()\r\n        {\r\n            var value = new uint[Packet" +
-                    "ReadInt32()];\r\n            for (int index = 0; index < value.Length; index++)\r\n " +
-                    "               value[index] = PacketReadUInt32();\r\n            return value;\r\n  " +
-                    "      }\r\n        protected void PacketWrite(uint[] value)\r\n        {\r\n          " +
-                    "  PacketWrite(value.Length);\r\n            foreach (var element in value)\r\n      " +
-                    "          PacketWrite(element);\r\n        }\r\n\r\n        // Int32\r\n        protecte" +
-                    "d int PacketReadInt32()\r\n        {\r\n            return ReceiveBuffer[ReceiveBuff" +
-                    "erPosition++] << 24\r\n                 | (ReceiveBuffer[ReceiveBufferPosition++] " +
-                    "<< 16)\r\n                 | (ReceiveBuffer[ReceiveBufferPosition++] << 8)\r\n      " +
-                    "           | (ReceiveBuffer[ReceiveBufferPosition++]);\r\n        }\r\n\r\n        pro" +
-                    "tected void PacketWrite(int value)\r\n        {\r\n            PacketWrite((byte)(va" +
-                    "lue >> 24));\r\n            PacketWrite((byte)(value >> 16));\r\n            PacketW" +
-                    "rite((byte)(value >> 8));\r\n            PacketWrite((byte)value);\r\n        }\r\n   " +
-                    "     protected int[] PacketReadListOfInt32()\r\n        {\r\n            var value =" +
-                    " new int[PacketReadInt32()];\r\n            for (int index = 0; index < value.Leng" +
-                    "th; index++)\r\n                value[index] = PacketReadInt32();\r\n            ret" +
-                    "urn value;\r\n        }\r\n        protected void PacketWrite(int[] value)\r\n        " +
-                    "{\r\n            PacketWrite(value.Length);\r\n            foreach (var element in v" +
-                    "alue)\r\n                PacketWrite(element);\r\n        }\r\n\r\n\r\n        // UInt64\r\n" +
-                    "        protected ulong PacketReadUInt64()\r\n        {\r\n            ulong value =" +
-                    " ReceiveBuffer[ReceiveBufferPosition++]; value <<= 8;\r\n            value |= Rece" +
-                    "iveBuffer[ReceiveBufferPosition++]; value <<= 8;\r\n            value |= ReceiveBu" +
-                    "ffer[ReceiveBufferPosition++]; value <<= 8;\r\n            value |= ReceiveBuffer[" +
-                    "ReceiveBufferPosition++]; value <<= 8;\r\n            value |= ReceiveBuffer[Recei" +
-                    "veBufferPosition++]; value <<= 8;\r\n            value |= ReceiveBuffer[ReceiveBuf" +
-                    "ferPosition++]; value <<= 8;\r\n            value |= ReceiveBuffer[ReceiveBufferPo" +
-                    "sition++]; value <<= 8;\r\n            value |= ReceiveBuffer[ReceiveBufferPositio" +
-                    "n++];\r\n            return value;\r\n        }\r\n        protected void PacketWrite(" +
-                    "ulong value)\r\n        {\r\n            PacketWrite((byte)(value >> 56));\r\n        " +
-                    "    PacketWrite((byte)(value >> 48));\r\n            PacketWrite((byte)(value >> 4" +
-                    "0));\r\n            PacketWrite((byte)(value >> 32));\r\n            PacketWrite((by" +
-                    "te)(value >> 24));\r\n            PacketWrite((byte)(value >> 16));\r\n            P" +
-                    "acketWrite((byte)(value >> 8));\r\n            PacketWrite((byte)value);\r\n        " +
-                    "}\r\n        protected ulong[] PacketReadListOfUInt64()\r\n        {\r\n            va" +
-                    "r value = new ulong[PacketReadInt32()];\r\n            for (int index = 0; index <" +
-                    " value.Length; index++)\r\n                value[index] = PacketReadUInt64();\r\n   " +
-                    "         return value;\r\n        }\r\n        protected void PacketWrite(ulong[] va" +
-                    "lue)\r\n        {\r\n            PacketWrite(value.Length);\r\n            foreach (va" +
-                    "r element in value)\r\n                PacketWrite(element);\r\n        }\r\n\r\n       " +
-                    " // Int64\r\n        protected long PacketReadInt64()\r\n        {\r\n            long" +
-                    " value = ReceiveBuffer[ReceiveBufferPosition++]; value <<= 8;\r\n            value" +
-                    " |= ReceiveBuffer[ReceiveBufferPosition++]; value <<= 8;\r\n            value |= R" +
-                    "eceiveBuffer[ReceiveBufferPosition++]; value <<= 8;\r\n            value |= Receiv" +
-                    "eBuffer[ReceiveBufferPosition++]; value <<= 8;\r\n            value |= ReceiveBuff" +
-                    "er[ReceiveBufferPosition++]; value <<= 8;\r\n            value |= ReceiveBuffer[Re" +
-                    "ceiveBufferPosition++]; value <<= 8;\r\n            value |= ReceiveBuffer[Receive" +
-                    "BufferPosition++]; value <<= 8;\r\n            value |= ReceiveBuffer[ReceiveBuffe" +
-                    "rPosition++];\r\n            return value;\r\n        }\r\n        protected void Pack" +
-                    "etWrite(long value)\r\n        {\r\n            PacketWrite((byte)(value >> 56));\r\n " +
-                    "           PacketWrite((byte)(value >> 48));\r\n            PacketWrite((byte)(val" +
-                    "ue >> 40));\r\n            PacketWrite((byte)(value >> 32));\r\n            PacketWr" +
-                    "ite((byte)(value >> 24));\r\n            PacketWrite((byte)(value >> 16));\r\n      " +
-                    "      PacketWrite((byte)(value >> 8));\r\n            PacketWrite((byte)value);\r\n " +
-                    "       }\r\n        protected long[] PacketReadListOfInt64()\r\n        {\r\n         " +
-                    "   var value = new long[PacketReadInt32()];\r\n            for (int index = 0; ind" +
-                    "ex < value.Length; index++)\r\n                value[index] = PacketReadInt64();\r\n" +
-                    "            return value;\r\n        }\r\n        protected void PacketWrite(long[] " +
-                    "value)\r\n        {\r\n            PacketWrite(value.Length);\r\n            foreach (" +
-                    "var element in value)\r\n                PacketWrite(element);\r\n        }\r\n       " +
-                    " // Boolean\r\n        protected bool PacketReadBoolean()\r\n        {\r\n            " +
-                    "return ReceiveBuffer[ReceiveBufferPosition++] != 0;\r\n        }\r\n        protecte" +
-                    "d void PacketWrite(bool value)\r\n        {\r\n            PacketWrite((byte)(value " +
-                    "? 1 : 0));\r\n        }\r\n        public bool[] PacketReadListOfBoolean()\r\n        " +
-                    "{\r\n            var value = new bool[PacketReadInt32()];\r\n            for (int in" +
-                    "dex = 0; index < value.Length; index++)\r\n                value[index] = PacketRe" +
-                    "adBoolean();\r\n            return value;\r\n        }\r\n        protected void Packe" +
-                    "tWrite(bool[] value)\r\n        {\r\n            PacketWrite(value.Length);\r\n       " +
-                    "     foreach (var element in value)\r\n                PacketWrite(element);\r\n    " +
-                    "    }\r\n\r\n        // Single\r\n        protected float PacketReadSingle()\r\n        " +
-                    "{\r\n            var value = BitConverter.ToSingle(ReceiveBuffer, ReceiveBufferPos" +
-                    "ition);\r\n            ReceiveBufferPosition += sizeof(float);\r\n            return" +
-                    " value;\r\n        }\r\n        protected void PacketWrite(float value)\r\n        {\r\n" +
-                    "            foreach(var currentByte in BitConverter.GetBytes(value))\r\n          " +
-                    "      PacketWrite(currentByte);\r\n        }\r\n        protected float[] PacketRead" +
-                    "ListOfSingle()\r\n        {\r\n            var value = new float[PacketReadInt32()];" +
-                    "\r\n            for (int index = 0; index < value.Length; index++)\r\n              " +
-                    "  value[index] = PacketReadSingle();\r\n            return value;\r\n        }\r\n    " +
-                    "    protected void PacketWrite(float[] value)\r\n        {\r\n            PacketWrit" +
-                    "e(value.Length);\r\n            foreach (var element in value)\r\n                Pa" +
-                    "cketWrite(element);\r\n        }\r\n\r\n        // Double\r\n        protected double Pa" +
-                    "cketReadDouble()\r\n        {\r\n            var value = BitConverter.ToDouble(Recei" +
-                    "veBuffer, ReceiveBufferPosition);\r\n            ReceiveBufferPosition += sizeof(d" +
-                    "ouble);\r\n            return value;\r\n        }\r\n        protected void PacketWrit" +
-                    "e(double value)\r\n        {\r\n            foreach(var currentByte in BitConverter." +
-                    "GetBytes(value))\r\n                PacketWrite(currentByte);\r\n        }\r\n        " +
-                    "protected double[] PacketReadListOfDouble()\r\n        {\r\n            var value = " +
-                    "new double[PacketReadInt32()];\r\n            for (int index = 0; index < value.Le" +
-                    "ngth; index++)\r\n                value[index] = PacketReadDouble();\r\n            " +
-                    "return value;\r\n        }\r\n        protected void PacketWrite(double[] value)\r\n  " +
-                    "      {\r\n            PacketWrite(value.Length);\r\n            foreach (var elemen" +
-                    "t in value)\r\n                PacketWrite(element);\r\n        }\r\n\r\n        // Stri" +
-                    "ng\r\n        protected string PacketReadString()\r\n        {\r\n            var byte" +
-                    "s = PacketReadListOfByte();\r\n            return Encoding.UTF8.GetString(bytes, 0" +
-                    ", bytes.Length);\r\n        }\r\n        protected void PacketWrite(string value)\r\n " +
-                    "       {\r\n            PacketWrite(Encoding.UTF8.GetBytes(value));\r\n        }\r\n  " +
-                    "      protected string[] PacketReadListOfString()\r\n        {\r\n            var va" +
-                    "lue = new string[PacketReadInt32()];\r\n            for (int index = 0; index < va" +
-                    "lue.Length; index++)\r\n                value[index] = PacketReadString();\r\n      " +
-                    "      return value;\r\n        }\r\n        protected void PacketWrite(string[] valu" +
+            this.Write("\t\r\n\tpublic enum ConnectionError\r\n    {\r\n        Unknown,\r\n\t\tUser,\r\n        Connec" +
+                    "tion,\r\n        Receive,\r\n        Send\r\n    }\r\n\r\n    public abstract class TcpCha" +
+                    "nnelBase<T> where T : TcpChannelBase<T>\r\n    {\r\n        public event Action<T> C" +
+                    "onnected;\r\n        public event Action<T,ConnectionError> Disconnected;\r\n       " +
+                    " \r\n        private Socket socket;\r\n        private object mutext = new object();" +
+                    "\r\n        private bool disposed = false;\r\n\r\n        private byte[] SendBuffer;\r\n" +
+                    "        private int SendBufferPosition;\r\n\r\n        private byte[] ReceiveBuffer;" +
+                    "\r\n        private int ReceiveBufferPosition;\r\n        private int ReceiveBufferS" +
+                    "ize;\r\n\r\n\t\tpublic int BufferSize { get; protected set; } \r\n\r\n\t\tpublic TcpChannelB" +
+                    "ase(int bufferSize)\r\n\t\t{\r\n\t\t\tBufferSize = bufferSize;\r\n\t\t}\r\n\r\n        public asy" +
+                    "nc Task Connect(string host, int port)\r\n        {\r\n            try\r\n            " +
+                    "{\r\n                socket = new Socket(AddressFamily.InterNetwork, SocketType.St" +
+                    "ream, ProtocolType.Tcp);\r\n\r\n\t\t\t\tvar success = await Task.Run(() => {\r\n\t\t\t\t\ttry\r\n" +
+                    "\t\t\t\t\t{\r\n\t\t\t\t\t\tsocket.Connect(host, port);\r\n\t\t\t\t\t\treturn true;\r\n\t\t\t\t\t}\r\n\t\t\t\t\tcatc" +
+                    "h(Exception)\r\n\t\t\t\t\t{\t\t\t\t\t\r\n\t\t\t\t\t\treturn false;\r\n\t\t\t\t\t}\r\n\t\t\t\t});\r\n\t\t\t\tif(!success" +
+                    ")\r\n\t\t\t\t{\r\n                    Disconnect(ConnectionError.Connection);\r\n         " +
+                    "           return;\r\n                }\r\n\r\n\t\t\t\tSendBuffer = new byte[BufferSize];\r" +
+                    "\n\t\t\t\tSendBufferPosition = 0;\r\n\r\n\t\t\t\tReceiveBuffer = new byte[BufferSize];\r\n\t\t\t\tR" +
+                    "eceiveBufferPosition = 0;\r\n\t\t\t\tReceiveBufferSize = 0;\r\n\r\n\t\t\t\tif (Connected != nu" +
+                    "ll)\r\n\t\t\t\t\tConnected((T)this);\r\n\r\n\t\t\t\t\r\n                while (true)\r\n           " +
+                    "     {\r\n\t\t\t\t\t//Read Size\r\n\t\t\t\t\tReceiveBufferPosition = 0;\r\n                    R" +
+                    "eceiveBufferSize = await Task.Run(() => Fill(sizeof(int)));\r\n\t\t\t\t\tif(ReceiveBuff" +
+                    "erSize != sizeof(int))\r\n\t\t\t\t\t{\r\n                        Disconnect(ConnectionErr" +
+                    "or.Receive);\r\n                        return;\r\n                    }\t\t\t\t\t\t\r\n    " +
+                    "                \r\n\t\t\t\t\t//read packet data\r\n\t\t\t\t\tReceiveBufferPosition = 0;\r\n\t\t\t\t" +
+                    "\tReceiveBufferSize = PacketReadInt32() + sizeof(int);\r\n\r\n\t\t\t\t\tdo{\r\n\t\t\t\t\t\tvar rea" +
+                    "ded = await Task.Run(() => Fill(ReceiveBufferSize - ReceiveBufferPosition));\r\n\t\t" +
+                    "\t\t\t\tif(readed == 0)\r\n\t\t\t\t\t\t{\r\n\t\t\t\t\t\t\tDisconnect(ConnectionError.Receive);\r\n\t\t\t\t\t" +
+                    "\t\treturn;\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t\tReceiveBufferPosition += readed;\r\n\t\t\t\t\t}while(ReceiveB" +
+                    "ufferPosition < ReceiveBufferSize);\r\n\r\n\t\t\t\t\tReceiveBufferPosition = sizeof(int);" +
+                    "                    \r\n\t\t\t\t\t\r\n                    OnReceive(PacketReadUInt32());\r" +
+                    "\n                }\r\n            }\r\n            catch (Exception)\r\n            {\r" +
+                    "\n                Disconnect(ConnectionError.Unknown);\r\n            }\r\n        }\r" +
+                    "\n\r\n\t\tprivate int Fill(int size){\r\n\t\t\ttry\r\n\t\t\t{\r\n\t\t\t\treturn socket.Receive(Receiv" +
+                    "eBuffer,ReceiveBufferPosition,size,SocketFlags.None);\r\n\t\t\t}\r\n\t\t\tcatch(Exception)" +
+                    "\r\n\t\t\t{\r\n\t\t\t\treturn 0;\r\n\t\t\t}\r\n\t\t}\r\n\r\n        private void Disconnect(ConnectionEr" +
+                    "ror error)\r\n        {\r\n            var mustRaise = false;\r\n            lock (soc" +
+                    "ket)\r\n            {\r\n                if (!disposed)\r\n                {\r\n        " +
+                    "            mustRaise = true;\r\n                    disposed = true;\r\n           " +
+                    "         socket.Dispose();                    \r\n                }\r\n            }" +
+                    "\r\n\r\n            if (mustRaise && Disconnected != null)\r\n                Disconne" +
+                    "cted((T)this, error);\r\n        }\r\n\r\n        protected void BeginReadPacket(bool " +
+                    "compressed)\r\n        {\r\n            if (compressed)\r\n            {\r\n            " +
+                    "    var compressedBuffer = new byte[ReceiveBufferSize - 8];\r\n                var" +
+                    " uncompressedBuffer = new byte[BufferSize];\r\n                Buffer.BlockCopy(Re" +
+                    "ceiveBuffer, 8, compressedBuffer, 0, compressedBuffer.Length);\r\n                " +
+                    "var cipher = new CLZF();\r\n                var uncompressedSize = cipher.lzf_deco" +
+                    "mpress(compressedBuffer, compressedBuffer.Length, uncompressedBuffer, uncompress" +
+                    "edBuffer.Length);\r\n                Buffer.BlockCopy(uncompressedBuffer, 0, Recei" +
+                    "veBuffer, 8, uncompressedSize);\r\n                ReceiveBufferSize = uncompresse" +
+                    "dSize + 8;\r\n            }\r\n        }\r\n\r\n        protected void BeginNewPacket(ui" +
+                    "nt key)\r\n        {\r\n            SendBufferPosition = 4;\r\n            PacketWrite" +
+                    "(key);\r\n        }\r\n\r\n        private void SetSize()\r\n        {\r\n            var " +
+                    "size = SendBufferPosition - 4;\r\n            SendBuffer[0] = ((byte)(size >> 24))" +
+                    ";\r\n            SendBuffer[1] = ((byte)(size >> 16));\r\n            SendBuffer[2] " +
+                    "= ((byte)(size >> 8));\r\n            SendBuffer[3] = ((byte)size);\r\n        }\r\n\r\n" +
+                    "        protected async Task SendPacket(bool compressed)\r\n        {\r\n           " +
+                    " try\r\n            {\r\n                if (compressed && SendBufferPosition > 8)\r\n" +
+                    "                {\r\n                    //TODO make this better\r\n                " +
+                    "    var cipher = new CLZF();\r\n                    var uncompressedBytes = new by" +
+                    "te[SendBufferPosition - 8];\r\n                    Buffer.BlockCopy(SendBuffer, 8," +
+                    " uncompressedBytes, 0, uncompressedBytes.Length);\r\n                    var compr" +
+                    "essedBytes = new byte[BufferSize];\r\n                    var size = cipher.lzf_co" +
+                    "mpress(uncompressedBytes, uncompressedBytes.Length, compressedBytes, compressedB" +
+                    "ytes.Length);\r\n                    Buffer.BlockCopy(compressedBytes, 0, SendBuff" +
+                    "er, 8, size);\r\n                    SendBufferPosition = size + 8;\r\n             " +
+                    "   }\r\n\r\n                SetSize();\r\n\r\n                var success = await Task.R" +
+                    "un<bool>(() => \r\n\t\t\t\t{\r\n\t\t\t\t\ttry \r\n\t\t\t\t\t{\r\n\t\t\t\t\t\tsocket.Send(SendBuffer, SendBuf" +
+                    "ferPosition, SocketFlags.None);\r\n\t\t\t\t\t\treturn true;\r\n\t\t\t\t\t}\r\n\t\t\t\t\tcatch(Exceptio" +
+                    "n)\r\n\t\t\t\t\t{\r\n\t\t\t\t\t\treturn false;\r\n\t\t\t\t\t}\r\n\t\t\t\t});\r\n\t\t\t\tif(!success)\r\n\t\t\t\t{\r\n     " +
+                    "               Disconnect(ConnectionError.Send);\r\n                    return;\r\n " +
+                    "               }\r\n            }\r\n            catch (Exception)\r\n            {\r\n " +
+                    "               Disconnect(ConnectionError.Unknown);\r\n            }\r\n        }\r\n\r" +
+                    "\n        #region Spike Primary Type\r\n        // Byte\r\n        protected void Pac" +
+                    "ketWrite(byte value)\r\n        {\r\n            SendBuffer[SendBufferPosition++] = " +
+                    "value;\r\n        }\r\n        protected byte PacketReadByte()\r\n        {\r\n         " +
+                    "   return ReceiveBuffer[ReceiveBufferPosition++];\r\n        }\r\n        protected " +
+                    "byte[] PacketReadListOfByte()\r\n        {\r\n            var value = new byte[Packe" +
+                    "tReadInt32()];\r\n            Buffer.BlockCopy(ReceiveBuffer, ReceiveBufferPositio" +
+                    "n, value, 0, value.Length);\r\n            ReceiveBufferPosition += value.Length;\r" +
+                    "\n            return value;\r\n        }\r\n        protected void PacketWrite(byte[]" +
+                    " value)\r\n        {\r\n            PacketWrite(value.Length);\r\n            Buffer.B" +
+                    "lockCopy(value, 0, SendBuffer, SendBufferPosition, value.Length);\r\n            S" +
+                    "endBufferPosition += value.Length;\r\n        }\r\n\r\n        // SByte\r\n        //Don" +
+                    "\'t existe in spike protocol\r\n\r\n        // UInt16\r\n        protected ushort Packe" +
+                    "tReadUInt16()\r\n        {\r\n            return (ushort)((ReceiveBuffer[ReceiveBuff" +
+                    "erPosition++] << 8)\r\n                | ReceiveBuffer[ReceiveBufferPosition++]);\r" +
+                    "\n        }\r\n        protected void PacketWrite(ushort value)\r\n        {\r\n       " +
+                    "     PacketWrite((byte)(value >> 8));\r\n            PacketWrite((byte)value);\r\n  " +
+                    "      }\r\n        protected ushort[] PacketReadListOfUInt16()\r\n        {\r\n       " +
+                    "     var value = new ushort[PacketReadInt32()];\r\n            for (int index = 0;" +
+                    " index < value.Length; index++)\r\n                value[index] = PacketReadUInt16" +
+                    "();\r\n            return value;\r\n        }\r\n        protected void PacketWrite(us" +
+                    "hort[] value)\r\n        {\r\n            PacketWrite(value.Length);\r\n            fo" +
+                    "reach (var element in value)\r\n                PacketWrite(element);\r\n        }\r\n" +
+                    "\r\n        // Int16\r\n        protected short PacketReadInt16()\r\n        {\r\n      " +
+                    "      return (short)((ReceiveBuffer[ReceiveBufferPosition++] << 8)\r\n            " +
+                    "    | ReceiveBuffer[ReceiveBufferPosition++]);\r\n        }\r\n        protected voi" +
+                    "d PacketWrite(short value)\r\n        {\r\n            PacketWrite((byte)(value >> 8" +
+                    "));\r\n            PacketWrite((byte)value);\r\n        }\r\n        protected short[]" +
+                    " PacketReadListOfInt16()\r\n        {\r\n            var value = new short[PacketRea" +
+                    "dInt32()];\r\n            for (int index = 0; index < value.Length; index++)\r\n    " +
+                    "            value[index] = PacketReadInt16();\r\n            return value;\r\n      " +
+                    "  }\r\n        protected void PacketWrite(short[] value)\r\n        {\r\n            P" +
+                    "acketWrite(value.Length);\r\n            foreach (var element in value)\r\n         " +
+                    "       PacketWrite(element);\r\n        }\r\n\r\n        // UInt32\r\n        protected " +
+                    "uint PacketReadUInt32()\r\n        {\r\n            return (uint)(ReceiveBuffer[Rece" +
+                    "iveBufferPosition++] << 24\r\n                 | (ReceiveBuffer[ReceiveBufferPosit" +
+                    "ion++] << 16)\r\n                 | (ReceiveBuffer[ReceiveBufferPosition++] << 8)\r" +
+                    "\n                 | (ReceiveBuffer[ReceiveBufferPosition++]));\r\n        }\r\n     " +
+                    "   protected void PacketWrite(uint value)\r\n        {\r\n            PacketWrite((b" +
+                    "yte)(value >> 24));\r\n            PacketWrite((byte)(value >> 16));\r\n            " +
+                    "PacketWrite((byte)(value >> 8));\r\n            PacketWrite((byte)value);\r\n       " +
+                    " }\r\n        protected uint[] PacketReadListOfUInt32()\r\n        {\r\n            va" +
+                    "r value = new uint[PacketReadInt32()];\r\n            for (int index = 0; index < " +
+                    "value.Length; index++)\r\n                value[index] = PacketReadUInt32();\r\n    " +
+                    "        return value;\r\n        }\r\n        protected void PacketWrite(uint[] valu" +
                     "e)\r\n        {\r\n            PacketWrite(value.Length);\r\n            foreach (var " +
                     "element in value)\r\n                PacketWrite(element);\r\n        }\r\n\r\n        /" +
-                    "/ DateTime\r\n        protected DateTime PacketReadDateTime()\r\n        {\r\n        " +
-                    "    var year = PacketReadInt16();\r\n            var month = PacketReadInt16();\r\n " +
-                    "           var day = PacketReadInt16();\r\n            var hour = PacketReadInt16(" +
-                    ");\r\n            var minute = PacketReadInt16();\r\n            var second = Packet" +
-                    "ReadInt16();\r\n            var millisecond = PacketReadInt16();\r\n\r\n            re" +
-                    "turn new DateTime(year, month, day, hour, minute, second, millisecond);\r\n       " +
-                    " }\r\n        protected void PacketWrite(DateTime value)\r\n        {\r\n            P" +
-                    "acketWrite((short)value.Year);\r\n            PacketWrite((short)value.Month);\r\n  " +
-                    "          PacketWrite((short)value.Day);\r\n            PacketWrite((short)value.H" +
-                    "our);\r\n            PacketWrite((short)value.Minute);\r\n            PacketWrite((s" +
-                    "hort)value.Second);\r\n            PacketWrite((short)value.Millisecond);\r\n       " +
-                    " }\r\n\r\n        protected DateTime[] PacketReadListOfDateTime()\r\n        {\r\n      " +
-                    "      var value = new DateTime[PacketReadInt32()];\r\n            for (int index =" +
-                    " 0; index < value.Length; index++)\r\n                value[index] = PacketReadDat" +
-                    "eTime();\r\n            return value;\r\n        }\r\n        protected void PacketWri" +
-                    "te(DateTime[] value)\r\n        {\r\n            PacketWrite(value.Length);\r\n       " +
-                    "     foreach (var element in value)\r\n                PacketWrite(element);\r\n    " +
-                    "    }\r\n        #endregion\r\n\r\n        protected abstract void OnReceive(uint key)" +
-                    ";\r\n\r\n        #region Dynamics\r\n        [Obsolete(\"DynamicType is obsolete. Consi" +
-                    "der using JSON or XML serialized objects instead.\", false)]\r\n        protected v" +
-                    "oid PacketWrite(object value)\r\n        {\r\n            if (value is byte)\r\n      " +
-                    "      {\r\n                PacketWrite(true);\r\n                PacketWrite(@\"Byte\"" +
-                    ");\r\n                PacketWrite((byte)value);\r\n            }\r\n            else i" +
-                    "f (value is ushort)\r\n            {\r\n                PacketWrite(true);\r\n        " +
-                    "        PacketWrite(@\"UInt16\");\r\n                PacketWrite((ushort)value);\r\n  " +
-                    "          }\r\n            else if (value is short)\r\n            {\r\n              " +
-                    "  PacketWrite(true);\r\n                PacketWrite(@\"Int16\");\r\n                Pa" +
-                    "cketWrite((short)value);\r\n            }\r\n            else if (value is uint)\r\n  " +
-                    "          {\r\n                PacketWrite(true);\r\n                PacketWrite(@\"U" +
-                    "Int32\");\r\n                PacketWrite((uint)value);\r\n            }\r\n            " +
-                    "else if (value is int)\r\n            {\r\n                PacketWrite(true);\r\n     " +
-                    "           PacketWrite(@\"Int32\");\r\n                PacketWrite((int)value);\r\n   " +
-                    "         }\r\n            else if (value is ulong)\r\n            {\r\n               " +
-                    " PacketWrite(true);\r\n                PacketWrite(@\"UInt64\");\r\n                Pa" +
-                    "cketWrite((ulong)value);\r\n            }\r\n            else if (value is long)\r\n  " +
-                    "          {\r\n                PacketWrite(true);\r\n                PacketWrite(@\"I" +
-                    "nt64\");\r\n                PacketWrite((long)value);\r\n            }\r\n            e" +
-                    "lse if (value is float)\r\n            {\r\n                PacketWrite(true);\r\n    " +
-                    "            PacketWrite(@\"Single\");\r\n                PacketWrite((float)value);\r" +
-                    "\n            }\r\n            else if (value is double)\r\n            {\r\n          " +
-                    "      PacketWrite(true);\r\n                PacketWrite(@\"Double\");\r\n             " +
-                    "   PacketWrite((double)value);\r\n            }\r\n            else if (value is boo" +
-                    "l)\r\n            {\r\n                PacketWrite(true);\r\n                PacketWri" +
-                    "te(@\"Boolean\");\r\n                PacketWrite((bool)value);\r\n            }\r\n     " +
-                    "       else if (value is string)\r\n            {\r\n                PacketWrite(tru" +
-                    "e);\r\n                PacketWrite(@\"String\");\r\n                PacketWrite((strin" +
-                    "g)value);\r\n            }\r\n            else if (value is DateTime)\r\n            {" +
-                    "\r\n                PacketWrite(true);\r\n                PacketWrite(@\"DateTime\");\r" +
-                    "\n                PacketWrite((DateTime)value);\r\n            }\r\n            else\r" +
-                    "\n                PacketWrite(false);\r\n        }\r\n        [Obsolete(\"DynamicType " +
-                    "is obsolete. Consider using JSON or XML serialized objects instead.\", false)]\r\n " +
-                    "       protected object PacketReadDynamicType()\r\n        {\r\n            if (Pack" +
-                    "etReadBoolean())\r\n            {\r\n                switch (PacketReadString())\r\n  " +
-                    "              {\r\n                    case \"Byte\":\r\n                        retur" +
-                    "n PacketReadByte();\r\n                    case \"UInt16\":\r\n                       " +
-                    " return PacketReadUInt16();\r\n                    case \"Int16\":\r\n                " +
-                    "        return PacketReadInt16();\r\n                    case \"UInt32\":\r\n         " +
-                    "               return PacketReadUInt32();\r\n                    case \"Int32\":\r\n  " +
-                    "                      return PacketReadInt32();\r\n                    case \"UInt6" +
-                    "4\":\r\n                        return PacketReadUInt64();\r\n                    cas" +
-                    "e \"Int64\":\r\n                        return PacketReadInt64();\r\n                 " +
-                    "   case \"Single\":\r\n                        return PacketReadSingle();\r\n         " +
-                    "           case \"Double\":\r\n                        return PacketReadDouble();\r\n " +
-                    "                   case \"Boolean\":\r\n                        return PacketReadBoo" +
-                    "lean();\r\n                    case \"String\":\r\n                        return Pack" +
-                    "etReadString();\r\n                    case \"DateTime\":\r\n                        r" +
-                    "eturn PacketReadDateTime();\r\n                }\r\n            }\r\n            retur" +
-                    "n null;\r\n        }\r\n        [Obsolete(\"DynamicType is obsolete. Consider using J" +
-                    "SON or XML serialized objects instead.\", false)]\r\n        protected object[] Pac" +
-                    "ketReadListOfDynamicType()\r\n        {\r\n            var value = new object[Packet" +
-                    "ReadInt32()];\r\n            for (int index = 0; index < value.Length; index++)\r\n " +
-                    "               value[index] = PacketReadDynamicType();\r\n            return value" +
-                    ";\r\n        }\r\n        [Obsolete(\"DynamicType is obsolete. Consider using JSON or" +
-                    " XML serialized objects instead.\", false)]\r\n        protected void PacketWrite(o" +
-                    "bject[] value)\r\n        {\r\n            PacketWrite(value.Length);\r\n            f" +
-                    "oreach (var element in value)\r\n                PacketWrite((object)element);\r\n  " +
-                    "      }\r\n        #endregion\r\n\r\n\r\n    }\r\n\r\n");
+                    "/ Int32\r\n        protected int PacketReadInt32()\r\n        {\r\n            return " +
+                    "ReceiveBuffer[ReceiveBufferPosition++] << 24\r\n                 | (ReceiveBuffer[" +
+                    "ReceiveBufferPosition++] << 16)\r\n                 | (ReceiveBuffer[ReceiveBuffer" +
+                    "Position++] << 8)\r\n                 | (ReceiveBuffer[ReceiveBufferPosition++]);\r" +
+                    "\n        }\r\n\r\n        protected void PacketWrite(int value)\r\n        {\r\n        " +
+                    "    PacketWrite((byte)(value >> 24));\r\n            PacketWrite((byte)(value >> 1" +
+                    "6));\r\n            PacketWrite((byte)(value >> 8));\r\n            PacketWrite((byt" +
+                    "e)value);\r\n        }\r\n        protected int[] PacketReadListOfInt32()\r\n        {" +
+                    "\r\n            var value = new int[PacketReadInt32()];\r\n            for (int inde" +
+                    "x = 0; index < value.Length; index++)\r\n                value[index] = PacketRead" +
+                    "Int32();\r\n            return value;\r\n        }\r\n        protected void PacketWri" +
+                    "te(int[] value)\r\n        {\r\n            PacketWrite(value.Length);\r\n            " +
+                    "foreach (var element in value)\r\n                PacketWrite(element);\r\n        }" +
+                    "\r\n\r\n\r\n        // UInt64\r\n        protected ulong PacketReadUInt64()\r\n        {\r\n" +
+                    "            ulong value = ReceiveBuffer[ReceiveBufferPosition++]; value <<= 8;\r\n" +
+                    "            value |= ReceiveBuffer[ReceiveBufferPosition++]; value <<= 8;\r\n     " +
+                    "       value |= ReceiveBuffer[ReceiveBufferPosition++]; value <<= 8;\r\n          " +
+                    "  value |= ReceiveBuffer[ReceiveBufferPosition++]; value <<= 8;\r\n            val" +
+                    "ue |= ReceiveBuffer[ReceiveBufferPosition++]; value <<= 8;\r\n            value |=" +
+                    " ReceiveBuffer[ReceiveBufferPosition++]; value <<= 8;\r\n            value |= Rece" +
+                    "iveBuffer[ReceiveBufferPosition++]; value <<= 8;\r\n            value |= ReceiveBu" +
+                    "ffer[ReceiveBufferPosition++];\r\n            return value;\r\n        }\r\n        pr" +
+                    "otected void PacketWrite(ulong value)\r\n        {\r\n            PacketWrite((byte)" +
+                    "(value >> 56));\r\n            PacketWrite((byte)(value >> 48));\r\n            Pack" +
+                    "etWrite((byte)(value >> 40));\r\n            PacketWrite((byte)(value >> 32));\r\n  " +
+                    "          PacketWrite((byte)(value >> 24));\r\n            PacketWrite((byte)(valu" +
+                    "e >> 16));\r\n            PacketWrite((byte)(value >> 8));\r\n            PacketWrit" +
+                    "e((byte)value);\r\n        }\r\n        protected ulong[] PacketReadListOfUInt64()\r\n" +
+                    "        {\r\n            var value = new ulong[PacketReadInt32()];\r\n            fo" +
+                    "r (int index = 0; index < value.Length; index++)\r\n                value[index] =" +
+                    " PacketReadUInt64();\r\n            return value;\r\n        }\r\n        protected vo" +
+                    "id PacketWrite(ulong[] value)\r\n        {\r\n            PacketWrite(value.Length);" +
+                    "\r\n            foreach (var element in value)\r\n                PacketWrite(elemen" +
+                    "t);\r\n        }\r\n\r\n        // Int64\r\n        protected long PacketReadInt64()\r\n  " +
+                    "      {\r\n            long value = ReceiveBuffer[ReceiveBufferPosition++]; value " +
+                    "<<= 8;\r\n            value |= ReceiveBuffer[ReceiveBufferPosition++]; value <<= 8" +
+                    ";\r\n            value |= ReceiveBuffer[ReceiveBufferPosition++]; value <<= 8;\r\n  " +
+                    "          value |= ReceiveBuffer[ReceiveBufferPosition++]; value <<= 8;\r\n       " +
+                    "     value |= ReceiveBuffer[ReceiveBufferPosition++]; value <<= 8;\r\n            " +
+                    "value |= ReceiveBuffer[ReceiveBufferPosition++]; value <<= 8;\r\n            value" +
+                    " |= ReceiveBuffer[ReceiveBufferPosition++]; value <<= 8;\r\n            value |= R" +
+                    "eceiveBuffer[ReceiveBufferPosition++];\r\n            return value;\r\n        }\r\n  " +
+                    "      protected void PacketWrite(long value)\r\n        {\r\n            PacketWrite" +
+                    "((byte)(value >> 56));\r\n            PacketWrite((byte)(value >> 48));\r\n         " +
+                    "   PacketWrite((byte)(value >> 40));\r\n            PacketWrite((byte)(value >> 32" +
+                    "));\r\n            PacketWrite((byte)(value >> 24));\r\n            PacketWrite((byt" +
+                    "e)(value >> 16));\r\n            PacketWrite((byte)(value >> 8));\r\n            Pac" +
+                    "ketWrite((byte)value);\r\n        }\r\n        protected long[] PacketReadListOfInt6" +
+                    "4()\r\n        {\r\n            var value = new long[PacketReadInt32()];\r\n          " +
+                    "  for (int index = 0; index < value.Length; index++)\r\n                value[inde" +
+                    "x] = PacketReadInt64();\r\n            return value;\r\n        }\r\n        protected" +
+                    " void PacketWrite(long[] value)\r\n        {\r\n            PacketWrite(value.Length" +
+                    ");\r\n            foreach (var element in value)\r\n                PacketWrite(elem" +
+                    "ent);\r\n        }\r\n        // Boolean\r\n        protected bool PacketReadBoolean()" +
+                    "\r\n        {\r\n            return ReceiveBuffer[ReceiveBufferPosition++] != 0;\r\n  " +
+                    "      }\r\n        protected void PacketWrite(bool value)\r\n        {\r\n            " +
+                    "PacketWrite((byte)(value ? 1 : 0));\r\n        }\r\n        public bool[] PacketRead" +
+                    "ListOfBoolean()\r\n        {\r\n            var value = new bool[PacketReadInt32()];" +
+                    "\r\n            for (int index = 0; index < value.Length; index++)\r\n              " +
+                    "  value[index] = PacketReadBoolean();\r\n            return value;\r\n        }\r\n   " +
+                    "     protected void PacketWrite(bool[] value)\r\n        {\r\n            PacketWrit" +
+                    "e(value.Length);\r\n            foreach (var element in value)\r\n                Pa" +
+                    "cketWrite(element);\r\n        }\r\n\r\n        // Single\r\n        protected float Pac" +
+                    "ketReadSingle()\r\n        {\r\n            var value = BitConverter.ToSingle(Receiv" +
+                    "eBuffer, ReceiveBufferPosition);\r\n            ReceiveBufferPosition += sizeof(fl" +
+                    "oat);\r\n            return value;\r\n        }\r\n        protected void PacketWrite(" +
+                    "float value)\r\n        {\r\n            foreach(var currentByte in BitConverter.Get" +
+                    "Bytes(value))\r\n                PacketWrite(currentByte);\r\n        }\r\n        pro" +
+                    "tected float[] PacketReadListOfSingle()\r\n        {\r\n            var value = new " +
+                    "float[PacketReadInt32()];\r\n            for (int index = 0; index < value.Length;" +
+                    " index++)\r\n                value[index] = PacketReadSingle();\r\n            retur" +
+                    "n value;\r\n        }\r\n        protected void PacketWrite(float[] value)\r\n        " +
+                    "{\r\n            PacketWrite(value.Length);\r\n            foreach (var element in v" +
+                    "alue)\r\n                PacketWrite(element);\r\n        }\r\n\r\n        // Double\r\n  " +
+                    "      protected double PacketReadDouble()\r\n        {\r\n            var value = Bi" +
+                    "tConverter.ToDouble(ReceiveBuffer, ReceiveBufferPosition);\r\n            ReceiveB" +
+                    "ufferPosition += sizeof(double);\r\n            return value;\r\n        }\r\n        " +
+                    "protected void PacketWrite(double value)\r\n        {\r\n            foreach(var cur" +
+                    "rentByte in BitConverter.GetBytes(value))\r\n                PacketWrite(currentBy" +
+                    "te);\r\n        }\r\n        protected double[] PacketReadListOfDouble()\r\n        {\r" +
+                    "\n            var value = new double[PacketReadInt32()];\r\n            for (int in" +
+                    "dex = 0; index < value.Length; index++)\r\n                value[index] = PacketRe" +
+                    "adDouble();\r\n            return value;\r\n        }\r\n        protected void Packet" +
+                    "Write(double[] value)\r\n        {\r\n            PacketWrite(value.Length);\r\n      " +
+                    "      foreach (var element in value)\r\n                PacketWrite(element);\r\n   " +
+                    "     }\r\n\r\n        // String\r\n        protected string PacketReadString()\r\n      " +
+                    "  {\r\n            var bytes = PacketReadListOfByte();\r\n            return Encodin" +
+                    "g.UTF8.GetString(bytes, 0, bytes.Length);\r\n        }\r\n        protected void Pac" +
+                    "ketWrite(string value)\r\n        {\r\n            PacketWrite(Encoding.UTF8.GetByte" +
+                    "s(value));\r\n        }\r\n        protected string[] PacketReadListOfString()\r\n    " +
+                    "    {\r\n            var value = new string[PacketReadInt32()];\r\n            for (" +
+                    "int index = 0; index < value.Length; index++)\r\n                value[index] = Pa" +
+                    "cketReadString();\r\n            return value;\r\n        }\r\n        protected void " +
+                    "PacketWrite(string[] value)\r\n        {\r\n            PacketWrite(value.Length);\r\n" +
+                    "            foreach (var element in value)\r\n                PacketWrite(element)" +
+                    ";\r\n        }\r\n\r\n        // DateTime\r\n        protected DateTime PacketReadDateTi" +
+                    "me()\r\n        {\r\n            var year = PacketReadInt16();\r\n            var mont" +
+                    "h = PacketReadInt16();\r\n            var day = PacketReadInt16();\r\n            va" +
+                    "r hour = PacketReadInt16();\r\n            var minute = PacketReadInt16();\r\n      " +
+                    "      var second = PacketReadInt16();\r\n            var millisecond = PacketReadI" +
+                    "nt16();\r\n\r\n            return new DateTime(year, month, day, hour, minute, secon" +
+                    "d, millisecond);\r\n        }\r\n        protected void PacketWrite(DateTime value)\r" +
+                    "\n        {\r\n            PacketWrite((short)value.Year);\r\n            PacketWrite" +
+                    "((short)value.Month);\r\n            PacketWrite((short)value.Day);\r\n            P" +
+                    "acketWrite((short)value.Hour);\r\n            PacketWrite((short)value.Minute);\r\n " +
+                    "           PacketWrite((short)value.Second);\r\n            PacketWrite((short)val" +
+                    "ue.Millisecond);\r\n        }\r\n\r\n        protected DateTime[] PacketReadListOfDate" +
+                    "Time()\r\n        {\r\n            var value = new DateTime[PacketReadInt32()];\r\n   " +
+                    "         for (int index = 0; index < value.Length; index++)\r\n                val" +
+                    "ue[index] = PacketReadDateTime();\r\n            return value;\r\n        }\r\n       " +
+                    " protected void PacketWrite(DateTime[] value)\r\n        {\r\n            PacketWrit" +
+                    "e(value.Length);\r\n            foreach (var element in value)\r\n                Pa" +
+                    "cketWrite(element);\r\n        }\r\n        #endregion\r\n\r\n        protected abstract" +
+                    " void OnReceive(uint key);\r\n\r\n        #region Dynamics\r\n        [Obsolete(\"Dynam" +
+                    "icType is obsolete. Consider using JSON or XML serialized objects instead.\", fal" +
+                    "se)]\r\n        protected void PacketWrite(object value)\r\n        {\r\n            i" +
+                    "f (value is byte)\r\n            {\r\n                PacketWrite(true);\r\n          " +
+                    "      PacketWrite(@\"Byte\");\r\n                PacketWrite((byte)value);\r\n        " +
+                    "    }\r\n            else if (value is ushort)\r\n            {\r\n                Pac" +
+                    "ketWrite(true);\r\n                PacketWrite(@\"UInt16\");\r\n                Packet" +
+                    "Write((ushort)value);\r\n            }\r\n            else if (value is short)\r\n    " +
+                    "        {\r\n                PacketWrite(true);\r\n                PacketWrite(@\"Int" +
+                    "16\");\r\n                PacketWrite((short)value);\r\n            }\r\n            el" +
+                    "se if (value is uint)\r\n            {\r\n                PacketWrite(true);\r\n      " +
+                    "          PacketWrite(@\"UInt32\");\r\n                PacketWrite((uint)value);\r\n  " +
+                    "          }\r\n            else if (value is int)\r\n            {\r\n                " +
+                    "PacketWrite(true);\r\n                PacketWrite(@\"Int32\");\r\n                Pack" +
+                    "etWrite((int)value);\r\n            }\r\n            else if (value is ulong)\r\n     " +
+                    "       {\r\n                PacketWrite(true);\r\n                PacketWrite(@\"UInt" +
+                    "64\");\r\n                PacketWrite((ulong)value);\r\n            }\r\n            el" +
+                    "se if (value is long)\r\n            {\r\n                PacketWrite(true);\r\n      " +
+                    "          PacketWrite(@\"Int64\");\r\n                PacketWrite((long)value);\r\n   " +
+                    "         }\r\n            else if (value is float)\r\n            {\r\n               " +
+                    " PacketWrite(true);\r\n                PacketWrite(@\"Single\");\r\n                Pa" +
+                    "cketWrite((float)value);\r\n            }\r\n            else if (value is double)\r\n" +
+                    "            {\r\n                PacketWrite(true);\r\n                PacketWrite(@" +
+                    "\"Double\");\r\n                PacketWrite((double)value);\r\n            }\r\n        " +
+                    "    else if (value is bool)\r\n            {\r\n                PacketWrite(true);\r\n" +
+                    "                PacketWrite(@\"Boolean\");\r\n                PacketWrite((bool)valu" +
+                    "e);\r\n            }\r\n            else if (value is string)\r\n            {\r\n      " +
+                    "          PacketWrite(true);\r\n                PacketWrite(@\"String\");\r\n         " +
+                    "       PacketWrite((string)value);\r\n            }\r\n            else if (value is" +
+                    " DateTime)\r\n            {\r\n                PacketWrite(true);\r\n                P" +
+                    "acketWrite(@\"DateTime\");\r\n                PacketWrite((DateTime)value);\r\n       " +
+                    "     }\r\n            else\r\n                PacketWrite(false);\r\n        }\r\n      " +
+                    "  [Obsolete(\"DynamicType is obsolete. Consider using JSON or XML serialized obje" +
+                    "cts instead.\", false)]\r\n        protected object PacketReadDynamicType()\r\n      " +
+                    "  {\r\n            if (PacketReadBoolean())\r\n            {\r\n                switch" +
+                    " (PacketReadString())\r\n                {\r\n                    case \"Byte\":\r\n    " +
+                    "                    return PacketReadByte();\r\n                    case \"UInt16\":" +
+                    "\r\n                        return PacketReadUInt16();\r\n                    case \"" +
+                    "Int16\":\r\n                        return PacketReadInt16();\r\n                    " +
+                    "case \"UInt32\":\r\n                        return PacketReadUInt32();\r\n            " +
+                    "        case \"Int32\":\r\n                        return PacketReadInt32();\r\n      " +
+                    "              case \"UInt64\":\r\n                        return PacketReadUInt64();" +
+                    "\r\n                    case \"Int64\":\r\n                        return PacketReadIn" +
+                    "t64();\r\n                    case \"Single\":\r\n                        return Packe" +
+                    "tReadSingle();\r\n                    case \"Double\":\r\n                        retu" +
+                    "rn PacketReadDouble();\r\n                    case \"Boolean\":\r\n                   " +
+                    "     return PacketReadBoolean();\r\n                    case \"String\":\r\n          " +
+                    "              return PacketReadString();\r\n                    case \"DateTime\":\r\n" +
+                    "                        return PacketReadDateTime();\r\n                }\r\n       " +
+                    "     }\r\n            return null;\r\n        }\r\n        [Obsolete(\"DynamicType is o" +
+                    "bsolete. Consider using JSON or XML serialized objects instead.\", false)]\r\n     " +
+                    "   protected object[] PacketReadListOfDynamicType()\r\n        {\r\n            var " +
+                    "value = new object[PacketReadInt32()];\r\n            for (int index = 0; index < " +
+                    "value.Length; index++)\r\n                value[index] = PacketReadDynamicType();\r" +
+                    "\n            return value;\r\n        }\r\n        [Obsolete(\"DynamicType is obsolet" +
+                    "e. Consider using JSON or XML serialized objects instead.\", false)]\r\n        pro" +
+                    "tected void PacketWrite(object[] value)\r\n        {\r\n            PacketWrite(valu" +
+                    "e.Length);\r\n            foreach (var element in value)\r\n                PacketWr" +
+                    "ite((object)element);\r\n        }\r\n        #endregion\r\n\r\n\r\n    }\r\n\r\n");
             this.Write("\r\n");
             
-            #line 24 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 25 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CSharp5Template.tt"
 	} 
             
             #line default
             #line hidden
             this.Write("\r\n");
             
-            #line 26 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 27 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CSharp5Template.tt"
 	if(Target == null || Target == "TcpChannel")
 	{ 
             
             #line default
             #line hidden
             this.Write(" \r\n\t");
-            this.Write("\tpublic class TcpChannel : TcpChannelBase<TcpChannel>\r\n\t{\r\n\t\t//Events\r\n");
+            this.Write("\tpublic class TcpChannel : TcpChannelBase<TcpChannel>\r\n\t{\r\n\t\tpublic TcpChannel(in" +
+                    "t bufferSize = 8096) : base(bufferSize)\r\n\t\t{\r\n\t\t}\r\n\r\n\t\t//Events\r\n");
             
-            #line 4 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 8 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
 		foreach(var receive in Model.Receives)
 		{ 
             
@@ -504,28 +504,28 @@ namespace Spike.Build.CSharp5
             #line hidden
             this.Write("\t\t\r\n\t\tpublic event Action<TcpChannel, ");
             
-            #line 6 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 10 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name));
             
             #line default
             #line hidden
             this.Write("> ");
             
-            #line 6 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 10 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name));
             
             #line default
             #line hidden
             this.Write("; \r\n");
             
-            #line 7 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 11 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
 		} 
             
             #line default
             #line hidden
             this.Write("\t\t    \r\n\t\t//Sends        \r\n");
             
-            #line 10 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 14 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
 		foreach(var send in Model.Sends)
 		{ 
             
@@ -533,14 +533,14 @@ namespace Spike.Build.CSharp5
             #line hidden
             this.Write("\t\t\r\n\t\tpublic async Task ");
             
-            #line 12 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 16 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(send.Name));
             
             #line default
             #line hidden
             this.Write("(");
             
-            #line 12 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 16 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
 	
 			var first = true;
 			foreach(var member in send.Members){
@@ -558,14 +558,14 @@ namespace Spike.Build.CSharp5
             #line hidden
             this.Write(")\r\n\t\t{\r\n\t\t\tBeginNewPacket(0x");
             
-            #line 25 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 29 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(send.Id.ToString("X")));
             
             #line default
             #line hidden
             this.Write("u);\r\n");
             
-            #line 26 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 30 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
 			foreach(var member in send.Members)
 			{ 
             
@@ -573,28 +573,28 @@ namespace Spike.Build.CSharp5
             #line hidden
             this.Write("\t\t\tPacketWrite(");
             
-            #line 28 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 32 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
             
             #line default
             #line hidden
             this.Write(");\r\n");
             
-            #line 29 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 33 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
 			} 
             
             #line default
             #line hidden
             this.Write("\t\t\tawait SendPacket(");
             
-            #line 30 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 34 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(send.Compressed ? "true" : "false"));
             
             #line default
             #line hidden
             this.Write(");\r\n\t\t}\t\t \r\n");
             
-            #line 32 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 36 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
 		} 
             
             #line default
@@ -602,7 +602,7 @@ namespace Spike.Build.CSharp5
             this.Write("\r\n\t\t//Dispatcher\r\n\t\tprotected override void OnReceive(uint key)\r\n\t\t{\r\n\t\t\tswitch (" +
                     "key)\r\n\t\t\t{\r\n");
             
-            #line 39 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 43 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
 				foreach(var receive in Model.Receives)
 				{ 
             
@@ -610,76 +610,76 @@ namespace Spike.Build.CSharp5
             #line hidden
             this.Write("\t\t\t\t\r\n\t\t\t\tcase 0x");
             
-            #line 41 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 45 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Id.ToString("X")));
             
             #line default
             #line hidden
             this.Write("u:\r\n\t\t\t\t{\r\n\t\t\t\t\tvar packet = new ");
             
-            #line 43 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 47 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name));
             
             #line default
             #line hidden
             this.Write("();\r\n\t\t\t\t\tBeginReadPacket(");
             
-            #line 44 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 48 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Compressed ? "true" : "false"));
             
             #line default
             #line hidden
             this.Write(");\r\n\t\t\t\t\t\r\n");
             
-            #line 46 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 50 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
 					foreach(var member in receive.Members){ 
             
             #line default
             #line hidden
             this.Write("\t\t\t\t\tpacket.");
             
-            #line 47 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 51 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
             
             #line default
             #line hidden
             this.Write(" = PacketRead");
             
-            #line 47 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 51 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "ListOf" : string.Empty));
             
             #line default
             #line hidden
             
-            #line 47 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 51 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Type));
             
             #line default
             #line hidden
             this.Write("();\r\n");
             
-            #line 48 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 52 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
 					} 
             
             #line default
             #line hidden
             this.Write("\r\n\t\t\t\t\t//Now Call event\r\n\t\t\t\t\tif (");
             
-            #line 51 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 55 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name));
             
             #line default
             #line hidden
             this.Write(" != null)\r\n\t\t\t\t\t\t");
             
-            #line 52 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 56 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name));
             
             #line default
             #line hidden
             this.Write("(this, packet);\r\n\r\n\t\t\t\t\tbreak;\r\n\t\t\t\t}\r\n");
             
-            #line 56 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 60 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
 				} 
             
             #line default
@@ -687,7 +687,7 @@ namespace Spike.Build.CSharp5
             this.Write("\r\n\t\t\t\tdefault:\r\n\t\t\t\t\tDebug.WriteLine(\"Unknow packet : {0:X}\", key);\r\n\t\t\t\t\treturn;" +
                     "\r\n\t\t\t}\r\n\t\t}\r\n\r\n\t\t//Custom Type\r\n");
             
-            #line 65 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 69 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
 		foreach(var customType in Model.CustomTypes)
 		{ 
             
@@ -695,28 +695,28 @@ namespace Spike.Build.CSharp5
             #line hidden
             this.Write("\t\tprotected ");
             
-            #line 67 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 71 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
             #line hidden
             this.Write(" PacketRead");
             
-            #line 67 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 71 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
             #line hidden
             this.Write("()\r\n        {\r\n            var value = new ");
             
-            #line 69 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 73 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
             #line hidden
             this.Write("();\r\n");
             
-            #line 70 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 74 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
 			foreach(var member in customType.Members)
 			{ 
             
@@ -724,41 +724,41 @@ namespace Spike.Build.CSharp5
             #line hidden
             this.Write("\t\t\tvalue.");
             
-            #line 72 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 76 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
             
             #line default
             #line hidden
             this.Write(" = PacketRead");
             
-            #line 72 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 76 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "ListOf" : string.Empty));
             
             #line default
             #line hidden
             
-            #line 72 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 76 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Type));
             
             #line default
             #line hidden
             this.Write("();\r\n");
             
-            #line 73 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 77 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
 			} 
             
             #line default
             #line hidden
             this.Write("\t\t\treturn value;\r\n        }\r\n        protected void PacketWrite(");
             
-            #line 76 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 80 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
             #line hidden
             this.Write(" value)\r\n        {\r\n            ");
             
-            #line 78 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 82 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
 			foreach(var member in customType.Members)
 			{ 
             
@@ -766,35 +766,35 @@ namespace Spike.Build.CSharp5
             #line hidden
             this.Write("\t\t\tPacketWrite(value.");
             
-            #line 80 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 84 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
             
             #line default
             #line hidden
             this.Write(");\r\n");
             
-            #line 81 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 85 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
 			} 
             
             #line default
             #line hidden
             this.Write("        }\r\n\r\n        protected ");
             
-            #line 84 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 88 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
             #line hidden
             this.Write("[] PacketReadListOf");
             
-            #line 84 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 88 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
             #line hidden
             this.Write("()\r\n        {\r\n            var value = new ");
             
-            #line 86 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 90 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
@@ -802,14 +802,14 @@ namespace Spike.Build.CSharp5
             this.Write("[PacketReadInt32()];\r\n            for (int index = 0; index < value.Length; index" +
                     "++)\r\n                value[index] = PacketRead");
             
-            #line 88 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 92 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
             #line hidden
             this.Write("();\r\n            return value;\r\n        }\r\n        protected void PacketWrite(");
             
-            #line 91 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 95 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
@@ -817,7 +817,7 @@ namespace Spike.Build.CSharp5
             this.Write("[] value)\r\n        {\r\n            PacketWrite(value.Length);\r\n            foreach" +
                     " (var element in value)\r\n                PacketWrite(element);\r\n        }\r\n");
             
-            #line 97 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 101 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\TcpChannel.t4"
 				} 
             
             #line default
@@ -825,14 +825,14 @@ namespace Spike.Build.CSharp5
             this.Write("\r\n\t}\r\n");
             this.Write("\r\n");
             
-            #line 29 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 30 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CSharp5Template.tt"
 	} 
             
             #line default
             #line hidden
             this.Write("\r\n\r\n");
             
-            #line 32 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 33 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CSharp5Template.tt"
 	if(Target == null)
 	{ 
 		foreach( var operation in Model.Receives )
@@ -887,7 +887,7 @@ namespace Spike.Build.CSharp5
             this.Write("\r\n    }\r\n\r\n");
             this.Write("\r\n");
             
-            #line 38 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 39 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CSharp5Template.tt"
 		} 
 	} else if( Target == "Packet" )
 	{ 
@@ -940,14 +940,14 @@ namespace Spike.Build.CSharp5
             this.Write("\r\n    }\r\n\r\n");
             this.Write("\r\n");
             
-            #line 42 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 43 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CSharp5Template.tt"
 	} 
             
             #line default
             #line hidden
             this.Write("\r\n\r\n");
             
-            #line 45 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 46 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CSharp5Template.tt"
 	if(Target == null)
 	{ 
 		foreach( var customType in Model.CustomTypes )
@@ -1002,7 +1002,7 @@ namespace Spike.Build.CSharp5
             this.Write("    }\r\n");
             this.Write("\r\n");
             
-            #line 51 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 52 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CSharp5Template.tt"
 		} 
 	} else if( Target == "ComplexType" )
 	{ 
@@ -1055,7 +1055,7 @@ namespace Spike.Build.CSharp5
             this.Write("    }\r\n");
             this.Write("\r\n");
             
-            #line 55 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 56 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CSharp5Template.tt"
 	} 
             
             #line default
@@ -1064,7 +1064,7 @@ namespace Spike.Build.CSharp5
             return this.GenerationEnvironment.ToString();
         }
         
-        #line 59 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CSharp5Template.tt"
+        #line 60 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.CSharp5\CSharp5Template.tt"
  internal void Clear(){
 	GenerationEnvironment.Clear();
 } 

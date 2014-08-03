@@ -1,5 +1,9 @@
 ﻿	public class TcpChannel : TcpChannelBase<TcpChannel>
 	{
+		public TcpChannel(int bufferSize = 8096) : base(bufferSize)
+		{
+		}
+
 		//Events
 <#		foreach(var receive in Model.Receives)
 		{ #>		

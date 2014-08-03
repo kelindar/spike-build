@@ -3,19 +3,21 @@
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
-
+<#@ import namespace="Spike.Build.CSharp5" #>
 
 using System;
 using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
-using System.Net.Sockets;
+using Windows.Networking;
+using Windows.Networking.Sockets;
+using Windows.Storage.Streams;
 
 namespace Spike.Network
 {
 <#	if(Target == null || Target == "LZF")
 	{ #> 
-	<#@ include file="CLZF.t4"#>
+	<#@ include file="../Spike.Build.CSharp5/CLZF.t4"#>
 <#	} #>
 
 <#	if(Target == null || Target == "TcpChannelBase")
@@ -25,7 +27,7 @@ namespace Spike.Network
 
 <#	if(Target == null || Target == "TcpChannel")
 	{ #> 
-	<#@ include file="TcpChannel.t4"#>
+	<#@ include file="../Spike.Build.CSharp5/TcpChannel.t4"#>
 <#	} #>
 
 
@@ -34,11 +36,11 @@ namespace Spike.Network
 		foreach( var operation in Model.Receives )
 		{
 			TargetOperation = operation; #> 
-			<#@ include file="Packet.t4"#>
+			<#@ include file="../Spike.Build.CSharp5/Packet.t4"#>
 <#		} 
 	} else if( Target == "Packet" )
 	{ #> 
-	<#@ include file="Packet.t4"#>
+	<#@ include file="../Spike.Build.CSharp5/Packet.t4"#>
 <#	} #>
 
 
@@ -47,11 +49,11 @@ namespace Spike.Network
 		foreach( var customType in Model.CustomTypes )
 		{
 			TargetType = customType; #> 
-			<#@ include file="ComplexType.t4"#>
+			<#@ include file="../Spike.Build.CSharp5/ComplexType.t4"#>
 <#		} 
 	} else if( Target == "ComplexType" )
 	{ #> 
-	<#@ include file="ComplexType.t4"#>
+	<#@ include file="../Spike.Build.CSharp5/ComplexType.t4"#>
 <#	} #>
 
 }

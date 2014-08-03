@@ -132,11 +132,6 @@
     </Compile>
     <Compile Include="Spike.Build.Xamarin\XamarinBuilder.cs" />
     <Compile Include="Spike.Build.WinRT\WinRTBuilder.cs" />
-    <Compile Include="Spike.Build.Xamarin\XamarinTemplate.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>XamarinTemplate.tt</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -192,30 +187,12 @@
       <LastGenOutput>TcpChannelTemplate.cs</LastGenOutput>
       <CustomToolNamespace>Spike.Build.Java</CustomToolNamespace>
     </None>
-    <None Include="Spike.Build.WinRT\CLZF.t4">
-      <LastGenOutput>CLZF.cs</LastGenOutput>
-    </None>
-    <None Include="Spike.Build.WinRT\ComplexType.t4" />
+    <None Include="Spike.Build.WinRT\TcpChannelBase.t4" />
     <None Include="Spike.Build.WinRT\WinRTTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>WinRTTemplate.cs</LastGenOutput>
       <CustomToolNamespace>Spike.Build.WinRT</CustomToolNamespace>
     </None>
-    <None Include="Spike.Build.WinRT\Packet.t4" />
-    <None Include="Spike.Build.WinRT\TcpChannel.t4" />
-    <None Include="Spike.Build.WinRT\TcpChannelBase.t4" />
-    <None Include="Spike.Build.Xamarin\CLZF.t4">
-      <LastGenOutput>CLZF.cs</LastGenOutput>
-    </None>
-    <None Include="Spike.Build.Xamarin\ComplexType.t4" />
-    <None Include="Spike.Build.Xamarin\XamarinTemplate.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>XamarinTemplate.cs</LastGenOutput>
-      <CustomToolNamespace>Spike.Build.Xamarin</CustomToolNamespace>
-    </None>
-    <None Include="Spike.Build.Xamarin\Packet.t4" />
-    <None Include="Spike.Build.Xamarin\TcpChannel.t4" />
-    <None Include="Spike.Build.Xamarin\TcpChannelBase.t4" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
