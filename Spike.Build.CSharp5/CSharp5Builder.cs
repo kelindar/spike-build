@@ -86,7 +86,7 @@ namespace Spike.Build.CSharp5
                 if (!Directory.Exists(output))
                     Directory.CreateDirectory(output);
 
-                File.WriteAllText(Path.Combine(output, @"Network.cs"), template.TransformText());
+                File.WriteAllText(Path.Combine(output, @"SpikeSdk.cs"), template.TransformText());
             }
             else
             {

@@ -216,7 +216,7 @@ namespace Spike.Build
 #else
             catch (Exception)
             {
-                Program.Exit("An unknown error occurred");  
+                ShowUsageAndExit("An unknown error occurred");  
             }
 #endif
         }
@@ -230,12 +230,12 @@ namespace Spike.Build
             Console.WriteLine("options : ");
 
             Console.WriteLine("\t-h, --help");
-            Console.WriteLine("\t-i, --input <sources>");
+            Console.WriteLine("\t-i, --input <source>");
             Console.WriteLine("\t-p, --platform <{0}>",Builders.Keys.Aggregate((platform1, platform2) => { return platform1 + '|' + platform2; }));
             Console.WriteLine("\t-o, --output <path>");
-            Console.WriteLine("\t-f, --format");
-            Console.WriteLine("\t-n, --namespace");
-            Console.WriteLine("\t-v, --verbose");
+            Console.WriteLine("\t-f, --format <single>");
+            //Console.WriteLine("\t-n, --namespace");
+            //Console.WriteLine("\t-v, --verbose");
 
             Console.WriteLine();
             Console.WriteLine(" sources could be either: ");
