@@ -498,7 +498,8 @@ namespace Spike.Build.WinRT
             #line hidden
             this.Write(" \r\n\t");
             this.Write("\tpublic class TcpChannel : TcpChannelBase<TcpChannel>\r\n\t{\r\n\t\tpublic TcpChannel(in" +
-                    "t bufferSize = 8096) : base(bufferSize)\r\n\t\t{\r\n\t\t}\r\n\r\n\t\t//Events\r\n");
+                    "t bufferSize = 8096, bool useSSL=false) : base(bufferSize, useSSL)\r\n\t\t{\r\n\t\t}\r\n\r\n" +
+                    "\t\t//Events\r\n");
             
             #line 8 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.WinRT\../Spike.Build.CSharp5/TcpChannel.t4"
 		foreach(var receive in Model.Receives)

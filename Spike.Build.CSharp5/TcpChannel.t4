@@ -1,6 +1,6 @@
 ﻿	public class TcpChannel : TcpChannelBase<TcpChannel>
 	{
-		public TcpChannel(int bufferSize = 8096) : base(bufferSize)
+		public TcpChannel(int bufferSize = 8096, bool useSSL=false) : base(bufferSize, useSSL)
 		{
 		}
 
