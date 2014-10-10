@@ -238,7 +238,8 @@ namespace Spike.Build.Server
             protocol.GetAllOperationsWithOutgoingPacket()
                 .ForEach(operation =>
                 {
-                    GenerateClientSend(writer, operation);
+                    GenerateSendToOne(writer, operation);
+                    GenerateSendToMany(writer, operation);
                 });
         }
 
@@ -246,7 +247,7 @@ namespace Spike.Build.Server
         /// <summary>
         /// Generates a manual send for any operation that can send
         /// </summary>
-        internal static void GenerateClientSend(TextWriter writer, ProtocolOperation operation)
+        internal static void GenerateSendToOne(TextWriter writer, ProtocolOperation operation)
         {
             var packet = operation.Outgoing;
             var parameters = packet.GetMembers();
@@ -263,35 +264,11 @@ namespace Spike.Build.Server
 
                 writer.WriteLine("public static void Send{0}Inform(this IClient client, {1})", operation.Name, paramList);
                 writer.WriteLine("{");
-                /*parameters
-                    .ForEach(parameter =>
-                    {
-
-                        var paramName = String.Format("p{0}", parameter.Name);
-                        if (parameter.IsList && parameter.IsComplexType) // List of exposed entities
-                        {
-                            writer.WriteLine("var {0} = new {1}();", paramName, parameter.InternalType);
-                            writer.WriteLine("for(int i=0; i < {0}.Count; ++i)", parameter.Name);
-                            writer.WriteLine("{");
-                            writer.WriteLine("{0}.Add( new {1} ( {2}[i] ) ); ",paramName, parameter.InternalElementType, parameter.Name);
-                            writer.WriteLine("}");
-                        }
-                        else if (parameter.IsComplexType) // Exposed entity
-                        {
-                            writer.WriteLine("var {0} = new {1}({2}); ", paramName, parameter.InternalType, parameter.Name);
-                        }
-                        else  // List of primitives or a primitive
-                        {
-                            writer.WriteLine("var {0} = {1}; ", paramName, parameter.Name);
-                        }
-                    });*/
 
                 // Send now
                 var sendList = parameters
-                    //.Select(p => String.Format("p{0}", p.Name))
                     .Select(p => p.Name)
                     .Aggregate((a, b) => String.Format("{0}, {1}", a, b));
-                //writer.WriteLine("state.Send( new {0} ({1}) );", packet.Name, sendList);
 
                 // Few bugs, but too tired to fix!
                 writer.WriteLine("{0} packet = {0}.Metadata.AcquireInform() as {0};", packet.Name);
@@ -315,6 +292,165 @@ namespace Spike.Build.Server
                 writer.WriteLine("}");
 
 
+            }
+        }
+
+        /// <summary>
+        /// Generates a manual send for any operation that can send
+        /// </summary>
+        internal static void GenerateSendToMany(TextWriter writer, ProtocolOperation operation)
+        {
+            var packet = operation.Outgoing;
+            var parameters = packet.GetMembers();
+
+            if (parameters.Count > 0)
+            {
+                #region Send to IClient[]
+                {
+                    writer.WriteLine("/// <summary>");
+                    writer.WriteLine("/// Sents a reply to the operation: {0}", operation.Description);
+                    writer.WriteLine("/// </summary>");
+
+                    var paramList = parameters
+                        .Select(p => String.Format("{0} {1}", p.IsList && p.IsComplexType ? String.Format("IList<{0}>", p.Class) : p.Class, p.Name))
+                        .Aggregate((a, b) => String.Format("{0}, {1}", a, b));
+
+                    writer.WriteLine("public static void Send{0}Inform(this IClient[] clients, {1})", operation.Name, paramList);
+                    writer.WriteLine("{");
+
+                    // Send now
+                    var sendList = parameters
+                        .Select(p => p.Name)
+                        .Aggregate((a, b) => String.Format("{0}, {1}", a, b));
+
+                    // Few bugs, but too tired to fix!
+                    writer.WriteLine("using({0} packet = {0}.Metadata.AcquireInform() as {0})", packet.Name);
+                    writer.WriteLine("{");
+                    writer.WriteLine("packet.Lifetime = PacketLifetime.Manual;");
+                    parameters.ForEach(element =>
+                    {
+                        writer.WriteLine("packet.{0} = {1};", element.Name, element.Name);
+                    });
+
+                    writer.WriteLine("for (int i = 0; i < clients.Length; ++i)");
+                    writer.WriteLine("   clients[i].Send(packet);");
+                    writer.WriteLine("}");
+
+                    writer.WriteLine("}");
+                    writer.WriteLine();
+
+
+                    // Direct packet send
+                    writer.WriteLine("/// <summary>");
+                    writer.WriteLine("/// Sents a reply to the operation: {0}", operation.Description);
+                    writer.WriteLine("/// </summary>");
+                    writer.WriteLine("public static void Send{0}Inform(this IClient[] clients, {1} packet)", operation.Name, operation.Outgoing.Name);
+                    writer.WriteLine("{");
+                    writer.WriteLine("packet.Lifetime = PacketLifetime.Manual;");
+                    writer.WriteLine("for (int i = 0; i < clients.Length; ++i)");
+                    writer.WriteLine("   clients[i].Send(packet);");
+
+                    writer.WriteLine("}");
+                }
+                #endregion
+
+                #region Send to List<IClient>
+                {
+                    writer.WriteLine("/// <summary>");
+                    writer.WriteLine("/// Sents a reply to the operation: {0}", operation.Description);
+                    writer.WriteLine("/// </summary>");
+
+                    var paramList = parameters
+                        .Select(p => String.Format("{0} {1}", p.IsList && p.IsComplexType ? String.Format("IList<{0}>", p.Class) : p.Class, p.Name))
+                        .Aggregate((a, b) => String.Format("{0}, {1}", a, b));
+
+                    writer.WriteLine("public static void Send{0}Inform(this List<IClient> clients, {1})", operation.Name, paramList);
+                    writer.WriteLine("{");
+
+                    // Send now
+                    var sendList = parameters
+                        .Select(p => p.Name)
+                        .Aggregate((a, b) => String.Format("{0}, {1}", a, b));
+
+                    // Few bugs, but too tired to fix!
+                    writer.WriteLine("using({0} packet = {0}.Metadata.AcquireInform() as {0})", packet.Name);
+                    writer.WriteLine("{");
+                    writer.WriteLine("packet.Lifetime = PacketLifetime.Manual;");
+                    parameters.ForEach(element =>
+                    {
+                        writer.WriteLine("packet.{0} = {1};", element.Name, element.Name);
+                    });
+
+                    writer.WriteLine("for (int i = 0; i < clients.Count; ++i)");
+                    writer.WriteLine("   clients[i].Send(packet);");
+                    writer.WriteLine("}");
+
+                    writer.WriteLine("}");
+                    writer.WriteLine();
+
+
+                    // Direct packet send
+                    writer.WriteLine("/// <summary>");
+                    writer.WriteLine("/// Sents a reply to the operation: {0}", operation.Description);
+                    writer.WriteLine("/// </summary>");
+                    writer.WriteLine("public static void Send{0}Inform(this List<IClient> clients, {1} packet)", operation.Name, operation.Outgoing.Name);
+                    writer.WriteLine("{");
+                    writer.WriteLine("packet.Lifetime = PacketLifetime.Manual;");
+                    writer.WriteLine("for (int i = 0; i < clients.Count; ++i)");
+                    writer.WriteLine("   clients[i].Send(packet);");
+
+                    writer.WriteLine("}");
+                }
+                #endregion
+
+                #region Send to IEnumerable<IClient>
+                {
+                    writer.WriteLine("/// <summary>");
+                    writer.WriteLine("/// Sents a reply to the operation: {0}", operation.Description);
+                    writer.WriteLine("/// </summary>");
+
+                    var paramList = parameters
+                        .Select(p => String.Format("{0} {1}", p.IsList && p.IsComplexType ? String.Format("IList<{0}>", p.Class) : p.Class, p.Name))
+                        .Aggregate((a, b) => String.Format("{0}, {1}", a, b));
+
+                    writer.WriteLine("public static void Send{0}Inform(this IEnumerable<IClient> clients, {1})", operation.Name, paramList);
+                    writer.WriteLine("{");
+
+                    // Send now
+                    var sendList = parameters
+                        .Select(p => p.Name)
+                        .Aggregate((a, b) => String.Format("{0}, {1}", a, b));
+
+                    // Few bugs, but too tired to fix!
+                    writer.WriteLine("using({0} packet = {0}.Metadata.AcquireInform() as {0})", packet.Name);
+                    writer.WriteLine("{");
+                    writer.WriteLine("packet.Lifetime = PacketLifetime.Manual;");
+                    parameters.ForEach(element =>
+                    {
+                        writer.WriteLine("packet.{0} = {1};", element.Name, element.Name);
+                    });
+
+                    writer.WriteLine("foreach(var client in clients)");
+                    writer.WriteLine("   client.Send(packet);");
+                    writer.WriteLine("}");
+
+                    writer.WriteLine("}");
+                    writer.WriteLine();
+
+
+                    // Direct packet send
+                    writer.WriteLine("/// <summary>");
+                    writer.WriteLine("/// Sents a reply to the operation: {0}", operation.Description);
+                    writer.WriteLine("/// </summary>");
+                    writer.WriteLine("public static void Send{0}Inform(this IEnumerable<IClient> clients, {1} packet)", operation.Name, operation.Outgoing.Name);
+                    writer.WriteLine("{");
+                    writer.WriteLine("packet.Lifetime = PacketLifetime.Manual;");
+                    writer.WriteLine("foreach(var client in clients)");
+                    writer.WriteLine("   client.Send(packet);");
+
+                    writer.WriteLine("}");
+                }
+                #endregion
             }
         }
         #endregion
