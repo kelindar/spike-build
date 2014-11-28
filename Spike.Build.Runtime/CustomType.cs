@@ -21,9 +21,37 @@ using System.Collections.Generic;
 
 namespace Spike.Build
 {
-    internal sealed class CustomType(string name)
+    /// <summary>
+    /// Represents a complex type.
+    /// </summary>
+    internal sealed class CustomType
     {
-        internal string Name { get; } = name;
-        internal List<Member> Members { get; } = new List<Member>();
+        /// <summary>
+        /// Constructs a new instance of an object.
+        /// </summary>
+        public CustomType (string name)
+	    {
+            this.Name = name;
+            this.Members = new List<Member>();
+	    }
+
+        /// <summary>
+        /// Gets the name of the type.
+        /// </summary>
+        public string Name
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Gets the members of the type.
+        /// </summary>
+        public List<Member> Members
+        {
+            get;
+            private set;
+        }
+
     }
 }

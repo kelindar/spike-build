@@ -26,24 +26,60 @@ using System.Xml.Linq;
 
 namespace Spike.Build
 {
+    /// <summary>
+    /// Represents a SPML Definition model.
+    /// 
+    /// </summary>
     internal sealed class Model
     {
-        internal List<CustomType> CustomTypes { get; } = new List<CustomType>();
+        /// <summary>
+        /// Constructs a new instance of an object.
+        /// </summary>
+        public Model ()
+	    {
+            this.CustomTypes = new List<CustomType>();
+            this.Sends = new List<Operation>();
+            this.Receives = new List<Operation>();
+	    }
 
-        internal List<Operation> Sends { get; } = new List<Operation>();
+        /// <summary>
+        /// Gets the list of complex types in the model.
+        /// </summary>
+        public List<CustomType> CustomTypes 
+        {
+            get;
+            private set;
+        }
 
-        internal List<Operation> Receives { get; } = new List<Operation>();
+        /// <summary>
+        /// Gets the list of send operations in the model.
+        /// </summary>
+        public List<Operation> Sends
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Gets the list of receive operations in the model.
+        /// </summary>
+        public List<Operation> Receives
+        {
+            get;
+            private set;
+        }
 
         private Member GetMember(XElement xmember)
         {
-            var type = xmember.Attribute("Type")?.Value;
-            if (string.IsNullOrWhiteSpace(type))
-                Program.Exit("All member must have a Type");
+            var type = xmember.GetAttributeValue("Type");
+            if (type == null)
+                throw new ProtocolMalformedException("All members must have a Type.");
 
-            var name = xmember.Attribute("Name")?.Value;
-            if (string.IsNullOrWhiteSpace(type))
-                Program.Exit("All member must have a Name");
+            var name = xmember.GetAttributeValue("Name");
+            if (name == null)
+                throw new ProtocolMalformedException("All members must have a Name.");
 
+            // Is this a list?
             var isList = false;
             if (type.StartsWith("ListOf"))
             {
@@ -51,20 +87,19 @@ namespace Spike.Build
                 type = type.Substring(6);
             }
 
-            //In client Enum is Int32
+            // In client Enum is Int32
             if (type == "Enum")
                 type = "Int32";
 
             if (type == "ComplexType")
             {
-                type = xmember.Attribute("Class")?.Value;
-                if (string.IsNullOrWhiteSpace(type))
-                    Program.Exit("All Type ComplexType/ListOfComplexType must have a Class");
+                type = xmember.GetAttributeValue("Class");
+                if (type == null)
+                    throw new ProtocolMalformedException("All members of type ComplexType/ListOfComplexType must have a Class.");
 
+                // Get the class of the complex type member
                 AddComplexType(xmember);
             }
-
-
 
             return new Member(
                 name,
@@ -75,17 +110,20 @@ namespace Spike.Build
 
         private void AddComplexType(XElement element)
         {
-            var typeName = element.Attribute("Class")?.Value;
-            if (string.IsNullOrWhiteSpace(typeName))
-                Program.Exit("All Type ComplexType/ListOfComplexType must have a Class");
+            // Get the type name
+            var typeName = element.GetAttributeValue("Class");
+            if(typeName == null)
+                throw new ProtocolMalformedException("All members of type ComplexType/ListOfComplexType must have a Class.");
 
-            var members = element.Elements().Where(member => member.Name.LocalName == "Member");
+            var members = element
+                .Elements()
+                .Where(member => member.Name.LocalName == "Member");
 
             //if has members
             if (members.Count() > 0)
             {
                 if (CustomTypes.Any(ct => ct.Name == typeName))
-                    Program.Exit("Complex type have 2 definitions");
+                    throw new ProtocolMalformedException("Complex type have 2 definitions");
 
                 var complexType = new CustomType(typeName);
 
@@ -113,13 +151,15 @@ namespace Spike.Build
         {
             try
             {
-                //var model = new Model();
+                // Load the document
                 var document = XDocument.Load(location);
+                if (document == null)
+                    throw new FileLoadException("Unable to load the document.");
 
-
-                var protocolName = document?.Root.Attribute(@"Name")?.Value;
+                // Get the protocol name
+                var protocolName = document.Root.GetAttributeValue(@"Name");
                 if (protocolName == null)
-                    Program.Exit("No protocol name");
+                    throw new ProtocolMalformedException("Protocol name not found.");
 
 
                 var SignBuilder = new StringBuilder();
@@ -139,25 +179,30 @@ namespace Spike.Build
                     List<Member> sendMembers;
                     List<Member> receiveMembers;
 
+                    // Check if we have a compression applied
                     var compressSend = false;
                     var compressReceive = false;
-
-                    switch (xoperation.Attribute("Compression")?.Value)
+                    var compression = xoperation.GetAttributeValue("Compression");
+                    if (compression != null)
                     {
-                        case "Both":
-                            compressSend = true;
-                            compressReceive = true;
-                            break;
-                        case "Incoming":
-                            compressSend = true;
-                            break;
-                        case "Outgoing":
-                            compressReceive = true;
-                            break;
+                        switch (compression)
+                        {
+                            case "Both":
+                                compressSend = true;
+                                compressReceive = true;
+                                break;
+                            case "Incoming":
+                                compressSend = true;
+                                break;
+                            case "Outgoing":
+                                compressReceive = true;
+                                break;
+                        }
                     }
 
-
-                    if (xoperation.Attribute("Direction")?.Value == "Push")
+                    // Get the direction
+                    var direction = xoperation.GetAttributeValue("Direction");
+                    if (direction != null && direction == "Push")
                     {
                         SignBuilder.Append("Push");
                         SignBuilder.Append('.');
@@ -170,7 +215,7 @@ namespace Spike.Build
 
                         //never send
                         if (xsend != null)
-                            Console.WriteLine("error1");
+                            throw new ProtocolMalformedException("A push operation can not contain an 'Incoming' element.");
                         sendMembers = null;
                     }
                     else
@@ -227,7 +272,7 @@ namespace Spike.Build
             }
             catch (FileNotFoundException)
             {
-                Program.Exit("Spml file unreachable");
+                throw new FileNotFoundException("SPML document was not found or unreachable.");
             }            
         }        
     }

@@ -22,6 +22,7 @@ using System.Linq;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Xml.Linq;
 
 namespace Spike.Build
 {
@@ -53,6 +54,23 @@ namespace Spike.Build
             using (var sourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(source))
             using (var destinationStream = File.OpenWrite(destination))
                 sourceStream.CopyTo(destinationStream);
+        }
+
+        /// <summary>
+        /// Gets the attribute value with necessary checks.
+        /// </summary>
+        /// <param name="source">The element that should have the attribute.</param>
+        /// <param name="attributeName">The name of the attribute to fetch.</param>
+        /// <returns>The value found, otherwise null.</returns>
+        internal static string GetAttributeValue(this XElement source, string attributeName)
+        {
+            var element = source.Attribute(attributeName);
+            if (element == null)
+                return null;
+
+            if (string.IsNullOrWhiteSpace(element.Value))
+                return null;
+            return element.Value;
         }
     }
 

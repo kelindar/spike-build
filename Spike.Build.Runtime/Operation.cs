@@ -21,11 +21,60 @@ using System.Collections.Generic;
 
 namespace Spike.Build
 {
-    internal sealed class Operation(uint id, string name, bool compressed)
+    /// <summary>
+    /// Class that represents SECP operation.
+    /// </summary>
+    internal sealed class Operation
     {
-        internal uint Id { get; } = id; 
-        internal string Name { get; } = name;
-        internal bool Compressed { get; } = compressed;
-        internal List<Member> Members { get; } = new List<Member>();
+        /// <summary>
+        /// Constructs a new instance of an object.
+        /// </summary>
+        /// <param name="id">The id of the operation.</param>
+        /// <param name="name">The name of the operation.</param>
+        /// <param name="compressed">Whether the operation is compressed or not.</param>
+        public Operation (uint id, string name, bool compressed)
+	    {
+            this.Id = id;
+            this.Name = name;
+            this.Compressed = compressed;
+            this.Members = new List<Member>();
+	    }
+
+        /// <summary>
+        /// Gets the id of the operation.
+        /// </summary>
+        public uint Id 
+        {
+            get; 
+            private set; 
+        } 
+
+        /// <summary>
+        /// Gets the name of the operation.
+        /// </summary>
+        public string Name
+        {
+            get;
+            private set;
+        } 
+
+        /// <summary>
+        /// Gets whether the operation is compressed or not.
+        /// </summary>
+        public bool Compressed
+        {
+            get;
+            private set;
+        } 
+
+        /// <summary>
+        /// Gets the list of members.
+        /// </summary>
+        public List<Member> Members
+        {
+            get;
+            private set;
+        } 
+
     }
 }

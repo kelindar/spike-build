@@ -64,6 +64,11 @@ namespace Spike.Build.CSharp5
 
         }
 
+        /// <summary>
+        /// Build the model of the specified type.
+        /// </summary>
+        /// <param name="model">The model to build.</param>
+        /// <param name="output">The output type.</param>
         public void Build(Model model, string output)
         {
             if (string.IsNullOrEmpty(output))

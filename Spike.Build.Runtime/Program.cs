@@ -26,6 +26,7 @@ using Spike.Build.WinRT;
 using Spike.Build.Xamarin;
 using Spike.Build.CSharp5;
 using Spike.Build.Java;
+using System.IO;
 
 
 namespace Spike.Build
@@ -37,7 +38,7 @@ namespace Spike.Build
             if (message != null)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.Write("Error : ");
+                Console.Write("Error: ");
                 Console.WriteLine(message);
                 Console.WriteLine();
                 Console.ForegroundColor = ConsoleColor.Gray;
@@ -78,13 +79,17 @@ namespace Spike.Build
 
                 if (modelFile.EndsWith("/spml/all", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    using (var client = new HttpClient()) {
+                    using (var client = new HttpClient())
+                    {
                         var result = client.GetAsync(modelFile).Result;
-                        if (result.IsSuccessStatusCode) {
+                        if (result.IsSuccessStatusCode)
+                        {
                             var protocols = result.Content.ReadAsStringAsync().Result.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
-                            if (protocols.Length > 0) {
+                            if (protocols.Length > 0)
+                            {
                                 var baseUrl = modelFile.Substring(0, modelFile.Length - 4);
-                                foreach (var protocol in protocols) {
+                                foreach (var protocol in protocols)
+                                {
                                     Console.WriteLine(protocol);
                                     model.Load(string.Format("{0}?file={1}", baseUrl, protocol));
                                 }
@@ -98,7 +103,7 @@ namespace Spike.Build
                 }
                 else
                     model.Load(modelFile);
-                
+
 
                 var separators = new char[] { '-', ':' };
                 for (var index = 1; index < args.Length; index++)
@@ -108,35 +113,39 @@ namespace Spike.Build
                     if (buildArguments.Length <= 0 || buildArguments.Length > 2)
                         Program.Exit("Syntax error");
 
-                    if (Builders.TryGetValue(buildArguments[0], out var builder))
+                    IBuilder builder;
+                    if (Builders.TryGetValue(buildArguments[0], out builder))
                     {
                         if (buildArguments.Length == 2)
                             builder.Build(model, buildArguments[1]);
                         else
                             builder.Build(model);
                     }
-                    else if (string.Compare(buildArguments[0],"mode") ==0) {
+                    else if (string.Compare(buildArguments[0], "mode") == 0)
+                    {
+
                     }
                     else
+                    {
                         Program.Exit("Unknown parameter");
+                    }
                 }
 
             }
-#if DEBUG
-            catch (Exception e)
+            catch (Exception ex)
             {
-                //Popup in visual studio if attached 
+#if DEBUG
                 if (System.Diagnostics.Debugger.IsAttached)
                     System.Diagnostics.Debugger.Break();
-
-                Program.Exit(string.Format("Unknown exception : {0}", e.StackTrace));
-            }
-#else
-            catch (Exception)
-            {
-                Program.Exit("An unknown error occurred");  
-            }
 #endif
+
+                if (ex is ProtocolMalformedException)
+                    Program.Exit(ex.Message);
+                if (ex is FileNotFoundException)
+                    Program.Exit(ex.Message);
+
+                Program.Exit(string.Format("An unexpected error has occured : {0}", ex.StackTrace));
+            }
         }
 
         private static void PromptUsage()

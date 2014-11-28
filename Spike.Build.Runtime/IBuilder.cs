@@ -19,8 +19,16 @@
 
 namespace Spike.Build
 {
+    /// <summary>
+    /// Contract that represents a builder.
+    /// </summary>
     internal interface IBuilder
     {
+        /// <summary>
+        /// Build the model of the specified type.
+        /// </summary>
+        /// <param name="model">The model to build.</param>
+        /// <param name="output">The output type.</param>
         void Build(Model model, string output = null);        
     }
 }

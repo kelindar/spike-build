@@ -19,10 +19,48 @@
 
 namespace Spike.Build
 {
-    internal sealed class Member(string name, string type, bool isList)
-    {
-        internal bool IsList { get; } = isList;
-        internal string Name { get; } = name;
-        internal string Type { get; } = type;        
+    /// <summary>
+    /// Represents a member type.
+    /// </summary>
+    internal sealed class Member
+    {       
+        /// <summary>
+        /// Constructs a new instance of an object.
+        /// </summary>
+        public Member(string name, string type, bool isList)
+	    {
+            this.Name = name;
+            this.Type = type;
+            this.IsList = isList;
+	    }
+
+        /// <summary>
+        /// Gets the name of the member.
+        /// </summary>
+        public string Name 
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Gets the type of the member.
+        /// </summary>
+        public string Type
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Gets whether this is a list.
+        /// </summary>
+        public bool IsList
+        {
+            get;
+            private set;
+        }
+
+   
     }
 }
