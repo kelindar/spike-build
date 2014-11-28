@@ -30,10 +30,16 @@ namespace Spike.Build.WinRT
         internal CustomType TargetType { get; set; }
     }
 
-    internal class WinRTBuilder : IBuilder
-    {        
-
-        public void Build(Model model, string output, string format) {
+    internal class WinRTBuilder : Spike.Build.CSharp5.CSharp5BuilderBase
+    {
+        /// <summary>
+        /// Build the model of the specified type.
+        /// </summary>
+        /// <param name="model">The model to build.</param>
+        /// <param name="output">The output type.</param>
+        /// <param name="format">The format to apply.</param>
+        public override void Build(Model model, string output, string format) 
+        {
             if (format == "single")
             {
                 var template = new WinRTTemplate();
@@ -59,40 +65,86 @@ namespace Spike.Build.WinRT
                 var template = new WinRTTemplate();
                 template.Model = model;
 
-                //CLZF.cs
-                template.Target = "LZF";
-                File.WriteAllText(Path.Combine(output, @"CLZF.cs"), template.TransformText());
-                template.Clear();
 
-                //TcpChannelBase.cs
-                template.Target = "TcpChannelBase";
-                File.WriteAllText(Path.Combine(output, @"TcpChannelBase.cs"), template.TransformText());
-                template.Clear();
+                // Build LZF.cs
+                this.BuildTarget("LZF", output, template);
 
-                //TcpChannel.cs
-                template.Target = "TcpChannel";
-                File.WriteAllText(Path.Combine(output, @"TcpChannel.cs"), template.TransformText());
-                template.Clear();
+                // Build PacketWriter.cs
+                this.BuildTarget("PacketWriter", output, template);
+
+                // Build TcpChannelBase.cs
+                this.BuildTarget("TcpChannelBase", output, template);
+
+                // Build TcpChannel.cs
+                this.BuildTarget("TcpChannel", output, template);
 
                 //Make packets
                 template.Target = "Packet";
                 foreach (var receive in model.Receives)
                 {
-                    template.TargetOperation = receive;
-                    File.WriteAllText(Path.Combine(output, string.Format(@"{0}.cs", receive.Name)), template.TransformText());
-                    template.Clear();
+                    // Build the operation
+                    this.BuildOperation(receive, output, template);
                 }
 
                 //Make CustomType
                 template.Target = "ComplexType";
                 foreach (var customType in model.CustomTypes)
                 {
-                    template.TargetType = customType;
-                    File.WriteAllText(Path.Combine(output, string.Format(@"{0}.cs", customType.Name)), template.TransformText());
-                    template.Clear();
+                    // Build the type
+                    this.BuildType(customType, output, template);
                 }
             }
         }
+
+        #region WinRT support
+
+        /// <summary>
+        /// Helper method that builds a template target.
+        /// </summary>
+        /// <param name="target">The target name.</param>
+        /// <param name="outputDirectory">The output directory for the file.</param>
+        /// <param name="template">The template to use.</param>
+        protected void BuildTarget(string target, string outputDirectory, WinRTTemplate template)
+        {
+            template.Target = target;
+            File.WriteAllText(
+                Path.Combine(outputDirectory, target + ".cs"),
+                this.Indent(template.TransformText()));
+            template.Clear();
+        }
+
+        /// <summary>
+        /// Helper method that builds a template target.
+        /// </summary>
+        /// <param name="operation">The target operation.</param>
+        /// <param name="outputDirectory">The output directory for the file.</param>
+        /// <param name="template">The template to use.</param>
+        protected void BuildOperation(Operation operation, string outputDirectory, WinRTTemplate template)
+        {
+            template.TargetOperation = operation;
+            File.WriteAllText(
+                Path.Combine(outputDirectory, string.Format(@"{0}.cs", operation.Name)),
+                this.Indent(template.TransformText())
+                );
+            template.Clear();
+        }
+
+        /// <summary>
+        /// Helper method that builds a template target.
+        /// </summary>
+        /// <param name="type">The target type.</param>
+        /// <param name="outputDirectory">The output directory for the file.</param>
+        /// <param name="template">The template to use.</param>
+        protected void BuildType(CustomType type, string outputDirectory, WinRTTemplate template)
+        {
+            template.TargetType = type;
+            File.WriteAllText(
+                Path.Combine(outputDirectory, string.Format(@"{0}.cs", type.Name)),
+                this.Indent(template.TransformText())
+                );
+            template.Clear();
+        }
+        #endregion
     }
 
     

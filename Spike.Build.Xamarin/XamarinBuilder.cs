@@ -70,6 +70,9 @@ namespace Spike.Build.Xamarin
                 // Build LZF.cs
                 this.BuildTarget("LZF", output, template);
 
+                // Build PacketWriter.cs
+                this.BuildTarget("PacketWriter", output, template);
+
                 // Build TcpChannelBase.cs
                 this.BuildTarget("TcpChannelBase", output, template);
 
