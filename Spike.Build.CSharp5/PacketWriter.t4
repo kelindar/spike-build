@@ -254,8 +254,16 @@
         public void Write(float value)
         {
             var bytes = System.BitConverter.GetBytes(value);
-            for (var index = bytes.Length - 1;index >= 0 ;--index)
-            Write(bytes[index]);            
+            if (BitConverter.IsLittleEndian)
+            {
+                for (var i = bytes.Length - 1; i >= 0; --i)
+                    Write(bytes[i]);
+            }
+            else
+            {
+                for (var i = 0; i < bytes.Length; ++i)
+                    Write(bytes[i]);
+            }
         }
 
         /// <summary>
@@ -276,8 +284,16 @@
         public void Write(double value)
         {
             var bytes = BitConverter.GetBytes(value);
-            for (var index = bytes.Length - 1; index >= 0; --index)
-            Write(bytes[index]);
+            if (BitConverter.IsLittleEndian)
+            {
+                for (var i = bytes.Length - 1; i >= 0; --i)
+                    Write(bytes[i]);
+            }
+            else
+            {
+                for (var i = 0; i < bytes.Length; ++i)
+                    Write(bytes[i]);
+            }
         }
 
         /// <summary>

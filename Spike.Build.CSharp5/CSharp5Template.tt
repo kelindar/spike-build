@@ -17,6 +17,7 @@ namespace Spike.Network
 {
 	<# if(Target == null || Target == "LZF") { #> <#@ include file="CLZF.t4"#><# } #><##>
 	<# if(Target == null || Target == "PacketWriter") { #> <#@ include file="PacketWriter.t4"#> <# } #><##>
+	<# if(Target == null || Target == "PacketReader") { #> <#@ include file="PacketReader.t4"#> <# } #><##>
 	<# if(Target == null || Target == "TcpChannelBase") { #> <#@ include file="TcpChannelBase.t4"#> <# } #><##>
 	<# if(Target == null || Target == "TcpChannel") { #> <#@ include file="TcpChannel.t4"#> <# } #><##>
 <#	if(Target == null)
@@ -44,6 +45,7 @@ namespace Spike.Network
 <#	} #>
 
 }
+
 
 <#+ internal void Clear(){
 	GenerationEnvironment.Clear();

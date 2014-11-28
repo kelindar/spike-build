@@ -1,0 +1,437 @@
+﻿    /// <summary>
+    /// Represents a packet reader that can be used to buffer and deserialize packets.
+    /// </summary>
+    public sealed class PacketReader
+    {
+        public readonly int Capacity;
+        public byte[] Buffer;
+        public int Offset;
+        public int Length;
+
+        /// <summary>
+        /// Constructs a new packet reader.
+        /// </summary>
+        /// <param name="capacity">The size of the buffer to allocate.</param>
+        public PacketReader(int capacity)
+        {
+            this.Capacity = capacity;
+            this.Buffer = new byte[capacity];
+        }
+
+        /// <summary>
+        /// Checks if data is available within the reader.
+        /// </summary>
+        /// <param name="length">The amount of bytes that should be present.</param>
+        /// <returns>Whether the reader contains it or not.</returns>
+        public bool CheckAvailable(int length)
+        {
+            return this.Length >= length;
+        }
+        
+        /// <summary>
+        /// Begins reading a new packet.
+        /// </summary>
+        /// <param name="compressed">Whether the packet we are reding is compressed or not.</param>
+        public void Begin(bool compressed)
+        {
+            if (compressed)
+            {
+                var compressedBuffer = new byte[this.Length - 8];
+                var uncompressedBuffer = new byte[this.Capacity];
+                System.Buffer.BlockCopy(this.Buffer, 8, compressedBuffer, 0, compressedBuffer.Length);
+
+                var packer = new CLZF();
+                var uncompressedSize = packer.lzf_decompress(compressedBuffer, compressedBuffer.Length, uncompressedBuffer, uncompressedBuffer.Length);
+                System.Buffer.BlockCopy(uncompressedBuffer, 0, this.Buffer, 8, uncompressedSize);
+                this.Length = uncompressedSize + 8;
+            }
+        }
+
+        /// <summary>
+        /// Reads a value from the underlying buffer.
+        /// </summary>
+        /// <returns>The value read from the buffer.</returns>
+        public byte ReadByte()
+        {
+            return this.Buffer[this.Offset++];
+        }
+
+        /// <summary>
+        /// Reads a value from the underlying buffer.
+        /// </summary>
+        /// <returns>The value read from the buffer.</returns>
+        public byte[] ReadListOfByte()
+        {
+            var value = new byte[ReadInt32()];
+            System.Buffer.BlockCopy(this.Buffer, this.Offset, value, 0, value.Length);
+            this.Offset += value.Length;
+            return value;
+        }
+
+        /// <summary>
+        /// Reads a value from the underlying buffer.
+        /// </summary>
+        /// <returns>The value read from the buffer.</returns>
+        public ushort ReadUInt16()
+        {
+            return (ushort)((this.Buffer[this.Offset++] << 8)
+            | this.Buffer[this.Offset++]);
+        }
+
+        /// <summary>
+        /// Reads a value from the underlying buffer.
+        /// </summary>
+        /// <returns>The value read from the buffer.</returns>
+        public ushort[] ReadListOfUInt16()
+        {
+            var value = new ushort[ReadInt32()];
+            for (int index = 0; index < value.Length; index++)
+                value[index] = ReadUInt16();
+            return value;
+        }
+
+        /// <summary>
+        /// Reads a value from the underlying buffer.
+        /// </summary>
+        /// <returns>The value read from the buffer.</returns>
+        public short ReadInt16()
+        {
+            return (short)((this.Buffer[this.Offset++] << 8)
+            | this.Buffer[this.Offset++]);
+        }
+
+        /// <summary>
+        /// Reads a value from the underlying buffer.
+        /// </summary>
+        /// <returns>The value read from the buffer.</returns>
+        public short[] ReadListOfInt16()
+        {
+            var value = new short[ReadInt32()];
+            for (int index = 0; index < value.Length; index++)
+                value[index] = ReadInt16();
+            return value;
+        }
+
+        /// <summary>
+        /// Reads a value from the underlying buffer.
+        /// </summary>
+        /// <returns>The value read from the buffer.</returns>
+        public uint ReadUInt32()
+        {
+            return (uint)(this.Buffer[this.Offset++] << 24
+            | (this.Buffer[this.Offset++] << 16)
+            | (this.Buffer[this.Offset++] << 8)
+            | (this.Buffer[this.Offset++]));
+        }
+
+        /// <summary>
+        /// Reads a value from the underlying buffer.
+        /// </summary>
+        /// <returns>The value read from the buffer.</returns>
+        public uint[] ReadListOfUInt32()
+        {
+            var value = new uint[ReadInt32()];
+            for (int index = 0; index < value.Length; index++)
+                value[index] = ReadUInt32();
+            return value;
+        }
+
+        /// <summary>
+        /// Reads a value from the underlying buffer.
+        /// </summary>
+        /// <returns>The value read from the buffer.</returns>
+        public int ReadInt32()
+        {
+            return this.Buffer[this.Offset++] << 24
+            | (this.Buffer[this.Offset++] << 16)
+            | (this.Buffer[this.Offset++] << 8)
+            | (this.Buffer[this.Offset++]);
+        }
+
+        /// <summary>
+        /// Reads a value from the underlying buffer.
+        /// </summary>
+        /// <returns>The value read from the buffer.</returns>
+        public int[] ReadListOfInt32()
+        {
+            var value = new int[ReadInt32()];
+            for (int index = 0; index < value.Length; index++)
+                value[index] = ReadInt32();
+            return value;
+        }
+
+        /// <summary>
+        /// Reads a value from the underlying buffer.
+        /// </summary>
+        /// <returns>The value read from the buffer.</returns>
+        public ulong ReadUInt64()
+        {
+            ulong value = this.Buffer[this.Offset++]; value <<= 8;
+            value |= this.Buffer[this.Offset++]; value <<= 8;
+            value |= this.Buffer[this.Offset++]; value <<= 8;
+            value |= this.Buffer[this.Offset++]; value <<= 8;
+            value |= this.Buffer[this.Offset++]; value <<= 8;
+            value |= this.Buffer[this.Offset++]; value <<= 8;
+            value |= this.Buffer[this.Offset++]; value <<= 8;
+            value |= this.Buffer[this.Offset++];
+            return value;
+        }
+
+        /// <summary>
+        /// Reads a value from the underlying buffer.
+        /// </summary>
+        /// <returns>The value read from the buffer.</returns>
+        public ulong[] ReadListOfUInt64()
+        {
+            var value = new ulong[ReadInt32()];
+            for (int index = 0; index < value.Length; index++)
+                value[index] = ReadUInt64();
+            return value;
+        }
+
+        /// <summary>
+        /// Reads a value from the underlying buffer.
+        /// </summary>
+        /// <returns>The value read from the buffer.</returns>
+        public long ReadInt64()
+        {
+            long value = this.Buffer[this.Offset++]; value <<= 8;
+            value |= this.Buffer[this.Offset++]; value <<= 8;
+            value |= this.Buffer[this.Offset++]; value <<= 8;
+            value |= this.Buffer[this.Offset++]; value <<= 8;
+            value |= this.Buffer[this.Offset++]; value <<= 8;
+            value |= this.Buffer[this.Offset++]; value <<= 8;
+            value |= this.Buffer[this.Offset++]; value <<= 8;
+            value |= this.Buffer[this.Offset++];
+            return value;
+        }
+
+        /// <summary>
+        /// Reads a value from the underlying buffer.
+        /// </summary>
+        /// <returns>The value read from the buffer.</returns>
+        public long[] ReadListOfInt64()
+        {
+            var value = new long[ReadInt32()];
+            for (int index = 0; index < value.Length; index++)
+                value[index] = ReadInt64();
+            return value;
+        }
+
+        /// <summary>
+        /// Reads a value from the underlying buffer.
+        /// </summary>
+        /// <returns>The value read from the buffer.</returns>
+        public bool ReadBoolean()
+        {
+            return this.Buffer[this.Offset++] != 0;
+        }
+
+        /// <summary>
+        /// Reads a value from the underlying buffer.
+        /// </summary>
+        /// <returns>The value read from the buffer.</returns>
+        public bool[] ReadListOfBoolean()
+        {
+            var value = new bool[ReadInt32()];
+            for (int index = 0; index < value.Length; index++)
+                value[index] = ReadBoolean();
+            return value;
+        }
+
+        /// <summary>
+        /// Reads a value from the underlying buffer.
+        /// </summary>
+        /// <returns>The value read from the buffer.</returns>
+        public float ReadSingle()
+        {
+            var bytes = new byte[sizeof(float)];
+            if (BitConverter.IsLittleEndian)
+            {
+                for (var i = bytes.Length - 1; i >= 0; --i)
+                    bytes[i] = ReadByte();
+            }
+            else
+            {
+                for (var i = 0; i < bytes.Length; ++ i)
+                    bytes[i] = ReadByte();
+            }
+            return BitConverter.ToSingle(bytes, 0);
+        }
+
+        /// <summary>
+        /// Reads a value from the underlying buffer.
+        /// </summary>
+        /// <returns>The value read from the buffer.</returns>
+        public float[] ReadListOfSingle()
+        {
+            var value = new float[ReadInt32()];
+            for (int index = 0; index < value.Length; index++)
+                value[index] = ReadSingle();
+            return value;
+        }
+
+        /// <summary>
+        /// Reads a value from the underlying buffer.
+        /// </summary>
+        /// <returns>The value read from the buffer.</returns>
+        public double ReadDouble()
+        {
+            var bytes = new byte[sizeof(double)];
+            if (BitConverter.IsLittleEndian)
+            {
+                for (var i = bytes.Length - 1; i >= 0; --i)
+                    bytes[i] = ReadByte();
+            }
+            else
+            {
+                for (var i = 0; i < bytes.Length; ++i)
+                    bytes[i] = ReadByte();
+            }
+            return BitConverter.ToDouble(bytes, 0);
+        }
+
+        /// <summary>
+        /// Reads a value from the underlying buffer.
+        /// </summary>
+        /// <returns>The value read from the buffer.</returns>
+        public double[] ReadListOfDouble()
+        {
+            var value = new double[ReadInt32()];
+            for (int index = 0; index < value.Length; index++)
+                value[index] = ReadDouble();
+            return value;
+        }
+
+        /// <summary>
+        /// Reads a value from the underlying buffer.
+        /// </summary>
+        /// <returns>The value read from the buffer.</returns>
+        public string ReadString()
+        {
+            var bytes = ReadListOfByte();
+            return Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+        }
+
+        /// <summary>
+        /// Reads a value from the underlying buffer.
+        /// </summary>
+        /// <returns>The value read from the buffer.</returns>
+        public string[] ReadListOfString()
+        {
+            var value = new string[ReadInt32()];
+            for (int index = 0; index < value.Length; index++)
+                value[index] = ReadString();
+            return value;
+        }
+
+        /// <summary>
+        /// Reads a value from the underlying buffer.
+        /// </summary>
+        /// <returns>The value read from the buffer.</returns>
+        public DateTime ReadDateTime()
+        {
+            var year = ReadInt16();
+            var month = ReadInt16();
+            var day = ReadInt16();
+            var hour = ReadInt16();
+            var minute = ReadInt16();
+            var second = ReadInt16();
+            var millisecond = ReadInt16();
+
+            return new DateTime(year, month, day, hour, minute, second, millisecond);
+        }
+
+        /// <summary>
+        /// Reads a value from the underlying buffer.
+        /// </summary>
+        /// <returns>The value read from the buffer.</returns>
+        public DateTime[] ReadListOfDateTime()
+        {
+            var value = new DateTime[ReadInt32()];
+            for (int index = 0; index < value.Length; index++)
+                value[index] = ReadDateTime();
+            return value;
+        }
+
+        /// <summary>
+        /// Reads a value from the underlying buffer.
+        /// </summary>
+        /// <returns>The value read from the buffer.</returns>
+        [Obsolete("DynamicType is obsolete. Consider using JSON or XML serialized objects instead.", false)]
+        public object ReadDynamicType()
+        {
+            if (ReadBoolean())
+            {
+                switch (ReadString())
+                {
+                    case "Byte":
+                        return ReadByte();
+                    case "UInt16":
+                        return ReadUInt16();
+                    case "Int16":
+                        return ReadInt16();
+                    case "UInt32":
+                        return ReadUInt32();
+                    case "Int32":
+                        return ReadInt32();
+                    case "UInt64":
+                        return ReadUInt64();
+                    case "Int64":
+                        return ReadInt64();
+                    case "Single":
+                        return ReadSingle();
+                    case "Double":
+                        return ReadDouble();
+                    case "Boolean":
+                        return ReadBoolean();
+                    case "String":
+                        return ReadString();
+                    case "DateTime":
+                        return ReadDateTime();
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Reads a value from the underlying buffer.
+        /// </summary>
+        /// <returns>The value read from the buffer.</returns>
+        [Obsolete("DynamicType is obsolete. Consider using JSON or XML serialized objects instead.", false)]
+        public object[] ReadListOfDynamicType()
+        {
+            var value = new object[ReadInt32()];
+            for (int index = 0; index < value.Length; index++)
+                value[index] = ReadDynamicType();
+            return value;
+        }
+
+
+<# foreach(var customType in Model.CustomTypes) { #>
+        /// <summary>
+        /// Reads a value from the underlying buffer.
+        /// </summary>
+        /// <returns>The value read from the buffer.</returns>
+		public <#= customType.Name #> Read<#= customType.Name #>()
+        {
+            var value = new <#= customType.Name #>();
+			<# foreach(var member in customType.Members) { #>
+			value.<#= member.Name #> = this.Read<#= member.IsList ? "ListOf" : string.Empty #><#= member.Type #>();
+			<# } #>
+			return value;
+        }
+
+		/// <summary>
+        /// Reads a value from the underlying buffer.
+        /// </summary>
+        /// <returns>The value read from the buffer.</returns>
+        public <#= customType.Name #>[] ReadListOf<#= customType.Name #>()
+        {
+            var value = new <#= customType.Name #>[this.ReadInt32()];
+            for (int index = 0; index < value.Length; index++)
+                value[index] = this.Read<#= customType.Name #>();
+            return value;
+        }
+<# } #>
+    }

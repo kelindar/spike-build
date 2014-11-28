@@ -69,6 +69,9 @@ namespace Spike.Build.WinRT
                 // Build LZF.cs
                 this.BuildTarget("LZF", output, template);
 
+                // Build PacketReader.cs
+                this.BuildTarget("PacketReader", output, template);
+
                 // Build PacketWriter.cs
                 this.BuildTarget("PacketWriter", output, template);
 

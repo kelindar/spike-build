@@ -1,4 +1,4 @@
-﻿  /// <summary>
+﻿	/// <summary>
     /// Represents a connection result.
     /// </summary>
     public enum ConnectionResult
@@ -54,9 +54,7 @@
         private Socket TcpSocket;
         private Stream InnerStream;
         private object Lock = new object();
-        private byte[] ReceiveBuffer;
-        private int ReceiveBufferPosition;
-        private int ReceiveBufferSize;
+
 
         /// <summary>
         /// An event that occurs when the channel is connected to the remote endpoint.
@@ -107,16 +105,24 @@
         /// <summary>
         /// Gets a packet writer for the current thread.
         /// </summary>
-        public PacketWriter Writer
+        protected PacketWriter Writer
         {
             get 
             {
                 if (PacketWriter == null)
-                    PacketWriter = new PacketWriter(this.BufferCapacity);
+                PacketWriter = new PacketWriter(this.BufferCapacity);
                 return PacketWriter;
             }
         }
 
+        /// <summary>
+        /// Gets a packet reader for the current channel.
+        /// </summary>
+        protected PacketReader Reader
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// Gets whether the current channel is connected or not.
@@ -140,39 +146,38 @@
         {
             try
             {
-                TcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                // Create a new TCP socket
+                this.TcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-                await Task.Factory.FromAsync(
-                TcpSocket.BeginConnect, 
-                TcpSocket.EndConnect,
-                host, port, null);
+                // Await the TCP Connect
+                await Task.Factory.FromAsync(this.TcpSocket.BeginConnect, this.TcpSocket.EndConnect, host, port, null);
 
                 if (TlsSecure)
                 {
-                    var sslStream = new SslStream(new NetworkStream(TcpSocket),
-                    false,
-                    (sender, certificate, chain, sslPolicyErrors) => 
-                    {
-                        return true; 
-                    }
-                    //Accept self signed
-                    );
+                    var sslStream = new SslStream(
+                        new NetworkStream(this.TcpSocket), false, (sender, certificate, chain, sslPolicyErrors) => true 
+                        );
+
+                    // Perform SSL/TLS Authentication
                     sslStream.AuthenticateAsClient("Spike Client");
-                    InnerStream = sslStream;
+                    this.InnerStream = sslStream;
                 }
                 else
-                InnerStream = new NetworkStream(TcpSocket);
+                {
+                    this.InnerStream = new NetworkStream(this.TcpSocket);
+                }
 
+                // Allocate a reader that will wrap the buffer and handle receive
+                this.Reader = new PacketReader(BufferCapacity);
 
-                ReceiveBuffer = new byte[BufferCapacity];
-                ReceiveBufferPosition = 0;
-                ReceiveBufferSize = 0;
+                if (this.Connected != null)
+                {
+                    // If we are connected, invoke the connected event
+                    this.Connected((T)this);
+                }
 
-                if (Connected != null)
-                Connected((T)this);
-
-                ReceiveLoop();
-
+                // Start receiving
+                this.ReceiveLoop();
                 return ConnectionResult.Connected;
             }
             catch (Exception)
@@ -192,59 +197,64 @@
         #region Receive Members
         protected abstract void OnReceive(uint key);
 
+        /// <summary>
+        /// The receive loop that reads packets and invokes OnReceive().
+        /// </summary>
         private async void ReceiveLoop()
         {
             while (true)
             {
-                //Read Size
-                ReceiveBufferPosition = 0;
-                ReceiveBufferSize = await Task.Run(() => Fill(sizeof(int)));
-                if (ReceiveBufferSize != sizeof(int))
+                // First we need to read the siez
+                this.Reader.Offset = 0;
+                this.Reader.Length = await Task.Run(() => Fill(sizeof(int)));
+                if (!this.Reader.CheckAvailable(sizeof(int)))
                 {
+                    // If we don't have at least 4 bytes, we can disconnect
                     Disconnect(ConnectionError.Receive);
                     return;
                 }
 
                 //read packet data
-                ReceiveBufferPosition = 0;
-                ReceiveBufferSize = PacketReadInt32() + sizeof(int);
+                this.Reader.Offset = 0;
+                this.Reader.Length = this.Reader.ReadInt32() + sizeof(int);
 
                 do
                 {
-                    var readed = await Task.Run(() => Fill(ReceiveBufferSize - ReceiveBufferPosition));
-                    if (readed == 0)
+                    var expect = this.Reader.Length - this.Reader.Offset;
+                    var length = await Task.Run(() => Fill(expect));
+                    if (length == 0)
                     {
+                        // If we did not receive the expected amout of bytes, disconnect
                         Disconnect(ConnectionError.Receive);
                         return;
                     }
-                    ReceiveBufferPosition += readed;
-                } while (ReceiveBufferPosition < ReceiveBufferSize);
 
-                ReceiveBufferPosition = sizeof(int);
+                    this.Reader.Offset += length;
+                }
+                while (this.Reader.Offset < this.Reader.Length);
 
-                OnReceive(PacketReadUInt32());
+                // Move the cursor back (seek)
+                this.Reader.Offset = sizeof(int);
+
+                // Now read the packet
+                OnReceive(this.Reader.ReadUInt32());
             }
         }
-
-        #endregion
-
-        #region Private/Protected Members
-
         private int Fill(int size)
         {
-
             try
             {
-                return InnerStream.Read(ReceiveBuffer, ReceiveBufferPosition, size);
-                //return socket.Receive(ReceiveBuffer,ReceiveBufferPosition,size,SocketFlags.None);
+                // Read to the packet reader
+                return InnerStream.Read(this.Reader.Buffer, this.Reader.Offset, size);
             }
             catch (Exception)
             {
                 return 0;
             }
         }
+        #endregion
 
-
+        #region Private/Protected Members
         private void Disconnect(ConnectionError error)
         {
             var mustRaise = false;
@@ -260,20 +270,6 @@
 
             if (mustRaise)
             Disconnected((T)this, error);            
-        }
-
-        protected void BeginReadPacket(bool compressed)
-        {
-            if (compressed)
-            {
-                var compressedBuffer = new byte[ReceiveBufferSize - 8];
-                var uncompressedBuffer = new byte[BufferCapacity];
-                Buffer.BlockCopy(ReceiveBuffer, 8, compressedBuffer, 0, compressedBuffer.Length);
-                var cipher = new CLZF();
-                var uncompressedSize = cipher.lzf_decompress(compressedBuffer, compressedBuffer.Length, uncompressedBuffer, uncompressedBuffer.Length);
-                Buffer.BlockCopy(uncompressedBuffer, 0, ReceiveBuffer, 8, uncompressedSize);
-                ReceiveBufferSize = uncompressedSize + 8;
-            }
         }
 
 
@@ -294,7 +290,7 @@
                     {
                         return false;
                     }
-                });
+                }                );
 
                 if(!success)
                 {
@@ -310,253 +306,4 @@
 
         #endregion
 
-        #region Packet Read
-
-        protected byte PacketReadByte()
-        {
-            return ReceiveBuffer[ReceiveBufferPosition++];
-        }
-        protected byte[] PacketReadListOfByte()
-        {
-            var value = new byte[PacketReadInt32()];
-            Buffer.BlockCopy(ReceiveBuffer, ReceiveBufferPosition, value, 0, value.Length);
-            ReceiveBufferPosition += value.Length;
-            return value;
-        }
-
-        // UInt16
-        protected ushort PacketReadUInt16()
-        {
-            return (ushort)((ReceiveBuffer[ReceiveBufferPosition++] << 8)
-            | ReceiveBuffer[ReceiveBufferPosition++]);
-        }
-
-        protected ushort[] PacketReadListOfUInt16()
-        {
-            var value = new ushort[PacketReadInt32()];
-            for (int index = 0; index < value.Length; index++)
-            value[index] = PacketReadUInt16();
-            return value;
-        }
-
-        // Int16
-        protected short PacketReadInt16()
-        {
-            return (short)((ReceiveBuffer[ReceiveBufferPosition++] << 8)
-            | ReceiveBuffer[ReceiveBufferPosition++]);
-        }
-
-        protected short[] PacketReadListOfInt16()
-        {
-            var value = new short[PacketReadInt32()];
-            for (int index = 0; index < value.Length; index++)
-            value[index] = PacketReadInt16();
-            return value;
-        }
- 
-        // UInt32
-        protected uint PacketReadUInt32()
-        {
-            return (uint)(ReceiveBuffer[ReceiveBufferPosition++] << 24
-            | (ReceiveBuffer[ReceiveBufferPosition++] << 16)
-            | (ReceiveBuffer[ReceiveBufferPosition++] << 8)
-            | (ReceiveBuffer[ReceiveBufferPosition++]));
-        }
-
-        protected uint[] PacketReadListOfUInt32()
-        {
-            var value = new uint[PacketReadInt32()];
-            for (int index = 0; index < value.Length; index++)
-            value[index] = PacketReadUInt32();
-            return value;
-        }
- 
-        // Int32
-        protected int PacketReadInt32()
-        {
-            return ReceiveBuffer[ReceiveBufferPosition++] << 24
-            | (ReceiveBuffer[ReceiveBufferPosition++] << 16)
-            | (ReceiveBuffer[ReceiveBufferPosition++] << 8)
-            | (ReceiveBuffer[ReceiveBufferPosition++]);
-        }
-
-        protected int[] PacketReadListOfInt32()
-        {
-            var value = new int[PacketReadInt32()];
-            for (int index = 0; index < value.Length; index++)
-            value[index] = PacketReadInt32();
-            return value;
-        }
-
-        // UInt64
-        protected ulong PacketReadUInt64()
-        {
-            ulong value = ReceiveBuffer[ReceiveBufferPosition++]; value <<= 8;
-            value |= ReceiveBuffer[ReceiveBufferPosition++]; value <<= 8;
-            value |= ReceiveBuffer[ReceiveBufferPosition++]; value <<= 8;
-            value |= ReceiveBuffer[ReceiveBufferPosition++]; value <<= 8;
-            value |= ReceiveBuffer[ReceiveBufferPosition++]; value <<= 8;
-            value |= ReceiveBuffer[ReceiveBufferPosition++]; value <<= 8;
-            value |= ReceiveBuffer[ReceiveBufferPosition++]; value <<= 8;
-            value |= ReceiveBuffer[ReceiveBufferPosition++];
-            return value;
-        }
-
-        protected ulong[] PacketReadListOfUInt64()
-        {
-            var value = new ulong[PacketReadInt32()];
-            for (int index = 0; index < value.Length; index++)
-            value[index] = PacketReadUInt64();
-            return value;
-        }
-
-        // Int64
-        protected long PacketReadInt64()
-        {
-            long value = ReceiveBuffer[ReceiveBufferPosition++]; value <<= 8;
-            value |= ReceiveBuffer[ReceiveBufferPosition++]; value <<= 8;
-            value |= ReceiveBuffer[ReceiveBufferPosition++]; value <<= 8;
-            value |= ReceiveBuffer[ReceiveBufferPosition++]; value <<= 8;
-            value |= ReceiveBuffer[ReceiveBufferPosition++]; value <<= 8;
-            value |= ReceiveBuffer[ReceiveBufferPosition++]; value <<= 8;
-            value |= ReceiveBuffer[ReceiveBufferPosition++]; value <<= 8;
-            value |= ReceiveBuffer[ReceiveBufferPosition++];
-            return value;
-        }
-
-        protected long[] PacketReadListOfInt64()
-        {
-            var value = new long[PacketReadInt32()];
-            for (int index = 0; index < value.Length; index++)
-            value[index] = PacketReadInt64();
-            return value;
-        }
-
-        // Boolean
-        protected bool PacketReadBoolean()
-        {
-            return ReceiveBuffer[ReceiveBufferPosition++] != 0;
-        }
-
-        public bool[] PacketReadListOfBoolean()
-        {
-            var value = new bool[PacketReadInt32()];
-            for (int index = 0; index < value.Length; index++)
-            value[index] = PacketReadBoolean();
-            return value;
-        }
-
-        protected float PacketReadSingle()
-        {
-            var bytes = new byte[sizeof(float)];
-            for (var index = bytes.Length - 1; index >= 0; --index)
-            bytes[index] = PacketReadByte();
-            return BitConverter.ToSingle(bytes, 0); 
-        }
-
-        protected float[] PacketReadListOfSingle()
-        {
-            var value = new float[PacketReadInt32()];
-            for (int index = 0; index < value.Length; index++)
-            value[index] = PacketReadSingle();
-            return value;
-        }
-
-        protected double PacketReadDouble()
-        {
-            var bytes = new byte[sizeof(double)];
-            for (var index = bytes.Length - 1; index >= 0; --index)
-            bytes[index] = PacketReadByte();
-            return BitConverter.ToDouble(bytes, 0);
-        }
-
-        protected double[] PacketReadListOfDouble()
-        {
-            var value = new double[PacketReadInt32()];
-            for (int index = 0; index < value.Length; index++)
-            value[index] = PacketReadDouble();
-            return value;
-        }
-
-        // String
-        protected string PacketReadString()
-        {
-            var bytes = PacketReadListOfByte();
-            return Encoding.UTF8.GetString(bytes, 0, bytes.Length);
-        }
-
-        protected string[] PacketReadListOfString()
-        {
-            var value = new string[PacketReadInt32()];
-            for (int index = 0; index < value.Length; index++)
-            value[index] = PacketReadString();
-            return value;
-        }
-        // DateTime
-        protected DateTime PacketReadDateTime()
-        {
-            var year = PacketReadInt16();
-            var month = PacketReadInt16();
-            var day = PacketReadInt16();
-            var hour = PacketReadInt16();
-            var minute = PacketReadInt16();
-            var second = PacketReadInt16();
-            var millisecond = PacketReadInt16();
-
-            return new DateTime(year, month, day, hour, minute, second, millisecond);
-        }
-
-        protected DateTime[] PacketReadListOfDateTime()
-        {
-            var value = new DateTime[PacketReadInt32()];
-            for (int index = 0; index < value.Length; index++)
-            value[index] = PacketReadDateTime();
-            return value;
-        }
-
-        [Obsolete("DynamicType is obsolete. Consider using JSON or XML serialized objects instead.", false)]
-        protected object PacketReadDynamicType()
-        {
-            if (PacketReadBoolean())
-            {
-                switch (PacketReadString())
-                {
-                    case "Byte":
-                    return PacketReadByte();
-                    case "UInt16":
-                    return PacketReadUInt16();
-                    case "Int16":
-                    return PacketReadInt16();
-                    case "UInt32":
-                    return PacketReadUInt32();
-                    case "Int32":
-                    return PacketReadInt32();
-                    case "UInt64":
-                    return PacketReadUInt64();
-                    case "Int64":
-                    return PacketReadInt64();
-                    case "Single":
-                    return PacketReadSingle();
-                    case "Double":
-                    return PacketReadDouble();
-                    case "Boolean":
-                    return PacketReadBoolean();
-                    case "String":
-                    return PacketReadString();
-                    case "DateTime":
-                    return PacketReadDateTime();
-                }
-            }
-            return null;
-        }
-
-        [Obsolete("DynamicType is obsolete. Consider using JSON or XML serialized objects instead.", false)]
-        protected object[] PacketReadListOfDynamicType()
-        {
-            var value = new object[PacketReadInt32()];
-            for (int index = 0; index < value.Length; index++)
-            value[index] = PacketReadDynamicType();
-            return value;
-        }
-        #endregion
     }

@@ -15,23 +15,12 @@ using Windows.Storage.Streams;
 
 namespace Spike.Network
 {
-<#	if(Target == null || Target == "LZF")
-	{ #> 
-	<#@ include file="../Spike.Build.CSharp5/CLZF.t4"#>
-<#	} #>
-
-<#	if(Target == null || Target == "TcpChannelBase")
-	{ #> 
-	<#@ include file="TcpChannelBase.t4"#>
-<#	} #>
-
-<#	if(Target == null || Target == "TcpChannel")
-	{ #> 
-	<#@ include file="../Spike.Build.CSharp5/TcpChannel.t4"#>
-<#	} #>
-
-
-<#	if(Target == null)
+	<# if(Target == null || Target == "LZF") { #> <#@ include file="../Spike.Build.CSharp5/CLZF.t4"#><# } #> <##>
+	<# if(Target == null || Target == "PacketReader") { #> <#@ include file="../Spike.Build.CSharp5/PacketReader.t4"#> <# } #><##>
+	<# if(Target == null || Target == "PacketWriter") { #> <#@ include file="../Spike.Build.CSharp5/PacketWriter.t4"#> <# } #><##>
+	<# if(Target == null || Target == "TcpChannelBase") { #> <#@ include file="TcpChannelBase.t4"#> <# } #> <##>
+	<# if(Target == null || Target == "TcpChannel") { #> <#@ include file="../Spike.Build.CSharp5/TcpChannel.t4"#> <# } #> <##>
+	<# if(Target == null)
 	{ 
 		foreach( var operation in Model.Receives )
 		{
