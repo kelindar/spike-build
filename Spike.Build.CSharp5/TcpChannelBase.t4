@@ -8,7 +8,7 @@
     public enum ConnectionError
     {
         Unknown,
-		User,
+        User,
         Connection,
         Receive,
         Send
@@ -33,11 +33,11 @@
         private int ReceiveBufferPosition;
         private int ReceiveBufferSize;
 
-		public int BufferSize { get; protected set; } 
+        public int BufferSize { get; protected set; } 
 
-		public TcpChannelBase(int bufferSize, bool useSSL)
-		{
-			BufferSize = bufferSize;
+        public TcpChannelBase(int bufferSize, bool useSSL)
+        {
+            BufferSize = bufferSize;
             this.useSSL = useSSL;
         }
 

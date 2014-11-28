@@ -69,6 +69,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Spike.Build.CSharp5\CSharp5BuilderBase.cs" />
     <Compile Include="Spike.Build.CSharp5\CSharp5Builder.cs" />
     <Compile Include="Spike.Build.CSharp5\CSharp5Template.cs">
       <AutoGen>True</AutoGen>

@@ -59,7 +59,8 @@ namespace Spike.Build
             Environment.Exit(-1);
         }
 
-        static private Dictionary<string, IBuilder> Builders = new Dictionary<string, IBuilder>(StringComparer.CurrentCultureIgnoreCase) {
+        static private Dictionary<string, IBuilder> Builders = new Dictionary<string, IBuilder>(StringComparer.CurrentCultureIgnoreCase) 
+        {
             { "CSharp5", new CSharp5Builder() },
             { "Java", new JavaBuilder() },
             { "WinRT", new WinRTBuilder() },
@@ -229,7 +230,7 @@ namespace Spike.Build
 
             Console.WriteLine("\t-h, --help");
             Console.WriteLine("\t-i, --input <source>");
-            Console.WriteLine("\t-p, --platform <{0}>",Builders.Keys.Aggregate((platform1, platform2) => { return platform1 + '|' + platform2; }));
+            Console.WriteLine("\t-p, --platform <{0}>", Builders.Keys.Aggregate((platform1, platform2) => { return platform1 + '|' + platform2; }));
             Console.WriteLine("\t-o, --output <path>");
             Console.WriteLine("\t-f, --format <single>");
             //Console.WriteLine("\t-n, --namespace");

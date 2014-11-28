@@ -5,7 +5,6 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 
-
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,22 +15,9 @@ using System.Diagnostics;
 
 namespace Spike.Network
 {
-<#	if(Target == null || Target == "LZF")
-	{ #> 
-	<#@ include file="CLZF.t4"#>
-<#	} #>
-
-<#	if(Target == null || Target == "TcpChannelBase")
-	{ #> 
-	<#@ include file="TcpChannelBase.t4"#>
-<#	} #>
-
-<#	if(Target == null || Target == "TcpChannel")
-	{ #> 
-	<#@ include file="TcpChannel.t4"#>
-<#	} #>
-
-
+	<# if(Target == null || Target == "LZF") { #> <#@ include file="CLZF.t4"#><# } #><##>
+	<# if(Target == null || Target == "TcpChannelBase") { #> <#@ include file="TcpChannelBase.t4"#> <# } #><##>
+	<# if(Target == null || Target == "TcpChannel") { #> <#@ include file="TcpChannel.t4"#> <# } #><##>
 <#	if(Target == null)
 	{ 
 		foreach( var operation in Model.Receives )
@@ -43,7 +29,6 @@ namespace Spike.Network
 	{ #> 
 	<#@ include file="Packet.t4"#>
 <#	} #>
-
 
 <#	if(Target == null)
 	{ 

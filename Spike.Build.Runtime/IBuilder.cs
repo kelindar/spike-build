@@ -29,6 +29,7 @@ namespace Spike.Build
         /// </summary>
         /// <param name="model">The model to build.</param>
         /// <param name="output">The output type.</param>
+        /// <param name="format">The format to apply.</param>
         void Build(Model model, string output = null, string format = null);        
 
     }

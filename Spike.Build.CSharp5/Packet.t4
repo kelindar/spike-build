@@ -1,10 +1,9 @@
-﻿
-    public sealed class <#= TargetOperation.Name #>
+﻿    /// <summary>
+    /// Represents a serializable packet of type <#= TargetOperation.Name #>.
+    /// </summary>
+	public sealed class <#= TargetOperation.Name #>
     {
-<#		foreach(var member in TargetOperation.Members)
-		{ #>	
+<#		foreach(var member in TargetOperation.Members){ #>	
 		public <#= CSharp5Builder.GetNativeType(member) #><#= member.IsList ? "[]" : string.Empty #> <#= member.Name #> { get; set; }
 <#		} #>
-
     }
-

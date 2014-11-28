@@ -1,7 +1,9 @@
-﻿    public partial struct <#= TargetType.Name #>
+﻿    /// <summary>
+    /// Represents a serializable complex type <#= TargetType.Name #>.
+    /// </summary>
+	public partial struct <#= TargetType.Name #>
     {
-<#		foreach(var member in TargetType.Members)
-		{ #>	
+<#		foreach(var member in TargetType.Members){ #>	
 		public <#= CSharp5Builder.GetNativeType(member) #><#= member.IsList ? "[]" : string.Empty #> <#= member.Name #> { get; set; }
 <#		} #>
     }
