@@ -26,12 +26,12 @@
 			}
 		#>)
 		{
-			BeginNewPacket(0x<#= send.Id.ToString("X") #>u);
+			this.Writer.Begin(0x<#= send.Id.ToString("X") #>u);
 <#			foreach(var member in send.Members)
 			{ #>
-			PacketWrite(<#= member.Name #>);
+			this.Writer.Write(<#= member.Name #>);
 <#			} #>
-			await SendPacket(<#= send.Compressed ? "true" : "false" #>);
+			await SendPacket(this.Writer, <#= send.Compressed ? "true" : "false" #>);
 		}		 
 <#		} #>
 
@@ -65,24 +65,14 @@
 			}
 		}
 
-		//Custom Type
-<#		foreach(var customType in Model.CustomTypes)
-		{ #>
+<# foreach(var customType in Model.CustomTypes) { #>
 		protected <#= customType.Name #> PacketRead<#= customType.Name #>()
         {
             var value = new <#= customType.Name #>();
-<#			foreach(var member in customType.Members)
-			{ #>
+			<# foreach(var member in customType.Members) { #>
 			value.<#= member.Name #> = PacketRead<#= member.IsList ? "ListOf" : string.Empty #><#= member.Type #>();
-<#			} #>
+			<# } #>
 			return value;
-        }
-        protected void PacketWrite(<#= customType.Name #> value)
-        {
-            <#			foreach(var member in customType.Members)
-			{ #>
-			PacketWrite(value.<#= member.Name #>);
-<#			} #>
         }
 
         protected <#= customType.Name #>[] PacketReadListOf<#= customType.Name #>()
@@ -92,12 +82,6 @@
                 value[index] = PacketRead<#= customType.Name #>();
             return value;
         }
-        protected void PacketWrite(<#= customType.Name #>[] value)
-        {
-            PacketWrite(value.Length);
-            foreach (var element in value)
-                PacketWrite(element);
-        }
-<#				} #>
+<# } #>
 
 	}
