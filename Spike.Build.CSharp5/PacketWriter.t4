@@ -1,0 +1,406 @@
+﻿    /// <summary>
+    /// Represents a packet writer that can be used to serialize packets.
+    /// </summary>
+    public sealed class PacketWriter
+    {
+
+        private byte[] Buffer;
+        private int Offset;
+
+        /// <summary>
+        /// Constructs a new packet writer.
+        /// </summary>
+        /// <param name="bufferSize">The size of the buffer to allocate.</param>
+        /// <param name="key">The</param>
+        public PacketWriter(int bufferSize)
+        {
+            this.Buffer = new byte[bufferSize];
+            this.Offset = 0;
+        }
+
+        public void WriteKey(uint key)
+        {
+            this.Offset = 4;
+            Write(key);
+        }
+
+        public void SetSize()
+        {
+            var size = this.Offset - 4;
+            this.Buffer[0] = ((byte)(size >> 24));
+            this.Buffer[1] = ((byte)(size >> 16));
+            this.Buffer[2] = ((byte)(size >> 8));
+            this.Buffer[3] = ((byte)size);
+        }
+
+
+        /// <summary>
+        /// Writes a value to the underlying buffer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        public void Write(byte value)
+        {
+            this.Buffer[this.Offset++] = value;
+        }
+
+        /// <summary>
+        /// Writes a value to the underlying buffer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        protected void Write(byte[] value)
+        {
+            Write(value.Length);
+            System.Buffer.BlockCopy(value, 0, this.Buffer, this.Offset, value.Length);
+            this.Offset += value.Length;
+        }
+
+        /// <summary>
+        /// Writes a value to the underlying buffer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        protected void Write(ushort value)
+        {
+            Write((byte)(value >> 8));
+            Write((byte)value);
+        }
+
+        /// <summary>
+        /// Writes a value to the underlying buffer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        protected void Write(ushort[] value)
+        {
+            Write(value.Length);
+            foreach (var element in value)
+                Write(element);
+        }
+
+        /// <summary>
+        /// Writes a value to the underlying buffer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        protected void Write(short value)
+        {
+            Write((byte)(value >> 8));
+            Write((byte)value);
+        }
+
+        /// <summary>
+        /// Writes a value to the underlying buffer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        protected void Write(short[] value)
+        {
+            Write(value.Length);
+            foreach (var element in value)
+                Write(element);
+        }
+
+        /// <summary>
+        /// Writes a value to the underlying buffer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        protected void Write(uint value)
+        {
+            Write((byte)(value >> 24));
+            Write((byte)(value >> 16));
+            Write((byte)(value >> 8));
+            Write((byte)value);
+        }
+
+        /// <summary>
+        /// Writes a value to the underlying buffer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        protected void Write(uint[] value)
+        {
+            Write(value.Length);
+            foreach (var element in value)
+                Write(element);
+        }
+
+        /// <summary>
+        /// Writes a value to the underlying buffer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        protected void Write(int value)
+        {
+            Write((byte)(value >> 24));
+            Write((byte)(value >> 16));
+            Write((byte)(value >> 8));
+            Write((byte)value);
+        }
+
+        /// <summary>
+        /// Writes a value to the underlying buffer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        protected void Write(int[] value)
+        {
+            Write(value.Length);
+            foreach (var element in value)
+                Write(element);
+        }
+
+        /// <summary>
+        /// Writes a value to the underlying buffer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        protected void Write(ulong value)
+        {
+            Write((byte)(value >> 56));
+            Write((byte)(value >> 48));
+            Write((byte)(value >> 40));
+            Write((byte)(value >> 32));
+            Write((byte)(value >> 24));
+            Write((byte)(value >> 16));
+            Write((byte)(value >> 8));
+            Write((byte)value);
+        }
+
+        /// <summary>
+        /// Writes a value to the underlying buffer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        protected void Write(ulong[] value)
+        {
+            Write(value.Length);
+            foreach (var element in value)
+                Write(element);
+        }
+
+        /// <summary>
+        /// Writes a value to the underlying buffer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        protected void Write(long value)
+        {
+            Write((byte)(value >> 56));
+            Write((byte)(value >> 48));
+            Write((byte)(value >> 40));
+            Write((byte)(value >> 32));
+            Write((byte)(value >> 24));
+            Write((byte)(value >> 16));
+            Write((byte)(value >> 8));
+            Write((byte)value);
+        }
+
+        /// <summary>
+        /// Writes a value to the underlying buffer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        protected void Write(long[] value)
+        {
+            Write(value.Length);
+            foreach (var element in value)
+                Write(element);
+        }
+
+        /// <summary>
+        /// Writes a value to the underlying buffer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        protected void Write(bool value)
+        {
+            Write((byte)(value ? 1 : 0));
+        }
+
+        /// <summary>
+        /// Writes a value to the underlying buffer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        protected void Write(bool[] value)
+        {
+            Write(value.Length);
+            foreach (var element in value)
+                Write(element);
+        }
+
+      
+        /// <summary>
+        /// Writes a value to the underlying buffer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        protected void Write(float value)
+        {
+            var bytes = System.BitConverter.GetBytes(value);
+            for (var index = bytes.Length - 1;index >= 0 ;--index)
+                Write(bytes[index]);            
+        }
+
+        /// <summary>
+        /// Writes a value to the underlying buffer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        protected void Write(float[] value)
+        {
+            Write(value.Length);
+            foreach (var element in value)
+                Write(element);
+        }
+
+        /// <summary>
+        /// Writes a value to the underlying buffer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        protected void Write(double value)
+        {
+            var bytes = BitConverter.GetBytes(value);
+            for (var index = bytes.Length - 1; index >= 0; --index)
+                Write(bytes[index]);
+        }
+
+        /// <summary>
+        /// Writes a value to the underlying buffer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        protected void Write(double[] value)
+        {
+            Write(value.Length);
+            foreach (var element in value)
+                Write(element);
+        }
+
+        /// <summary>
+        /// Writes a value to the underlying buffer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        protected void Write(string value)
+        {
+            Write(System.Text.Encoding.UTF8.GetBytes(value));
+        }
+
+        /// <summary>
+        /// Writes a value to the underlying buffer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        protected void Write(string[] value)
+        {
+            Write(value.Length);
+            foreach (var element in value)
+                Write(element);
+        }
+
+        /// <summary>
+        /// Writes a value to the underlying buffer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        protected void Write(DateTime value)
+        {
+            Write((short)value.Year);
+            Write((short)value.Month);
+            Write((short)value.Day);
+            Write((short)value.Hour);
+            Write((short)value.Minute);
+            Write((short)value.Second);
+            Write((short)value.Millisecond);
+        }
+
+        /// <summary>
+        /// Writes a value to the underlying buffer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        protected void Write(DateTime[] value)
+        {
+            Write(value.Length);
+            foreach (var element in value)
+                Write(element);
+        }
+  
+        /// <summary>
+        /// Writes a value to the underlying buffer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        [Obsolete("DynamicType is obsolete. Consider using JSON or XML serialized objects instead.", false)]
+        protected void Write(object value)
+        {
+            if (value is byte)
+            {
+                Write(true);
+                Write(@"Byte");
+                Write((byte)value);
+            }
+            else if (value is ushort)
+            {
+                Write(true);
+                Write(@"UInt16");
+                Write((ushort)value);
+            }
+            else if (value is short)
+            {
+                Write(true);
+                Write(@"Int16");
+                Write((short)value);
+            }
+            else if (value is uint)
+            {
+                Write(true);
+                Write(@"UInt32");
+                Write((uint)value);
+            }
+            else if (value is int)
+            {
+                Write(true);
+                Write(@"Int32");
+                Write((int)value);
+            }
+            else if (value is ulong)
+            {
+                Write(true);
+                Write(@"UInt64");
+                Write((ulong)value);
+            }
+            else if (value is long)
+            {
+                Write(true);
+                Write(@"Int64");
+                Write((long)value);
+            }
+            else if (value is float)
+            {
+                Write(true);
+                Write(@"Single");
+                Write((float)value);
+            }
+            else if (value is double)
+            {
+                Write(true);
+                Write(@"Double");
+                Write((double)value);
+            }
+            else if (value is bool)
+            {
+                Write(true);
+                Write(@"Boolean");
+                Write((bool)value);
+            }
+            else if (value is string)
+            {
+                Write(true);
+                Write(@"String");
+                Write((string)value);
+            }
+            else if (value is DateTime)
+            {
+                Write(true);
+                Write(@"DateTime");
+                Write((DateTime)value);
+            }
+            else
+                Write(false);
+        }
+
+
+
+        /// <summary>
+        /// Writes a value to the underlying buffer.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+		[Obsolete("DynamicType is obsolete. Consider using JSON or XML serialized objects instead.", false)]
+        protected void Write(object[] value)
+        {
+            Write(value.Length);
+            foreach (var element in value)
+                Write((object)element);
+        }
+    }

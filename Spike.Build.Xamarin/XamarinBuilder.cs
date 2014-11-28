@@ -31,16 +31,16 @@ namespace Spike.Build.Xamarin
         internal CustomType TargetType { get; set; }
     }
 
-    internal class XamarinBuilder : IBuilder
+    internal class XamarinBuilder : CSharp5BuilderBase
     {
-        
 
         /// <summary>
         /// Build the model of the specified type.
         /// </summary>
         /// <param name="model">The model to build.</param>
         /// <param name="output">The output type.</param>
-        public void Build(Model model, string output, string format)
+        /// <param name="format">The format to apply.</param>
+        public override void Build(Model model, string output, string format)
         {
             if (format == "single")
             {
@@ -67,37 +67,29 @@ namespace Spike.Build.Xamarin
                 var template = new CSharp5Template();
                 template.Model = model;
 
-                //CLZF.cs
-                template.Target = "LZF";
-                File.WriteAllText(Path.Combine(output, @"CLZF.cs"), template.TransformText());
-                template.Clear();
+                // Build LZF.cs
+                this.BuildTarget("LZF", output, template);
 
-                //TcpChannelBase.cs
-                template.Target = "TcpChannelBase";
-                File.WriteAllText(Path.Combine(output, @"TcpChannelBase.cs"), template.TransformText());
-                template.Clear();
+                // Build TcpChannelBase.cs
+                this.BuildTarget("TcpChannelBase", output, template);
 
-                //TcpChannel.cs
-                template.Target = "TcpChannel";
-                File.WriteAllText(Path.Combine(output, @"TcpChannel.cs"), template.TransformText());
-                template.Clear();
+                // Build TcpChannel.cs
+                this.BuildTarget("TcpChannel", output, template);
 
                 //Make packets
                 template.Target = "Packet";
                 foreach (var receive in model.Receives)
                 {
-                    template.TargetOperation = receive;
-                    File.WriteAllText(Path.Combine(output, string.Format(@"{0}.cs", receive.Name)), template.TransformText());
-                    template.Clear();
+                    // Build the operation
+                    this.BuildOperation(receive, output, template);
                 }
 
                 //Make CustomType
                 template.Target = "ComplexType";
                 foreach (var customType in model.CustomTypes)
                 {
-                    template.TargetType = customType;
-                    File.WriteAllText(Path.Combine(output, string.Format(@"{0}.cs", customType.Name)), template.TransformText());
-                    template.Clear();
+                    // Build the type
+                    this.BuildType(customType, output, template);
                 }
             }
         }

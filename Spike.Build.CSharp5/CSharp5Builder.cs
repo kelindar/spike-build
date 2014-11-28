@@ -63,6 +63,9 @@ namespace Spike.Build.CSharp5
                 // Build LZF.cs
                 this.BuildTarget("LZF", output, template);
 
+                // Build TcpChannel.cs
+                this.BuildTarget("PacketWriter", output, template);
+
                 // Build TcpChannelBase.cs
                 this.BuildTarget("TcpChannelBase", output, template);
 

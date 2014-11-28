@@ -76,6 +76,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CSharp5Template.tt</DependentUpon>
     </Compile>
+    <None Include="Spike.Build.CSharp5\PacketWriter.t4" />
     <Compile Include="Spike.Build.Java\CustomTypeTemplate.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

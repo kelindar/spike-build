@@ -179,6 +179,180 @@ namespace Spike.Build.CSharp5
             this.Write("\t");
             
             #line 19 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
+ if(Target == null || Target == "PacketWriter") { 
+            
+            #line default
+            #line hidden
+            this.Write(" ");
+            this.Write("    /// <summary>\r\n    /// Represents a packet writer that can be used to seriali" +
+                    "ze packets.\r\n    /// </summary>\r\n    public sealed class PacketWriter\r\n    {\r\n\r\n" +
+                    "        private byte[] Buffer;\r\n        private int Offset;\r\n\r\n        /// <summ" +
+                    "ary>\r\n        /// Constructs a new packet writer.\r\n        /// </summary>\r\n     " +
+                    "   /// <param name=\"bufferSize\">The size of the buffer to allocate.</param>\r\n   " +
+                    "     /// <param name=\"key\">The</param>\r\n        public PacketWriter(int bufferSi" +
+                    "ze)\r\n        {\r\n            this.Buffer = new byte[bufferSize];\r\n            thi" +
+                    "s.Offset = 0;\r\n        }\r\n\r\n        public void WriteKey(uint key)\r\n        {\r\n " +
+                    "           this.Offset = 4;\r\n            Write(key);\r\n        }\r\n\r\n        publi" +
+                    "c void SetSize()\r\n        {\r\n            var size = this.Offset - 4;\r\n          " +
+                    "  this.Buffer[0] = ((byte)(size >> 24));\r\n            this.Buffer[1] = ((byte)(s" +
+                    "ize >> 16));\r\n            this.Buffer[2] = ((byte)(size >> 8));\r\n            thi" +
+                    "s.Buffer[3] = ((byte)size);\r\n        }\r\n\r\n\r\n        /// <summary>\r\n        /// W" +
+                    "rites a value to the underlying buffer.\r\n        /// </summary>\r\n        /// <pa" +
+                    "ram name=\"value\">The value to write.</param>\r\n        public void Write(byte val" +
+                    "ue)\r\n        {\r\n            this.Buffer[this.Offset++] = value;\r\n        }\r\n\r\n  " +
+                    "      /// <summary>\r\n        /// Writes a value to the underlying buffer.\r\n     " +
+                    "   /// </summary>\r\n        /// <param name=\"value\">The value to write.</param>\r\n" +
+                    "        protected void Write(byte[] value)\r\n        {\r\n            Write(value.L" +
+                    "ength);\r\n            System.Buffer.BlockCopy(value, 0, this.Buffer, this.Offset," +
+                    " value.Length);\r\n            this.Offset += value.Length;\r\n        }\r\n\r\n        " +
+                    "/// <summary>\r\n        /// Writes a value to the underlying buffer.\r\n        ///" +
+                    " </summary>\r\n        /// <param name=\"value\">The value to write.</param>\r\n      " +
+                    "  protected void Write(ushort value)\r\n        {\r\n            Write((byte)(value " +
+                    ">> 8));\r\n            Write((byte)value);\r\n        }\r\n\r\n        /// <summary>\r\n  " +
+                    "      /// Writes a value to the underlying buffer.\r\n        /// </summary>\r\n    " +
+                    "    /// <param name=\"value\">The value to write.</param>\r\n        protected void " +
+                    "Write(ushort[] value)\r\n        {\r\n            Write(value.Length);\r\n            " +
+                    "foreach (var element in value)\r\n                Write(element);\r\n        }\r\n\r\n  " +
+                    "      /// <summary>\r\n        /// Writes a value to the underlying buffer.\r\n     " +
+                    "   /// </summary>\r\n        /// <param name=\"value\">The value to write.</param>\r\n" +
+                    "        protected void Write(short value)\r\n        {\r\n            Write((byte)(v" +
+                    "alue >> 8));\r\n            Write((byte)value);\r\n        }\r\n\r\n        /// <summary" +
+                    ">\r\n        /// Writes a value to the underlying buffer.\r\n        /// </summary>\r" +
+                    "\n        /// <param name=\"value\">The value to write.</param>\r\n        protected " +
+                    "void Write(short[] value)\r\n        {\r\n            Write(value.Length);\r\n        " +
+                    "    foreach (var element in value)\r\n                Write(element);\r\n        }\r\n" +
+                    "\r\n        /// <summary>\r\n        /// Writes a value to the underlying buffer.\r\n " +
+                    "       /// </summary>\r\n        /// <param name=\"value\">The value to write.</para" +
+                    "m>\r\n        protected void Write(uint value)\r\n        {\r\n            Write((byte" +
+                    ")(value >> 24));\r\n            Write((byte)(value >> 16));\r\n            Write((by" +
+                    "te)(value >> 8));\r\n            Write((byte)value);\r\n        }\r\n\r\n        /// <su" +
+                    "mmary>\r\n        /// Writes a value to the underlying buffer.\r\n        /// </summ" +
+                    "ary>\r\n        /// <param name=\"value\">The value to write.</param>\r\n        prote" +
+                    "cted void Write(uint[] value)\r\n        {\r\n            Write(value.Length);\r\n    " +
+                    "        foreach (var element in value)\r\n                Write(element);\r\n       " +
+                    " }\r\n\r\n        /// <summary>\r\n        /// Writes a value to the underlying buffer" +
+                    ".\r\n        /// </summary>\r\n        /// <param name=\"value\">The value to write.</" +
+                    "param>\r\n        protected void Write(int value)\r\n        {\r\n            Write((b" +
+                    "yte)(value >> 24));\r\n            Write((byte)(value >> 16));\r\n            Write(" +
+                    "(byte)(value >> 8));\r\n            Write((byte)value);\r\n        }\r\n\r\n        /// " +
+                    "<summary>\r\n        /// Writes a value to the underlying buffer.\r\n        /// </s" +
+                    "ummary>\r\n        /// <param name=\"value\">The value to write.</param>\r\n        pr" +
+                    "otected void Write(int[] value)\r\n        {\r\n            Write(value.Length);\r\n  " +
+                    "          foreach (var element in value)\r\n                Write(element);\r\n     " +
+                    "   }\r\n\r\n        /// <summary>\r\n        /// Writes a value to the underlying buff" +
+                    "er.\r\n        /// </summary>\r\n        /// <param name=\"value\">The value to write." +
+                    "</param>\r\n        protected void Write(ulong value)\r\n        {\r\n            Writ" +
+                    "e((byte)(value >> 56));\r\n            Write((byte)(value >> 48));\r\n            Wr" +
+                    "ite((byte)(value >> 40));\r\n            Write((byte)(value >> 32));\r\n            " +
+                    "Write((byte)(value >> 24));\r\n            Write((byte)(value >> 16));\r\n          " +
+                    "  Write((byte)(value >> 8));\r\n            Write((byte)value);\r\n        }\r\n\r\n    " +
+                    "    /// <summary>\r\n        /// Writes a value to the underlying buffer.\r\n       " +
+                    " /// </summary>\r\n        /// <param name=\"value\">The value to write.</param>\r\n  " +
+                    "      protected void Write(ulong[] value)\r\n        {\r\n            Write(value.Le" +
+                    "ngth);\r\n            foreach (var element in value)\r\n                Write(elemen" +
+                    "t);\r\n        }\r\n\r\n        /// <summary>\r\n        /// Writes a value to the under" +
+                    "lying buffer.\r\n        /// </summary>\r\n        /// <param name=\"value\">The value" +
+                    " to write.</param>\r\n        protected void Write(long value)\r\n        {\r\n       " +
+                    "     Write((byte)(value >> 56));\r\n            Write((byte)(value >> 48));\r\n     " +
+                    "       Write((byte)(value >> 40));\r\n            Write((byte)(value >> 32));\r\n   " +
+                    "         Write((byte)(value >> 24));\r\n            Write((byte)(value >> 16));\r\n " +
+                    "           Write((byte)(value >> 8));\r\n            Write((byte)value);\r\n        " +
+                    "}\r\n\r\n        /// <summary>\r\n        /// Writes a value to the underlying buffer." +
+                    "\r\n        /// </summary>\r\n        /// <param name=\"value\">The value to write.</p" +
+                    "aram>\r\n        protected void Write(long[] value)\r\n        {\r\n            Write(" +
+                    "value.Length);\r\n            foreach (var element in value)\r\n                Writ" +
+                    "e(element);\r\n        }\r\n\r\n        /// <summary>\r\n        /// Writes a value to t" +
+                    "he underlying buffer.\r\n        /// </summary>\r\n        /// <param name=\"value\">T" +
+                    "he value to write.</param>\r\n        protected void Write(bool value)\r\n        {\r" +
+                    "\n            Write((byte)(value ? 1 : 0));\r\n        }\r\n\r\n        /// <summary>\r\n" +
+                    "        /// Writes a value to the underlying buffer.\r\n        /// </summary>\r\n  " +
+                    "      /// <param name=\"value\">The value to write.</param>\r\n        protected voi" +
+                    "d Write(bool[] value)\r\n        {\r\n            Write(value.Length);\r\n            " +
+                    "foreach (var element in value)\r\n                Write(element);\r\n        }\r\n\r\n  " +
+                    "    \r\n        /// <summary>\r\n        /// Writes a value to the underlying buffer" +
+                    ".\r\n        /// </summary>\r\n        /// <param name=\"value\">The value to write.</" +
+                    "param>\r\n        protected void Write(float value)\r\n        {\r\n            var by" +
+                    "tes = System.BitConverter.GetBytes(value);\r\n            for (var index = bytes.L" +
+                    "ength - 1;index >= 0 ;--index)\r\n                Write(bytes[index]);            " +
+                    "\r\n        }\r\n\r\n        /// <summary>\r\n        /// Writes a value to the underlyi" +
+                    "ng buffer.\r\n        /// </summary>\r\n        /// <param name=\"value\">The value to" +
+                    " write.</param>\r\n        protected void Write(float[] value)\r\n        {\r\n       " +
+                    "     Write(value.Length);\r\n            foreach (var element in value)\r\n         " +
+                    "       Write(element);\r\n        }\r\n\r\n        /// <summary>\r\n        /// Writes a" +
+                    " value to the underlying buffer.\r\n        /// </summary>\r\n        /// <param nam" +
+                    "e=\"value\">The value to write.</param>\r\n        protected void Write(double value" +
+                    ")\r\n        {\r\n            var bytes = BitConverter.GetBytes(value);\r\n           " +
+                    " for (var index = bytes.Length - 1; index >= 0; --index)\r\n                Write(" +
+                    "bytes[index]);\r\n        }\r\n\r\n        /// <summary>\r\n        /// Writes a value t" +
+                    "o the underlying buffer.\r\n        /// </summary>\r\n        /// <param name=\"value" +
+                    "\">The value to write.</param>\r\n        protected void Write(double[] value)\r\n   " +
+                    "     {\r\n            Write(value.Length);\r\n            foreach (var element in va" +
+                    "lue)\r\n                Write(element);\r\n        }\r\n\r\n        /// <summary>\r\n     " +
+                    "   /// Writes a value to the underlying buffer.\r\n        /// </summary>\r\n       " +
+                    " /// <param name=\"value\">The value to write.</param>\r\n        protected void Wri" +
+                    "te(string value)\r\n        {\r\n            Write(System.Text.Encoding.UTF8.GetByte" +
+                    "s(value));\r\n        }\r\n\r\n        /// <summary>\r\n        /// Writes a value to th" +
+                    "e underlying buffer.\r\n        /// </summary>\r\n        /// <param name=\"value\">Th" +
+                    "e value to write.</param>\r\n        protected void Write(string[] value)\r\n       " +
+                    " {\r\n            Write(value.Length);\r\n            foreach (var element in value)" +
+                    "\r\n                Write(element);\r\n        }\r\n\r\n        /// <summary>\r\n        /" +
+                    "// Writes a value to the underlying buffer.\r\n        /// </summary>\r\n        ///" +
+                    " <param name=\"value\">The value to write.</param>\r\n        protected void Write(D" +
+                    "ateTime value)\r\n        {\r\n            Write((short)value.Year);\r\n            Wr" +
+                    "ite((short)value.Month);\r\n            Write((short)value.Day);\r\n            Writ" +
+                    "e((short)value.Hour);\r\n            Write((short)value.Minute);\r\n            Writ" +
+                    "e((short)value.Second);\r\n            Write((short)value.Millisecond);\r\n        }" +
+                    "\r\n\r\n        /// <summary>\r\n        /// Writes a value to the underlying buffer.\r" +
+                    "\n        /// </summary>\r\n        /// <param name=\"value\">The value to write.</pa" +
+                    "ram>\r\n        protected void Write(DateTime[] value)\r\n        {\r\n            Wri" +
+                    "te(value.Length);\r\n            foreach (var element in value)\r\n                W" +
+                    "rite(element);\r\n        }\r\n  \r\n        /// <summary>\r\n        /// Writes a value" +
+                    " to the underlying buffer.\r\n        /// </summary>\r\n        /// <param name=\"val" +
+                    "ue\">The value to write.</param>\r\n        [Obsolete(\"DynamicType is obsolete. Con" +
+                    "sider using JSON or XML serialized objects instead.\", false)]\r\n        protected" +
+                    " void Write(object value)\r\n        {\r\n            if (value is byte)\r\n          " +
+                    "  {\r\n                Write(true);\r\n                Write(@\"Byte\");\r\n            " +
+                    "    Write((byte)value);\r\n            }\r\n            else if (value is ushort)\r\n " +
+                    "           {\r\n                Write(true);\r\n                Write(@\"UInt16\");\r\n " +
+                    "               Write((ushort)value);\r\n            }\r\n            else if (value " +
+                    "is short)\r\n            {\r\n                Write(true);\r\n                Write(@\"" +
+                    "Int16\");\r\n                Write((short)value);\r\n            }\r\n            else " +
+                    "if (value is uint)\r\n            {\r\n                Write(true);\r\n               " +
+                    " Write(@\"UInt32\");\r\n                Write((uint)value);\r\n            }\r\n        " +
+                    "    else if (value is int)\r\n            {\r\n                Write(true);\r\n       " +
+                    "         Write(@\"Int32\");\r\n                Write((int)value);\r\n            }\r\n  " +
+                    "          else if (value is ulong)\r\n            {\r\n                Write(true);\r" +
+                    "\n                Write(@\"UInt64\");\r\n                Write((ulong)value);\r\n      " +
+                    "      }\r\n            else if (value is long)\r\n            {\r\n                Wri" +
+                    "te(true);\r\n                Write(@\"Int64\");\r\n                Write((long)value);" +
+                    "\r\n            }\r\n            else if (value is float)\r\n            {\r\n          " +
+                    "      Write(true);\r\n                Write(@\"Single\");\r\n                Write((fl" +
+                    "oat)value);\r\n            }\r\n            else if (value is double)\r\n            {" +
+                    "\r\n                Write(true);\r\n                Write(@\"Double\");\r\n             " +
+                    "   Write((double)value);\r\n            }\r\n            else if (value is bool)\r\n  " +
+                    "          {\r\n                Write(true);\r\n                Write(@\"Boolean\");\r\n " +
+                    "               Write((bool)value);\r\n            }\r\n            else if (value is" +
+                    " string)\r\n            {\r\n                Write(true);\r\n                Write(@\"S" +
+                    "tring\");\r\n                Write((string)value);\r\n            }\r\n            else" +
+                    " if (value is DateTime)\r\n            {\r\n                Write(true);\r\n          " +
+                    "      Write(@\"DateTime\");\r\n                Write((DateTime)value);\r\n            " +
+                    "}\r\n            else\r\n                Write(false);\r\n        }\r\n\r\n\r\n\r\n        ///" +
+                    " <summary>\r\n        /// Writes a value to the underlying buffer.\r\n        /// </" +
+                    "summary>\r\n        /// <param name=\"value\">The value to write.</param>\r\n\t\t[Obsole" +
+                    "te(\"DynamicType is obsolete. Consider using JSON or XML serialized objects inste" +
+                    "ad.\", false)]\r\n        protected void Write(object[] value)\r\n        {\r\n        " +
+                    "    Write(value.Length);\r\n            foreach (var element in value)\r\n          " +
+                    "      Write((object)element);\r\n        }\r\n    }");
+            this.Write(" ");
+            
+            #line 19 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
+ } 
+            
+            #line default
+            #line hidden
+            this.Write("\t");
+            
+            #line 20 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
  if(Target == null || Target == "TcpChannelBase") { 
             
             #line default
@@ -507,14 +681,14 @@ namespace Spike.Build.CSharp5
                     "egion\r\n    }");
             this.Write(" ");
             
-            #line 19 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 20 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
  } 
             
             #line default
             #line hidden
             this.Write("\t");
             
-            #line 20 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 21 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
  if(Target == null || Target == "TcpChannel") { 
             
             #line default
@@ -853,13 +1027,13 @@ namespace Spike.Build.CSharp5
             this.Write("\r\n\t}\r\n");
             this.Write(" ");
             
-            #line 20 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 21 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
  } 
             
             #line default
             #line hidden
             
-            #line 21 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 22 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
 	if(Target == null)
 	{ 
 		foreach( var operation in Model.Receives )
@@ -927,7 +1101,7 @@ namespace Spike.Build.CSharp5
             this.Write("    }");
             this.Write("\r\n");
             
-            #line 27 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 28 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
 		} 
 	} else if( Target == "Packet" )
 	{ 
@@ -993,14 +1167,14 @@ namespace Spike.Build.CSharp5
             this.Write("    }");
             this.Write("\r\n");
             
-            #line 31 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 32 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
 	} 
             
             #line default
             #line hidden
             this.Write("\r\n");
             
-            #line 33 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 34 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
 	if(Target == null)
 	{ 
 		foreach( var customType in Model.CustomTypes )
@@ -1068,7 +1242,7 @@ namespace Spike.Build.CSharp5
             this.Write("    }");
             this.Write("\r\n");
             
-            #line 39 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 40 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
 		} 
 	} else if( Target == "ComplexType" )
 	{ 
@@ -1134,7 +1308,7 @@ namespace Spike.Build.CSharp5
             this.Write("    }");
             this.Write("\r\n");
             
-            #line 43 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 44 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
 	} 
             
             #line default
@@ -1143,7 +1317,7 @@ namespace Spike.Build.CSharp5
             return this.GenerationEnvironment.ToString();
         }
         
-        #line 47 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
+        #line 48 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
  internal void Clear(){
 	GenerationEnvironment.Clear();
 } 

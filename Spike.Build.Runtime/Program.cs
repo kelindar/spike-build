@@ -187,7 +187,7 @@ namespace Spike.Build
                                     var baseUrl = modelFile.Substring(0, modelFile.Length - 4);
                                     foreach (var protocol in protocols)
                                     {
-                                        Console.WriteLine(protocol);
+                                        Console.WriteLine("Building Protocol: " + protocol + "...");
                                         Model.Load(string.Format("{0}?file={1}", baseUrl, protocol));
                                     }
                                 }
