@@ -4,7 +4,13 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ parameter type="Spike.Build.CustomType" name="CustomType" #>
-package com.misakai.spike.network.entities;
+<#	if(CustomType.Members.Any((member) => member.Type == "DateTime"))
+	{ #>
+import java.util.Date;
+<#	} #>
+
+
+package com.misakai.spike.network;
 
 public final class <#= CustomType.Name #> {
 <#		foreach(var member in CustomType.Members)

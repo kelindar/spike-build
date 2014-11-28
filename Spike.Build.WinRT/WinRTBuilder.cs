@@ -22,108 +22,76 @@ using System.IO;
 
 namespace Spike.Build.WinRT
 {
-    internal class WinRTBuilder : IBuilder
+    partial class WinRTTemplate
     {
-        internal static string GetNativeType(Member member)
-        {
-            switch (member.Type)
+        internal string Target { get; set; }
+        internal Model Model { get; set; }
+        internal Operation TargetOperation { get; set; }
+        internal CustomType TargetType { get; set; }
+    }
+
+    internal class WinRTBuilder : IBuilder
+    {        
+
+        public void Build(Model model, string output, string format) {
+            if (format == "single")
             {
-                case "Byte":
-                    return "byte";
-                case "UInt16":
-                    return "ushort";
-                case "UInt32":
-                    return "uint";
-                case "UInt64":
-                    return "ulong";
+                var template = new WinRTTemplate();
+                template.Target = null;
+                template.Model = model;
 
-                case "SByte":
-                    return "sbyte";
-                case "Int16":
-                    return "short";
-                case "Int32":
-                    return "int";
-                case "Int64":
-                    return "long";
+                if (string.IsNullOrEmpty(output))
+                    output = @"WinRT";
 
-                case "Boolean":
-                    return "bool";
-                case "Single":
-                    return "float";
-                case "Double":
-                    return "double";
-                case "String":
-                    return "string";
+                if (!Directory.Exists(output))
+                    Directory.CreateDirectory(output);
 
-                case "Dynamic":
-                    return "object";
-
-                default: //CustomType & DateTime
-                    return member.Type;
+                File.WriteAllText(Path.Combine(output, @"SpikeSdk.cs"), template.TransformText());
             }
-
-        }
-
-        /// <summary>
-        /// Build the model of the specified type.
-        /// </summary>
-        /// <param name="model">The model to build.</param>
-        /// <param name="output">The output type.</param>
-        public void Build(Model model, string output) {
-            if (string.IsNullOrEmpty(output))
-                output = @"WinRT";
-
-            var networkDirectory = Path.Combine(output, "Spike", "Network");
-            if (!Directory.Exists(networkDirectory))
-                Directory.CreateDirectory(networkDirectory);
-
-            var packetsDirectory = Path.Combine(output, "Spike", "Network", "Packets");
-            if (!Directory.Exists(packetsDirectory))
-                Directory.CreateDirectory(packetsDirectory);
-
-            var customTypesDirectory = Path.Combine(output, "Spike", "Network", "Entities");
-            if (!Directory.Exists(customTypesDirectory))
-                Directory.CreateDirectory(customTypesDirectory);
-
-            Extentions.CopyFromRessources("Spike.Build.WinRT.StaticFiles.CLZF.cs", Path.Combine(networkDirectory, @"CLZF.cs"));
-            Extentions.CopyFromRessources("Spike.Build.WinRT.StaticFiles.TcpChannelBase.cs", Path.Combine(networkDirectory, @"TcpChannelBase.cs"));
-            
-            var tcpChanneltemplate = new TcpChannelTemplate();
-            var tcpChannelsession = new Dictionary<string, object>();
-            tcpChanneltemplate.Session = tcpChannelsession;
-
-            tcpChannelsession["Model"] = model;
-            tcpChanneltemplate.Initialize();
-            
-            var code = tcpChanneltemplate.TransformText();
-            File.WriteAllText(Path.Combine(networkDirectory, @"TcpChannel.cs"), code);
-
-            //Make packets
-            var packetTemplate = new PacketTemplate();
-            var packetSession = new Dictionary<string, object>();
-            packetTemplate.Session = packetSession;
-            foreach (var receive in model.Receives) {
-                packetTemplate.Clear();
-                packetSession["Operation"] = receive;
-                packetTemplate.Initialize();
-
-                code = packetTemplate.TransformText();
-                File.WriteAllText(Path.Combine(packetsDirectory, string.Format(@"{0}.cs", receive.Name)), code);
-            }
-
-            //Make CustomType
-            var customTypeTemplate = new CustomTypeTemplate();
-            var customTypeSession = new Dictionary<string, object>();
-            customTypeTemplate.Session = customTypeSession;
-            foreach (var customType in model.CustomTypes)
+            else
             {
-                customTypeTemplate.Clear();
-                customTypeSession["CustomType"] = customType;
-                customTypeTemplate.Initialize();
-                code = customTypeTemplate.TransformText();
-                File.WriteAllText(Path.Combine(customTypesDirectory, string.Format(@"{0}.cs", customType.Name)), code);
-            }
+                if (string.IsNullOrEmpty(output))
+                    output = @"WinRT";
 
+                if (!Directory.Exists(output))
+                    Directory.CreateDirectory(output);
+
+                var template = new WinRTTemplate();
+                template.Model = model;
+
+                //CLZF.cs
+                template.Target = "LZF";
+                File.WriteAllText(Path.Combine(output, @"CLZF.cs"), template.TransformText());
+                template.Clear();
+
+                //TcpChannelBase.cs
+                template.Target = "TcpChannelBase";
+                File.WriteAllText(Path.Combine(output, @"TcpChannelBase.cs"), template.TransformText());
+                template.Clear();
+
+                //TcpChannel.cs
+                template.Target = "TcpChannel";
+                File.WriteAllText(Path.Combine(output, @"TcpChannel.cs"), template.TransformText());
+                template.Clear();
+
+                //Make packets
+                template.Target = "Packet";
+                foreach (var receive in model.Receives)
+                {
+                    template.TargetOperation = receive;
+                    File.WriteAllText(Path.Combine(output, string.Format(@"{0}.cs", receive.Name)), template.TransformText());
+                    template.Clear();
+                }
+
+                //Make CustomType
+                template.Target = "ComplexType";
+                foreach (var customType in model.CustomTypes)
+                {
+                    template.TargetType = customType;
+                    File.WriteAllText(Path.Combine(output, string.Format(@"{0}.cs", customType.Name)), template.TransformText());
+                    template.Clear();
+                }
+            }
         }
     }
 

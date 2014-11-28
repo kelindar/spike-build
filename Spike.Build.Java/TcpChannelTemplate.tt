@@ -7,8 +7,10 @@
 package com.misakai.spike.network;
 
 import java.util.ArrayList;
-import com.misakai.spike.network.packets.*;
-import com.misakai.spike.network.entities.*;
+<#	if(Model.CustomTypes.Any((customType) => customType.Members.Any((member) => member.Type == "DateTime")))
+	{ #>
+import java.util.Date;
+<#	} #>
 
 public final class TcpChannel extends AbstractTcpChannel {
 	//EventHandlers	
@@ -51,7 +53,7 @@ public final class TcpChannel extends AbstractTcpChannel {
 <#	foreach(var receive in Model.Receives)
 	{ #>				
 			case 0x<#= receive.Id.ToString("X") #> : {
-				<#= receive.Name #>packet = new <#= receive.Name #>();
+				<#= receive.Name #> packet = new <#= receive.Name #>();
 				beginReadPacket(<#= receive.Compressed ? "true" : "false" #>);
 					
 <#		foreach(var member in receive.Members){ #>
@@ -109,5 +111,5 @@ public final class TcpChannel extends AbstractTcpChannel {
     }
 <#	} #>
 
-	}
+	
 }

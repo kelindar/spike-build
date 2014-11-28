@@ -7,7 +7,7 @@
 //     the code is regenerated.
 // </auto-generated>
 // ------------------------------------------------------------------------------
-namespace Spike.Build.Xamarin
+namespace Spike.Build.Java
 {
     using System.Linq;
     using System.Text;
@@ -18,9 +18,9 @@ namespace Spike.Build.Xamarin
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Xamarin\PacketTemplate.tt"
+    #line 1 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Java\DisconnectionHandlerTemplate.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "14.0.0.0")]
-    public partial class PacketTemplate : PacketTemplateBase
+    public partial class DisconnectionHandlerTemplate : DisconnectionHandlerTemplateBase
     {
 #line hidden
         /// <summary>
@@ -28,107 +28,20 @@ namespace Spike.Build.Xamarin
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write("using Spike.Network.CustomTypes;\r\n\r\nnamespace Spike.Network.Packets\r\n{\r\n    publi" +
-                    "c sealed class ");
-            
-            #line 11 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Xamarin\PacketTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Operation.Name));
-            
-            #line default
-            #line hidden
-            this.Write("\r\n    {\r\n");
-            
-            #line 13 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Xamarin\PacketTemplate.tt"
-		foreach(var member in Operation.Members)
-		{ 
-            
-            #line default
-            #line hidden
-            this.Write("\t\r\n\t\tpublic ");
-            
-            #line 15 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Xamarin\PacketTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(XamarinBuilder.GetNativeType(member)));
-            
-            #line default
-            #line hidden
-            
-            #line 15 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Xamarin\PacketTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "[]" : string.Empty));
-            
-            #line default
-            #line hidden
-            this.Write(" ");
-            
-            #line 15 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Xamarin\PacketTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
-            
-            #line default
-            #line hidden
-            this.Write(" { get; set; }\r\n");
-            
-            #line 16 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Xamarin\PacketTemplate.tt"
-		} 
-            
-            #line default
-            #line hidden
-            this.Write("\r\n    }\r\n}\r\n");
+            this.Write(@"package com.misakai.spike.network;
+
+/**
+ * The listener interface for receiving disconnection events. The class must define a method of no arguments called onDisconnect. 
+ */
+//@FunctionalInterface //Too soon with android 
+public interface DisconnectionHandler {
+	/**
+	 * Invoked when a disconnection occurs.
+	 */
+	public void onDisconnect();
+}");
             return this.GenerationEnvironment.ToString();
         }
-        
-        #line 20 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Xamarin\PacketTemplate.tt"
- internal void Clear(){
-	GenerationEnvironment.Clear();
-} 
-        
-        #line default
-        #line hidden
-        
-        #line 1 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Xamarin\PacketTemplate.tt"
-
-private global::Spike.Build.Operation _OperationField;
-
-/// <summary>
-/// Access the Operation parameter of the template.
-/// </summary>
-private global::Spike.Build.Operation Operation
-{
-    get
-    {
-        return this._OperationField;
-    }
-}
-
-
-/// <summary>
-/// Initialize the template
-/// </summary>
-public virtual void Initialize()
-{
-    if ((this.Errors.HasErrors == false))
-    {
-bool OperationValueAcquired = false;
-if (this.Session.ContainsKey("Operation"))
-{
-    this._OperationField = ((global::Spike.Build.Operation)(this.Session["Operation"]));
-    OperationValueAcquired = true;
-}
-if ((OperationValueAcquired == false))
-{
-    object data = global::System.Runtime.Remoting.Messaging.CallContext.LogicalGetData("Operation");
-    if ((data != null))
-    {
-        this._OperationField = ((global::Spike.Build.Operation)(data));
-    }
-}
-
-
-    }
-}
-
-
-        
-        #line default
-        #line hidden
     }
     
     #line default
@@ -138,7 +51,7 @@ if ((OperationValueAcquired == false))
     /// Base class for this transformation
     /// </summary>
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "14.0.0.0")]
-    public class PacketTemplateBase
+    public class DisconnectionHandlerTemplateBase
     {
         #region Fields
         private global::System.Text.StringBuilder generationEnvironmentField;

@@ -1,18 +1,30 @@
-﻿using LZF.NET;
-using System;
-using System.Diagnostics;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net.Sockets;
+﻿    public enum ConnectionResult
+    {
+        Connected,
+        Error
+    }
 
-namespace Spike.Network
-{
+
+    public enum ConnectionError
+    {
+        Unknown,
+		User,
+        Connection,
+        Receive,
+        Send
+    }
+
     public abstract class TcpChannelBase<T> where T : TcpChannelBase<T>
     {
         public event Action<T> Connected;
-        public event Action<T> Disconnected;
-
+        public event Action<T,ConnectionError> Disconnected;
+        
         private Socket socket;
+
+        private bool useSSL;
+        private Stream innerStream;
+
+        private object mutext = new object();
         
         private byte[] SendBuffer;
         private int SendBufferPosition;
@@ -21,53 +33,130 @@ namespace Spike.Network
         private int ReceiveBufferPosition;
         private int ReceiveBufferSize;
 
-        public async void Connect(string host, int port)
-        {
-			socket = new Socket(AddressFamily.InterNetwork,SocketType.Stream,ProtocolType.Tcp);
-            
+		public int BufferSize { get; protected set; } 
 
-			await Task.Run(() => socket.Connect (host, port));
+		public TcpChannelBase(int bufferSize, bool useSSL)
+		{
+			BufferSize = bufferSize;
+            this.useSSL = useSSL;
+        }
 
-            SendBuffer = new byte[4096];
-            SendBufferPosition = 0;
-            
-			ReceiveBuffer = new byte[4096];
-            ReceiveBufferPosition = 0;
-            ReceiveBufferSize = 0;
-
-            if (Connected != null)
-                Connected((T)this);
-
-            try
-            {
-                while (true)
-                {
-					ReceiveBufferSize = await Task<int>.Run(() => 
-						{return socket.Receive(ReceiveBuffer);}
-					);
-					 
-					ReceiveBufferPosition = 0;
-
-                    if (ReceiveBufferSize != (PacketReadInt32() + 4))
-                    {
-                        Debug.WriteLine("No fragmentation");
-                        Disconnect();
-                        return;
-                    }
-                    OnReceive(PacketReadUInt32());
-                }
-            }
-            catch (Exception)
-            {
-                Disconnect();
+        public bool IsConnected {
+            get {
+                return (socket != null && socket.Connected);
             }
         }
 
-        public void Disconnect()
+        private async void ReceiveLoop()
         {
-            socket.Dispose();
-            if (Disconnected != null)
-                Disconnected((T)this);
+            while (true)
+            {
+                //Read Size
+                ReceiveBufferPosition = 0;
+                ReceiveBufferSize = await Task.Run(() => Fill(sizeof(int)));
+                if (ReceiveBufferSize != sizeof(int))
+                {
+                    Disconnect(ConnectionError.Receive);
+                    return;
+                }
+
+                //read packet data
+                ReceiveBufferPosition = 0;
+                ReceiveBufferSize = PacketReadInt32() + sizeof(int);
+
+                do
+                {
+                    var readed = await Task.Run(() => Fill(ReceiveBufferSize - ReceiveBufferPosition));
+                    if (readed == 0)
+                    {
+                        Disconnect(ConnectionError.Receive);
+                        return;
+                    }
+                    ReceiveBufferPosition += readed;
+                } while (ReceiveBufferPosition < ReceiveBufferSize);
+
+                ReceiveBufferPosition = sizeof(int);
+
+                OnReceive(PacketReadUInt32());
+            }
+        }
+
+
+        public async Task<ConnectionResult> Connect(string host, int port)
+        {
+            try
+            {
+                socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                
+                await Task.Factory.FromAsync(
+                    socket.BeginConnect, 
+                    socket.EndConnect,
+                    host, port, null);
+
+                if (useSSL)
+                {
+                    var sslStream = new SslStream(new NetworkStream(socket),
+                        false,
+                        (sender, certificate, chain, sslPolicyErrors) => { return true; } //Accept self signed
+                        );
+                    sslStream.AuthenticateAsClient("Spike Client");
+                    innerStream = sslStream;
+                }
+                else
+                    innerStream = new NetworkStream(socket);
+
+                SendBuffer = new byte[BufferSize];
+				SendBufferPosition = 0;
+
+				ReceiveBuffer = new byte[BufferSize];
+				ReceiveBufferPosition = 0;
+				ReceiveBufferSize = 0;
+
+				if (Connected != null)
+					Connected((T)this);
+
+                ReceiveLoop();
+
+                return ConnectionResult.Connected;
+            }
+            catch (Exception)
+            {
+                return ConnectionResult.Error;
+            }
+        }
+
+		private int Fill(int size){
+			try
+			{
+                return innerStream.Read(ReceiveBuffer, ReceiveBufferPosition, size);
+				//return socket.Receive(ReceiveBuffer,ReceiveBufferPosition,size,SocketFlags.None);
+			}
+			catch(Exception)
+			{
+				return 0;
+			}
+		}
+
+		public void Disconnect()
+        {
+			Disconnect(ConnectionError.User);
+		}
+
+        private void Disconnect(ConnectionError error)
+        {
+            var mustRaise = false;
+            lock (mutext)
+            {
+                if (socket != null)
+                {
+                    socket.Dispose();
+                    mustRaise = true;
+                    socket = null;
+                }
+            }
+
+            if (mustRaise)
+                Disconnected((T)this, error);            
         }
 
         protected void BeginReadPacket(bool compressed)
@@ -75,11 +164,11 @@ namespace Spike.Network
             if (compressed)
             {
                 var compressedBuffer = new byte[ReceiveBufferSize - 8];
-                var uncompressedBuffer = new byte[4096];
-                System.Buffer.BlockCopy(ReceiveBuffer, 8, compressedBuffer, 0, compressedBuffer.Length);
+                var uncompressedBuffer = new byte[BufferSize];
+                Buffer.BlockCopy(ReceiveBuffer, 8, compressedBuffer, 0, compressedBuffer.Length);
                 var cipher = new CLZF();
                 var uncompressedSize = cipher.lzf_decompress(compressedBuffer, compressedBuffer.Length, uncompressedBuffer, uncompressedBuffer.Length);
-                System.Buffer.BlockCopy(uncompressedBuffer, 0, ReceiveBuffer, 8, uncompressedSize);
+                Buffer.BlockCopy(uncompressedBuffer, 0, ReceiveBuffer, 8, uncompressedSize);
                 ReceiveBufferSize = uncompressedSize + 8;
             }
         }
@@ -101,23 +190,44 @@ namespace Spike.Network
 
         protected async Task SendPacket(bool compressed)
         {
-            if (compressed && SendBufferPosition > 8)
+            try
             {
-                //TODO make this better
-                var cipher = new CLZF();
-                var uncompressedBytes = new byte[SendBufferPosition - 8];
-                System.Buffer.BlockCopy(SendBuffer, 8, uncompressedBytes, 0, uncompressedBytes.Length);
-                var compressedBytes = new byte[4096];
-                var size = cipher.lzf_compress(uncompressedBytes, uncompressedBytes.Length, compressedBytes, compressedBytes.Length);
-                System.Buffer.BlockCopy(compressedBytes, 0, SendBuffer, 8, size);
-                SendBufferPosition = size + 8;
-            }
+                if (compressed && SendBufferPosition > 8)
+                {
+                    //TODO make this better
+                    var cipher = new CLZF();
+                    var uncompressedBytes = new byte[SendBufferPosition - 8];
+                    Buffer.BlockCopy(SendBuffer, 8, uncompressedBytes, 0, uncompressedBytes.Length);
+                    var compressedBytes = new byte[BufferSize];
+                    var size = cipher.lzf_compress(uncompressedBytes, uncompressedBytes.Length, compressedBytes, compressedBytes.Length);
+                    Buffer.BlockCopy(compressedBytes, 0, SendBuffer, 8, size);
+                    SendBufferPosition = size + 8;
+                }
 
-            SetSize();
-            
-			await Task.Run(() => {
-				socket.Send(SendBuffer, SendBufferPosition, SocketFlags.None);
-			});            
+                SetSize();
+
+                var success = await Task.Run<bool>(() => 
+				{
+					try 
+					{
+                        innerStream.Write(SendBuffer, 0, SendBufferPosition);
+                        return true;
+					}
+					catch(Exception)
+					{
+						return false;
+					}
+				});
+				if(!success)
+				{
+                    Disconnect(ConnectionError.Send);
+                    return;
+                }
+            }
+            catch (Exception)
+            {
+                Disconnect(ConnectionError.Unknown);
+            }
         }
 
         #region Spike Primary Type
@@ -133,14 +243,14 @@ namespace Spike.Network
         protected byte[] PacketReadListOfByte()
         {
             var value = new byte[PacketReadInt32()];
-            System.Buffer.BlockCopy(ReceiveBuffer, ReceiveBufferPosition, value, 0, value.Length);
+            Buffer.BlockCopy(ReceiveBuffer, ReceiveBufferPosition, value, 0, value.Length);
             ReceiveBufferPosition += value.Length;
             return value;
         }
         protected void PacketWrite(byte[] value)
         {
             PacketWrite(value.Length);
-            System.Buffer.BlockCopy(value, 0, SendBuffer, SendBufferPosition, value.Length);
+            Buffer.BlockCopy(value, 0, SendBuffer, SendBufferPosition, value.Length);
             SendBufferPosition += value.Length;
         }
 
@@ -168,9 +278,8 @@ namespace Spike.Network
         protected void PacketWrite(ushort[] value)
         {
             PacketWrite(value.Length);
-            var byteSize = System.Buffer.ByteLength(value);
-            System.Buffer.BlockCopy(SendBuffer, SendBufferPosition, value, 0, byteSize);
-            SendBufferPosition += byteSize;
+            foreach (var element in value)
+                PacketWrite(element);
         }
 
         // Int16
@@ -357,16 +466,31 @@ namespace Spike.Network
         }
 
         // Single
+        //protected float PacketReadSingle()
+        //{
+        //    var value = BitConverter.ToSingle(ReceiveBuffer, ReceiveBufferPosition);
+        //    ReceiveBufferPosition += sizeof(float);
+        //    return value;
+        //}
+        //protected void PacketWrite(float value)
+        //{
+        //    foreach(var currentByte in BitConverter.GetBytes(value))
+        //        PacketWrite(currentByte);
+        //}
         protected float PacketReadSingle()
         {
-            var value = BitConverter.ToSingle(ReceiveBuffer, ReceiveBufferPosition);
-            ReceiveBufferPosition += sizeof(float);
-            return value;
+            var bytes = new byte[sizeof(float)];
+            for (var index = bytes.Length - 1; index >= 0; --index)
+                bytes[index] = PacketReadByte();
+            return BitConverter.ToSingle(bytes, 0); 
         }
         protected void PacketWrite(float value)
         {
-            PacketWrite(BitConverter.GetBytes(value));
+            var bytes = BitConverter.GetBytes(value);
+            for (var index = bytes.Length - 1;index >= 0 ;--index)
+                PacketWrite(bytes[index]);            
         }
+
         protected float[] PacketReadListOfSingle()
         {
             var value = new float[PacketReadInt32()];
@@ -382,15 +506,29 @@ namespace Spike.Network
         }
 
         // Double
+        //protected double PacketReadDouble()
+        //{
+        //    var value = BitConverter.ToDouble(ReceiveBuffer, ReceiveBufferPosition);
+        //    ReceiveBufferPosition += sizeof(double);
+        //    return value;
+        //}
+        //protected void PacketWrite(double value)
+        //{
+        //    foreach (var currentByte in BitConverter.GetBytes(value))
+        //        PacketWrite(currentByte);
+        //}
         protected double PacketReadDouble()
         {
-            var value = BitConverter.ToDouble(ReceiveBuffer, ReceiveBufferPosition);
-            ReceiveBufferPosition += sizeof(double);
-            return value;
+            var bytes = new byte[sizeof(double)];
+            for (var index = bytes.Length - 1; index >= 0; --index)
+                bytes[index] = PacketReadByte();
+            return BitConverter.ToDouble(bytes, 0);
         }
         protected void PacketWrite(double value)
         {
-            PacketWrite(BitConverter.GetBytes(value));
+            var bytes = BitConverter.GetBytes(value);
+            for (var index = bytes.Length - 1; index >= 0; --index)
+                PacketWrite(bytes[index]);
         }
         protected double[] PacketReadListOfDouble()
         {
@@ -433,13 +571,13 @@ namespace Spike.Network
         // DateTime
         protected DateTime PacketReadDateTime()
         {
-            short year = PacketReadInt16();
-            short month = PacketReadInt16();
-            short day = PacketReadInt16();
-            short hour = PacketReadInt16();
-            short minute = PacketReadInt16();
-            short second = PacketReadInt16();
-            short millisecond = PacketReadInt16();
+            var year = PacketReadInt16();
+            var month = PacketReadInt16();
+            var day = PacketReadInt16();
+            var hour = PacketReadInt16();
+            var minute = PacketReadInt16();
+            var second = PacketReadInt16();
+            var millisecond = PacketReadInt16();
 
             return new DateTime(year, month, day, hour, minute, second, millisecond);
         }
@@ -473,7 +611,7 @@ namespace Spike.Network
 
         #region Dynamics
         [Obsolete("DynamicType is obsolete. Consider using JSON or XML serialized objects instead.", false)]
-        protected void PacketWriteDynamic(object value)
+        protected void PacketWrite(object value)
         {
             if (value is byte)
             {
@@ -550,8 +688,9 @@ namespace Spike.Network
             else
                 PacketWrite(false);
         }
-        [Obsolete("DynamicType is obsolete. Consider using JSON or XML serialized objects instead.", false)]
-        protected object PacketReadDynamic()
+        
+		[Obsolete("DynamicType is obsolete. Consider using JSON or XML serialized objects instead.", false)]
+        protected object PacketReadDynamicType()
         {
             if (PacketReadBoolean())
             {
@@ -585,23 +724,22 @@ namespace Spike.Network
             }
             return null;
         }
-        [Obsolete("DynamicType is obsolete. Consider using JSON or XML serialized objects instead.", false)]
-        protected object[] PacketReadListOfDynamic()
+        
+		[Obsolete("DynamicType is obsolete. Consider using JSON or XML serialized objects instead.", false)]
+        protected object[] PacketReadListOfDynamicType()
         {
             var value = new object[PacketReadInt32()];
             for (int index = 0; index < value.Length; index++)
-                value[index] = PacketReadDynamic();
+                value[index] = PacketReadDynamicType();
             return value;
         }
-        [Obsolete("DynamicType is obsolete. Consider using JSON or XML serialized objects instead.", false)]
-        protected void PacketWriteDynamic(object[] value)
+        
+		[Obsolete("DynamicType is obsolete. Consider using JSON or XML serialized objects instead.", false)]
+        protected void PacketWrite(object[] value)
         {
             PacketWrite(value.Length);
             foreach (var element in value)
-                PacketWriteDynamic(element);
+                PacketWrite((object)element);
         }
         #endregion
-
-
     }
-}

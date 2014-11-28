@@ -28,16 +28,30 @@ namespace Spike.Build.Java
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write("package com.misakai.spike.network.entities;\r\n\r\npublic final class ");
             
-            #line 9 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Java\CustomTypeTemplate.tt"
+            #line 7 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Java\CustomTypeTemplate.tt"
+	if(CustomType.Members.Any((member) => member.Type == "DateTime"))
+	{ 
+            
+            #line default
+            #line hidden
+            this.Write("import java.util.Date;\r\n");
+            
+            #line 10 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Java\CustomTypeTemplate.tt"
+	} 
+            
+            #line default
+            #line hidden
+            this.Write("\r\n\r\npackage com.misakai.spike.network;\r\n\r\npublic final class ");
+            
+            #line 15 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Java\CustomTypeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(CustomType.Name));
             
             #line default
             #line hidden
             this.Write(" {\r\n");
             
-            #line 10 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Java\CustomTypeTemplate.tt"
+            #line 16 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Java\CustomTypeTemplate.tt"
 		foreach(var member in CustomType.Members)
 		{ 
             
@@ -45,27 +59,27 @@ namespace Spike.Build.Java
             #line hidden
             this.Write("\t\r\n\t\tpublic ");
             
-            #line 12 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Java\CustomTypeTemplate.tt"
+            #line 18 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Java\CustomTypeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(JavaBuilder.GetNativeType(member)));
             
             #line default
             #line hidden
             
-            #line 12 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Java\CustomTypeTemplate.tt"
+            #line 18 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Java\CustomTypeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "[]" : string.Empty));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 12 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Java\CustomTypeTemplate.tt"
+            #line 18 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Java\CustomTypeTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name.CamelCase()));
             
             #line default
             #line hidden
             this.Write(";\r\n");
             
-            #line 13 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Java\CustomTypeTemplate.tt"
+            #line 19 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Java\CustomTypeTemplate.tt"
 		} 
             
             #line default
@@ -74,7 +88,7 @@ namespace Spike.Build.Java
             return this.GenerationEnvironment.ToString();
         }
         
-        #line 17 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Java\CustomTypeTemplate.tt"
+        #line 23 "C:\Users\Fabian\Desktop\Projects\GitHub\spike-build\Spike.Build.Java\CustomTypeTemplate.tt"
  internal void Clear(){
 	GenerationEnvironment.Clear();
 } 

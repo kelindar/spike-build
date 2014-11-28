@@ -17,13 +17,12 @@
 * 
 *************************************************************************/
 
-using Spike.Build.CSharp5;
 using System.Collections.Generic;
 using System.IO;
 
-namespace Spike.Build.Xamarin
+namespace Spike.Build.CSharp5
 {
-    partial class XamarinTemplate
+    partial class CSharp5Template
     {
         internal string Target { get; set; }
         internal Model Model { get; set; }
@@ -31,15 +30,48 @@ namespace Spike.Build.Xamarin
         internal CustomType TargetType { get; set; }
     }
 
-    internal class XamarinBuilder : IBuilder
+    internal class CSharp5Builder : IBuilder
     {
-        
+        internal static string GetNativeType(Member member)
+        {
+            switch (member.Type)
+            {
+                case "Byte":
+                    return "byte";
+                case "UInt16":
+                    return "ushort";
+                case "UInt32":
+                    return "uint";
+                case "UInt64":
+                    return "ulong";
 
-        /// <summary>
-        /// Build the model of the specified type.
-        /// </summary>
-        /// <param name="model">The model to build.</param>
-        /// <param name="output">The output type.</param>
+                case "SByte":
+                    return "sbyte";
+                case "Int16":
+                    return "short";
+                case "Int32":
+                    return "int";
+                case "Int64":
+                    return "long";
+
+                case "Boolean":
+                    return "bool";
+                case "Single":
+                    return "float";
+                case "Double":
+                    return "double";
+                case "String":
+                    return "string";
+
+                case "DynamicType":
+                    return "object";
+
+                default: //CustomType & DateTime
+                    return member.Type;
+            }
+
+        }
+
         public void Build(Model model, string output, string format)
         {
             if (format == "single")
@@ -49,17 +81,17 @@ namespace Spike.Build.Xamarin
                 template.Model = model;
 
                 if (string.IsNullOrEmpty(output))
-                    output = @"Xamarin";
+                    output = @"CSharp";
 
                 if (!Directory.Exists(output))
                     Directory.CreateDirectory(output);
 
-                File.WriteAllText(Path.Combine(output, @"Network.cs"), template.TransformText());
+                File.WriteAllText(Path.Combine(output, @"SpikeSdk.cs"), template.TransformText());
             }
             else
             {
                 if (string.IsNullOrEmpty(output))
-                    output = @"Xamarin";
+                    output = @"CSharp";
 
                 if (!Directory.Exists(output))
                     Directory.CreateDirectory(output);

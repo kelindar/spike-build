@@ -18,6 +18,7 @@
 *************************************************************************/
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Net.Http;
@@ -31,15 +32,25 @@ using System.IO;
 
 namespace Spike.Build
 {
+    
     internal static class Program
     {
-        static internal void Exit(string message = null)
+        private static bool Verbose = false;
+        private static IBuilder Builder = null; //--platform -p
+        private static List<string> Sources = new List<string>(); // --input -i
+        private static string Destination = null; // --output -o 
+        private static string Format = null; // --format -f 
+        private static string Namespace = null; // --namespace -n
+        private static Model Model = null; 
+
+
+        static internal void ShowUsageAndExit(string error = null)
         {
-            if (message != null)
+            if (error != null)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.Write("Error: ");
-                Console.WriteLine(message);
+                Console.Write("Error : ");
+                Console.WriteLine(error);
                 Console.WriteLine();
                 Console.ForegroundColor = ConsoleColor.Gray;
             }
@@ -49,8 +60,8 @@ namespace Spike.Build
         }
 
         static private Dictionary<string, IBuilder> Builders = new Dictionary<string, IBuilder>(StringComparer.CurrentCultureIgnoreCase) {
+            { "CSharp5", new CSharp5Builder() },
             { "Java", new JavaBuilder() },
-            { "CSharp", new CSharpBuilder() },
             { "WinRT", new WinRTBuilder() },
             { "Xamarin", new XamarinBuilder() }
         };
@@ -64,73 +75,133 @@ namespace Spike.Build
                 Console.WriteLine(currentAssembly.GetCustomAttribute<AssemblyCopyrightAttribute>().Copyright);
                 Console.WriteLine();
 
+                //If arguments parsing become more complex Consider using NDesk.Option
 
-
-                // Parse arguments
                 if (args.Length == 0)
-                    Program.Exit();
+                    ShowUsageAndExit();
 
-                if (args.Length < 2)
-                    Program.Exit("You must define <source> AND <build>");
+                for (int index = 0; index < args.Length;)
+                {
+                    var command = args[index++].ToLower();
+                    switch (command)
+                    {
+                        case "-v":
+                        case "--verbose":
+                            if (index < args.Length && args[index][0] != '-') // no "-v blabla" 
+                                ShowUsageAndExit("--verbose take no parameters");
+
+                            Verbose = true;
+                            break;
+                        case "-h":
+                        case "--help":
+                            ShowUsageAndExit();
+                            break;
+                        case "-p":
+                        case "--platform":
+                            if (index >= args.Length || args[index][0] == '-') //no -p -i
+                                ShowUsageAndExit("You must define a platform after --platform");
+
+                            var builderName = args[index++];
+                            if (Builder != null ||  //no -p java -i file.spml -p xamarin
+                                (index < args.Length && args[index][0] != '-')) //no -p java xamarin
+                                ShowUsageAndExit("Only one builder");
+
+                            if (!Builders.TryGetValue(builderName, out Builder)) //no -p unknown
+                                ShowUsageAndExit("Unknown platform");
+                            break;
+                        case "-i":
+                        case "--input":
+                            if (index >= args.Length || args[index][0] == '-')
+                                ShowUsageAndExit("You must define a input");
+
+                            do
+                                Sources.Add(args[index++]);
+                            while (index < args.Length && args[index][0] != '-');
+
+                            break;
+                        case "-o":
+                        case "--output":
+                            if (index >= args.Length || args[index][0] == '-')
+                                ShowUsageAndExit("You must define a output");
+
+                            var destination = args[index++];
+                            if (Destination != null ||  
+                                (index < args.Length && args[index][0] != '-')) 
+                                ShowUsageAndExit("Only one output");
+
+                            Destination = destination;
+                            break;
+                        case "-f":
+                        case "--format":
+                            if (index >= args.Length || args[index][0] == '-')
+                                ShowUsageAndExit("You must define a format");
+
+                            var format = args[index++];
+                            if (Format != null ||  
+                                (index < args.Length && args[index][0] != '-')) 
+                                ShowUsageAndExit("Only one format");
+
+                            Format = format;
+                            break;
+                        case "-n":
+                        case "--namespace":
+                            if (index >= args.Length || args[index][0] == '-')
+                                ShowUsageAndExit("You must define a namespace");
+
+                            var ns = args[index++];
+                            if (Namespace != null ||  //already set by previex --platform
+                                (index < args.Length && args[index][0] != '-')) //if the next argument is not a command
+                                ShowUsageAndExit("Only one namespace");
+
+                            Namespace = ns;
+                            break;
+                    }
+
+                }
+                
+                if (Builder == null)
+                    ShowUsageAndExit("You must define a platform");
+
+                if (Sources.Count <= 0)
+                    ShowUsageAndExit("You must define a source");
+
 
                 // Get Model
-                var model = new Model();
-                var modelFile = args[0].TrimEnd('/');
+                Model = new Model();
 
-                if (modelFile.EndsWith("/spml/all", StringComparison.CurrentCultureIgnoreCase))
+                foreach (var source in Sources)
                 {
-                    using (var client = new HttpClient())
+                    var modelFile = source.TrimEnd('/');
+
+                    if (modelFile.EndsWith("/spml/all", StringComparison.CurrentCultureIgnoreCase))
                     {
-                        var result = client.GetAsync(modelFile).Result;
-                        if (result.IsSuccessStatusCode)
+                        using (var client = new HttpClient())
                         {
-                            var protocols = result.Content.ReadAsStringAsync().Result.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
-                            if (protocols.Length > 0)
+                            var result = client.GetAsync(modelFile).Result;
+                            if (result.IsSuccessStatusCode)
                             {
-                                var baseUrl = modelFile.Substring(0, modelFile.Length - 4);
-                                foreach (var protocol in protocols)
+                                var protocols = result.Content.ReadAsStringAsync().Result.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+                                if (protocols.Length > 0)
                                 {
-                                    Console.WriteLine(protocol);
-                                    model.Load(string.Format("{0}?file={1}", baseUrl, protocol));
+                                    var baseUrl = modelFile.Substring(0, modelFile.Length - 4);
+                                    foreach (var protocol in protocols)
+                                    {
+                                        Console.WriteLine(protocol);
+                                        Model.Load(string.Format("{0}?file={1}", baseUrl, protocol));
+                                    }
                                 }
+                                else
+                                    ShowUsageAndExit("No Protocols");
                             }
                             else
-                                Program.Exit("No Protocols");
+                                ShowUsageAndExit("Host unreachable");
                         }
-                        else
-                            Program.Exit("Host unreachable");
-                    }
-                }
-                else
-                    model.Load(modelFile);
-
-
-                var separators = new char[] { '-', ':' };
-                for (var index = 1; index < args.Length; index++)
-                {
-                    var buildArguments = args[index].Split(separators, StringSplitOptions.RemoveEmptyEntries);
-
-                    if (buildArguments.Length <= 0 || buildArguments.Length > 2)
-                        Program.Exit("Syntax error");
-
-                    IBuilder builder;
-                    if (Builders.TryGetValue(buildArguments[0], out builder))
-                    {
-                        if (buildArguments.Length == 2)
-                            builder.Build(model, buildArguments[1]);
-                        else
-                            builder.Build(model);
-                    }
-                    else if (string.Compare(buildArguments[0], "mode") == 0)
-                    {
-
                     }
                     else
-                    {
-                        Program.Exit("Unknown parameter");
-                    }
+                        Model.Load(modelFile);
                 }
 
+                Builder.Build(Model,Destination,Format);
             }
             catch (Exception ex)
             {
@@ -140,25 +211,33 @@ namespace Spike.Build
 #endif
 
                 if (ex is ProtocolMalformedException)
-                    Program.Exit(ex.Message);
+                    Program.ShowUsageAndExit(ex.Message);
                 if (ex is FileNotFoundException)
-                    Program.Exit(ex.Message);
+                    Program.ShowUsageAndExit(ex.Message);
 
-                Program.Exit(string.Format("An unexpected error has occured : {0}", ex.StackTrace));
+                Program.ShowUsageAndExit(string.Format("An unexpected error has occured : {0}", ex.StackTrace));
             }
         }
 
         private static void PromptUsage()
         {
-            Console.WriteLine("Usage: ");
-            Console.WriteLine(" Spike.Build <source> <build>");
+            var currentAssembly = Assembly.GetExecutingAssembly();
+            Console.WriteLine("Usage: Spike.Build <options>");
+            Console.WriteLine(currentAssembly.GetCustomAttribute<AssemblyDescriptionAttribute>().Description);
             Console.WriteLine();
-            Console.WriteLine(" build: ");
-            foreach (var key in Builders.Keys)
-                Console.WriteLine("  -{0}[:output_path]", key);
+            Console.WriteLine("options : ");
+
+            Console.WriteLine("\t-h, --help");
+            Console.WriteLine("\t-i, --input <source>");
+            Console.WriteLine("\t-p, --platform <{0}>",Builders.Keys.Aggregate((platform1, platform2) => { return platform1 + '|' + platform2; }));
+            Console.WriteLine("\t-o, --output <path>");
+            Console.WriteLine("\t-f, --format <single>");
+            //Console.WriteLine("\t-n, --namespace");
+            //Console.WriteLine("\t-v, --verbose");
+
             Console.WriteLine();
-            Console.WriteLine(" source could be either: ");
-            Console.WriteLine("  URL ( ex: http://www.spike-engine.com/spml?file=MyChatProtocol or http://www.spike-engine.com/spml/all )");
+            Console.WriteLine(" sources could be either: ");
+            Console.WriteLine("  URL ( ex: http://www.spike-engine.com/spml/MyChatProtocol or http://www.spike-engine.com/spml/all )");
             Console.WriteLine("  File ( ex: test.spml )");
         }
     }

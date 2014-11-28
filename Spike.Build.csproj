@@ -32,13 +32,12 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -48,6 +47,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <NoWin32Manifest>true</NoWin32Manifest>
@@ -69,24 +69,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Spike.Build.CSharp5\CSharpBuilder.cs" />
-    <Compile Include="Spike.Build.CSharp5\CustomTypeTemplate.cs">
+    <Compile Include="Spike.Build.CSharp5\CSharp5Builder.cs" />
+    <Compile Include="Spike.Build.CSharp5\CSharp5Template.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>CustomTypeTemplate.tt</DependentUpon>
+      <DependentUpon>CSharp5Template.tt</DependentUpon>
     </Compile>
-    <Compile Include="Spike.Build.CSharp5\PacketTemplate.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>PacketTemplate.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Spike.Build.CSharp5\TcpChannelTemplate.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>TcpChannelTemplate.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Spike.Build.CSharp5\StaticFiles\CLZF.cs" />
-    <Compile Include="Spike.Build.CSharp5\StaticFiles\TcpChannelBase.cs" />
     <Compile Include="Spike.Build.Java\CustomTypeTemplate.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -98,7 +86,33 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>PacketTemplate.tt</DependentUpon>
     </Compile>
+    <Compile Include="Spike.Build.Java\AbstractTcpChannelTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AbstractTcpChannelTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Spike.Build.Java\CLZFTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CLZFTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Spike.Build.Java\ConnectionHandlerTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ConnectionHandlerTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Spike.Build.Java\DisconnectionHandlerTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DisconnectionHandlerTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Spike.Build.Java\PacketHandlerTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PacketHandlerTemplate.tt</DependentUpon>
+    </Compile>
     <Compile Include="Spike.Build.Runtime\CustomType.cs" />
+    <Compile Include="Spike.Build.Runtime\Exceptions.cs" />
     <Compile Include="Spike.Build.Runtime\Extentions.cs" />
     <Compile Include="Spike.Build.Runtime\IBuilder.cs" />
     <Compile Include="Spike.Build.Java\TcpChannelTemplate.cs">
@@ -111,61 +125,28 @@
     <Compile Include="Spike.Build.Runtime\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Spike.Build.Runtime\Model.cs" />
-    <EmbeddedResource Include="Spike.Build.WinRT\StaticFiles\CLZF.cs" />
-    <Compile Include="Spike.Build.Runtime\Exceptions.cs" />
-    <Compile Include="Spike.Build.Xamarin\CustomTypeTemplate.cs">
+    <Compile Include="Spike.Build.WinRT\WinRTTemplate.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>CustomTypeTemplate.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Spike.Build.Xamarin\PacketTemplate.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>PacketTemplate.tt</DependentUpon>
-    </Compile>
-    <EmbeddedResource Include="Spike.Build.Xamarin\StaticFiles\CLZF.cs" />
-    <EmbeddedResource Include="Spike.Build.Xamarin\StaticFiles\TcpChannelBase.cs" />
-    <Compile Include="Spike.Build.Xamarin\TcpChannelTemplate.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>TcpChannelTemplate.tt</DependentUpon>
+      <DependentUpon>WinRTTemplate.tt</DependentUpon>
     </Compile>
     <Compile Include="Spike.Build.Xamarin\XamarinBuilder.cs" />
-    <EmbeddedResource Include="Spike.Build.WinRT\StaticFiles\TcpChannelBase.cs" />
-    <Compile Include="Spike.Build.WinRT\CustomTypeTemplate.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CustomTypeTemplate.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Spike.Build.WinRT\PacketTemplate.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>PacketTemplate.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Spike.Build.WinRT\TcpChannelTemplate.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>TcpChannelTemplate.tt</DependentUpon>
-    </Compile>
     <Compile Include="Spike.Build.WinRT\WinRTBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Spike.Build.CSharp5\CustomTypeTemplate.tt">
+    <None Include="Spike.Build.CSharp5\CLZF.t4">
+      <LastGenOutput>CLZF.cs</LastGenOutput>
+    </None>
+    <None Include="Spike.Build.CSharp5\CSharp5Template.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>CustomTypeTemplate.cs</LastGenOutput>
+      <LastGenOutput>CSharp5Template.cs</LastGenOutput>
       <CustomToolNamespace>Spike.Build.CSharp5</CustomToolNamespace>
     </None>
-    <None Include="Spike.Build.CSharp5\PacketTemplate.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>PacketTemplate.cs</LastGenOutput>
-      <CustomToolNamespace>Spike.Build.CSharp5</CustomToolNamespace>
-    </None>
-    <None Include="Spike.Build.CSharp5\TcpChannelTemplate.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>TcpChannelTemplate.cs</LastGenOutput>
-      <CustomToolNamespace>Spike.Build.CSharp5</CustomToolNamespace>
-    </None>
+    <None Include="Spike.Build.CSharp5\ComplexType.t4" />
+    <None Include="Spike.Build.CSharp5\Packet.t4" />
+    <None Include="Spike.Build.CSharp5\TcpChannelBase.t4" />
+    <None Include="Spike.Build.CSharp5\TcpChannel.t4" />
     <None Include="Spike.Build.Java\CustomTypeTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>CustomTypeTemplate.cs</LastGenOutput>
@@ -176,43 +157,41 @@
       <LastGenOutput>PacketTemplate.cs</LastGenOutput>
       <CustomToolNamespace>Spike.Build.Java</CustomToolNamespace>
     </None>
+    <None Include="Spike.Build.Java\AbstractTcpChannelTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>AbstractTcpChannelTemplate.cs</LastGenOutput>
+      <CustomToolNamespace>Spike.Build.Java</CustomToolNamespace>
+    </None>
+    <None Include="Spike.Build.Java\CLZFTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>CLZFTemplate.cs</LastGenOutput>
+      <CustomToolNamespace>Spike.Build.Java</CustomToolNamespace>
+    </None>
+    <None Include="Spike.Build.Java\ConnectionHandlerTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>ConnectionHandlerTemplate.cs</LastGenOutput>
+      <CustomToolNamespace>Spike.Build.Java</CustomToolNamespace>
+    </None>
+    <None Include="Spike.Build.Java\DisconnectionHandlerTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>DisconnectionHandlerTemplate.cs</LastGenOutput>
+      <CustomToolNamespace>Spike.Build.Java</CustomToolNamespace>
+    </None>
+    <None Include="Spike.Build.Java\PacketHandlerTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>PacketHandlerTemplate.cs</LastGenOutput>
+      <CustomToolNamespace>Spike.Build.Java</CustomToolNamespace>
+    </None>
     <None Include="Spike.Build.Java\TcpChannelTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>TcpChannelTemplate.cs</LastGenOutput>
       <CustomToolNamespace>Spike.Build.Java</CustomToolNamespace>
     </None>
-    <None Include="test.spml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Spike.Build.WinRT\CustomTypeTemplate.tt">
+    <None Include="Spike.Build.WinRT\TcpChannelBase.t4" />
+    <None Include="Spike.Build.WinRT\WinRTTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>CustomTypeTemplate.cs</LastGenOutput>
+      <LastGenOutput>WinRTTemplate.cs</LastGenOutput>
       <CustomToolNamespace>Spike.Build.WinRT</CustomToolNamespace>
-    </None>
-    <None Include="Spike.Build.WinRT\PacketTemplate.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>PacketTemplate.cs</LastGenOutput>
-      <CustomToolNamespace>Spike.Build.WinRT</CustomToolNamespace>
-    </None>
-    <None Include="Spike.Build.WinRT\TcpChannelTemplate.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>TcpChannelTemplate.cs</LastGenOutput>
-      <CustomToolNamespace>Spike.Build.WinRT</CustomToolNamespace>
-    </None>
-    <None Include="Spike.Build.Xamarin\CustomTypeTemplate.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>CustomTypeTemplate.cs</LastGenOutput>
-      <CustomToolNamespace>Spike.Build.Xamarin</CustomToolNamespace>
-    </None>
-    <None Include="Spike.Build.Xamarin\PacketTemplate.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>PacketTemplate.cs</LastGenOutput>
-      <CustomToolNamespace>Spike.Build.Xamarin</CustomToolNamespace>
-    </None>
-    <None Include="Spike.Build.Xamarin\TcpChannelTemplate.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>TcpChannelTemplate.cs</LastGenOutput>
-      <CustomToolNamespace>Spike.Build.Xamarin</CustomToolNamespace>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -233,11 +212,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Spike.Build.Java\StaticFiles\AbstractTcpChannel.java" />
-    <EmbeddedResource Include="Spike.Build.Java\StaticFiles\CLZF.java" />
-    <EmbeddedResource Include="Spike.Build.Java\StaticFiles\ConnectionHandler.java" />
-    <EmbeddedResource Include="Spike.Build.Java\StaticFiles\DisconnectionHandler.java" />
-    <EmbeddedResource Include="Spike.Build.Java\StaticFiles\PacketHandler.java" />
     <Content Include="misakai.ico" />
   </ItemGroup>
   <ItemGroup>

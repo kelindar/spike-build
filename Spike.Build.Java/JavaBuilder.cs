@@ -67,28 +67,33 @@ namespace Spike.Build.Java
         /// </summary>
         /// <param name="model">The model to build.</param>
         /// <param name="output">The output type.</param>
-        public void Build(Model model, string output)
+        public void Build(Model model, string output, string format)
         {
             if (string.IsNullOrEmpty(output))
                 output = @"Java";
-            //com.misakai.spike.network
-            var networkDirectory = Path.Combine(output, "com", "misakai", "spike", "network");
-            if (!Directory.Exists(networkDirectory))
-                Directory.CreateDirectory(networkDirectory);
 
-            var packetsDirectory = Path.Combine(output, "com", "misakai", "spike", "network", "packets");
-            if (!Directory.Exists(packetsDirectory))
-                Directory.CreateDirectory(packetsDirectory);
+            if (!Directory.Exists(output))
+                Directory.CreateDirectory(output);
+                   
+            //AbstractTcpChannel.java
+            var abstractTcpChannelTemplate = new AbstractTcpChannelTemplate();
+            File.WriteAllText(Path.Combine(output, @"AbstractTcpChannel.java"), abstractTcpChannelTemplate.TransformText());
 
-            var customTypesDirectory = Path.Combine(output, "com", "misakai", "spike", "network", "entities");
-            if (!Directory.Exists(customTypesDirectory))
-                Directory.CreateDirectory(customTypesDirectory);
+            //CLZF.java
+            var clzfTemplate = new CLZFTemplate();
+            File.WriteAllText(Path.Combine(output, @"CLZF.java"), clzfTemplate.TransformText());
 
-            Extentions.CopyFromRessources("Spike.Build.Java.StaticFiles.AbstractTcpChannel.java", Path.Combine(networkDirectory, @"AbstractTcpChannel.java"));
-            Extentions.CopyFromRessources("Spike.Build.Java.StaticFiles.CLZF.java", Path.Combine(networkDirectory, @"CLZF.java"));
-            Extentions.CopyFromRessources("Spike.Build.Java.StaticFiles.ConnectionHandler.java", Path.Combine(networkDirectory, @"ConnectionHandler.java"));
-            Extentions.CopyFromRessources("Spike.Build.Java.StaticFiles.DisconnectionHandler.java", Path.Combine(networkDirectory, @"DisconnectionHandler.java"));
-            Extentions.CopyFromRessources("Spike.Build.Java.StaticFiles.PacketHandler.java", Path.Combine(networkDirectory, @"PacketHandler.java"));
+            //ConnectionHandler.java
+            var connectionHandlerTemplate = new ConnectionHandlerTemplate();
+            File.WriteAllText(Path.Combine(output, @"ConnectionHandler.java"), connectionHandlerTemplate.TransformText());
+
+            //DisconnectionHandler.java
+            var disconnectionHandlerTemplate = new DisconnectionHandlerTemplate();
+            File.WriteAllText(Path.Combine(output, @"DisconnectionHandler.java"), disconnectionHandlerTemplate.TransformText());
+
+            //PacketHandler.java
+            var packetHandlerTemplate = new PacketHandlerTemplate();
+            File.WriteAllText(Path.Combine(output, @"PacketHandler.java"), packetHandlerTemplate.TransformText());
 
 
             var tcpChanneltemplate = new TcpChannelTemplate();
@@ -99,7 +104,7 @@ namespace Spike.Build.Java
             tcpChanneltemplate.Initialize();
 
             var code = tcpChanneltemplate.TransformText();
-            File.WriteAllText(Path.Combine(networkDirectory, @"TcpChannel.java"), code);
+            File.WriteAllText(Path.Combine(output, @"TcpChannel.java"), code);
 
             //Make packets
             var packetTemplate = new PacketTemplate();
@@ -112,7 +117,7 @@ namespace Spike.Build.Java
                 packetTemplate.Initialize();
 
                 code = packetTemplate.TransformText();
-                File.WriteAllText(Path.Combine(packetsDirectory, string.Format(@"{0}.java", receive.Name)), code);
+                File.WriteAllText(Path.Combine(output, string.Format(@"{0}.java", receive.Name)), code);
             }
 
             //Make CustomType
@@ -125,7 +130,7 @@ namespace Spike.Build.Java
                 customTypeSession["CustomType"] = customType;
                 customTypeTemplate.Initialize();
                 code = customTypeTemplate.TransformText();
-                File.WriteAllText(Path.Combine(customTypesDirectory, string.Format(@"{0}.java", customType.Name)), code);
+                File.WriteAllText(Path.Combine(output, string.Format(@"{0}.java", customType.Name)), code);
             }
 
         }

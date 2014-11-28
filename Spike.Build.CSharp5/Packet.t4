@@ -1,0 +1,10 @@
+﻿
+    public sealed class <#= TargetOperation.Name #>
+    {
+<#		foreach(var member in TargetOperation.Members)
+		{ #>	
+		public <#= CSharp5Builder.GetNativeType(member) #><#= member.IsList ? "[]" : string.Empty #> <#= member.Name #> { get; set; }
+<#		} #>
+
+    }
+

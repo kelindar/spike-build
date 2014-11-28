@@ -27,11 +27,12 @@ namespace Spike.Build
         /// <summary>
         /// Constructs a new instance of an object.
         /// </summary>
-        public Member(string name, string type, bool isList)
+        public Member(string name, string type, bool isList, bool isCustom)
 	    {
             this.Name = name;
             this.Type = type;
             this.IsList = isList;
+            this.IsCustom = isCustom;
 	    }
 
         /// <summary>
@@ -61,6 +62,13 @@ namespace Spike.Build
             private set;
         }
 
-   
+        /// <summary>
+        /// Gets whether this is a complex type.
+        /// </summary>
+        public bool IsCustom
+        {
+            get;
+            private set;
+        }
     }
 }
