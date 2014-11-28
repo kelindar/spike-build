@@ -890,29 +890,36 @@ namespace Spike.Build.CSharp5
             
             #line default
             #line hidden
-            this.Write("\t\r\n\t\tpublic ");
+            this.Write("\t\r\n\t\t/// <summary>\r\n\t\t/// Gets or sets the member \'");
             
-            #line 7 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
+            #line 8 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
+            this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
+            
+            #line default
+            #line hidden
+            this.Write("\' of the packet.\r\n\t\t/// </summary>\r\n\t\tpublic ");
+            
+            #line 10 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(CSharp5Builder.GetNativeType(member)));
             
             #line default
             #line hidden
             
-            #line 7 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
+            #line 10 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "[]" : string.Empty));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 7 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
+            #line 10 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
             
             #line default
             #line hidden
             this.Write(" { get; set; }\r\n");
             
-            #line 8 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
+            #line 11 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
 		} 
             
             #line default
@@ -949,29 +956,36 @@ namespace Spike.Build.CSharp5
             
             #line default
             #line hidden
-            this.Write("\t\r\n\t\tpublic ");
+            this.Write("\t\r\n\t\t/// <summary>\r\n\t\t/// Gets or sets the member \'");
             
-            #line 7 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
+            #line 8 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
+            this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
+            
+            #line default
+            #line hidden
+            this.Write("\' of the packet.\r\n\t\t/// </summary>\r\n\t\tpublic ");
+            
+            #line 10 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(CSharp5Builder.GetNativeType(member)));
             
             #line default
             #line hidden
             
-            #line 7 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
+            #line 10 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "[]" : string.Empty));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 7 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
+            #line 10 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
             
             #line default
             #line hidden
             this.Write(" { get; set; }\r\n");
             
-            #line 8 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
+            #line 11 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
 		} 
             
             #line default
@@ -1017,29 +1031,36 @@ namespace Spike.Build.CSharp5
             
             #line default
             #line hidden
-            this.Write("\t\r\n\t\tpublic ");
+            this.Write("\t\r\n\t\t/// <summary>\r\n\t\t/// Gets or sets the property \'");
             
-            #line 7 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
+            #line 8 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
+            this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
+            
+            #line default
+            #line hidden
+            this.Write("\' of the complex type.\r\n\t\t/// </summary>\r\n\t\tpublic ");
+            
+            #line 10 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(CSharp5Builder.GetNativeType(member)));
             
             #line default
             #line hidden
             
-            #line 7 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
+            #line 10 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "[]" : string.Empty));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 7 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
+            #line 10 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
             
             #line default
             #line hidden
-            this.Write(" { get; set; }\r\n");
+            this.Write(";\r\n");
             
-            #line 8 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
+            #line 11 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
 		} 
             
             #line default
@@ -1076,29 +1097,36 @@ namespace Spike.Build.CSharp5
             
             #line default
             #line hidden
-            this.Write("\t\r\n\t\tpublic ");
+            this.Write("\t\r\n\t\t/// <summary>\r\n\t\t/// Gets or sets the property \'");
             
-            #line 7 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
+            #line 8 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
+            this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
+            
+            #line default
+            #line hidden
+            this.Write("\' of the complex type.\r\n\t\t/// </summary>\r\n\t\tpublic ");
+            
+            #line 10 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(CSharp5Builder.GetNativeType(member)));
             
             #line default
             #line hidden
             
-            #line 7 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
+            #line 10 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "[]" : string.Empty));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 7 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
+            #line 10 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
             
             #line default
             #line hidden
-            this.Write(" { get; set; }\r\n");
+            this.Write(";\r\n");
             
-            #line 8 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
+            #line 11 "d:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
 		} 
             
             #line default
