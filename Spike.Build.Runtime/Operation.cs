@@ -24,7 +24,7 @@ namespace Spike.Build
     /// <summary>
     /// Class that represents SECP operation.
     /// </summary>
-    internal sealed class Operation
+    public sealed class Operation
     {
         /// <summary>
         /// Constructs a new instance of an object.

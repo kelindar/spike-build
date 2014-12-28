@@ -47,6 +47,6 @@ namespace Spike.Network
 
 }
 
-<#+ internal void Clear(){
+<#+ public void Clear(){
 	GenerationEnvironment.Clear();
 } #>

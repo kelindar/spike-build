@@ -30,7 +30,7 @@ namespace Spike.Build
     /// Represents a SPML Definition model.
     /// 
     /// </summary>
-    internal sealed class Model
+    public sealed class Model
     {
         /// <summary>
         /// Constructs a new instance of an object.

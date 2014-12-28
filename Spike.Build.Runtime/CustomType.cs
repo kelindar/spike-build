@@ -24,7 +24,7 @@ namespace Spike.Build
     /// <summary>
     /// Represents a complex type.
     /// </summary>
-    internal sealed class CustomType
+    public sealed class CustomType
     {
         /// <summary>
         /// Constructs a new instance of an object.

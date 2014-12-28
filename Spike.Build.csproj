@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Spike.Build</RootNamespace>
-    <AssemblyName>Spike.Build</AssemblyName>
+    <AssemblyName>SBuild</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
@@ -78,6 +78,126 @@
     </Compile>
     <None Include="Spike.Build.CSharp5\PacketReader.t4" />
     <None Include="Spike.Build.CSharp5\PacketWriter.t4" />
+    <Compile Include="Spike.Build.JavaScript\JavaScriptBuilder.cs" />
+    <Compile Include="Spike.Build.JavaScript\JavaScriptTemplate.cs">
+      <DependentUpon>JavaScriptTemplate.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Spike.Build.Runtime\BuilderBase.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\CssEncoderFallback.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\Css\CssColorName.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\Css\CssErrorCode.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\Css\CssParser.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\Css\CssScanner.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\Css\CssSettings.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\Css\CssStrings.Designer.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\Css\CssToken.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\IJsNameDeclaration.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\IJsNameReference.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\IJsSourceMap.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\IJsVisitor.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsActivationObject.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsAnalyzeNodeVisitor.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsArrayLiteral.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsAspNetBlockNode.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsAstNode.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsAstNodeList.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsBinaryOperator.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsBlock.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsBlockScope.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsBreak.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsCallNode.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsCatchScope.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsCommaOperator.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsConditional.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsConditionalCompilationComment.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsConditionalCompilationElse.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsConditionalCompilationElseIf.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsConditionalCompilationEnd.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsConditionalCompilationIf.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsConditionalCompilationOn.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsConditionalCompilationSet.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsConditionalCompilationStatement.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsConstantWrapper.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsConstantWrapperPP.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsConstStatement.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsContext.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsContinueNode.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JScript.Designer.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsCrunchEnumerator.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsCustomNode.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsDebuggerNode.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsDeclaration.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsDetachReferences.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsDirectivePrologue.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsDocumentContext.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsDoWhile.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsEmptyStatement.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsError.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsEvaluateLiteralVisitor.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsException.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsExpression.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsFinalPassVisitor.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsForIn.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsForNode.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsFunctionObject.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsFunctionScope.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsGetterSetter.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsGlobalScope.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsGroupingOperator.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsIfNode.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsImportantComment.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsIterationStatement.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsKeyword.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsLabeledStatement.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsLexicalDeclaration.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsLogicalNot.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsLookup.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsMatchPropertiesVisitor.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsMember.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsMissing.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsNewParensVisitor.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsObjectLiteral.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsObjectLiteralField.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsObjectLiteralProperty.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsonOutputVisitor.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsOperatorPrecedence.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsOutputVisitor.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsParameterDeclaration.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsParser.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsRegExpLiteral.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsReorderScopeVisitor.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsResolutionVisitor.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsReturnNode.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsScanner.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsScannerException.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsScriptSharpSourceMap.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsSettings.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsSourceMapFactory.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsStatementStartVisitor.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsSwitch.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsSwitchCase.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsThisLiteral.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsThrowNode.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsToken.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsTreeVisitor.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsTryNode.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsUnaryOperator.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsV3SourceMap.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsVar.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsVariableDeclaration.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsVariableField.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsWhileNode.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsWithNode.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JavaScript\JsWithScope.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\JsEncoderFallback.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\Minifier.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\MinifierError.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\MinifierExtensions.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\MinifierParser.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\MinifierResourceStrings.cs" />
+    <Compile Include="Spike.Build.Runtime\Minifiers\MinifierSettings.cs" />
     <Compile Include="Spike.Build.Java\CustomTypeTemplate.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -150,6 +270,30 @@
     <None Include="Spike.Build.CSharp5\Packet.t4" />
     <None Include="Spike.Build.CSharp5\TcpChannelBase.t4" />
     <None Include="Spike.Build.CSharp5\TcpChannel.t4" />
+    <None Include="Spike.Build.JavaScript\JavaScriptTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>JavaScriptTemplate.cs</LastGenOutput>
+      <CustomToolNamespace>Spike.Build.JavaScript</CustomToolNamespace>
+    </None>
+    <None Include="Spike.Build.JavaScript\Engine.t4">
+      <LastGenOutput>CLZF.cs</LastGenOutput>
+    </None>
+    <None Include="Spike.Build.JavaScript\ServerSocket.t4">
+      <LastGenOutput>CLZF.cs</LastGenOutput>
+    </None>
+    <None Include="Spike.Build.JavaScript\PacketWriter.t4">
+      <LastGenOutput>CLZF.cs</LastGenOutput>
+    </None>
+    <None Include="Spike.Build.JavaScript\PacketReader.t4">
+      <LastGenOutput>CLZF.cs</LastGenOutput>
+    </None>
+    <None Include="Spike.Build.JavaScript\ByteArray.t4">
+      <LastGenOutput>CLZF.cs</LastGenOutput>
+    </None>
+    <None Include="Spike.Build.JavaScript\PacketCompressor.t4">
+      <LastGenOutput>CLZF.cs</LastGenOutput>
+    </None>
+    <None Include="Spike.Build.JavaScript\ServerChannel.t4" />
     <None Include="Spike.Build.Java\CustomTypeTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>CustomTypeTemplate.cs</LastGenOutput>
@@ -220,7 +364,10 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Spike.Build.Runtime\Minifiers\Css\CssStrings.resx" />
+    <EmbeddedResource Include="Spike.Build.Runtime\Minifiers\JavaScript\JScript.resx" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

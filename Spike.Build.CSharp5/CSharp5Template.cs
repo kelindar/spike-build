@@ -18,7 +18,7 @@ namespace Spike.Build.CSharp5
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
+    #line 1 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "12.0.0.0")]
     public partial class CSharp5Template : CSharp5TemplateBase
     {
@@ -32,7 +32,7 @@ namespace Spike.Build.CSharp5
                     "Net.Sockets;\r\nusing System.IO;\r\nusing System.Net.Security;\r\nusing System.Diagnos" +
                     "tics;\r\n\r\nnamespace Spike.Network\r\n{\r\n\t");
             
-            #line 18 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 18 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
  if(Target == null || Target == "LZF") { 
             
             #line default
@@ -171,14 +171,14 @@ namespace Spike.Build.CSharp5
                     "\t}\r\n\t\t\twhile (iidx < in_len);\r\n\r\n\t\t\treturn (int)oidx;\r\n\t\t}\r\n\r\n\t\tpublic CLZF()\r\n\t" +
                     "\t{\r\n\t\t\t//\r\n\t\t\t// TODO: Add ructor logic here\r\n\t\t\t//\r\n\t\t}\r\n\t}\r\n\r\n\r\n");
             
-            #line 18 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 18 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
  } 
             
             #line default
             #line hidden
             this.Write("\t");
             
-            #line 19 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 19 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
  if(Target == null || Target == "PacketWriter") { 
             
             #line default
@@ -366,7 +366,7 @@ namespace Spike.Build.CSharp5
                     "\n            Write(value.Length);\r\n            foreach (var element in value)\r\n " +
                     "           Write((object)element);\r\n        }\r\n\r\n");
             
-            #line 451 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketWriter.t4"
+            #line 451 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketWriter.t4"
  foreach(var customType in Model.CustomTypes) { 
             
             #line default
@@ -375,28 +375,28 @@ namespace Spike.Build.CSharp5
                     "    /// </summary>\r\n        /// <param name=\"value\">The value to write.</param>\r" +
                     "\n        protected void Write(");
             
-            #line 456 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketWriter.t4"
+            #line 456 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketWriter.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
             #line hidden
             this.Write(" value)\r\n        {\r\n            ");
             
-            #line 458 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketWriter.t4"
+            #line 458 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketWriter.t4"
  foreach(var member in customType.Members){ 
             
             #line default
             #line hidden
             this.Write("\t\t\t    Write(value.");
             
-            #line 459 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketWriter.t4"
+            #line 459 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketWriter.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
             
             #line default
             #line hidden
             this.Write(");\r\n            ");
             
-            #line 460 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketWriter.t4"
+            #line 460 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketWriter.t4"
  } 
             
             #line default
@@ -405,7 +405,7 @@ namespace Spike.Build.CSharp5
                     "buffer.\r\n        /// </summary>\r\n        /// <param name=\"value\">The value to wr" +
                     "ite.</param>\r\n        protected void Write(");
             
-            #line 467 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketWriter.t4"
+            #line 467 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketWriter.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
@@ -413,7 +413,7 @@ namespace Spike.Build.CSharp5
             this.Write("[] value)\r\n        {\r\n            Write(value.Length);\r\n            foreach (var " +
                     "element in value)\r\n                Write(element);\r\n        }\r\n");
             
-            #line 473 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketWriter.t4"
+            #line 473 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketWriter.t4"
  } 
             
             #line default
@@ -421,14 +421,14 @@ namespace Spike.Build.CSharp5
             this.Write("    }");
             this.Write(" ");
             
-            #line 19 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 19 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
  } 
             
             #line default
             #line hidden
             this.Write("\t");
             
-            #line 20 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 20 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
  if(Target == null || Target == "PacketReader") { 
             
             #line default
@@ -620,7 +620,7 @@ namespace Spike.Build.CSharp5
                     " for (int index = 0; index < value.Length; index++)\r\n                value[index" +
                     "] = ReadDynamicType();\r\n            return value;\r\n        }\r\n\r\n\r\n");
             
-            #line 411 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketReader.t4"
+            #line 411 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketReader.t4"
  foreach(var customType in Model.CustomTypes) { 
             
             #line default
@@ -629,55 +629,55 @@ namespace Spike.Build.CSharp5
                     "     /// </summary>\r\n        /// <returns>The value read from the buffer.</retur" +
                     "ns>\r\n\t\tpublic ");
             
-            #line 416 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketReader.t4"
+            #line 416 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
             #line hidden
             this.Write(" Read");
             
-            #line 416 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketReader.t4"
+            #line 416 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
             #line hidden
             this.Write("()\r\n        {\r\n            var value = new ");
             
-            #line 418 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketReader.t4"
+            #line 418 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
             #line hidden
             this.Write("();\r\n\t\t\t");
             
-            #line 419 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketReader.t4"
+            #line 419 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketReader.t4"
  foreach(var member in customType.Members) { 
             
             #line default
             #line hidden
             this.Write("\t\t\tvalue.");
             
-            #line 420 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketReader.t4"
+            #line 420 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
             
             #line default
             #line hidden
             this.Write(" = this.Read");
             
-            #line 420 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketReader.t4"
+            #line 420 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "ListOf" : string.Empty));
             
             #line default
             #line hidden
             
-            #line 420 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketReader.t4"
+            #line 420 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Type));
             
             #line default
             #line hidden
             this.Write("();\r\n\t\t\t");
             
-            #line 421 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketReader.t4"
+            #line 421 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketReader.t4"
  } 
             
             #line default
@@ -686,21 +686,21 @@ namespace Spike.Build.CSharp5
                     "e underlying buffer.\r\n        /// </summary>\r\n        /// <returns>The value rea" +
                     "d from the buffer.</returns>\r\n        public ");
             
-            #line 429 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketReader.t4"
+            #line 429 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
             #line hidden
             this.Write("[] ReadListOf");
             
-            #line 429 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketReader.t4"
+            #line 429 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
             #line hidden
             this.Write("()\r\n        {\r\n            var value = new ");
             
-            #line 431 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketReader.t4"
+            #line 431 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
@@ -708,14 +708,14 @@ namespace Spike.Build.CSharp5
             this.Write("[this.ReadInt32()];\r\n            for (int index = 0; index < value.Length; index+" +
                     "+)\r\n                value[index] = this.Read");
             
-            #line 433 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketReader.t4"
+            #line 433 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
             #line hidden
             this.Write("();\r\n            return value;\r\n        }\r\n");
             
-            #line 436 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketReader.t4"
+            #line 436 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\PacketReader.t4"
  } 
             
             #line default
@@ -723,14 +723,14 @@ namespace Spike.Build.CSharp5
             this.Write("    }");
             this.Write(" ");
             
-            #line 20 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 20 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
  } 
             
             #line default
             #line hidden
             this.Write("\t");
             
-            #line 21 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 21 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
  if(Target == null || Target == "TcpChannelBase") { 
             
             #line default
@@ -857,14 +857,14 @@ namespace Spike.Build.CSharp5
                     "own);\r\n            }\r\n        }\r\n\r\n        #endregion\r\n\r\n    }");
             this.Write(" ");
             
-            #line 21 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 21 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
  } 
             
             #line default
             #line hidden
             this.Write("\t");
             
-            #line 22 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 22 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
  if(Target == null || Target == "TcpChannel") { 
             
             #line default
@@ -874,7 +874,7 @@ namespace Spike.Build.CSharp5
                     "t bufferSize = 8096, bool useSSL=false) : base(bufferSize, useSSL)\r\n\t\t{\r\n\t\t}\r\n\r\n" +
                     "\t\t//Events\r\n");
             
-            #line 8 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 8 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
 		foreach(var receive in Model.Receives)
 		{ 
             
@@ -882,28 +882,28 @@ namespace Spike.Build.CSharp5
             #line hidden
             this.Write("\t\t\r\n\t\tpublic event Action<TcpChannel, ");
             
-            #line 10 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 10 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name));
             
             #line default
             #line hidden
             this.Write("> ");
             
-            #line 10 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 10 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name));
             
             #line default
             #line hidden
             this.Write("; \r\n");
             
-            #line 11 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 11 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
 		} 
             
             #line default
             #line hidden
             this.Write("\t\t    \r\n\t\t//Sends        \r\n");
             
-            #line 14 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 14 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
 		foreach(var send in Model.Sends)
 		{ 
             
@@ -911,14 +911,14 @@ namespace Spike.Build.CSharp5
             #line hidden
             this.Write("\t\t\r\n\t\tpublic async Task ");
             
-            #line 16 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 16 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(send.Name));
             
             #line default
             #line hidden
             this.Write("(");
             
-            #line 16 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 16 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
 	
 			var first = true;
 			foreach(var member in send.Members){
@@ -936,14 +936,14 @@ namespace Spike.Build.CSharp5
             #line hidden
             this.Write(")\r\n\t\t{\r\n\t\t\tthis.Writer.Begin(0x");
             
-            #line 29 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 29 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(send.Id.ToString("X")));
             
             #line default
             #line hidden
             this.Write("u);\r\n");
             
-            #line 30 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 30 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
 			foreach(var member in send.Members)
 			{ 
             
@@ -951,28 +951,28 @@ namespace Spike.Build.CSharp5
             #line hidden
             this.Write("\t\t\tthis.Writer.Write(");
             
-            #line 32 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 32 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
             
             #line default
             #line hidden
             this.Write(");\r\n");
             
-            #line 33 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 33 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
 			} 
             
             #line default
             #line hidden
             this.Write("\t\t\tawait SendPacket(this.Writer, ");
             
-            #line 34 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 34 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(send.Compressed ? "true" : "false"));
             
             #line default
             #line hidden
             this.Write(");\r\n\t\t}\t\t \r\n");
             
-            #line 36 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 36 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
 		} 
             
             #line default
@@ -980,7 +980,7 @@ namespace Spike.Build.CSharp5
             this.Write("\r\n\t\t//Dispatcher\r\n\t\tprotected override void OnReceive(uint key)\r\n\t\t{\r\n\t\t\tswitch (" +
                     "key)\r\n\t\t\t{\r\n");
             
-            #line 43 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 43 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
 				foreach(var receive in Model.Receives)
 				{ 
             
@@ -988,76 +988,76 @@ namespace Spike.Build.CSharp5
             #line hidden
             this.Write("\t\t\t\t\r\n\t\t\t\tcase 0x");
             
-            #line 45 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 45 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Id.ToString("X")));
             
             #line default
             #line hidden
             this.Write("u:\r\n\t\t\t\t{\r\n\t\t\t\t\tvar packet = new ");
             
-            #line 47 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 47 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name));
             
             #line default
             #line hidden
             this.Write("();\r\n\t\t\t\t\tthis.Reader.Begin(");
             
-            #line 48 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 48 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Compressed ? "true" : "false"));
             
             #line default
             #line hidden
             this.Write(");\r\n\t\t\t\t\t\r\n");
             
-            #line 50 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 50 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
 					foreach(var member in receive.Members){ 
             
             #line default
             #line hidden
             this.Write("\t\t\t\t\tpacket.");
             
-            #line 51 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 51 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
             
             #line default
             #line hidden
             this.Write(" = this.Reader.Read");
             
-            #line 51 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 51 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "ListOf" : string.Empty));
             
             #line default
             #line hidden
             
-            #line 51 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 51 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Type));
             
             #line default
             #line hidden
             this.Write("();\r\n");
             
-            #line 52 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 52 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
 					} 
             
             #line default
             #line hidden
             this.Write("\r\n\t\t\t\t\t//Now Call event\r\n\t\t\t\t\tif (");
             
-            #line 55 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 55 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name));
             
             #line default
             #line hidden
             this.Write(" != null)\r\n\t\t\t\t\t\t");
             
-            #line 56 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 56 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name));
             
             #line default
             #line hidden
             this.Write("(this, packet);\r\n\r\n\t\t\t\t\tbreak;\r\n\t\t\t\t}\r\n");
             
-            #line 60 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
+            #line 60 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\TcpChannel.t4"
 				} 
             
             #line default
@@ -1066,13 +1066,13 @@ namespace Spike.Build.CSharp5
                     "\r\n\t\t\t}\r\n\t\t}\r\n\r\n\r\n\t}\r\n");
             this.Write(" ");
             
-            #line 22 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 22 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
  } 
             
             #line default
             #line hidden
             
-            #line 23 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 23 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
 	if(Target == null)
 	{ 
 		foreach( var operation in Model.Receives )
@@ -1084,55 +1084,55 @@ namespace Spike.Build.CSharp5
             this.Write(" \r\n\t\t\t");
             this.Write("    /// <summary>\r\n    /// Represents a serializable packet of type ");
             
-            #line 2 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
+            #line 2 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(TargetOperation.Name));
             
             #line default
             #line hidden
             this.Write(".\r\n    /// </summary>\r\n\tpublic sealed class ");
             
-            #line 4 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
+            #line 4 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(TargetOperation.Name));
             
             #line default
             #line hidden
             this.Write("\r\n    {\r\n");
             
-            #line 6 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
+            #line 6 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
 		foreach(var member in TargetOperation.Members){ 
             
             #line default
             #line hidden
             this.Write("\t\r\n\t\t/// <summary>\r\n\t\t/// Gets or sets the member \'");
             
-            #line 8 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
+            #line 8 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
             
             #line default
             #line hidden
             this.Write("\' of the packet.\r\n\t\t/// </summary>\r\n\t\tpublic ");
             
-            #line 10 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
+            #line 10 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(CSharp5Builder.GetNativeType(member)));
             
             #line default
             #line hidden
             
-            #line 10 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
+            #line 10 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "[]" : string.Empty));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 10 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
+            #line 10 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
             
             #line default
             #line hidden
             this.Write(" { get; set; }\r\n");
             
-            #line 11 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
+            #line 11 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
 		} 
             
             #line default
@@ -1140,7 +1140,7 @@ namespace Spike.Build.CSharp5
             this.Write("    }");
             this.Write("\r\n");
             
-            #line 29 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 29 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
 		} 
 	} else if( Target == "Packet" )
 	{ 
@@ -1150,55 +1150,55 @@ namespace Spike.Build.CSharp5
             this.Write(" \r\n\t");
             this.Write("    /// <summary>\r\n    /// Represents a serializable packet of type ");
             
-            #line 2 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
+            #line 2 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(TargetOperation.Name));
             
             #line default
             #line hidden
             this.Write(".\r\n    /// </summary>\r\n\tpublic sealed class ");
             
-            #line 4 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
+            #line 4 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(TargetOperation.Name));
             
             #line default
             #line hidden
             this.Write("\r\n    {\r\n");
             
-            #line 6 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
+            #line 6 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
 		foreach(var member in TargetOperation.Members){ 
             
             #line default
             #line hidden
             this.Write("\t\r\n\t\t/// <summary>\r\n\t\t/// Gets or sets the member \'");
             
-            #line 8 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
+            #line 8 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
             
             #line default
             #line hidden
             this.Write("\' of the packet.\r\n\t\t/// </summary>\r\n\t\tpublic ");
             
-            #line 10 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
+            #line 10 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(CSharp5Builder.GetNativeType(member)));
             
             #line default
             #line hidden
             
-            #line 10 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
+            #line 10 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "[]" : string.Empty));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 10 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
+            #line 10 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
             
             #line default
             #line hidden
             this.Write(" { get; set; }\r\n");
             
-            #line 11 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
+            #line 11 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\Packet.t4"
 		} 
             
             #line default
@@ -1206,14 +1206,14 @@ namespace Spike.Build.CSharp5
             this.Write("    }");
             this.Write("\r\n");
             
-            #line 33 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 33 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
 	} 
             
             #line default
             #line hidden
             this.Write("\r\n");
             
-            #line 35 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 35 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
 	if(Target == null)
 	{ 
 		foreach( var customType in Model.CustomTypes )
@@ -1225,55 +1225,55 @@ namespace Spike.Build.CSharp5
             this.Write(" \r\n\t\t\t");
             this.Write("    /// <summary>\r\n    /// Represents a serializable complex type ");
             
-            #line 2 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
+            #line 2 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(TargetType.Name));
             
             #line default
             #line hidden
             this.Write(".\r\n    /// </summary>\r\n\tpublic partial struct ");
             
-            #line 4 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
+            #line 4 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(TargetType.Name));
             
             #line default
             #line hidden
             this.Write("\r\n    {\r\n");
             
-            #line 6 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
+            #line 6 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
 		foreach(var member in TargetType.Members){ 
             
             #line default
             #line hidden
             this.Write("\t\r\n\t\t/// <summary>\r\n\t\t/// Gets or sets the property \'");
             
-            #line 8 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
+            #line 8 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
             
             #line default
             #line hidden
             this.Write("\' of the complex type.\r\n\t\t/// </summary>\r\n\t\tpublic ");
             
-            #line 10 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
+            #line 10 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(CSharp5Builder.GetNativeType(member)));
             
             #line default
             #line hidden
             
-            #line 10 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
+            #line 10 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "[]" : string.Empty));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 10 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
+            #line 10 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
             
             #line default
             #line hidden
             this.Write(";\r\n");
             
-            #line 11 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
+            #line 11 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
 		} 
             
             #line default
@@ -1281,7 +1281,7 @@ namespace Spike.Build.CSharp5
             this.Write("    }");
             this.Write("\r\n");
             
-            #line 41 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 41 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
 		} 
 	} else if( Target == "ComplexType" )
 	{ 
@@ -1291,55 +1291,55 @@ namespace Spike.Build.CSharp5
             this.Write(" \r\n\t");
             this.Write("    /// <summary>\r\n    /// Represents a serializable complex type ");
             
-            #line 2 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
+            #line 2 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(TargetType.Name));
             
             #line default
             #line hidden
             this.Write(".\r\n    /// </summary>\r\n\tpublic partial struct ");
             
-            #line 4 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
+            #line 4 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(TargetType.Name));
             
             #line default
             #line hidden
             this.Write("\r\n    {\r\n");
             
-            #line 6 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
+            #line 6 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
 		foreach(var member in TargetType.Members){ 
             
             #line default
             #line hidden
             this.Write("\t\r\n\t\t/// <summary>\r\n\t\t/// Gets or sets the property \'");
             
-            #line 8 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
+            #line 8 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
             
             #line default
             #line hidden
             this.Write("\' of the complex type.\r\n\t\t/// </summary>\r\n\t\tpublic ");
             
-            #line 10 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
+            #line 10 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(CSharp5Builder.GetNativeType(member)));
             
             #line default
             #line hidden
             
-            #line 10 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
+            #line 10 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "[]" : string.Empty));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 10 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
+            #line 10 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
             
             #line default
             #line hidden
             this.Write(";\r\n");
             
-            #line 11 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
+            #line 11 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\ComplexType.t4"
 		} 
             
             #line default
@@ -1347,7 +1347,7 @@ namespace Spike.Build.CSharp5
             this.Write("    }");
             this.Write("\r\n");
             
-            #line 45 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
+            #line 45 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
 	} 
             
             #line default
@@ -1356,8 +1356,8 @@ namespace Spike.Build.CSharp5
             return this.GenerationEnvironment.ToString();
         }
         
-        #line 50 "D:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
- internal void Clear(){
+        #line 50 "C:\Workspace\Spike.Build\Spike.Build.CSharp5\CSharp5Template.tt"
+ public void Clear(){
 	GenerationEnvironment.Clear();
 } 
         

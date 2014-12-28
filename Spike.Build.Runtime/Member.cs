@@ -22,7 +22,7 @@ namespace Spike.Build
     /// <summary>
     /// Represents a member type.
     /// </summary>
-    internal sealed class Member
+    public sealed class Member
     {       
         /// <summary>
         /// Constructs a new instance of an object.

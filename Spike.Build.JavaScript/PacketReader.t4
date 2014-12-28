@@ -1,0 +1,249 @@
+﻿spike.PacketReader = function(byteArray){
+
+    /* The buffer to read */
+    this.buffer = byteArray;
+
+    this.decompress = function(){
+		this.buffer = new spike.PacketCompressor().decompress(this.buffer, this.buffer.getSize());
+		this.buffer.position = 0;
+    }
+
+    this.readBoolean = function(){
+		return this.buffer.readInt(8, false) == 1;
+    }
+
+    this.readByte = function(){
+        return this.buffer.readInt(8, false);
+    }
+
+    this.readSByte = function(){
+        return this.buffer.readInt(8, true);
+    }
+
+    this.readInt16 = function(){
+        return this.buffer.readInt(16, true);
+    }
+
+    this.readInt32 = function(){
+        return this.buffer.readInt(32, true);
+    }
+
+    this.readInt64 = function(){
+        return this.buffer.readInt(64, true);
+    }
+
+    this.readUInt16 = function(){
+        return this.buffer.readInt(16, false);
+    }
+
+    this.readUInt32 = function(){
+        return this.buffer.readInt(32, false);
+    }
+
+    this.readUInt64 = function(){
+        return this.buffer.readInt(64, false);
+    }
+
+    this.readDateTime = function(){
+		var year = this.readInt16();
+		var month = this.readInt16() - 1;
+		var date = this.readInt16();
+		var hour = this.readInt16();
+		var minute = this.readInt16();
+		var second = this.readInt16();
+		var millisecond = this.readInt16();
+			
+		return new Date(year,month,date,hour,minute,second,millisecond);
+    }
+
+    this.readSingle = function(){
+        return this.buffer.readFloat(23, 8);
+    }
+
+    this.readDouble = function(){
+        return this.buffer.readFloat(52, 11);
+    }
+
+	this.readString = function(){
+		var length = this.readInt32();
+		if(length > 0){
+		    return decodeURIComponent(escape(this.buffer.readBytes(length)));
+		}
+		else{
+			return '';
+		}
+	}
+
+    this.readDynamic = function(){
+	if(this.readByte()  == 1){
+		var type = this.readString();
+		switch (type){
+			case 'Byte': return this.readByte();
+			case 'Int16': return this.readInt16();
+			case 'Int32': return this.readInt32();
+			case 'Int64': return this.readInt64();
+			case 'UInt16': return this.readUInt16();
+			case 'UInt32': return this.readUInt32();
+			case 'UInt64': return this.readUInt64();
+			case 'Boolean': return this.readBoolean();
+			case 'Single': return this.readSingle();
+			case 'Double': return this.readDouble();
+			case 'DateTime': return this.readDateTime();
+			case 'String': return this.readString();
+			default: return null;
+		}
+	}
+	return null;
+    }
+
+    this.readPacket = function(value){
+		value.read(this);
+		return value;
+    }
+
+    this.readEntity = function(value){
+		value.read(this);
+		return value;
+    }
+
+    this.readArrayOfByte = function(){
+		var len = this.readInt32();
+		return new ByteArray(this.buffer.readBytes(len));
+    }
+
+    this.readArrayOfEntity = function(className){
+		var length = this.readInt32();
+		var classCtor = 'new ' + className + '()';		
+		var resultArray = new Array();
+		if(length == 0){
+			return resultArray;
+		}
+				
+		for(var i = 0; i < length; ++i){
+			var entityInstance = eval(classCtor);
+			resultArray.push( this.readEntity(entityInstance) );	
+		}
+		return resultArray;
+    }
+
+	this.readArrayOfUInt16 = function(){
+		var length = this.readInt32();
+		var resultArray = new Array();
+		
+		for(var i = 0; i < length; ++i)
+			resultArray.push( this.readUInt16() );
+			
+		return resultArray;
+    }
+
+	this.readArrayOfInt16 = function(){
+		var length = this.readInt32();
+		var resultArray = new Array();
+		
+		for(var i = 0; i < length; ++i)
+			resultArray.push( this.readInt16() );
+			
+		return resultArray;
+    }
+
+	this.readArrayOfUInt32 = function(){
+		var length = this.readInt32();
+		var resultArray = new Array();
+		
+		for(var i = 0; i < length; ++i)
+			resultArray.push( this.readUInt32() );
+			
+		return resultArray;
+    }
+
+	this.readArrayOfInt32 = function(){
+		var length = this.readInt32();
+		var resultArray = new Array();
+		
+		for(var i = 0; i < length; ++i)
+			resultArray.push( this.readInt32() );
+			
+		return resultArray;
+    }
+
+	this.readArrayOfUInt64 = function(){
+		var length = this.readInt32();
+		var resultArray = new Array();
+		
+		for(var i = 0; i < length; ++i)
+			resultArray.push( this.readUInt64() );
+			
+		return resultArray;
+    }
+
+	this.readArrayOfInt64 = function(){
+		var length = this.readInt32();
+		var resultArray = new Array();
+		
+		for(var i = 0; i < length; ++i)
+			resultArray.push( this.readInt64() );
+			
+		return resultArray;
+    }
+
+	this.readArrayOfSingle = function(){
+		var length = this.readInt32();
+		var resultArray = new Array();
+		
+		for(var i = 0; i < length; ++i)
+			resultArray.push( this.readSingle() );
+			
+		return resultArray;
+    }
+
+	this.readArrayOfDouble = function(){
+		var length = this.readInt32();
+		var resultArray = new Array();
+		
+		for(var i = 0; i < length; ++i)
+			resultArray.push( this.readDouble() );
+			
+		return resultArray;
+    }
+
+	this.readArrayOfBoolean = function(){
+		var length = this.readInt32();
+		var resultArray = new Array();
+		
+		for(var i = 0; i < length; ++i)
+			resultArray.push( this.readBoolean() );
+			
+		return resultArray;
+    }
+
+	this.readArrayOfDateTime = function(){
+		var length = this.readInt32();
+		var resultArray = new Array();
+		
+		for(var i = 0; i < length; ++i)
+			resultArray.push( this.readDateTime() );
+			
+		return resultArray;
+    }
+
+	this.readArrayOfString = function(){
+		var length = this.readInt32();
+		var resultArray = new Array();
+		
+		for(var i = 0; i < length; ++i)
+			resultArray.push( this.readString() );
+			
+		return resultArray;
+    }
+
+	this.readArrayOfDynamic = function(){
+		var length = this.readInt32();
+		var resultArray = new Array();
+		
+		for(var i = 0; i < length; ++i)
+			resultArray.push( this.readDynamic() );
+			
+		return resultArray;
+    }
+
+}

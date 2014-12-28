@@ -28,7 +28,7 @@ namespace Spike.Build
 {
     internal static class Extentions
     {
-        internal static string CamelCase(this string text)
+        public static string CamelCase(this string text)
         {
             if (text != null && text.Length > 0 && char.IsUpper(text[0]))
             {
@@ -39,7 +39,7 @@ namespace Spike.Build
             return text;
         }
 
-        internal static string PascalCase(this string text)
+        public static string PascalCase(this string text)
         {
             if (text != null && text.Length > 0 && char.IsLower(text[0]))
             {
@@ -50,7 +50,8 @@ namespace Spike.Build
             return text;
         }
 
-        internal static void CopyFromRessources(string source, string destination) {
+        public static void CopyFromRessources(string source, string destination)
+        {
             using (var sourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(source))
             using (var destinationStream = File.OpenWrite(destination))
                 sourceStream.CopyTo(destinationStream);
@@ -62,7 +63,7 @@ namespace Spike.Build
         /// <param name="source">The element that should have the attribute.</param>
         /// <param name="attributeName">The name of the attribute to fetch.</param>
         /// <returns>The value found, otherwise null.</returns>
-        internal static string GetAttributeValue(this XElement source, string attributeName)
+        public static string GetAttributeValue(this XElement source, string attributeName)
         {
             var element = source.Attribute(attributeName);
             if (element == null)
@@ -71,6 +72,139 @@ namespace Spike.Build
             if (string.IsNullOrWhiteSpace(element.Value))
                 return null;
             return element.Value;
+        }
+
+        /// <summary>
+        /// Executes the template and returns the text.
+        /// </summary>
+        /// <param name="indent">Whether we should indent it or not.</param>
+        /// <param name="template">The template to execute.</param>
+        /// <returns>The compiled text.</returns>
+        public static string AsText(this ITemplate template, bool indent = false)
+        {
+            var text = template.TransformText().Trim();
+            return indent
+                ? text.Indent()
+                : text;
+        }
+
+
+        /// <summary>
+        /// Helper method that indents the C-like code.
+        /// </summary>
+        /// <param name="code">The code to indent.</param>
+        /// <returns>The indented code.</returns>
+        public static string Indent(this string code)
+        {
+            const string INDENT_STEP = "    ";
+
+            if (string.IsNullOrWhiteSpace(code))
+            {
+                return code;
+            }
+
+            var result = new StringBuilder();
+            var indent = string.Empty;
+            var lineContent = false;
+            var stringDefinition = false;
+
+            for (var i = 0; i < code.Length; i++)
+            {
+                var ch = code[i];
+
+                if (ch == '"' && !stringDefinition)
+                {
+                    result.Append(ch);
+                    stringDefinition = true;
+                    continue;
+                }
+
+                if (ch == '"' && stringDefinition)
+                {
+                    result.Append(ch);
+                    stringDefinition = false;
+                    continue;
+                }
+
+                if (stringDefinition)
+                {
+                    result.Append(ch);
+                    continue;
+                }
+
+                if (ch == '{' && !stringDefinition)
+                {
+                    if (lineContent)
+                    {
+                        result.AppendLine();
+                    }
+
+                    result.Append(indent).Append("{");
+
+                    if (lineContent)
+                    {
+                        result.AppendLine();
+                    }
+
+                    indent += INDENT_STEP;
+                    lineContent = false;
+
+                    continue;
+                }
+
+                if (ch == '}' && !stringDefinition)
+                {
+                    if (indent.Length != 0)
+                    {
+                        indent = indent.Substring(0, indent.Length - INDENT_STEP.Length);
+                    }
+
+                    if (lineContent)
+                    {
+                        result.AppendLine();
+                    }
+
+                    result.Append(indent).Append("}");
+
+                    if (lineContent)
+                    {
+                        result.AppendLine();
+                    }
+
+
+                    lineContent = false;
+
+                    continue;
+                }
+
+                if (ch == '\r')
+                {
+                    continue;
+                }
+
+                if ((ch == ' ' || ch == '\t') && !lineContent)
+                {
+                    continue;
+                }
+
+                if (ch == '\n')
+                {
+                    lineContent = false;
+                    result.AppendLine();
+
+                    continue;
+                }
+
+                if (!lineContent)
+                {
+                    result.Append(indent);
+                    lineContent = true;
+                }
+
+                result.Append(ch);
+            }
+
+            return result.ToString();
         }
     }
 

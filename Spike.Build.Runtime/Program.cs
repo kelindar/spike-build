@@ -28,6 +28,7 @@ using Spike.Build.Xamarin;
 using Spike.Build.CSharp5;
 using Spike.Build.Java;
 using System.IO;
+using Spike.Build.JavaScript;
 
 
 namespace Spike.Build
@@ -64,7 +65,8 @@ namespace Spike.Build
             { "CSharp5", new CSharp5Builder() },
             { "Java", new JavaBuilder() },
             { "WinRT", new WinRTBuilder() },
-            { "Xamarin", new XamarinBuilder() }
+            { "Xamarin", new XamarinBuilder() },
+            { "JavaScript", new JavaScriptBuilder()}
         };
 
         static void Main(string[] args)

@@ -1,0 +1,327 @@
+﻿spike.PacketWriter = function(bufferTowrite){
+
+	/* The buffer to write to */
+	this.buffer = new ByteArray([]);
+
+	/* Compresses the packet */
+	this.compress = function()
+	{			
+		this.buffer = new spike.PacketCompressor().compress(this.buffer, this.buffer.getSize());
+	}	
+	
+	this.writeBoolean = function(value){
+		if(value){
+			this.buffer.writeInt(1, 8, false);
+		}else{
+			this.buffer.writeInt(0, 8, false);
+		}
+	}
+	
+	this.writeKey = function(value){
+		for(var i=0; i < 8; i+=2)
+		{
+			var s = value.charAt(i) + value.charAt(i + 1);
+			var b = parseInt(s, 16);
+			this.buffer.writeInt(b, 8, false);
+		}
+	}
+
+	this.writeByte = function(value){
+		this.buffer.writeInt(value, 8, false);
+	}
+	
+	this.writeSByte = function(value){
+		this.buffer.writeInt(value, 8, true);
+	}
+	
+	this.writeInt16 = function(value){
+		this.buffer.writeInt(value, 16, true);
+	}
+	
+	this.writeInt32 = function(value){
+		this.buffer.writeInt(value, 32, true);
+	}
+	
+	this.writeInt64 = function(value){
+		this.buffer.writeInt(value, 64, true);
+	}
+	
+	this.writeUInt16 = function(value){
+		this.buffer.writeInt(value, 16, false);
+	}
+	
+	this.writeUInt32 = function(value){
+		this.buffer.writeInt(value, 32, false);
+	}
+	
+	this.writeUInt64 = function(value){
+		this.buffer.writeInt(value, 64, false);
+	}
+
+	this.writeDateTime = function(value){
+		this.writeInt16(value.getFullYear());
+		this.writeInt16(value.getMonth() + 1);
+		this.writeInt16(value.getDate());
+		this.writeInt16(value.getHours());
+		this.writeInt16(value.getMinutes());
+		this.writeInt16(value.getSeconds());
+		this.writeInt16(value.getMilliseconds());
+	}
+
+	this.writeSingle = function(value){
+		this.buffer.writeFloat(value, 23, 8);
+	}
+	
+	this.writeDouble = function(value){
+		this.buffer.writeFloat(value, 52, 11);
+	}
+	
+	this.writeString = function(value){
+		if(value == 'undefined' || value == null || value.length == 0){
+			this.writeInt32(0);		
+		}else{
+		    value = unescape(encodeURIComponent(value));
+		    this.writeInt32(value.length);
+		    this.buffer.writeBytes(value);
+		}
+	}
+
+	this.writePacket = function(value){
+		value.write(this);
+	}
+
+	this.writeEntity = function(value){
+		value.write(this);
+	}
+
+	this.writeDynamic = function(value){
+		var type = typeof(value);
+		if(type == "number")
+		{
+			this.writeByte(1);
+			this.writeString("Double");
+			this.writeDouble(value);
+		}
+		else if(type == "boolean")
+		{
+			this.writeByte(1);
+			this.writeString("Boolean");
+			this.writeBoolean(value);
+		}
+		else if(type == "string")
+		{
+			this.writeByte(1);
+			this.writeString("String");
+			this.writeString(value);
+		}
+		else if(type == "object" && value instanceof Date)
+		{
+			this.writeByte(1);
+			this.writeString("DateTime");
+			this.writeDateTime(value);
+		}
+		else
+		{
+			this.writeByte(0);
+		}
+	}
+
+	this.writeArrayOfByte = function(value){
+		var type = typeof(value);
+		if(type == "object" && value instanceof ByteArray){
+			this.writeInt32(value.getSize());
+			this.buffer.writeBytes(value.data);
+		}else{
+			this.writeInt32(value.length);
+			this.buffer.writeBytes(value);
+		}
+	}
+
+	this.writeArrayOfUInt16 = function(value){
+		var type = typeof(value);
+		if(type == "object" && value instanceof Array){
+			this.writeInt32(value.length);
+			if(value.length == 0)
+				return;
+			for(var i=0; i<value.length; ++i){
+				this.writeUInt16(value[i]);
+			}
+		}else{
+			this.writeInt32(0);
+		}
+	}
+
+	this.writeArrayOfInt16 = function(value){
+		var type = typeof(value);
+		if(type == "object" && value instanceof Array){
+			this.writeInt32(value.length);
+			if(value.length == 0)
+				return;
+			for(var i=0; i<value.length; ++i){
+				this.writeInt16(value[i]);
+			}
+		}else{
+			this.writeInt32(0);
+		}
+	}
+
+	this.writeArrayOfInt32 = function(value){
+		var type = typeof(value);
+		if(type == "object" && value instanceof Array){
+			this.writeInt32(value.length);
+			if(value.length == 0)
+				return;
+			for(var i=0; i<value.length; ++i){
+				this.writeInt32(value[i]);
+			}
+		}else{
+			this.writeInt32(0);
+		}
+	}
+
+	this.writeArrayOfUInt32 = function(value){
+		var type = typeof(value);
+		if(type == "object" && value instanceof Array){
+			this.writeInt32(value.length);
+			if(value.length == 0)
+				return;
+			for(var i=0; i<value.length; ++i){
+				this.writeUInt32(value[i]);
+			}
+		}else{
+			this.writeInt32(0);
+		}
+	}
+
+	this.writeArrayOfInt64 = function(value){
+		var type = typeof(value);
+		if(type == "object" && value instanceof Array){
+			this.writeInt32(value.length);
+			if(value.length == 0)
+				return;
+			for(var i=0; i<value.length; ++i){
+				this.writeInt64(value[i]);
+			}
+		}else{
+			this.writeInt32(0);
+		}
+	}
+
+	this.writeArrayOfUInt64 = function(value){
+		var type = typeof(value);
+		if(type == "object" && value instanceof Array){
+			this.writeInt32(value.length);
+			if(value.length == 0)
+				return;
+			for(var i=0; i<value.length; ++i){
+				this.writeUInt64(value[i]);
+			}
+		}else{
+			this.writeInt32(0);
+		}
+	}
+
+	this.writeArrayOfDouble = function(value){
+		var type = typeof(value);
+		if(type == "object" && value instanceof Array){
+			this.writeInt32(value.length);
+			if(value.length == 0)
+				return;
+			for(var i=0; i<value.length; ++i){
+				this.writeDouble(value[i]);
+			}
+		}else{
+			this.writeInt32(0);
+		}
+	}
+
+	this.writeArrayOfSingle = function(value){
+		var type = typeof(value);
+		if(type == "object" && value instanceof Array){
+			this.writeInt32(value.length);
+			if(value.length == 0)
+				return;
+			for(var i=0; i<value.length; ++i){
+				this.writeSingle(value[i]);
+			}
+		}else{
+			this.writeInt32(0);
+		}
+	}
+
+	this.writeArrayOfDateTime = function(value){
+		var type = typeof(value);
+		if(type == "object" && value instanceof Array){
+			this.writeInt32(value.length);
+			if(value.length == 0)
+				return;
+			for(var i=0; i<value.length; ++i){
+				this.writeDateTime(value[i]);
+			}
+		}else{
+			this.writeInt32(0);
+		}
+	}
+
+	this.writeArrayOfString = function(value){
+		var type = typeof(value);
+		if(type == "object" && value instanceof Array){
+			this.writeInt32(value.length);
+			if(value.length == 0)
+				return;
+			for(var i=0; i<value.length; ++i){
+				this.writeString(value[i]);
+			}
+		}else{
+			this.writeInt32(0);
+		}
+	}
+
+	this.writeArrayOfBoolean = function(value){
+		var type = typeof(value);
+		if(type == "object" && value instanceof Array){
+			this.writeInt32(value.length);
+			if(value.length == 0)
+				return;
+			for(var i=0; i<value.length; ++i){
+				this.writeBoolean(value[i]);
+			}
+		}else{
+			this.writeInt32(0);
+		}
+	}
+
+	this.writeArrayOfDynamic = function(value){
+		var type = typeof(value);
+		if(type == "object" && value instanceof Array){
+			this.writeInt32(value.length);
+			if(value.length == 0)
+				return;
+			for(var i=0; i<value.length; ++i){
+				this.writeDynamic(value[i]);
+			}
+		}else{
+			this.writeInt32(0);
+		}
+	}
+
+	this.writeArray = function(value){
+		var type = typeof(value);
+		if(type == "object" && value instanceof Array){
+			this.writeInt32(value.length);
+			if(value.length == 0)
+				return;
+			for(var i=0; i<value.length; ++i){
+				if(value[i].write != 'undefined'){
+					value[i].write(this);
+				}else{
+					throw "Unable to write, the array contains unknown elements";
+				}
+			}
+		}else{
+			this.writeInt32(0);
+		}
+	}
+
+
+}

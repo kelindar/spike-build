@@ -22,12 +22,12 @@ using System.IO;
 
 namespace Spike.Build.WinRT
 {
-    partial class WinRTTemplate
+    partial class WinRTTemplate : ITemplate
     {
-        internal string Target { get; set; }
-        internal Model Model { get; set; }
-        internal Operation TargetOperation { get; set; }
-        internal CustomType TargetType { get; set; }
+        public string Target { get; set; }
+        public Model Model { get; set; }
+        public Operation TargetOperation { get; set; }
+        public CustomType TargetType { get; set; }
     }
 
     internal class WinRTBuilder : Spike.Build.CSharp5.CSharp5BuilderBase
@@ -99,55 +99,6 @@ namespace Spike.Build.WinRT
             }
         }
 
-        #region WinRT support
-
-        /// <summary>
-        /// Helper method that builds a template target.
-        /// </summary>
-        /// <param name="target">The target name.</param>
-        /// <param name="outputDirectory">The output directory for the file.</param>
-        /// <param name="template">The template to use.</param>
-        protected void BuildTarget(string target, string outputDirectory, WinRTTemplate template)
-        {
-            template.Target = target;
-            File.WriteAllText(
-                Path.Combine(outputDirectory, target + ".cs"),
-                this.Indent(template.TransformText()));
-            template.Clear();
-        }
-
-        /// <summary>
-        /// Helper method that builds a template target.
-        /// </summary>
-        /// <param name="operation">The target operation.</param>
-        /// <param name="outputDirectory">The output directory for the file.</param>
-        /// <param name="template">The template to use.</param>
-        protected void BuildOperation(Operation operation, string outputDirectory, WinRTTemplate template)
-        {
-            template.TargetOperation = operation;
-            File.WriteAllText(
-                Path.Combine(outputDirectory, string.Format(@"{0}.cs", operation.Name)),
-                this.Indent(template.TransformText())
-                );
-            template.Clear();
-        }
-
-        /// <summary>
-        /// Helper method that builds a template target.
-        /// </summary>
-        /// <param name="type">The target type.</param>
-        /// <param name="outputDirectory">The output directory for the file.</param>
-        /// <param name="template">The template to use.</param>
-        protected void BuildType(CustomType type, string outputDirectory, WinRTTemplate template)
-        {
-            template.TargetType = type;
-            File.WriteAllText(
-                Path.Combine(outputDirectory, string.Format(@"{0}.cs", type.Name)),
-                this.Indent(template.TransformText())
-                );
-            template.Clear();
-        }
-        #endregion
     }
 
     

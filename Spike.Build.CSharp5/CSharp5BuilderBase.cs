@@ -24,19 +24,35 @@ using System.Text.RegularExpressions;
 
 namespace Spike.Build.CSharp5
 {
-    partial class CSharp5Template
+    partial class CSharp5Template : ITemplate
     {
-        internal string Target { get; set; }
-        internal Model Model { get; set; }
-        internal Operation TargetOperation { get; set; }
-        internal CustomType TargetType { get; set; }
+        public string Target { get; set; }
+        public Model Model { get; set; }
+        public Operation TargetOperation { get; set; }
+        public CustomType TargetType { get; set; }
     }
 
     /// <summary>
     /// Represents a base builder for C#5, containing helper methods.
     /// </summary>
-    internal abstract class CSharp5BuilderBase : IBuilder
+    internal abstract class CSharp5BuilderBase : BuilderBase
     {
+        /// <summary>
+        /// Gets the extension for this builder.
+        /// </summary>
+        public override string Extension
+        {
+            get { return ".cs"; }
+        }
+
+        /// <summary>
+        /// Gets whether the build should apply identation.
+        /// </summary>
+        public override bool Indent
+        {
+            get { return true; }
+        }
+
         internal static string GetNativeType(Member member)
         {
             switch (member.Type)
@@ -77,182 +93,6 @@ namespace Spike.Build.CSharp5
 
         }
 
-        /// <summary>
-        /// Build the model of the specified type.
-        /// </summary>
-        /// <param name="model">The model to build.</param>
-        /// <param name="output">The output type.</param>
-        /// <param name="format">The format to apply.</param>
-        public abstract void Build(Model model, string output, string format);
-
-        /// <summary>
-        /// Helper method that builds a template target.
-        /// </summary>
-        /// <param name="target">The target name.</param>
-        /// <param name="outputDirectory">The output directory for the file.</param>
-        /// <param name="template">The template to use.</param>
-        protected void BuildTarget(string target, string outputDirectory, CSharp5Template template)
-        {
-            template.Target = target;
-            File.WriteAllText(
-                Path.Combine(outputDirectory, target + ".cs"),
-                this.Indent(template.TransformText()));
-            template.Clear();
-        }
-
-        /// <summary>
-        /// Helper method that builds a template target.
-        /// </summary>
-        /// <param name="operation">The target operation.</param>
-        /// <param name="outputDirectory">The output directory for the file.</param>
-        /// <param name="template">The template to use.</param>
-        protected void BuildOperation(Operation operation, string outputDirectory, CSharp5Template template)
-        {
-            template.TargetOperation = operation;
-            File.WriteAllText(
-                Path.Combine(outputDirectory, string.Format(@"{0}.cs", operation.Name)),
-                this.Indent(template.TransformText())
-                );
-            template.Clear();
-        }
-
-        /// <summary>
-        /// Helper method that builds a template target.
-        /// </summary>
-        /// <param name="type">The target type.</param>
-        /// <param name="outputDirectory">The output directory for the file.</param>
-        /// <param name="template">The template to use.</param>
-        protected void BuildType(CustomType type, string outputDirectory, CSharp5Template template)
-        {
-            template.TargetType = type;
-            File.WriteAllText(
-                Path.Combine(outputDirectory, string.Format(@"{0}.cs", type.Name)),
-                this.Indent(template.TransformText())
-                );
-            template.Clear();
-        }
-
-
-
-        #region Indent Members
-
-        /// <summary>
-        /// Helper method that indents the C# code.
-        /// </summary>
-        /// <param name="code"></param>
-        /// <returns></returns>
-        protected string Indent(string code)
-        {
-            const string INDENT_STEP = "    ";
-
-            if (string.IsNullOrWhiteSpace(code))
-            {
-                return code;
-            }
-
-            var result = new StringBuilder();
-            var indent = string.Empty;
-            var lineContent = false;
-            var stringDefinition = false;
-
-            for (var i = 0; i < code.Length; i++)
-            {
-                var ch = code[i];
-
-                if (ch == '"' && !stringDefinition)
-                {
-                    result.Append(ch);
-                    stringDefinition = true;
-                    continue;
-                }
-
-                if (ch == '"' && stringDefinition)
-                {
-                    result.Append(ch);
-                    stringDefinition = false;
-                    continue;
-                }
-
-                if (stringDefinition)
-                {
-                    result.Append(ch);
-                    continue;
-                }
-
-                if (ch == '{' && !stringDefinition)
-                {
-                    if (lineContent)
-                    {
-                        result.AppendLine();
-                    }
-
-                    result.Append(indent).Append("{");
-
-                    if (lineContent)
-                    {
-                        result.AppendLine();
-                    }
-
-                    indent += INDENT_STEP;
-                    lineContent = false;
-
-                    continue;
-                }
-
-                if (ch == '}' && !stringDefinition)
-                {
-                    if (indent.Length != 0)
-                    {
-                        indent = indent.Substring(0, indent.Length - INDENT_STEP.Length);
-                    }
-
-                    if (lineContent)
-                    {
-                        result.AppendLine();
-                    }
-
-                    result.Append(indent).Append("}");
-
-                    if (lineContent)
-                    {
-                        result.AppendLine();
-                    }
-
-
-                    lineContent = false;
-
-                    continue;
-                }
-
-                if (ch == '\r')
-                {
-                    continue;
-                }
-
-                if ((ch == ' ' || ch == '\t') && !lineContent)
-                {
-                    continue;
-                }
-
-                if (ch == '\n')
-                {
-                    lineContent = false;
-                    result.AppendLine();
-
-                    continue;
-                }
-
-                if (!lineContent)
-                {
-                    result.Append(indent);
-                    lineContent = true;
-                }
-
-                result.Append(ch);
-            }
-
-            return result.ToString().Trim();
-        }
-        #endregion
+    
     }
 }
