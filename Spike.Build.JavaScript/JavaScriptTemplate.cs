@@ -483,1134 +483,1086 @@ namespace Spike.Build.JavaScript
                     ":{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.ex" +
                     "ports,e,t,n,r)}return n[o].exports}var i=typeof require==\"function\"&&require;for" +
                     "(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){" +
-                    "\r\n\r\nmodule.exports =  _dereq_(\'./lib/\');\r\n\r\n},{\"./lib/\":2}],2:[function(_dereq_," +
-                    "module,exports){\r\n\r\nmodule.exports = _dereq_(\'./socket\');\r\n\r\n/**\r\n * Exports par" +
-                    "ser\r\n *\r\n * @api public\r\n *\r\n */\r\nmodule.exports.parser = _dereq_(\'engine.io-par" +
-                    "ser\');\r\n\r\n},{\"./socket\":3,\"engine.io-parser\":17}],3:[function(_dereq_,module,exp" +
-                    "orts){\r\n(function (global){\r\n/**\r\n * Module dependencies.\r\n */\r\n\r\nvar transports" +
-                    " = _dereq_(\'./transports\');\r\nvar Emitter = _dereq_(\'component-emitter\');\r\nvar de" +
-                    "bug = _dereq_(\'debug\')(\'engine.io-client:socket\');\r\nvar index = _dereq_(\'indexof" +
-                    "\');\r\nvar parser = _dereq_(\'engine.io-parser\');\r\nvar parseuri = _dereq_(\'parseuri" +
-                    "\');\r\nvar parsejson = _dereq_(\'parsejson\');\r\nvar parseqs = _dereq_(\'parseqs\');\r\n\r" +
-                    "\n/**\r\n * Module exports.\r\n */\r\n\r\nmodule.exports = Socket;\r\n\r\n/**\r\n * Noop functi" +
-                    "on.\r\n *\r\n * @api private\r\n */\r\n\r\nfunction noop(){}\r\n\r\n/**\r\n * Socket constructor" +
-                    ".\r\n *\r\n * @param {String|Object} uri or options\r\n * @param {Object} options\r\n * " +
-                    "@api public\r\n */\r\n\r\nfunction Socket(uri, opts){\r\n  if (!(this instanceof Socket)" +
-                    ") return new Socket(uri, opts);\r\n\r\n  opts = opts || {};\r\n\r\n  if (uri && \'object\'" +
-                    " == typeof uri) {\r\n    opts = uri;\r\n    uri = null;\r\n  }\r\n\r\n  if (uri) {\r\n    ur" +
-                    "i = parseuri(uri);\r\n    opts.host = uri.host;\r\n    opts.secure = uri.protocol ==" +
-                    " \'https\' || uri.protocol == \'wss\';\r\n    opts.port = uri.port;\r\n    if (uri.query" +
-                    ") opts.query = uri.query;\r\n  }\r\n\r\n  this.secure = null != opts.secure ? opts.sec" +
-                    "ure :\r\n    (global.location && \'https:\' == location.protocol);\r\n\r\n  if (opts.hos" +
-                    "t) {\r\n    var pieces = opts.host.split(\':\');\r\n    opts.hostname = pieces.shift()" +
-                    ";\r\n    if (pieces.length) opts.port = pieces.pop();\r\n  }\r\n\r\n  this.agent = opts." +
-                    "agent || false;\r\n  this.hostname = opts.hostname ||\r\n    (global.location ? loca" +
-                    "tion.hostname : \'localhost\');\r\n  this.port = opts.port || (global.location && lo" +
-                    "cation.port ?\r\n       location.port :\r\n       (this.secure ? 443 : 80));\r\n  this" +
-                    ".query = opts.query || {};\r\n  if (\'string\' == typeof this.query) this.query = pa" +
-                    "rseqs.decode(this.query);\r\n  this.upgrade = false !== opts.upgrade;\r\n  this.path" +
-                    " = (opts.path || \'/engine.io\').replace(/\\/$/, \'\') + \'/\';\r\n  this.forceJSONP = !!" +
-                    "opts.forceJSONP;\r\n  this.jsonp = false !== opts.jsonp;\r\n  this.forceBase64 = !!o" +
-                    "pts.forceBase64;\r\n  this.enablesXDR = !!opts.enablesXDR;\r\n  this.timestampParam " +
-                    "= opts.timestampParam || \'t\';\r\n  this.timestampRequests = opts.timestampRequests" +
-                    ";\r\n  this.transports = opts.transports || [\'polling\', \'websocket\'];\r\n  this.read" +
-                    "yState = \'\';\r\n  this.writeBuffer = [];\r\n  this.callbackBuffer = [];\r\n  this.poli" +
-                    "cyPort = opts.policyPort || 843;\r\n  this.rememberUpgrade = opts.rememberUpgrade " +
-                    "|| false;\r\n  this.open();\r\n  this.binaryType = null;\r\n  this.onlyBinaryUpgrades " +
-                    "= opts.onlyBinaryUpgrades;\r\n}\r\n\r\nSocket.priorWebsocketSuccess = false;\r\n\r\n/**\r\n " +
-                    "* Mix in `Emitter`.\r\n */\r\n\r\nEmitter(Socket.prototype);\r\n\r\n/**\r\n * Protocol versi" +
-                    "on.\r\n *\r\n * @api public\r\n */\r\n\r\nSocket.protocol = parser.protocol; // this is an" +
-                    " int\r\n\r\n/**\r\n * Expose deps for legacy compatibility\r\n * and standalone browser " +
-                    "access.\r\n */\r\n\r\nSocket.Socket = Socket;\r\nSocket.Transport = _dereq_(\'./transport" +
-                    "\');\r\nSocket.transports = _dereq_(\'./transports\');\r\nSocket.parser = _dereq_(\'engi" +
-                    "ne.io-parser\');\r\n\r\n/**\r\n * Creates transport of the given type.\r\n *\r\n * @param {" +
-                    "String} transport name\r\n * @return {Transport}\r\n * @api private\r\n */\r\n\r\nSocket.p" +
-                    "rototype.createTransport = function (name) {\r\n  debug(\'creating transport \"%s\"\'," +
-                    " name);\r\n  var query = clone(this.query);\r\n\r\n  // append engine.io protocol iden" +
-                    "tifier\r\n  query.EIO = parser.protocol;\r\n\r\n  // transport name\r\n  query.transport" +
-                    " = name;\r\n\r\n  // session id if we already have one\r\n  if (this.id) query.sid = t" +
-                    "his.id;\r\n\r\n  var transport = new transports[name]({\r\n    agent: this.agent,\r\n   " +
-                    " hostname: this.hostname,\r\n    port: this.port,\r\n    secure: this.secure,\r\n    p" +
-                    "ath: this.path,\r\n    query: query,\r\n    forceJSONP: this.forceJSONP,\r\n    jsonp:" +
-                    " this.jsonp,\r\n    forceBase64: this.forceBase64,\r\n    enablesXDR: this.enablesXD" +
-                    "R,\r\n    timestampRequests: this.timestampRequests,\r\n    timestampParam: this.tim" +
-                    "estampParam,\r\n    policyPort: this.policyPort,\r\n    socket: this\r\n  });\r\n\r\n  ret" +
-                    "urn transport;\r\n};\r\n\r\nfunction clone (obj) {\r\n  var o = {};\r\n  for (var i in obj" +
-                    ") {\r\n    if (obj.hasOwnProperty(i)) {\r\n      o[i] = obj[i];\r\n    }\r\n  }\r\n  retur" +
-                    "n o;\r\n}\r\n\r\n/**\r\n * Initializes transport to use and starts probe.\r\n *\r\n * @api p" +
-                    "rivate\r\n */\r\nSocket.prototype.open = function () {\r\n  var transport;\r\n  if (this" +
-                    ".rememberUpgrade && Socket.priorWebsocketSuccess && this.transports.indexOf(\'web" +
-                    "socket\') != -1) {\r\n    transport = \'websocket\';\r\n  } else if (0 == this.transpor" +
-                    "ts.length) {\r\n    // Emit error on next tick so it can be listened to\r\n    var s" +
-                    "elf = this;\r\n    setTimeout(function() {\r\n      self.emit(\'error\', \'No transport" +
-                    "s available\');\r\n    }, 0);\r\n    return;\r\n  } else {\r\n    transport = this.transp" +
-                    "orts[0];\r\n  }\r\n  this.readyState = \'opening\';\r\n\r\n  // Retry with the next transp" +
-                    "ort if the transport is disabled (jsonp: false)\r\n  var transport;\r\n  try {\r\n    " +
-                    "transport = this.createTransport(transport);\r\n  } catch (e) {\r\n    this.transpor" +
-                    "ts.shift();\r\n    this.open();\r\n    return;\r\n  }\r\n\r\n  transport.open();\r\n  this.s" +
-                    "etTransport(transport);\r\n};\r\n\r\n/**\r\n * Sets the current transport. Disables the " +
-                    "existing one (if any).\r\n *\r\n * @api private\r\n */\r\n\r\nSocket.prototype.setTranspor" +
-                    "t = function(transport){\r\n  debug(\'setting transport %s\', transport.name);\r\n  va" +
-                    "r self = this;\r\n\r\n  if (this.transport) {\r\n    debug(\'clearing existing transpor" +
-                    "t %s\', this.transport.name);\r\n    this.transport.removeAllListeners();\r\n  }\r\n\r\n " +
-                    " // set up transport\r\n  this.transport = transport;\r\n\r\n  // set up transport lis" +
-                    "teners\r\n  transport\r\n  .on(\'drain\', function(){\r\n    self.onDrain();\r\n  })\r\n  .o" +
-                    "n(\'packet\', function(packet){\r\n    self.onPacket(packet);\r\n  })\r\n  .on(\'error\', " +
-                    "function(e){\r\n    self.onError(e);\r\n  })\r\n  .on(\'close\', function(){\r\n    self.o" +
-                    "nClose(\'transport close\');\r\n  });\r\n};\r\n\r\n/**\r\n * Probes a transport.\r\n *\r\n * @pa" +
-                    "ram {String} transport name\r\n * @api private\r\n */\r\n\r\nSocket.prototype.probe = fu" +
-                    "nction (name) {\r\n  debug(\'probing transport \"%s\"\', name);\r\n  var transport = thi" +
-                    "s.createTransport(name, { probe: 1 })\r\n    , failed = false\r\n    , self = this;\r" +
-                    "\n\r\n  Socket.priorWebsocketSuccess = false;\r\n\r\n  function onTransportOpen(){\r\n   " +
-                    " if (self.onlyBinaryUpgrades) {\r\n      var upgradeLosesBinary = !this.supportsBi" +
-                    "nary && self.transport.supportsBinary;\r\n      failed = failed || upgradeLosesBin" +
-                    "ary;\r\n    }\r\n    if (failed) return;\r\n\r\n    debug(\'probe transport \"%s\" opened\'," +
-                    " name);\r\n    transport.send([{ type: \'ping\', data: \'probe\' }]);\r\n    transport.o" +
-                    "nce(\'packet\', function (msg) {\r\n      if (failed) return;\r\n      if (\'pong\' == m" +
-                    "sg.type && \'probe\' == msg.data) {\r\n        debug(\'probe transport \"%s\" pong\', na" +
-                    "me);\r\n        self.upgrading = true;\r\n        self.emit(\'upgrading\', transport);" +
-                    "\r\n        if (!transport) return;\r\n        Socket.priorWebsocketSuccess = \'webso" +
-                    "cket\' == transport.name;\r\n\r\n        debug(\'pausing current transport \"%s\"\', self" +
-                    ".transport.name);\r\n        self.transport.pause(function () {\r\n          if (fai" +
-                    "led) return;\r\n          if (\'closed\' == self.readyState) return;\r\n          debu" +
-                    "g(\'changing transport and sending upgrade packet\');\r\n\r\n          cleanup();\r\n\r\n " +
-                    "         self.setTransport(transport);\r\n          transport.send([{ type: \'upgra" +
-                    "de\' }]);\r\n          self.emit(\'upgrade\', transport);\r\n          transport = null" +
-                    ";\r\n          self.upgrading = false;\r\n          self.flush();\r\n        });\r\n    " +
-                    "  } else {\r\n        debug(\'probe transport \"%s\" failed\', name);\r\n        var err" +
-                    " = new Error(\'probe error\');\r\n        err.transport = transport.name;\r\n        s" +
-                    "elf.emit(\'upgradeError\', err);\r\n      }\r\n    });\r\n  }\r\n\r\n  function freezeTransp" +
-                    "ort() {\r\n    if (failed) return;\r\n\r\n    // Any callback called by transport shou" +
-                    "ld be ignored since now\r\n    failed = true;\r\n\r\n    cleanup();\r\n\r\n    transport.c" +
-                    "lose();\r\n    transport = null;\r\n  }\r\n\r\n  //Handle any error that happens while p" +
-                    "robing\r\n  function onerror(err) {\r\n    var error = new Error(\'probe error: \' + e" +
-                    "rr);\r\n    error.transport = transport.name;\r\n\r\n    freezeTransport();\r\n\r\n    deb" +
-                    "ug(\'probe transport \"%s\" failed because of error: %s\', name, err);\r\n\r\n    self.e" +
-                    "mit(\'upgradeError\', error);\r\n  }\r\n\r\n  function onTransportClose(){\r\n    onerror(" +
-                    "\"transport closed\");\r\n  }\r\n\r\n  //When the socket is closed while we\'re probing\r\n" +
-                    "  function onclose(){\r\n    onerror(\"socket closed\");\r\n  }\r\n\r\n  //When the socket" +
-                    " is upgraded while we\'re probing\r\n  function onupgrade(to){\r\n    if (transport &" +
-                    "& to.name != transport.name) {\r\n      debug(\'\"%s\" works - aborting \"%s\"\', to.nam" +
-                    "e, transport.name);\r\n      freezeTransport();\r\n    }\r\n  }\r\n\r\n  //Remove all list" +
-                    "eners on the transport and on self\r\n  function cleanup(){\r\n    transport.removeL" +
-                    "istener(\'open\', onTransportOpen);\r\n    transport.removeListener(\'error\', onerror" +
-                    ");\r\n    transport.removeListener(\'close\', onTransportClose);\r\n    self.removeLis" +
-                    "tener(\'close\', onclose);\r\n    self.removeListener(\'upgrading\', onupgrade);\r\n  }\r" +
-                    "\n\r\n  transport.once(\'open\', onTransportOpen);\r\n  transport.once(\'error\', onerror" +
-                    ");\r\n  transport.once(\'close\', onTransportClose);\r\n\r\n  this.once(\'close\', onclose" +
-                    ");\r\n  this.once(\'upgrading\', onupgrade);\r\n\r\n  transport.open();\r\n\r\n};\r\n\r\n/**\r\n *" +
-                    " Called when connection is deemed open.\r\n *\r\n * @api public\r\n */\r\n\r\nSocket.proto" +
-                    "type.onOpen = function () {\r\n  debug(\'socket open\');\r\n  this.readyState = \'open\'" +
-                    ";\r\n  Socket.priorWebsocketSuccess = \'websocket\' == this.transport.name;\r\n  this." +
-                    "emit(\'open\');\r\n  this.flush();\r\n\r\n  // we check for `readyState` in case an `ope" +
-                    "n`\r\n  // listener already closed the socket\r\n  if (\'open\' == this.readyState && " +
-                    "this.upgrade && this.transport.pause) {\r\n    debug(\'starting upgrade probes\');\r\n" +
-                    "    for (var i = 0, l = this.upgrades.length; i < l; i++) {\r\n      this.probe(th" +
-                    "is.upgrades[i]);\r\n    }\r\n  }\r\n};\r\n\r\n/**\r\n * Handles a packet.\r\n *\r\n * @api priva" +
-                    "te\r\n */\r\n\r\nSocket.prototype.onPacket = function (packet) {\r\n  if (\'opening\' == t" +
-                    "his.readyState || \'open\' == this.readyState) {\r\n    debug(\'socket receive: type " +
-                    "\"%s\", data \"%s\"\', packet.type, packet.data);\r\n\r\n    this.emit(\'packet\', packet);" +
-                    "\r\n\r\n    // Socket is live - any packet counts\r\n    this.emit(\'heartbeat\');\r\n\r\n  " +
-                    "  switch (packet.type) {\r\n      case \'open\':\r\n        this.onHandshake(parsejson" +
-                    "(packet.data));\r\n        break;\r\n\r\n      case \'pong\':\r\n        this.setPing();\r\n" +
-                    "        break;\r\n\r\n      case \'error\':\r\n        var err = new Error(\'server error" +
-                    "\');\r\n        err.code = packet.data;\r\n        this.emit(\'error\', err);\r\n        " +
-                    "break;\r\n\r\n      case \'message\':\r\n        this.emit(\'data\', packet.data);\r\n      " +
-                    "  this.emit(\'message\', packet.data);\r\n        break;\r\n    }\r\n  } else {\r\n    deb" +
-                    "ug(\'packet received with socket readyState \"%s\"\', this.readyState);\r\n  }\r\n};\r\n\r\n" +
-                    "/**\r\n * Called upon handshake completion.\r\n *\r\n * @param {Object} handshake obj\r" +
-                    "\n * @api private\r\n */\r\n\r\nSocket.prototype.onHandshake = function (data) {\r\n  thi" +
-                    "s.emit(\'handshake\', data);\r\n  this.id = data.sid;\r\n  this.transport.query.sid = " +
-                    "data.sid;\r\n  this.upgrades = this.filterUpgrades(data.upgrades);\r\n  this.pingInt" +
-                    "erval = data.pingInterval;\r\n  this.pingTimeout = data.pingTimeout;\r\n  this.onOpe" +
-                    "n();\r\n  // In case open handler closes socket\r\n  if  (\'closed\' == this.readyStat" +
-                    "e) return;\r\n  this.setPing();\r\n\r\n  // Prolong liveness of socket on heartbeat\r\n " +
-                    " this.removeListener(\'heartbeat\', this.onHeartbeat);\r\n  this.on(\'heartbeat\', thi" +
-                    "s.onHeartbeat);\r\n};\r\n\r\n/**\r\n * Resets ping timeout.\r\n *\r\n * @api private\r\n */\r\n\r" +
-                    "\nSocket.prototype.onHeartbeat = function (timeout) {\r\n  clearTimeout(this.pingTi" +
-                    "meoutTimer);\r\n  var self = this;\r\n  self.pingTimeoutTimer = setTimeout(function " +
-                    "() {\r\n    if (\'closed\' == self.readyState) return;\r\n    self.onClose(\'ping timeo" +
-                    "ut\');\r\n  }, timeout || (self.pingInterval + self.pingTimeout));\r\n};\r\n\r\n/**\r\n * P" +
-                    "ings server every `this.pingInterval` and expects response\r\n * within `this.ping" +
-                    "Timeout` or closes connection.\r\n *\r\n * @api private\r\n */\r\n\r\nSocket.prototype.set" +
-                    "Ping = function () {\r\n  var self = this;\r\n  clearTimeout(self.pingIntervalTimer)" +
-                    ";\r\n  self.pingIntervalTimer = setTimeout(function () {\r\n    debug(\'writing ping " +
-                    "packet - expecting pong within %sms\', self.pingTimeout);\r\n    self.ping();\r\n    " +
-                    "self.onHeartbeat(self.pingTimeout);\r\n  }, self.pingInterval);\r\n};\r\n\r\n/**\r\n* Send" +
-                    "s a ping packet.\r\n*\r\n* @api public\r\n*/\r\n\r\nSocket.prototype.ping = function () {\r" +
-                    "\n  this.sendPacket(\'ping\');\r\n};\r\n\r\n/**\r\n * Called on `drain` event\r\n *\r\n * @api " +
-                    "private\r\n */\r\n\r\nSocket.prototype.onDrain = function() {\r\n  for (var i = 0; i < t" +
-                    "his.prevBufferLen; i++) {\r\n    if (this.callbackBuffer[i]) {\r\n      this.callbac" +
-                    "kBuffer[i]();\r\n    }\r\n  }\r\n\r\n  this.writeBuffer.splice(0, this.prevBufferLen);\r\n" +
-                    "  this.callbackBuffer.splice(0, this.prevBufferLen);\r\n\r\n  // setting prevBufferL" +
-                    "en = 0 is very important\r\n  // for example, when upgrading, upgrade packet is se" +
-                    "nt over,\r\n  // and a nonzero prevBufferLen could cause problems on `drain`\r\n  th" +
-                    "is.prevBufferLen = 0;\r\n\r\n  if (this.writeBuffer.length == 0) {\r\n    this.emit(\'d" +
-                    "rain\');\r\n  } else {\r\n    this.flush();\r\n  }\r\n};\r\n\r\n/**\r\n * Flush write buffers.\r" +
-                    "\n *\r\n * @api private\r\n */\r\n\r\nSocket.prototype.flush = function () {\r\n  if (\'clos" +
-                    "ed\' != this.readyState && this.transport.writable &&\r\n    !this.upgrading && thi" +
-                    "s.writeBuffer.length) {\r\n    debug(\'flushing %d packets in socket\', this.writeBu" +
-                    "ffer.length);\r\n    this.transport.send(this.writeBuffer);\r\n    // keep track of " +
-                    "current length of writeBuffer\r\n    // splice writeBuffer and callbackBuffer on `" +
-                    "drain`\r\n    this.prevBufferLen = this.writeBuffer.length;\r\n    this.emit(\'flush\'" +
-                    ");\r\n  }\r\n};\r\n\r\n/**\r\n * Sends a message.\r\n *\r\n * @param {String} message.\r\n * @pa" +
-                    "ram {Function} callback function.\r\n * @return {Socket} for chaining.\r\n * @api pu" +
-                    "blic\r\n */\r\n\r\nSocket.prototype.write =\r\nSocket.prototype.send = function (msg, fn" +
-                    ") {\r\n  this.sendPacket(\'message\', msg, fn);\r\n  return this;\r\n};\r\n\r\n/**\r\n * Sends" +
-                    " a packet.\r\n *\r\n * @param {String} packet type.\r\n * @param {String} data.\r\n * @p" +
-                    "aram {Function} callback function.\r\n * @api private\r\n */\r\n\r\nSocket.prototype.sen" +
-                    "dPacket = function (type, data, fn) {\r\n  if (\'closing\' == this.readyState || \'cl" +
-                    "osed\' == this.readyState) {\r\n    return;\r\n  }\r\n\r\n  var packet = { type: type, da" +
-                    "ta: data };\r\n  this.emit(\'packetCreate\', packet);\r\n  this.writeBuffer.push(packe" +
-                    "t);\r\n  this.callbackBuffer.push(fn);\r\n  this.flush();\r\n};\r\n\r\n/**\r\n * Closes the " +
-                    "connection.\r\n *\r\n * @api private\r\n */\r\n\r\nSocket.prototype.close = function () {\r" +
-                    "\n  if (\'opening\' == this.readyState || \'open\' == this.readyState) {\r\n    this.re" +
-                    "adyState = \'closing\';\r\n\r\n    var self = this;\r\n\r\n    function close() {\r\n      s" +
-                    "elf.onClose(\'forced close\');\r\n      debug(\'socket closing - telling transport to" +
-                    " close\');\r\n      self.transport.close();\r\n    }\r\n\r\n    function cleanupAndClose(" +
-                    ") {\r\n      self.removeListener(\'upgrade\', cleanupAndClose);\r\n      self.removeLi" +
-                    "stener(\'upgradeError\', cleanupAndClose);\r\n      close();\r\n    }\r\n\r\n    function " +
-                    "waitForUpgrade() {\r\n      // wait for upgrade to finish since we can\'t send pack" +
-                    "ets while pausing a transport\r\n      self.once(\'upgrade\', cleanupAndClose);\r\n   " +
-                    "   self.once(\'upgradeError\', cleanupAndClose);\r\n    }\r\n\r\n    if (this.writeBuffe" +
-                    "r.length) {\r\n      this.once(\'drain\', function() {\r\n        if (this.upgrading) " +
-                    "{\r\n          waitForUpgrade();\r\n        } else {\r\n          close();\r\n        }\r" +
-                    "\n      });\r\n    } else if (this.upgrading) {\r\n      waitForUpgrade();\r\n    } els" +
-                    "e {\r\n      close();\r\n    }\r\n  }\r\n\r\n  return this;\r\n};\r\n\r\n/**\r\n * Called upon tra" +
-                    "nsport error\r\n *\r\n * @api private\r\n */\r\n\r\nSocket.prototype.onError = function (e" +
-                    "rr) {\r\n  debug(\'socket error %j\', err);\r\n  Socket.priorWebsocketSuccess = false;" +
-                    "\r\n  this.emit(\'error\', err);\r\n  this.onClose(\'transport error\', err);\r\n};\r\n\r\n/**" +
-                    "\r\n * Called upon transport close.\r\n *\r\n * @api private\r\n */\r\n\r\nSocket.prototype." +
-                    "onClose = function (reason, desc) {\r\n  if (\'opening\' == this.readyState || \'open" +
-                    "\' == this.readyState || \'closing\' == this.readyState) {\r\n    debug(\'socket close" +
-                    " with reason: \"%s\"\', reason);\r\n    var self = this;\r\n\r\n    // clear timers\r\n    " +
-                    "clearTimeout(this.pingIntervalTimer);\r\n    clearTimeout(this.pingTimeoutTimer);\r" +
-                    "\n\r\n    // clean buffers in next tick, so developers can still\r\n    // grab the b" +
-                    "uffers on `close` event\r\n    setTimeout(function() {\r\n      self.writeBuffer = [" +
-                    "];\r\n      self.callbackBuffer = [];\r\n      self.prevBufferLen = 0;\r\n    }, 0);\r\n" +
-                    "\r\n    // stop event from firing again for transport\r\n    this.transport.removeAl" +
-                    "lListeners(\'close\');\r\n\r\n    // ensure transport won\'t stay open\r\n    this.transp" +
-                    "ort.close();\r\n\r\n    // ignore further transport communication\r\n    this.transpor" +
-                    "t.removeAllListeners();\r\n\r\n    // set ready state\r\n    this.readyState = \'closed" +
-                    "\';\r\n\r\n    // clear session id\r\n    this.id = null;\r\n\r\n    // emit close event\r\n " +
-                    "   this.emit(\'close\', reason, desc);\r\n  }\r\n};\r\n\r\n/**\r\n * Filters upgrades, retur" +
-                    "ning only those matching client transports.\r\n *\r\n * @param {Array} server upgrad" +
-                    "es\r\n * @api private\r\n *\r\n */\r\n\r\nSocket.prototype.filterUpgrades = function (upgr" +
-                    "ades) {\r\n  var filteredUpgrades = [];\r\n  for (var i = 0, j = upgrades.length; i<" +
-                    "j; i++) {\r\n    if (~index(this.transports, upgrades[i])) filteredUpgrades.push(u" +
-                    "pgrades[i]);\r\n  }\r\n  return filteredUpgrades;\r\n};\r\n\r\n}).call(this,typeof self !=" +
-                    "= \"undefined\" ? self : typeof window !== \"undefined\" ? window : {})\r\n},{\"./trans" +
-                    "port\":4,\"./transports\":5,\"component-emitter\":12,\"debug\":14,\"engine.io-parser\":17" +
-                    ",\"indexof\":25,\"parsejson\":26,\"parseqs\":27,\"parseuri\":28}],4:[function(_dereq_,mo" +
-                    "dule,exports){\r\n/**\r\n * Module dependencies.\r\n */\r\n\r\nvar parser = _dereq_(\'engin" +
-                    "e.io-parser\');\r\nvar Emitter = _dereq_(\'component-emitter\');\r\n\r\n/**\r\n * Module ex" +
-                    "ports.\r\n */\r\n\r\nmodule.exports = Transport;\r\n\r\n/**\r\n * Transport abstract constru" +
-                    "ctor.\r\n *\r\n * @param {Object} options.\r\n * @api private\r\n */\r\n\r\nfunction Transpo" +
-                    "rt (opts) {\r\n  this.path = opts.path;\r\n  this.hostname = opts.hostname;\r\n  this." +
-                    "port = opts.port;\r\n  this.secure = opts.secure;\r\n  this.query = opts.query;\r\n  t" +
-                    "his.timestampParam = opts.timestampParam;\r\n  this.timestampRequests = opts.times" +
-                    "tampRequests;\r\n  this.readyState = \'\';\r\n  this.agent = opts.agent || false;\r\n  t" +
-                    "his.socket = opts.socket;\r\n  this.enablesXDR = opts.enablesXDR;\r\n}\r\n\r\n/**\r\n * Mi" +
-                    "x in `Emitter`.\r\n */\r\n\r\nEmitter(Transport.prototype);\r\n\r\n/**\r\n * A counter used " +
-                    "to prevent collisions in the timestamps used\r\n * for cache busting.\r\n */\r\n\r\nTran" +
-                    "sport.timestamps = 0;\r\n\r\n/**\r\n * Emits an error.\r\n *\r\n * @param {String} str\r\n *" +
-                    " @return {Transport} for chaining\r\n * @api public\r\n */\r\n\r\nTransport.prototype.on" +
-                    "Error = function (msg, desc) {\r\n  var err = new Error(msg);\r\n  err.type = \'Trans" +
-                    "portError\';\r\n  err.description = desc;\r\n  this.emit(\'error\', err);\r\n  return thi" +
-                    "s;\r\n};\r\n\r\n/**\r\n * Opens the transport.\r\n *\r\n * @api public\r\n */\r\n\r\nTransport.pro" +
-                    "totype.open = function () {\r\n  if (\'closed\' == this.readyState || \'\' == this.rea" +
-                    "dyState) {\r\n    this.readyState = \'opening\';\r\n    this.doOpen();\r\n  }\r\n\r\n  retur" +
-                    "n this;\r\n};\r\n\r\n/**\r\n * Closes the transport.\r\n *\r\n * @api private\r\n */\r\n\r\nTransp" +
-                    "ort.prototype.close = function () {\r\n  if (\'opening\' == this.readyState || \'open" +
-                    "\' == this.readyState) {\r\n    this.doClose();\r\n    this.onClose();\r\n  }\r\n\r\n  retu" +
-                    "rn this;\r\n};\r\n\r\n/**\r\n * Sends multiple packets.\r\n *\r\n * @param {Array} packets\r\n" +
-                    " * @api private\r\n */\r\n\r\nTransport.prototype.send = function(packets){\r\n  if (\'op" +
-                    "en\' == this.readyState) {\r\n    this.write(packets);\r\n  } else {\r\n    throw new E" +
-                    "rror(\'Transport not open\');\r\n  }\r\n};\r\n\r\n/**\r\n * Called upon open\r\n *\r\n * @api pr" +
-                    "ivate\r\n */\r\n\r\nTransport.prototype.onOpen = function () {\r\n  this.readyState = \'o" +
-                    "pen\';\r\n  this.writable = true;\r\n  this.emit(\'open\');\r\n};\r\n\r\n/**\r\n * Called with " +
-                    "data.\r\n *\r\n * @param {String} data\r\n * @api private\r\n */\r\n\r\nTransport.prototype." +
-                    "onData = function(data){\r\n  var packet = parser.decodePacket(data, this.socket.b" +
-                    "inaryType);\r\n  this.onPacket(packet);\r\n};\r\n\r\n/**\r\n * Called with a decoded packe" +
-                    "t.\r\n */\r\n\r\nTransport.prototype.onPacket = function (packet) {\r\n  this.emit(\'pack" +
-                    "et\', packet);\r\n};\r\n\r\n/**\r\n * Called upon close.\r\n *\r\n * @api private\r\n */\r\n\r\nTra" +
-                    "nsport.prototype.onClose = function () {\r\n  this.readyState = \'closed\';\r\n  this." +
-                    "emit(\'close\');\r\n};\r\n\r\n},{\"component-emitter\":12,\"engine.io-parser\":17}],5:[funct" +
-                    "ion(_dereq_,module,exports){\r\n(function (global){\r\n/**\r\n * Module dependencies\r\n" +
-                    " */\r\n\r\nvar XMLHttpRequest = _dereq_(\'xmlhttprequest\');\r\nvar XHR = _dereq_(\'./pol" +
-                    "ling-xhr\');\r\nvar JSONP = _dereq_(\'./polling-jsonp\');\r\nvar websocket = _dereq_(\'." +
-                    "/websocket\');\r\n\r\n/**\r\n * Export transports.\r\n */\r\n\r\nexports.polling = polling;\r\n" +
-                    "exports.websocket = websocket;\r\n\r\n/**\r\n * Polling transport polymorphic construc" +
-                    "tor.\r\n * Decides on xhr vs jsonp based on feature detection.\r\n *\r\n * @api privat" +
-                    "e\r\n */\r\n\r\nfunction polling(opts){\r\n  var xhr;\r\n  var xd = false;\r\n  var xs = fal" +
-                    "se;\r\n  var jsonp = false !== opts.jsonp;\r\n\r\n  if (global.location) {\r\n    var is" +
-                    "SSL = \'https:\' == location.protocol;\r\n    var port = location.port;\r\n\r\n    // so" +
-                    "me user agents have empty `location.port`\r\n    if (!port) {\r\n      port = isSSL " +
-                    "? 443 : 80;\r\n    }\r\n\r\n    xd = opts.hostname != location.hostname || port != opt" +
-                    "s.port;\r\n    xs = opts.secure != isSSL;\r\n  }\r\n\r\n  opts.xdomain = xd;\r\n  opts.xsc" +
-                    "heme = xs;\r\n  xhr = new XMLHttpRequest(opts);\r\n\r\n  if (\'open\' in xhr && !opts.fo" +
-                    "rceJSONP) {\r\n    return new XHR(opts);\r\n  } else {\r\n    if (!jsonp) throw new Er" +
-                    "ror(\'JSONP disabled\');\r\n    return new JSONP(opts);\r\n  }\r\n}\r\n\r\n}).call(this,type" +
-                    "of self !== \"undefined\" ? self : typeof window !== \"undefined\" ? window : {})\r\n}" +
-                    ",{\"./polling-jsonp\":6,\"./polling-xhr\":7,\"./websocket\":9,\"xmlhttprequest\":10}],6:" +
-                    "[function(_dereq_,module,exports){\r\n(function (global){\r\n\r\n/**\r\n * Module requir" +
-                    "ements.\r\n */\r\n\r\nvar Polling = _dereq_(\'./polling\');\r\nvar inherit = _dereq_(\'comp" +
-                    "onent-inherit\');\r\n\r\n/**\r\n * Module exports.\r\n */\r\n\r\nmodule.exports = JSONPPollin" +
-                    "g;\r\n\r\n/**\r\n * Cached regular expressions.\r\n */\r\n\r\nvar rNewline = /\\n/g;\r\nvar rEs" +
-                    "capedNewline = /\\\\n/g;\r\n\r\n/**\r\n * Global JSONP callbacks.\r\n */\r\n\r\nvar callbacks;" +
-                    "\r\n\r\n/**\r\n * Callbacks count.\r\n */\r\n\r\nvar index = 0;\r\n\r\n/**\r\n * Noop.\r\n */\r\n\r\nfun" +
-                    "ction empty () { }\r\n\r\n/**\r\n * JSONP Polling constructor.\r\n *\r\n * @param {Object}" +
-                    " opts.\r\n * @api public\r\n */\r\n\r\nfunction JSONPPolling (opts) {\r\n  Polling.call(th" +
-                    "is, opts);\r\n\r\n  this.query = this.query || {};\r\n\r\n  // define global callbacks a" +
-                    "rray if not present\r\n  // we do this here (lazily) to avoid unneeded global poll" +
-                    "ution\r\n  if (!callbacks) {\r\n    // we need to consider multiple engines in the s" +
-                    "ame page\r\n    if (!global.___eio) global.___eio = [];\r\n    callbacks = global.__" +
-                    "_eio;\r\n  }\r\n\r\n  // callback identifier\r\n  this.index = callbacks.length;\r\n\r\n  //" +
-                    " add callback to jsonp global\r\n  var self = this;\r\n  callbacks.push(function (ms" +
-                    "g) {\r\n    self.onData(msg);\r\n  });\r\n\r\n  // append to query string\r\n  this.query." +
-                    "j = this.index;\r\n\r\n  // prevent spurious errors from being emitted when the wind" +
-                    "ow is unloaded\r\n  if (global.document && global.addEventListener) {\r\n    global." +
-                    "addEventListener(\'beforeunload\', function () {\r\n      if (self.script) self.scri" +
-                    "pt.onerror = empty;\r\n    }, false);\r\n  }\r\n}\r\n\r\n/**\r\n * Inherits from Polling.\r\n " +
-                    "*/\r\n\r\ninherit(JSONPPolling, Polling);\r\n\r\n/*\r\n * JSONP only supports binary as ba" +
-                    "se64 encoded strings\r\n */\r\n\r\nJSONPPolling.prototype.supportsBinary = false;\r\n\r\n/" +
-                    "**\r\n * Closes the socket.\r\n *\r\n * @api private\r\n */\r\n\r\nJSONPPolling.prototype.do" +
-                    "Close = function () {\r\n  if (this.script) {\r\n    this.script.parentNode.removeCh" +
-                    "ild(this.script);\r\n    this.script = null;\r\n  }\r\n\r\n  if (this.form) {\r\n    this." +
-                    "form.parentNode.removeChild(this.form);\r\n    this.form = null;\r\n    this.iframe " +
-                    "= null;\r\n  }\r\n\r\n  Polling.prototype.doClose.call(this);\r\n};\r\n\r\n/**\r\n * Starts a " +
-                    "poll cycle.\r\n *\r\n * @api private\r\n */\r\n\r\nJSONPPolling.prototype.doPoll = functio" +
-                    "n () {\r\n  var self = this;\r\n  var script = document.createElement(\'script\');\r\n\r\n" +
-                    "  if (this.script) {\r\n    this.script.parentNode.removeChild(this.script);\r\n    " +
-                    "this.script = null;\r\n  }\r\n\r\n  script.async = true;\r\n  script.src = this.uri();\r\n" +
-                    "  script.onerror = function(e){\r\n    self.onError(\'jsonp poll error\',e);\r\n  };\r\n" +
-                    "\r\n  var insertAt = document.getElementsByTagName(\'script\')[0];\r\n  insertAt.paren" +
-                    "tNode.insertBefore(script, insertAt);\r\n  this.script = script;\r\n\r\n  var isUAgeck" +
-                    "o = \'undefined\' != typeof navigator && /gecko/i.test(navigator.userAgent);\r\n  \r\n" +
-                    "  if (isUAgecko) {\r\n    setTimeout(function () {\r\n      var iframe = document.cr" +
-                    "eateElement(\'iframe\');\r\n      document.body.appendChild(iframe);\r\n      document" +
-                    ".body.removeChild(iframe);\r\n    }, 100);\r\n  }\r\n};\r\n\r\n/**\r\n * Writes with a hidde" +
-                    "n iframe.\r\n *\r\n * @param {String} data to send\r\n * @param {Function} called upon" +
-                    " flush.\r\n * @api private\r\n */\r\n\r\nJSONPPolling.prototype.doWrite = function (data" +
-                    ", fn) {\r\n  var self = this;\r\n\r\n  if (!this.form) {\r\n    var form = document.crea" +
-                    "teElement(\'form\');\r\n    var area = document.createElement(\'textarea\');\r\n    var " +
-                    "id = this.iframeId = \'eio_iframe_\' + this.index;\r\n    var iframe;\r\n\r\n    form.cl" +
-                    "assName = \'socketio\';\r\n    form.style.position = \'absolute\';\r\n    form.style.top" +
-                    " = \'-1000px\';\r\n    form.style.left = \'-1000px\';\r\n    form.target = id;\r\n    form" +
-                    ".method = \'POST\';\r\n    form.setAttribute(\'accept-charset\', \'utf-8\');\r\n    area.n" +
-                    "ame = \'d\';\r\n    form.appendChild(area);\r\n    document.body.appendChild(form);\r\n\r" +
-                    "\n    this.form = form;\r\n    this.area = area;\r\n  }\r\n\r\n  this.form.action = this." +
-                    "uri();\r\n\r\n  function complete () {\r\n    initIframe();\r\n    fn();\r\n  }\r\n\r\n  funct" +
-                    "ion initIframe () {\r\n    if (self.iframe) {\r\n      try {\r\n        self.form.remo" +
-                    "veChild(self.iframe);\r\n      } catch (e) {\r\n        self.onError(\'jsonp polling " +
-                    "iframe removal error\', e);\r\n      }\r\n    }\r\n\r\n    try {\r\n      // ie6 dynamic if" +
-                    "rames with target=\"\" support (thanks Chris Lambacher)\r\n      var html = \'<iframe" +
-                    " src=\"javascript:0\" name=\"\'+ self.iframeId +\'\">\';\r\n      iframe = document.creat" +
-                    "eElement(html);\r\n    } catch (e) {\r\n      iframe = document.createElement(\'ifram" +
-                    "e\');\r\n      iframe.name = self.iframeId;\r\n      iframe.src = \'javascript:0\';\r\n  " +
-                    "  }\r\n\r\n    iframe.id = self.iframeId;\r\n\r\n    self.form.appendChild(iframe);\r\n   " +
-                    " self.iframe = iframe;\r\n  }\r\n\r\n  initIframe();\r\n\r\n  // escape \\n to prevent it f" +
-                    "rom being converted into \\r\\n by some UAs\r\n  // double escaping is required for " +
-                    "escaped new lines because unescaping of new lines can be done safely on server-s" +
-                    "ide\r\n  data = data.replace(rEscapedNewline, \'\\\\\\n\');\r\n  this.area.value = data.r" +
-                    "eplace(rNewline, \'\\\\n\');\r\n\r\n  try {\r\n    this.form.submit();\r\n  } catch(e) {}\r\n\r" +
-                    "\n  if (this.iframe.attachEvent) {\r\n    this.iframe.onreadystatechange = function" +
-                    "(){\r\n      if (self.iframe.readyState == \'complete\') {\r\n        complete();\r\n   " +
-                    "   }\r\n    };\r\n  } else {\r\n    this.iframe.onload = complete;\r\n  }\r\n};\r\n\r\n}).call" +
-                    "(this,typeof self !== \"undefined\" ? self : typeof window !== \"undefined\" ? windo" +
-                    "w : {})\r\n},{\"./polling\":8,\"component-inherit\":13}],7:[function(_dereq_,module,ex" +
-                    "ports){\r\n(function (global){\r\n/**\r\n * Module requirements.\r\n */\r\n\r\nvar XMLHttpRe" +
-                    "quest = _dereq_(\'xmlhttprequest\');\r\nvar Polling = _dereq_(\'./polling\');\r\nvar Emi" +
-                    "tter = _dereq_(\'component-emitter\');\r\nvar inherit = _dereq_(\'component-inherit\')" +
-                    ";\r\nvar debug = _dereq_(\'debug\')(\'engine.io-client:polling-xhr\');\r\n\r\n/**\r\n * Modu" +
-                    "le exports.\r\n */\r\n\r\nmodule.exports = XHR;\r\nmodule.exports.Request = Request;\r\n\r\n" +
-                    "/**\r\n * Empty function\r\n */\r\n\r\nfunction empty(){}\r\n\r\n/**\r\n * XHR Polling constru" +
-                    "ctor.\r\n *\r\n * @param {Object} opts\r\n * @api public\r\n */\r\n\r\nfunction XHR(opts){\r\n" +
-                    "  Polling.call(this, opts);\r\n\r\n  if (global.location) {\r\n    var isSSL = \'https:" +
-                    "\' == location.protocol;\r\n    var port = location.port;\r\n\r\n    // some user agent" +
-                    "s have empty `location.port`\r\n    if (!port) {\r\n      port = isSSL ? 443 : 80;\r\n" +
-                    "    }\r\n\r\n    this.xd = opts.hostname != global.location.hostname ||\r\n      port " +
-                    "!= opts.port;\r\n    this.xs = opts.secure != isSSL;\r\n  }\r\n}\r\n\r\n/**\r\n * Inherits f" +
-                    "rom Polling.\r\n */\r\n\r\ninherit(XHR, Polling);\r\n\r\n/**\r\n * XHR supports binary\r\n */\r" +
-                    "\n\r\nXHR.prototype.supportsBinary = true;\r\n\r\n/**\r\n * Creates a request.\r\n *\r\n * @p" +
-                    "aram {String} method\r\n * @api private\r\n */\r\n\r\nXHR.prototype.request = function(o" +
-                    "pts){\r\n  opts = opts || {};\r\n  opts.uri = this.uri();\r\n  opts.xd = this.xd;\r\n  o" +
-                    "pts.xs = this.xs;\r\n  opts.agent = this.agent || false;\r\n  opts.supportsBinary = " +
-                    "this.supportsBinary;\r\n  opts.enablesXDR = this.enablesXDR;\r\n  return new Request" +
-                    "(opts);\r\n};\r\n\r\n/**\r\n * Sends data.\r\n *\r\n * @param {String} data to send.\r\n * @pa" +
-                    "ram {Function} called upon flush.\r\n * @api private\r\n */\r\n\r\nXHR.prototype.doWrite" +
-                    " = function(data, fn){\r\n  var isBinary = typeof data !== \'string\' && data !== un" +
-                    "defined;\r\n  var req = this.request({ method: \'POST\', data: data, isBinary: isBin" +
-                    "ary });\r\n  var self = this;\r\n  req.on(\'success\', fn);\r\n  req.on(\'error\', functio" +
-                    "n(err){\r\n    self.onError(\'xhr post error\', err);\r\n  });\r\n  this.sendXhr = req;\r" +
-                    "\n};\r\n\r\n/**\r\n * Starts a poll cycle.\r\n *\r\n * @api private\r\n */\r\n\r\nXHR.prototype.d" +
-                    "oPoll = function(){\r\n  debug(\'xhr poll\');\r\n  var req = this.request();\r\n  var se" +
-                    "lf = this;\r\n  req.on(\'data\', function(data){\r\n    self.onData(data);\r\n  });\r\n  r" +
-                    "eq.on(\'error\', function(err){\r\n    self.onError(\'xhr poll error\', err);\r\n  });\r\n" +
-                    "  this.pollXhr = req;\r\n};\r\n\r\n/**\r\n * Request constructor\r\n *\r\n * @param {Object}" +
-                    " options\r\n * @api public\r\n */\r\n\r\nfunction Request(opts){\r\n  this.method = opts.m" +
-                    "ethod || \'GET\';\r\n  this.uri = opts.uri;\r\n  this.xd = !!opts.xd;\r\n  this.xs = !!o" +
-                    "pts.xs;\r\n  this.async = false !== opts.async;\r\n  this.data = undefined != opts.d" +
-                    "ata ? opts.data : null;\r\n  this.agent = opts.agent;\r\n  this.isBinary = opts.isBi" +
-                    "nary;\r\n  this.supportsBinary = opts.supportsBinary;\r\n  this.enablesXDR = opts.en" +
-                    "ablesXDR;\r\n  this.create();\r\n}\r\n\r\n/**\r\n * Mix in `Emitter`.\r\n */\r\n\r\nEmitter(Requ" +
-                    "est.prototype);\r\n\r\n/**\r\n * Creates the XHR object and sends the request.\r\n *\r\n *" +
-                    " @api private\r\n */\r\n\r\nRequest.prototype.create = function(){\r\n  var xhr = this.x" +
-                    "hr = new XMLHttpRequest({ agent: this.agent, xdomain: this.xd, xscheme: this.xs," +
-                    " enablesXDR: this.enablesXDR });\r\n  var self = this;\r\n\r\n  try {\r\n    debug(\'xhr " +
-                    "open %s: %s\', this.method, this.uri);\r\n    xhr.open(this.method, this.uri, this." +
-                    "async);\r\n    if (this.supportsBinary) {\r\n      // This has to be done after open" +
-                    " because Firefox is stupid\r\n      // http://stackoverflow.com/questions/13216903" +
-                    "/get-binary-data-with-xmlhttprequest-in-a-firefox-extension\r\n      xhr.responseT" +
-                    "ype = \'arraybuffer\';\r\n    }\r\n\r\n    if (\'POST\' == this.method) {\r\n      try {\r\n  " +
-                    "      if (this.isBinary) {\r\n          xhr.setRequestHeader(\'Content-type\', \'appl" +
-                    "ication/octet-stream\');\r\n        } else {\r\n          xhr.setRequestHeader(\'Conte" +
-                    "nt-type\', \'text/plain;charset=UTF-8\');\r\n        }\r\n      } catch (e) {}\r\n    }\r\n" +
-                    "\r\n    // ie6 check\r\n    if (\'withCredentials\' in xhr) {\r\n      xhr.withCredentia" +
-                    "ls = true;\r\n    }\r\n\r\n    if (this.hasXDR()) {\r\n      xhr.onload = function(){\r\n " +
-                    "       self.onLoad();\r\n      };\r\n      xhr.onerror = function(){\r\n        self.o" +
-                    "nError(xhr.responseText);\r\n      };\r\n    } else {\r\n      xhr.onreadystatechange " +
-                    "= function(){\r\n        if (4 != xhr.readyState) return;\r\n        if (200 == xhr." +
-                    "status || 1223 == xhr.status) {\r\n          self.onLoad();\r\n        } else {\r\n   " +
-                    "       // make sure the `error` event handler that\'s user-set\r\n          // does" +
-                    " not throw in the same tick and gets caught here\r\n          setTimeout(function(" +
-                    "){\r\n            self.onError(xhr.status);\r\n          }, 0);\r\n        }\r\n      };" +
-                    "\r\n    }\r\n\r\n    debug(\'xhr data %s\', this.data);\r\n    xhr.send(this.data);\r\n  } c" +
-                    "atch (e) {\r\n    // Need to defer since .create() is called directly fhrom the co" +
-                    "nstructor\r\n    // and thus the \'error\' event can only be only bound *after* this" +
-                    " exception\r\n    // occurs.  Therefore, also, we cannot throw here at all.\r\n    s" +
-                    "etTimeout(function() {\r\n      self.onError(e);\r\n    }, 0);\r\n    return;\r\n  }\r\n\r\n" +
-                    "  if (global.document) {\r\n    this.index = Request.requestsCount++;\r\n    Request" +
-                    ".requests[this.index] = this;\r\n  }\r\n};\r\n\r\n/**\r\n * Called upon successful respons" +
-                    "e.\r\n *\r\n * @api private\r\n */\r\n\r\nRequest.prototype.onSuccess = function(){\r\n  thi" +
-                    "s.emit(\'success\');\r\n  this.cleanup();\r\n};\r\n\r\n/**\r\n * Called if we have data.\r\n *" +
-                    "\r\n * @api private\r\n */\r\n\r\nRequest.prototype.onData = function(data){\r\n  this.emi" +
-                    "t(\'data\', data);\r\n  this.onSuccess();\r\n};\r\n\r\n/**\r\n * Called upon error.\r\n *\r\n * " +
-                    "@api private\r\n */\r\n\r\nRequest.prototype.onError = function(err){\r\n  this.emit(\'er" +
-                    "ror\', err);\r\n  this.cleanup();\r\n};\r\n\r\n/**\r\n * Cleans up house.\r\n *\r\n * @api priv" +
-                    "ate\r\n */\r\n\r\nRequest.prototype.cleanup = function(){\r\n  if (\'undefined\' == typeof" +
-                    " this.xhr || null === this.xhr) {\r\n    return;\r\n  }\r\n  // xmlhttprequest\r\n  if (" +
-                    "this.hasXDR()) {\r\n    this.xhr.onload = this.xhr.onerror = empty;\r\n  } else {\r\n " +
-                    "   this.xhr.onreadystatechange = empty;\r\n  }\r\n\r\n  try {\r\n    this.xhr.abort();\r\n" +
-                    "  } catch(e) {}\r\n\r\n  if (global.document) {\r\n    delete Request.requests[this.in" +
-                    "dex];\r\n  }\r\n\r\n  this.xhr = null;\r\n};\r\n\r\n/**\r\n * Called upon load.\r\n *\r\n * @api p" +
-                    "rivate\r\n */\r\n\r\nRequest.prototype.onLoad = function(){\r\n  var data;\r\n  try {\r\n   " +
-                    " var contentType;\r\n    try {\r\n      contentType = this.xhr.getResponseHeader(\'Co" +
-                    "ntent-Type\').split(\';\')[0];\r\n    } catch (e) {}\r\n    if (contentType === \'applic" +
-                    "ation/octet-stream\') {\r\n      data = this.xhr.response;\r\n    } else {\r\n      if " +
-                    "(!this.supportsBinary) {\r\n        data = this.xhr.responseText;\r\n      } else {\r" +
-                    "\n        data = \'ok\';\r\n      }\r\n    }\r\n  } catch (e) {\r\n    this.onError(e);\r\n  " +
-                    "}\r\n  if (null != data) {\r\n    this.onData(data);\r\n  }\r\n};\r\n\r\n/**\r\n * Check if it" +
-                    " has XDomainRequest.\r\n *\r\n * @api private\r\n */\r\n\r\nRequest.prototype.hasXDR = fun" +
-                    "ction(){\r\n  return \'undefined\' !== typeof global.XDomainRequest && !this.xs && t" +
-                    "his.enablesXDR;\r\n};\r\n\r\n/**\r\n * Aborts the request.\r\n *\r\n * @api public\r\n */\r\n\r\nR" +
-                    "equest.prototype.abort = function(){\r\n  this.cleanup();\r\n};\r\n\r\n/**\r\n * Aborts pe" +
-                    "nding requests when unloading the window. This is needed to prevent\r\n * memory l" +
-                    "eaks (e.g. when using IE) and to ensure that no spurious error is\r\n * emitted.\r\n" +
-                    " */\r\n\r\nif (global.document) {\r\n  Request.requestsCount = 0;\r\n  Request.requests " +
-                    "= {};\r\n  if (global.attachEvent) {\r\n    global.attachEvent(\'onunload\', unloadHan" +
-                    "dler);\r\n  } else if (global.addEventListener) {\r\n    global.addEventListener(\'be" +
-                    "foreunload\', unloadHandler, false);\r\n  }\r\n}\r\n\r\nfunction unloadHandler() {\r\n  for" +
-                    " (var i in Request.requests) {\r\n    if (Request.requests.hasOwnProperty(i)) {\r\n " +
-                    "     Request.requests[i].abort();\r\n    }\r\n  }\r\n}\r\n\r\n}).call(this,typeof self !==" +
-                    " \"undefined\" ? self : typeof window !== \"undefined\" ? window : {})\r\n},{\"./pollin" +
-                    "g\":8,\"component-emitter\":12,\"component-inherit\":13,\"debug\":14,\"xmlhttprequest\":1" +
-                    "0}],8:[function(_dereq_,module,exports){\r\n/**\r\n * Module dependencies.\r\n */\r\n\r\nv" +
-                    "ar Transport = _dereq_(\'../transport\');\r\nvar parseqs = _dereq_(\'parseqs\');\r\nvar " +
-                    "parser = _dereq_(\'engine.io-parser\');\r\nvar inherit = _dereq_(\'component-inherit\'" +
-                    ");\r\nvar debug = _dereq_(\'debug\')(\'engine.io-client:polling\');\r\n\r\n/**\r\n * Module " +
-                    "exports.\r\n */\r\n\r\nmodule.exports = Polling;\r\n\r\n/**\r\n * Is XHR2 supported?\r\n */\r\n\r" +
-                    "\nvar hasXHR2 = (function() {\r\n  var XMLHttpRequest = _dereq_(\'xmlhttprequest\');\r" +
-                    "\n  var xhr = new XMLHttpRequest({ xdomain: false });\r\n  return null != xhr.respo" +
-                    "nseType;\r\n})();\r\n\r\n/**\r\n * Polling interface.\r\n *\r\n * @param {Object} opts\r\n * @" +
-                    "api private\r\n */\r\n\r\nfunction Polling(opts){\r\n  var forceBase64 = (opts && opts.f" +
-                    "orceBase64);\r\n  if (!hasXHR2 || forceBase64) {\r\n    this.supportsBinary = false;" +
-                    "\r\n  }\r\n  Transport.call(this, opts);\r\n}\r\n\r\n/**\r\n * Inherits from Transport.\r\n */" +
-                    "\r\n\r\ninherit(Polling, Transport);\r\n\r\n/**\r\n * Transport name.\r\n */\r\n\r\nPolling.prot" +
-                    "otype.name = \'polling\';\r\n\r\n/**\r\n * Opens the socket (triggers polling). We write" +
-                    " a PING message to determine\r\n * when the transport is open.\r\n *\r\n * @api privat" +
-                    "e\r\n */\r\n\r\nPolling.prototype.doOpen = function(){\r\n  this.poll();\r\n};\r\n\r\n/**\r\n * " +
-                    "Pauses polling.\r\n *\r\n * @param {Function} callback upon buffers are flushed and " +
-                    "transport is paused\r\n * @api private\r\n */\r\n\r\nPolling.prototype.pause = function(" +
-                    "onPause){\r\n  var pending = 0;\r\n  var self = this;\r\n\r\n  this.readyState = \'pausin" +
-                    "g\';\r\n\r\n  function pause(){\r\n    debug(\'paused\');\r\n    self.readyState = \'paused\'" +
-                    ";\r\n    onPause();\r\n  }\r\n\r\n  if (this.polling || !this.writable) {\r\n    var total" +
-                    " = 0;\r\n\r\n    if (this.polling) {\r\n      debug(\'we are currently polling - waitin" +
-                    "g to pause\');\r\n      total++;\r\n      this.once(\'pollComplete\', function(){\r\n    " +
-                    "    debug(\'pre-pause polling complete\');\r\n        --total || pause();\r\n      });" +
-                    "\r\n    }\r\n\r\n    if (!this.writable) {\r\n      debug(\'we are currently writing - wa" +
-                    "iting to pause\');\r\n      total++;\r\n      this.once(\'drain\', function(){\r\n       " +
-                    " debug(\'pre-pause writing complete\');\r\n        --total || pause();\r\n      });\r\n " +
-                    "   }\r\n  } else {\r\n    pause();\r\n  }\r\n};\r\n\r\n/**\r\n * Starts polling cycle.\r\n *\r\n *" +
-                    " @api public\r\n */\r\n\r\nPolling.prototype.poll = function(){\r\n  debug(\'polling\');\r\n" +
-                    "  this.polling = true;\r\n  this.doPoll();\r\n  this.emit(\'poll\');\r\n};\r\n\r\n/**\r\n * Ov" +
-                    "erloads onData to detect payloads.\r\n *\r\n * @api private\r\n */\r\n\r\nPolling.prototyp" +
-                    "e.onData = function(data){\r\n  var self = this;\r\n  debug(\'polling got data %s\', d" +
-                    "ata);\r\n  var callback = function(packet, index, total) {\r\n    // if its the firs" +
-                    "t message we consider the transport open\r\n    if (\'opening\' == self.readyState) " +
-                    "{\r\n      self.onOpen();\r\n    }\r\n\r\n    // if its a close packet, we close the ong" +
-                    "oing requests\r\n    if (\'close\' == packet.type) {\r\n      self.onClose();\r\n      r" +
-                    "eturn false;\r\n    }\r\n\r\n    // otherwise bypass onData and handle the message\r\n  " +
-                    "  self.onPacket(packet);\r\n  };\r\n\r\n  // decode payload\r\n  parser.decodePayload(da" +
-                    "ta, this.socket.binaryType, callback);\r\n\r\n  // if an event did not trigger closi" +
-                    "ng\r\n  if (\'closed\' != this.readyState) {\r\n    // if we got data we\'re not pollin" +
-                    "g\r\n    this.polling = false;\r\n    this.emit(\'pollComplete\');\r\n\r\n    if (\'open\' =" +
-                    "= this.readyState) {\r\n      this.poll();\r\n    } else {\r\n      debug(\'ignoring po" +
-                    "ll - transport state \"%s\"\', this.readyState);\r\n    }\r\n  }\r\n};\r\n\r\n/**\r\n * For pol" +
-                    "ling, send a close packet.\r\n *\r\n * @api private\r\n */\r\n\r\nPolling.prototype.doClos" +
-                    "e = function(){\r\n  var self = this;\r\n\r\n  function close(){\r\n    debug(\'writing c" +
-                    "lose packet\');\r\n    self.write([{ type: \'close\' }]);\r\n  }\r\n\r\n  if (\'open\' == thi" +
-                    "s.readyState) {\r\n    debug(\'transport open - closing\');\r\n    close();\r\n  } else " +
-                    "{\r\n    // in case we\'re trying to close while\r\n    // handshaking is in progress" +
-                    " (GH-164)\r\n    debug(\'transport not open - deferring close\');\r\n    this.once(\'op" +
-                    "en\', close);\r\n  }\r\n};\r\n\r\n/**\r\n * Writes a packets payload.\r\n *\r\n * @param {Array" +
-                    "} data packets\r\n * @param {Function} drain callback\r\n * @api private\r\n */\r\n\r\nPol" +
-                    "ling.prototype.write = function(packets){\r\n  var self = this;\r\n  this.writable =" +
-                    " false;\r\n  var callbackfn = function() {\r\n    self.writable = true;\r\n    self.em" +
-                    "it(\'drain\');\r\n  };\r\n\r\n  var self = this;\r\n  parser.encodePayload(packets, this.s" +
-                    "upportsBinary, function(data) {\r\n    self.doWrite(data, callbackfn);\r\n  });\r\n};\r" +
-                    "\n\r\n/**\r\n * Generates uri for connection.\r\n *\r\n * @api private\r\n */\r\n\r\nPolling.pr" +
-                    "ototype.uri = function(){\r\n  var query = this.query || {};\r\n  var schema = this." +
-                    "secure ? \'https\' : \'http\';\r\n  var port = \'\';\r\n\r\n  // cache busting is forced\r\n  " +
-                    "if (false !== this.timestampRequests) {\r\n    query[this.timestampParam] = +new D" +
-                    "ate + \'-\' + Transport.timestamps++;\r\n  }\r\n\r\n  if (!this.supportsBinary && !query" +
-                    ".sid) {\r\n    query.b64 = 1;\r\n  }\r\n\r\n  query = parseqs.encode(query);\r\n\r\n  // avo" +
-                    "id port if default for schema\r\n  if (this.port && ((\'https\' == schema && this.po" +
-                    "rt != 443) ||\r\n     (\'http\' == schema && this.port != 80))) {\r\n    port = \':\' + " +
-                    "this.port;\r\n  }\r\n\r\n  // prepend ? to query\r\n  if (query.length) {\r\n    query = \'" +
-                    "?\' + query;\r\n  }\r\n\r\n  return schema + \'://\' + this.hostname + port + this.path +" +
-                    " query;\r\n};\r\n\r\n},{\"../transport\":4,\"component-inherit\":13,\"debug\":14,\"engine.io-" +
-                    "parser\":17,\"parseqs\":27,\"xmlhttprequest\":10}],9:[function(_dereq_,module,exports" +
-                    "){\r\n/**\r\n * Module dependencies.\r\n */\r\n\r\nvar Transport = _dereq_(\'../transport\')" +
-                    ";\r\nvar parser = _dereq_(\'engine.io-parser\');\r\nvar parseqs = _dereq_(\'parseqs\');\r" +
-                    "\nvar inherit = _dereq_(\'component-inherit\');\r\nvar debug = _dereq_(\'debug\')(\'engi" +
-                    "ne.io-client:websocket\');\r\n\r\n/**\r\n * `ws` exposes a WebSocket-compatible interfa" +
-                    "ce in\r\n * Node, or the `WebSocket` or `MozWebSocket` globals\r\n * in the browser." +
-                    "\r\n */\r\n\r\nvar WebSocket = _dereq_(\'ws\');\r\n\r\n/**\r\n * Module exports.\r\n */\r\n\r\nmodul" +
-                    "e.exports = WS;\r\n\r\n/**\r\n * WebSocket transport constructor.\r\n *\r\n * @api {Object" +
-                    "} connection options\r\n * @api public\r\n */\r\n\r\nfunction WS(opts){\r\n  var forceBase" +
-                    "64 = (opts && opts.forceBase64);\r\n  if (forceBase64) {\r\n    this.supportsBinary " +
-                    "= false;\r\n  }\r\n  Transport.call(this, opts);\r\n}\r\n\r\n/**\r\n * Inherits from Transpo" +
-                    "rt.\r\n */\r\n\r\ninherit(WS, Transport);\r\n\r\n/**\r\n * Transport name.\r\n *\r\n * @api publ" +
-                    "ic\r\n */\r\n\r\nWS.prototype.name = \'websocket\';\r\n\r\n/*\r\n * WebSockets support binary\r" +
-                    "\n */\r\n\r\nWS.prototype.supportsBinary = true;\r\n\r\n/**\r\n * Opens socket.\r\n *\r\n * @ap" +
-                    "i private\r\n */\r\n\r\nWS.prototype.doOpen = function(){\r\n  if (!this.check()) {\r\n   " +
-                    " // let probe timeout\r\n    return;\r\n  }\r\n\r\n  var self = this;\r\n  var uri = this." +
-                    "uri();\r\n  var protocols = void(0);\r\n  var opts = { agent: this.agent };\r\n\r\n  thi" +
-                    "s.ws = new WebSocket(uri, protocols, opts);\r\n\r\n  if (this.ws.binaryType === unde" +
-                    "fined) {\r\n    this.supportsBinary = false;\r\n  }\r\n\r\n  this.ws.binaryType = \'array" +
-                    "buffer\';\r\n  this.addEventListeners();\r\n};\r\n\r\n/**\r\n * Adds event listeners to the" +
-                    " socket\r\n *\r\n * @api private\r\n */\r\n\r\nWS.prototype.addEventListeners = function()" +
-                    "{\r\n  var self = this;\r\n\r\n  this.ws.onopen = function(){\r\n    self.onOpen();\r\n  }" +
-                    ";\r\n  this.ws.onclose = function(){\r\n    self.onClose();\r\n  };\r\n  this.ws.onmessa" +
-                    "ge = function(ev){\r\n    self.onData(ev.data);\r\n  };\r\n  this.ws.onerror = functio" +
-                    "n(e){\r\n    self.onError(\'websocket error\', e);\r\n  };\r\n};\r\n\r\n/**\r\n * Override `on" +
-                    "Data` to use a timer on iOS.\r\n * See: https://gist.github.com/mloughran/2052006\r" +
-                    "\n *\r\n * @api private\r\n */\r\n\r\nif (\'undefined\' != typeof navigator\r\n  && /iPad|iPh" +
-                    "one|iPod/i.test(navigator.userAgent)) {\r\n  WS.prototype.onData = function(data){" +
-                    "\r\n    var self = this;\r\n    setTimeout(function(){\r\n      Transport.prototype.on" +
-                    "Data.call(self, data);\r\n    }, 0);\r\n  };\r\n}\r\n\r\n/**\r\n * Writes data to socket.\r\n " +
-                    "*\r\n * @param {Array} array of packets.\r\n * @api private\r\n */\r\n\r\nWS.prototype.wri" +
-                    "te = function(packets){\r\n  var self = this;\r\n  this.writable = false;\r\n  // enco" +
-                    "dePacket efficient as it uses WS framing\r\n  // no need for encodePayload\r\n  for " +
-                    "(var i = 0, l = packets.length; i < l; i++) {\r\n    parser.encodePacket(packets[i" +
-                    "], this.supportsBinary, function(data) {\r\n      //Sometimes the websocket has al" +
-                    "ready been closed but the browser didn\'t\r\n      //have a chance of informing us " +
-                    "about it yet, in that case send will\r\n      //throw an error\r\n      try {\r\n     " +
-                    "   self.ws.send(data);\r\n      } catch (e){\r\n        debug(\'websocket closed befo" +
-                    "re onclose event\');\r\n      }\r\n    });\r\n  }\r\n\r\n  function ondrain() {\r\n    self.w" +
-                    "ritable = true;\r\n    self.emit(\'drain\');\r\n  }\r\n  // fake drain\r\n  // defer to ne" +
-                    "xt tick to allow Socket to clear writeBuffer\r\n  setTimeout(ondrain, 0);\r\n};\r\n\r\n/" +
-                    "**\r\n * Called upon close\r\n *\r\n * @api private\r\n */\r\n\r\nWS.prototype.onClose = fun" +
-                    "ction(){\r\n  Transport.prototype.onClose.call(this);\r\n};\r\n\r\n/**\r\n * Closes socket" +
-                    ".\r\n *\r\n * @api private\r\n */\r\n\r\nWS.prototype.doClose = function(){\r\n  if (typeof " +
-                    "this.ws !== \'undefined\') {\r\n    this.ws.close();\r\n  }\r\n};\r\n\r\n/**\r\n * Generates u" +
-                    "ri for connection.\r\n *\r\n * @api private\r\n */\r\n\r\nWS.prototype.uri = function(){\r\n" +
-                    "  var query = this.query || {};\r\n  var schema = this.secure ? \'wss\' : \'ws\';\r\n  v" +
-                    "ar port = \'\';\r\n\r\n  // avoid port if default for schema\r\n  if (this.port && ((\'ws" +
-                    "s\' == schema && this.port != 443)\r\n    || (\'ws\' == schema && this.port != 80))) " +
-                    "{\r\n    port = \':\' + this.port;\r\n  }\r\n\r\n  // append timestamp to URI\r\n  if (this." +
-                    "timestampRequests) {\r\n    query[this.timestampParam] = +new Date;\r\n  }\r\n\r\n  // c" +
-                    "ommunicate binary support capabilities\r\n  if (!this.supportsBinary) {\r\n    query" +
-                    ".b64 = 1;\r\n  }\r\n\r\n  query = parseqs.encode(query);\r\n\r\n  // prepend ? to query\r\n " +
-                    " if (query.length) {\r\n    query = \'?\' + query;\r\n  }\r\n\r\n  return schema + \'://\' +" +
-                    " this.hostname + port + this.path + query;\r\n};\r\n\r\n/**\r\n * Feature detection for " +
-                    "WebSocket.\r\n *\r\n * @return {Boolean} whether this transport is available.\r\n * @a" +
-                    "pi public\r\n */\r\n\r\nWS.prototype.check = function(){\r\n  return !!WebSocket && !(\'_" +
-                    "_initialize\' in WebSocket && this.name === WS.prototype.name);\r\n};\r\n\r\n},{\"../tra" +
-                    "nsport\":4,\"component-inherit\":13,\"debug\":14,\"engine.io-parser\":17,\"parseqs\":27,\"" +
-                    "ws\":29}],10:[function(_dereq_,module,exports){\r\n// browser shim for xmlhttpreque" +
-                    "st module\r\nvar hasCORS = _dereq_(\'has-cors\');\r\n\r\nmodule.exports = function(opts)" +
-                    " {\r\n  var xdomain = opts.xdomain;\r\n\r\n  // scheme must be same when usign XDomain" +
-                    "Request\r\n  // http://blogs.msdn.com/b/ieinternals/archive/2010/05/13/xdomainrequ" +
-                    "est-restrictions-limitations-and-workarounds.aspx\r\n  var xscheme = opts.xscheme;" +
-                    "\r\n\r\n  // XDomainRequest has a flow of not sending cookie, therefore it should be" +
-                    " disabled as a default.\r\n  // https://github.com/Automattic/engine.io-client/pul" +
-                    "l/217\r\n  var enablesXDR = opts.enablesXDR;\r\n\r\n  // XMLHttpRequest can be disable" +
-                    "d on IE\r\n  try {\r\n    if (\'undefined\' != typeof XMLHttpRequest && (!xdomain || h" +
-                    "asCORS)) {\r\n      return new XMLHttpRequest();\r\n    }\r\n  } catch (e) { }\r\n\r\n  //" +
-                    " Use XDomainRequest for IE8 if enablesXDR is true\r\n  // because loading bar keep" +
-                    "s flashing when using jsonp-polling\r\n  // https://github.com/yujiosaka/socke.io-" +
-                    "ie8-loading-example\r\n  try {\r\n    if (\'undefined\' != typeof XDomainRequest && !x" +
-                    "scheme && enablesXDR) {\r\n      return new XDomainRequest();\r\n    }\r\n  } catch (e" +
-                    ") { }\r\n\r\n  if (!xdomain) {\r\n    try {\r\n      return new ActiveXObject(\'Microsoft" +
-                    ".XMLHTTP\');\r\n    } catch(e) { }\r\n  }\r\n}\r\n\r\n},{\"has-cors\":23}],11:[function(_dere" +
-                    "q_,module,exports){\r\n(function (global){\r\n/**\r\n * Create a blob builder even whe" +
-                    "n vendor prefixes exist\r\n */\r\n\r\nvar BlobBuilder = global.BlobBuilder\r\n  || globa" +
-                    "l.WebKitBlobBuilder\r\n  || global.MSBlobBuilder\r\n  || global.MozBlobBuilder;\r\n\r\n/" +
-                    "**\r\n * Check if Blob constructor is supported\r\n */\r\n\r\nvar blobSupported = (funct" +
-                    "ion() {\r\n  try {\r\n    var b = new Blob([\'hi\']);\r\n    return b.size == 2;\r\n  } ca" +
-                    "tch(e) {\r\n    return false;\r\n  }\r\n})();\r\n\r\n/**\r\n * Check if BlobBuilder is suppo" +
-                    "rted\r\n */\r\n\r\nvar blobBuilderSupported = BlobBuilder\r\n  && BlobBuilder.prototype." +
-                    "append\r\n  && BlobBuilder.prototype.getBlob;\r\n\r\nfunction BlobBuilderConstructor(a" +
-                    "ry, options) {\r\n  options = options || {};\r\n\r\n  var bb = new BlobBuilder();\r\n  f" +
-                    "or (var i = 0; i < ary.length; i++) {\r\n    bb.append(ary[i]);\r\n  }\r\n  return (op" +
-                    "tions.type) ? bb.getBlob(options.type) : bb.getBlob();\r\n};\r\n\r\nmodule.exports = (" +
-                    "function() {\r\n  if (blobSupported) {\r\n    return global.Blob;\r\n  } else if (blob" +
-                    "BuilderSupported) {\r\n    return BlobBuilderConstructor;\r\n  } else {\r\n    return " +
-                    "undefined;\r\n  }\r\n})();\r\n\r\n}).call(this,typeof self !== \"undefined\" ? self : type" +
-                    "of window !== \"undefined\" ? window : {})\r\n},{}],12:[function(_dereq_,module,expo" +
-                    "rts){\r\n\r\n/**\r\n * Expose `Emitter`.\r\n */\r\n\r\nmodule.exports = Emitter;\r\n\r\n/**\r\n * " +
-                    "Initialize a new `Emitter`.\r\n *\r\n * @api public\r\n */\r\n\r\nfunction Emitter(obj) {\r" +
-                    "\n  if (obj) return mixin(obj);\r\n};\r\n\r\n/**\r\n * Mixin the emitter properties.\r\n *\r" +
-                    "\n * @param {Object} obj\r\n * @return {Object}\r\n * @api private\r\n */\r\n\r\nfunction m" +
-                    "ixin(obj) {\r\n  for (var key in Emitter.prototype) {\r\n    obj[key] = Emitter.prot" +
-                    "otype[key];\r\n  }\r\n  return obj;\r\n}\r\n\r\n/**\r\n * Listen on the given `event` with `" +
-                    "fn`.\r\n *\r\n * @param {String} event\r\n * @param {Function} fn\r\n * @return {Emitter" +
-                    "}\r\n * @api public\r\n */\r\n\r\nEmitter.prototype.on =\r\nEmitter.prototype.addEventList" +
-                    "ener = function(event, fn){\r\n  this._callbacks = this._callbacks || {};\r\n  (this" +
-                    "._callbacks[event] = this._callbacks[event] || [])\r\n    .push(fn);\r\n  return thi" +
-                    "s;\r\n};\r\n\r\n/**\r\n * Adds an `event` listener that will be invoked a single\r\n * tim" +
-                    "e then automatically removed.\r\n *\r\n * @param {String} event\r\n * @param {Function" +
-                    "} fn\r\n * @return {Emitter}\r\n * @api public\r\n */\r\n\r\nEmitter.prototype.once = func" +
-                    "tion(event, fn){\r\n  var self = this;\r\n  this._callbacks = this._callbacks || {};" +
-                    "\r\n\r\n  function on() {\r\n    self.off(event, on);\r\n    fn.apply(this, arguments);\r" +
-                    "\n  }\r\n\r\n  on.fn = fn;\r\n  this.on(event, on);\r\n  return this;\r\n};\r\n\r\n/**\r\n * Remo" +
-                    "ve the given callback for `event` or all\r\n * registered callbacks.\r\n *\r\n * @para" +
-                    "m {String} event\r\n * @param {Function} fn\r\n * @return {Emitter}\r\n * @api public\r" +
-                    "\n */\r\n\r\nEmitter.prototype.off =\r\nEmitter.prototype.removeListener =\r\nEmitter.pro" +
-                    "totype.removeAllListeners =\r\nEmitter.prototype.removeEventListener = function(ev" +
-                    "ent, fn){\r\n  this._callbacks = this._callbacks || {};\r\n\r\n  // all\r\n  if (0 == ar" +
-                    "guments.length) {\r\n    this._callbacks = {};\r\n    return this;\r\n  }\r\n\r\n  // spec" +
-                    "ific event\r\n  var callbacks = this._callbacks[event];\r\n  if (!callbacks) return " +
-                    "this;\r\n\r\n  // remove all handlers\r\n  if (1 == arguments.length) {\r\n    delete th" +
-                    "is._callbacks[event];\r\n    return this;\r\n  }\r\n\r\n  // remove specific handler\r\n  " +
-                    "var cb;\r\n  for (var i = 0; i < callbacks.length; i++) {\r\n    cb = callbacks[i];\r" +
-                    "\n    if (cb === fn || cb.fn === fn) {\r\n      callbacks.splice(i, 1);\r\n      brea" +
-                    "k;\r\n    }\r\n  }\r\n  return this;\r\n};\r\n\r\n/**\r\n * Emit `event` with the given args.\r" +
-                    "\n *\r\n * @param {String} event\r\n * @param {Mixed} ...\r\n * @return {Emitter}\r\n */\r" +
-                    "\n\r\nEmitter.prototype.emit = function(event){\r\n  this._callbacks = this._callback" +
-                    "s || {};\r\n  var args = [].slice.call(arguments, 1)\r\n    , callbacks = this._call" +
-                    "backs[event];\r\n\r\n  if (callbacks) {\r\n    callbacks = callbacks.slice(0);\r\n    fo" +
-                    "r (var i = 0, len = callbacks.length; i < len; ++i) {\r\n      callbacks[i].apply(" +
-                    "this, args);\r\n    }\r\n  }\r\n\r\n  return this;\r\n};\r\n\r\n/**\r\n * Return array of callba" +
-                    "cks for `event`.\r\n *\r\n * @param {String} event\r\n * @return {Array}\r\n * @api publ" +
-                    "ic\r\n */\r\n\r\nEmitter.prototype.listeners = function(event){\r\n  this._callbacks = t" +
-                    "his._callbacks || {};\r\n  return this._callbacks[event] || [];\r\n};\r\n\r\n/**\r\n * Che" +
-                    "ck if this emitter has `event` handlers.\r\n *\r\n * @param {String} event\r\n * @retu" +
-                    "rn {Boolean}\r\n * @api public\r\n */\r\n\r\nEmitter.prototype.hasListeners = function(e" +
-                    "vent){\r\n  return !! this.listeners(event).length;\r\n};\r\n\r\n},{}],13:[function(_der" +
-                    "eq_,module,exports){\r\n\r\nmodule.exports = function(a, b){\r\n  var fn = function(){" +
-                    "};\r\n  fn.prototype = b.prototype;\r\n  a.prototype = new fn;\r\n  a.prototype.constr" +
-                    "uctor = a;\r\n};\r\n},{}],14:[function(_dereq_,module,exports){\r\n\r\n/**\r\n * This is t" +
-                    "he web browser implementation of `debug()`.\r\n *\r\n * Expose `debug()` as the modu" +
-                    "le.\r\n */\r\n\r\nexports = module.exports = _dereq_(\'./debug\');\r\nexports.log = log;\r\n" +
-                    "exports.formatArgs = formatArgs;\r\nexports.save = save;\r\nexports.load = load;\r\nex" +
-                    "ports.useColors = useColors;\r\n\r\n/**\r\n * Colors.\r\n */\r\n\r\nexports.colors = [\r\n  \'l" +
-                    "ightseagreen\',\r\n  \'forestgreen\',\r\n  \'goldenrod\',\r\n  \'dodgerblue\',\r\n  \'darkorchid" +
-                    "\',\r\n  \'crimson\'\r\n];\r\n\r\n/**\r\n * Currently only WebKit-based Web Inspectors, Firef" +
-                    "ox >= v31,\r\n * and the Firebug extension (any Firefox version) are known\r\n * to " +
-                    "support \"%c\" CSS customizations.\r\n *\r\n * TODO: add a `localStorage` variable to " +
-                    "explicitly enable/disable colors\r\n */\r\n\r\nfunction useColors() {\r\n  // is webkit?" +
-                    " http://stackoverflow.com/a/16459606/376773\r\n  return (\'WebkitAppearance\' in doc" +
-                    "ument.documentElement.style) ||\r\n    // is firebug? http://stackoverflow.com/a/3" +
-                    "98120/376773\r\n    (window.console && (console.firebug || (console.exception && c" +
-                    "onsole.table))) ||\r\n    // is firefox >= v31?\r\n    // https://developer.mozilla." +
-                    "org/en-US/docs/Tools/Web_Console#Styling_messages\r\n    (navigator.userAgent.toLo" +
-                    "werCase().match(/firefox\\/(\\d+)/) && parseInt(RegExp.$1, 10) >= 31);\r\n}\r\n\r\n/**\r\n" +
-                    " * Map %j to `JSON.stringify()`, since no Web Inspectors do that by default.\r\n *" +
-                    "/\r\n\r\nexports.formatters.j = function(v) {\r\n  return JSON.stringify(v);\r\n};\r\n\r\n\r\n" +
-                    "/**\r\n * Colorize log arguments if enabled.\r\n *\r\n * @api public\r\n */\r\n\r\nfunction " +
-                    "formatArgs() {\r\n  var args = arguments;\r\n  var useColors = this.useColors;\r\n\r\n  " +
-                    "args[0] = (useColors ? \'%c\' : \'\')\r\n    + this.namespace\r\n    + (useColors ? \' %c" +
-                    "\' : \' \')\r\n    + args[0]\r\n    + (useColors ? \'%c \' : \' \')\r\n    + \'+\' + exports.hu" +
-                    "manize(this.diff);\r\n\r\n  if (!useColors) return args;\r\n\r\n  var c = \'color: \' + th" +
-                    "is.color;\r\n  args = [args[0], c, \'color: inherit\'].concat(Array.prototype.slice." +
-                    "call(args, 1));\r\n\r\n  // the final \"%c\" is somewhat tricky, because there could b" +
-                    "e other\r\n  // arguments passed either before or after the %c, so we need to\r\n  /" +
-                    "/ figure out the correct index to insert the CSS into\r\n  var index = 0;\r\n  var l" +
-                    "astC = 0;\r\n  args[0].replace(/%[a-z%]/g, function(match) {\r\n    if (\'%\' === matc" +
-                    "h) return;\r\n    index++;\r\n    if (\'%c\' === match) {\r\n      // we only are intere" +
-                    "sted in the *last* %c\r\n      // (the user may have provided their own)\r\n      la" +
-                    "stC = index;\r\n    }\r\n  });\r\n\r\n  args.splice(lastC, 0, c);\r\n  return args;\r\n}\r\n\r\n" +
-                    "/**\r\n * Invokes `console.log()` when available.\r\n * No-op when `console.log` is " +
-                    "not a \"function\".\r\n *\r\n * @api public\r\n */\r\n\r\nfunction log() {\r\n  // This hacker" +
-                    "y is required for IE8,\r\n  // where the `console.log` function doesn\'t have \'appl" +
-                    "y\'\r\n  return \'object\' == typeof console\r\n    && \'function\' == typeof console.log" +
-                    "\r\n    && Function.prototype.apply.call(console.log, console, arguments);\r\n}\r\n\r\n/" +
-                    "**\r\n * Save `namespaces`.\r\n *\r\n * @param {String} namespaces\r\n * @api private\r\n " +
-                    "*/\r\n\r\nfunction save(namespaces) {\r\n  try {\r\n    if (null == namespaces) {\r\n     " +
-                    " localStorage.removeItem(\'debug\');\r\n    } else {\r\n      localStorage.debug = nam" +
-                    "espaces;\r\n    }\r\n  } catch(e) {}\r\n}\r\n\r\n/**\r\n * Load `namespaces`.\r\n *\r\n * @retur" +
-                    "n {String} returns the previously persisted debug modes\r\n * @api private\r\n */\r\n\r" +
-                    "\nfunction load() {\r\n  var r;\r\n  try {\r\n    r = localStorage.debug;\r\n  } catch(e)" +
-                    " {}\r\n  return r;\r\n}\r\n\r\n/**\r\n * Enable namespaces listed in `localStorage.debug` " +
-                    "initially.\r\n */\r\n\r\nexports.enable(load());\r\n\r\n},{\"./debug\":15}],15:[function(_de" +
-                    "req_,module,exports){\r\n\r\n/**\r\n * This is the common logic for both the Node.js a" +
-                    "nd web browser\r\n * implementations of `debug()`.\r\n *\r\n * Expose `debug()` as the" +
-                    " module.\r\n */\r\n\r\nexports = module.exports = debug;\r\nexports.coerce = coerce;\r\nex" +
-                    "ports.disable = disable;\r\nexports.enable = enable;\r\nexports.enabled = enabled;\r\n" +
-                    "exports.humanize = _dereq_(\'ms\');\r\n\r\n/**\r\n * The currently active debug mode nam" +
-                    "es, and names to skip.\r\n */\r\n\r\nexports.names = [];\r\nexports.skips = [];\r\n\r\n/**\r\n" +
-                    " * Map of special \"%n\" handling functions, for the debug \"format\" argument.\r\n *\r" +
-                    "\n * Valid key names are a single, lowercased letter, i.e. \"n\".\r\n */\r\n\r\nexports.f" +
-                    "ormatters = {};\r\n\r\n/**\r\n * Previously assigned color.\r\n */\r\n\r\nvar prevColor = 0;" +
-                    "\r\n\r\n/**\r\n * Previous log timestamp.\r\n */\r\n\r\nvar prevTime;\r\n\r\n/**\r\n * Select a co" +
-                    "lor.\r\n *\r\n * @return {Number}\r\n * @api private\r\n */\r\n\r\nfunction selectColor() {\r" +
-                    "\n  return exports.colors[prevColor++ % exports.colors.length];\r\n}\r\n\r\n/**\r\n * Cre" +
-                    "ate a debugger with the given `namespace`.\r\n *\r\n * @param {String} namespace\r\n *" +
-                    " @return {Function}\r\n * @api public\r\n */\r\n\r\nfunction debug(namespace) {\r\n\r\n  // " +
-                    "define the `disabled` version\r\n  function disabled() {\r\n  }\r\n  disabled.enabled " +
-                    "= false;\r\n\r\n  // define the `enabled` version\r\n  function enabled() {\r\n\r\n    var" +
-                    " self = enabled;\r\n\r\n    // set `diff` timestamp\r\n    var curr = +new Date();\r\n  " +
-                    "  var ms = curr - (prevTime || curr);\r\n    self.diff = ms;\r\n    self.prev = prev" +
-                    "Time;\r\n    self.curr = curr;\r\n    prevTime = curr;\r\n\r\n    // add the `color` if " +
-                    "not set\r\n    if (null == self.useColors) self.useColors = exports.useColors();\r\n" +
-                    "    if (null == self.color && self.useColors) self.color = selectColor();\r\n\r\n   " +
-                    " var args = Array.prototype.slice.call(arguments);\r\n\r\n    args[0] = exports.coer" +
-                    "ce(args[0]);\r\n\r\n    if (\'string\' !== typeof args[0]) {\r\n      // anything else l" +
-                    "et\'s inspect with %o\r\n      args = [\'%o\'].concat(args);\r\n    }\r\n\r\n    // apply a" +
-                    "ny `formatters` transformations\r\n    var index = 0;\r\n    args[0] = args[0].repla" +
-                    "ce(/%([a-z%])/g, function(match, format) {\r\n      // if we encounter an escaped " +
-                    "% then don\'t increase the array index\r\n      if (match === \'%\') return match;\r\n " +
-                    "     index++;\r\n      var formatter = exports.formatters[format];\r\n      if (\'fun" +
-                    "ction\' === typeof formatter) {\r\n        var val = args[index];\r\n        match = " +
-                    "formatter.call(self, val);\r\n\r\n        // now we need to remove `args[index]` sin" +
-                    "ce it\'s inlined in the `format`\r\n        args.splice(index, 1);\r\n        index--" +
-                    ";\r\n      }\r\n      return match;\r\n    });\r\n\r\n    if (\'function\' === typeof export" +
-                    "s.formatArgs) {\r\n      args = exports.formatArgs.apply(self, args);\r\n    }\r\n    " +
-                    "var logFn = enabled.log || exports.log || console.log.bind(console);\r\n    logFn." +
-                    "apply(self, args);\r\n  }\r\n  enabled.enabled = true;\r\n\r\n  var fn = exports.enabled" +
-                    "(namespace) ? enabled : disabled;\r\n\r\n  fn.namespace = namespace;\r\n\r\n  return fn;" +
-                    "\r\n}\r\n\r\n/**\r\n * Enables a debug mode by namespaces. This can include modes\r\n * se" +
-                    "parated by a colon and wildcards.\r\n *\r\n * @param {String} namespaces\r\n * @api pu" +
-                    "blic\r\n */\r\n\r\nfunction enable(namespaces) {\r\n  exports.save(namespaces);\r\n\r\n  var" +
-                    " split = (namespaces || \'\').split(/[\\s,]+/);\r\n  var len = split.length;\r\n\r\n  for" +
-                    " (var i = 0; i < len; i++) {\r\n    if (!split[i]) continue; // ignore empty strin" +
-                    "gs\r\n    namespaces = split[i].replace(/\\*/g, \'.*?\');\r\n    if (namespaces[0] === " +
-                    "\'-\') {\r\n      exports.skips.push(new RegExp(\'^\' + namespaces.substr(1) + \'$\'));\r" +
-                    "\n    } else {\r\n      exports.names.push(new RegExp(\'^\' + namespaces + \'$\'));\r\n  " +
-                    "  }\r\n  }\r\n}\r\n\r\n/**\r\n * Disable debug output.\r\n *\r\n * @api public\r\n */\r\n\r\nfunctio" +
-                    "n disable() {\r\n  exports.enable(\'\');\r\n}\r\n\r\n/**\r\n * Returns true if the given mod" +
-                    "e name is enabled, false otherwise.\r\n *\r\n * @param {String} name\r\n * @return {Bo" +
-                    "olean}\r\n * @api public\r\n */\r\n\r\nfunction enabled(name) {\r\n  var i, len;\r\n  for (i" +
-                    " = 0, len = exports.skips.length; i < len; i++) {\r\n    if (exports.skips[i].test" +
-                    "(name)) {\r\n      return false;\r\n    }\r\n  }\r\n  for (i = 0, len = exports.names.le" +
-                    "ngth; i < len; i++) {\r\n    if (exports.names[i].test(name)) {\r\n      return true" +
-                    ";\r\n    }\r\n  }\r\n  return false;\r\n}\r\n\r\n/**\r\n * Coerce `val`.\r\n *\r\n * @param {Mixed" +
-                    "} val\r\n * @return {Mixed}\r\n * @api private\r\n */\r\n\r\nfunction coerce(val) {\r\n  if " +
-                    "(val instanceof Error) return val.stack || val.message;\r\n  return val;\r\n}\r\n\r\n},{" +
-                    "\"ms\":16}],16:[function(_dereq_,module,exports){\r\n/**\r\n * Helpers.\r\n */\r\n\r\nvar s " +
-                    "= 1000;\r\nvar m = s * 60;\r\nvar h = m * 60;\r\nvar d = h * 24;\r\nvar y = d * 365.25;\r" +
-                    "\n\r\n/**\r\n * Parse or format the given `val`.\r\n *\r\n * Options:\r\n *\r\n *  - `long` v" +
-                    "erbose formatting [false]\r\n *\r\n * @param {String|Number} val\r\n * @param {Object}" +
-                    " options\r\n * @return {String|Number}\r\n * @api public\r\n */\r\n\r\nmodule.exports = fu" +
-                    "nction(val, options){\r\n  options = options || {};\r\n  if (\'string\' == typeof val)" +
-                    " return parse(val);\r\n  return options.long\r\n    ? long(val)\r\n    : short(val);\r\n" +
-                    "};\r\n\r\n/**\r\n * Parse the given `str` and return milliseconds.\r\n *\r\n * @param {Str" +
-                    "ing} str\r\n * @return {Number}\r\n * @api private\r\n */\r\n\r\nfunction parse(str) {\r\n  " +
-                    "var match = /^((?:\\d+)?\\.?\\d+) *(ms|seconds?|s|minutes?|m|hours?|h|days?|d|years" +
-                    "?|y)?$/i.exec(str);\r\n  if (!match) return;\r\n  var n = parseFloat(match[1]);\r\n  v" +
-                    "ar type = (match[2] || \'ms\').toLowerCase();\r\n  switch (type) {\r\n    case \'years\'" +
-                    ":\r\n    case \'year\':\r\n    case \'y\':\r\n      return n * y;\r\n    case \'days\':\r\n    c" +
-                    "ase \'day\':\r\n    case \'d\':\r\n      return n * d;\r\n    case \'hours\':\r\n    case \'hou" +
-                    "r\':\r\n    case \'h\':\r\n      return n * h;\r\n    case \'minutes\':\r\n    case \'minute\':" +
-                    "\r\n    case \'m\':\r\n      return n * m;\r\n    case \'seconds\':\r\n    case \'second\':\r\n " +
-                    "   case \'s\':\r\n      return n * s;\r\n    case \'ms\':\r\n      return n;\r\n  }\r\n}\r\n\r\n/*" +
-                    "*\r\n * Short format for `ms`.\r\n *\r\n * @param {Number} ms\r\n * @return {String}\r\n *" +
-                    " @api private\r\n */\r\n\r\nfunction short(ms) {\r\n  if (ms >= d) return Math.round(ms " +
-                    "/ d) + \'d\';\r\n  if (ms >= h) return Math.round(ms / h) + \'h\';\r\n  if (ms >= m) ret" +
-                    "urn Math.round(ms / m) + \'m\';\r\n  if (ms >= s) return Math.round(ms / s) + \'s\';\r\n" +
-                    "  return ms + \'ms\';\r\n}\r\n\r\n/**\r\n * Long format for `ms`.\r\n *\r\n * @param {Number} " +
-                    "ms\r\n * @return {String}\r\n * @api private\r\n */\r\n\r\nfunction long(ms) {\r\n  return p" +
-                    "lural(ms, d, \'day\')\r\n    || plural(ms, h, \'hour\')\r\n    || plural(ms, m, \'minute\'" +
-                    ")\r\n    || plural(ms, s, \'second\')\r\n    || ms + \' ms\';\r\n}\r\n\r\n/**\r\n * Pluralizatio" +
-                    "n helper.\r\n */\r\n\r\nfunction plural(ms, n, name) {\r\n  if (ms < n) return;\r\n  if (m" +
-                    "s < n * 1.5) return Math.floor(ms / n) + \' \' + name;\r\n  return Math.ceil(ms / n)" +
-                    " + \' \' + name + \'s\';\r\n}\r\n\r\n},{}],17:[function(_dereq_,module,exports){\r\n(functio" +
-                    "n (global){\r\n/**\r\n * Module dependencies.\r\n */\r\n\r\nvar keys = _dereq_(\'./keys\');\r" +
-                    "\nvar sliceBuffer = _dereq_(\'arraybuffer.slice\');\r\nvar base64encoder = _dereq_(\'b" +
-                    "ase64-arraybuffer\');\r\nvar after = _dereq_(\'after\');\r\nvar utf8 = _dereq_(\'utf8\');" +
-                    "\r\n\r\n/**\r\n * Check if we are running an android browser. That requires us to use\r" +
-                    "\n * ArrayBuffer with polling transports...\r\n *\r\n * http://ghinda.net/jpeg-blob-a" +
-                    "jax-android/\r\n */\r\n\r\nvar isAndroid = navigator.userAgent.match(/Android/i);\r\n\r\n/" +
-                    "**\r\n * Current protocol version.\r\n */\r\n\r\nexports.protocol = 3;\r\n\r\n/**\r\n * Packet" +
-                    " types.\r\n */\r\n\r\nvar packets = exports.packets = {\r\n    open:     0    // non-ws\r" +
-                    "\n  , close:    1    // non-ws\r\n  , ping:     2\r\n  , pong:     3\r\n  , message:  4" +
-                    "\r\n  , upgrade:  5\r\n  , noop:     6\r\n};\r\n\r\nvar packetslist = keys(packets);\r\n\r\n/*" +
-                    "*\r\n * Premade error packet.\r\n */\r\n\r\nvar err = { type: \'error\', data: \'parser err" +
-                    "or\' };\r\n\r\n/**\r\n * Create a blob api even for blob builder when vendor prefixes e" +
-                    "xist\r\n */\r\n\r\nvar Blob = _dereq_(\'blob\');\r\n\r\n/**\r\n * Encodes a packet.\r\n *\r\n *   " +
-                    "  <packet type id> [ <data> ]\r\n *\r\n * Example:\r\n *\r\n *     5hello world\r\n *     " +
-                    "3\r\n *     4\r\n *\r\n * Binary is encoded in an identical principle\r\n *\r\n * @api pri" +
-                    "vate\r\n */\r\n\r\nexports.encodePacket = function (packet, supportsBinary, utf8encode" +
-                    ", callback) {\r\n  if (\'function\' == typeof supportsBinary) {\r\n    callback = supp" +
-                    "ortsBinary;\r\n    supportsBinary = false;\r\n  }\r\n\r\n  if (\'function\' == typeof utf8" +
-                    "encode) {\r\n    callback = utf8encode;\r\n    utf8encode = null;\r\n  }\r\n\r\n  var data" +
-                    " = (packet.data === undefined)\r\n    ? undefined\r\n    : packet.data.buffer || pac" +
-                    "ket.data;\r\n\r\n  if (global.ArrayBuffer && data instanceof ArrayBuffer) {\r\n    ret" +
-                    "urn encodeArrayBuffer(packet, supportsBinary, callback);\r\n  } else if (Blob && d" +
-                    "ata instanceof global.Blob) {\r\n    return encodeBlob(packet, supportsBinary, cal" +
-                    "lback);\r\n  }\r\n\r\n  // Sending data as a utf-8 string\r\n  var encoded = packets[pac" +
-                    "ket.type];\r\n\r\n  // data fragment is optional\r\n  if (undefined !== packet.data) {" +
-                    "\r\n    encoded += utf8encode ? utf8.encode(String(packet.data)) : String(packet.d" +
-                    "ata);\r\n  }\r\n\r\n  return callback(\'\' + encoded);\r\n\r\n};\r\n\r\n/**\r\n * Encode packet he" +
-                    "lpers for binary types\r\n */\r\n\r\nfunction encodeArrayBuffer(packet, supportsBinary" +
-                    ", callback) {\r\n  if (!supportsBinary) {\r\n    return exports.encodeBase64Packet(p" +
-                    "acket, callback);\r\n  }\r\n\r\n  var data = packet.data;\r\n  var contentArray = new Ui" +
-                    "nt8Array(data);\r\n  var resultBuffer = new Uint8Array(1 + data.byteLength);\r\n\r\n  " +
-                    "resultBuffer[0] = packets[packet.type];\r\n  for (var i = 0; i < contentArray.leng" +
-                    "th; i++) {\r\n    resultBuffer[i+1] = contentArray[i];\r\n  }\r\n\r\n  return callback(r" +
-                    "esultBuffer.buffer);\r\n}\r\n\r\nfunction encodeBlobAsArrayBuffer(packet, supportsBina" +
-                    "ry, callback) {\r\n  if (!supportsBinary) {\r\n    return exports.encodeBase64Packet" +
-                    "(packet, callback);\r\n  }\r\n\r\n  var fr = new FileReader();\r\n  fr.onload = function" +
-                    "() {\r\n    packet.data = fr.result;\r\n    exports.encodePacket(packet, supportsBin" +
-                    "ary, true, callback);\r\n  };\r\n  return fr.readAsArrayBuffer(packet.data);\r\n}\r\n\r\nf" +
-                    "unction encodeBlob(packet, supportsBinary, callback) {\r\n  if (!supportsBinary) {" +
-                    "\r\n    return exports.encodeBase64Packet(packet, callback);\r\n  }\r\n\r\n  if (isAndro" +
-                    "id) {\r\n    return encodeBlobAsArrayBuffer(packet, supportsBinary, callback);\r\n  " +
-                    "}\r\n\r\n  var length = new Uint8Array(1);\r\n  length[0] = packets[packet.type];\r\n  v" +
-                    "ar blob = new Blob([length.buffer, packet.data]);\r\n\r\n  return callback(blob);\r\n}" +
-                    "\r\n\r\n/**\r\n * Encodes a packet with binary data in a base64 string\r\n *\r\n * @param " +
-                    "{Object} packet, has `type` and `data`\r\n * @return {String} base64 encoded messa" +
-                    "ge\r\n */\r\n\r\nexports.encodeBase64Packet = function(packet, callback) {\r\n  var mess" +
-                    "age = \'b\' + exports.packets[packet.type];\r\n  if (Blob && packet.data instanceof " +
-                    "Blob) {\r\n    var fr = new FileReader();\r\n    fr.onload = function() {\r\n      var" +
-                    " b64 = fr.result.split(\',\')[1];\r\n      callback(message + b64);\r\n    };\r\n    ret" +
-                    "urn fr.readAsDataURL(packet.data);\r\n  }\r\n\r\n  var b64data;\r\n  try {\r\n    b64data " +
-                    "= String.fromCharCode.apply(null, new Uint8Array(packet.data));\r\n  } catch (e) {" +
-                    "\r\n    // iPhone Safari doesn\'t let you apply with typed arrays\r\n    var typed = " +
-                    "new Uint8Array(packet.data);\r\n    var basic = new Array(typed.length);\r\n    for " +
-                    "(var i = 0; i < typed.length; i++) {\r\n      basic[i] = typed[i];\r\n    }\r\n    b64" +
-                    "data = String.fromCharCode.apply(null, basic);\r\n  }\r\n  message += global.btoa(b6" +
-                    "4data);\r\n  return callback(message);\r\n};\r\n\r\n/**\r\n * Decodes a packet. Changes fo" +
-                    "rmat to Blob if requested.\r\n *\r\n * @return {Object} with `type` and `data` (if a" +
-                    "ny)\r\n * @api private\r\n */\r\n\r\nexports.decodePacket = function (data, binaryType, " +
-                    "utf8decode) {\r\n  // String data\r\n  if (typeof data == \'string\' || data === undef" +
-                    "ined) {\r\n    if (data.charAt(0) == \'b\') {\r\n      return exports.decodeBase64Pack" +
-                    "et(data.substr(1), binaryType);\r\n    }\r\n\r\n    if (utf8decode) {\r\n      try {\r\n  " +
-                    "      data = utf8.decode(data);\r\n      } catch (e) {\r\n        return err;\r\n     " +
-                    " }\r\n    }\r\n    var type = data.charAt(0);\r\n\r\n    if (Number(type) != type || !pa" +
-                    "cketslist[type]) {\r\n      return err;\r\n    }\r\n\r\n    if (data.length > 1) {\r\n    " +
-                    "  return { type: packetslist[type], data: data.substring(1) };\r\n    } else {\r\n  " +
-                    "    return { type: packetslist[type] };\r\n    }\r\n  }\r\n\r\n  var asArray = new Uint8" +
-                    "Array(data);\r\n  var type = asArray[0];\r\n  var rest = sliceBuffer(data, 1);\r\n  if" +
-                    " (Blob && binaryType === \'blob\') {\r\n    rest = new Blob([rest]);\r\n  }\r\n  return " +
-                    "{ type: packetslist[type], data: rest };\r\n};\r\n\r\n/**\r\n * Decodes a packet encoded" +
-                    " in a base64 string\r\n *\r\n * @param {String} base64 encoded message\r\n * @return {" +
-                    "Object} with `type` and `data` (if any)\r\n */\r\n\r\nexports.decodeBase64Packet = fun" +
-                    "ction(msg, binaryType) {\r\n  var type = packetslist[msg.charAt(0)];\r\n  if (!globa" +
-                    "l.ArrayBuffer) {\r\n    return { type: type, data: { base64: true, data: msg.subst" +
-                    "r(1) } };\r\n  }\r\n\r\n  var data = base64encoder.decode(msg.substr(1));\r\n\r\n  if (bin" +
-                    "aryType === \'blob\' && Blob) {\r\n    data = new Blob([data]);\r\n  }\r\n\r\n  return { t" +
-                    "ype: type, data: data };\r\n};\r\n\r\n/**\r\n * Encodes multiple messages (payload).\r\n *" +
-                    "\r\n *     <length>:data\r\n *\r\n * Example:\r\n *\r\n *     11:hello world2:hi\r\n *\r\n * I" +
-                    "f any contents are binary, they will be encoded as base64 strings. Base64\r\n * en" +
-                    "coded strings are marked with a b before the length specifier\r\n *\r\n * @param {Ar" +
-                    "ray} packets\r\n * @api private\r\n */\r\n\r\nexports.encodePayload = function (packets," +
-                    " supportsBinary, callback) {\r\n  if (typeof supportsBinary == \'function\') {\r\n    " +
-                    "callback = supportsBinary;\r\n    supportsBinary = null;\r\n  }\r\n\r\n  if (supportsBin" +
-                    "ary) {\r\n    if (Blob && !isAndroid) {\r\n      return exports.encodePayloadAsBlob(" +
-                    "packets, callback);\r\n    }\r\n\r\n    return exports.encodePayloadAsArrayBuffer(pack" +
-                    "ets, callback);\r\n  }\r\n\r\n  if (!packets.length) {\r\n    return callback(\'0:\');\r\n  " +
-                    "}\r\n\r\n  function setLengthHeader(message) {\r\n    return message.length + \':\' + me" +
-                    "ssage;\r\n  }\r\n\r\n  function encodeOne(packet, doneCallback) {\r\n    exports.encodeP" +
-                    "acket(packet, supportsBinary, true, function(message) {\r\n      doneCallback(null" +
-                    ", setLengthHeader(message));\r\n    });\r\n  }\r\n\r\n  map(packets, encodeOne, function" +
-                    "(err, results) {\r\n    return callback(results.join(\'\'));\r\n  });\r\n};\r\n\r\n/**\r\n * A" +
-                    "sync array map using after\r\n */\r\n\r\nfunction map(ary, each, done) {\r\n  var result" +
-                    " = new Array(ary.length);\r\n  var next = after(ary.length, done);\r\n\r\n  var eachWi" +
-                    "thIndex = function(i, el, cb) {\r\n    each(el, function(error, msg) {\r\n      resu" +
-                    "lt[i] = msg;\r\n      cb(error, result);\r\n    });\r\n  };\r\n\r\n  for (var i = 0; i < a" +
-                    "ry.length; i++) {\r\n    eachWithIndex(i, ary[i], next);\r\n  }\r\n}\r\n\r\n/*\r\n * Decodes" +
-                    " data when a payload is maybe expected. Possible binary contents are\r\n * decoded" +
-                    " from their base64 representation\r\n *\r\n * @param {String} data, callback method\r" +
-                    "\n * @api public\r\n */\r\n\r\nexports.decodePayload = function (data, binaryType, call" +
-                    "back) {\r\n  if (typeof data != \'string\') {\r\n    return exports.decodePayloadAsBin" +
-                    "ary(data, binaryType, callback);\r\n  }\r\n\r\n  if (typeof binaryType === \'function\')" +
-                    " {\r\n    callback = binaryType;\r\n    binaryType = null;\r\n  }\r\n\r\n  var packet;\r\n  " +
-                    "if (data == \'\') {\r\n    // parser error - ignoring payload\r\n    return callback(e" +
-                    "rr, 0, 1);\r\n  }\r\n\r\n  var length = \'\'\r\n    , n, msg;\r\n\r\n  for (var i = 0, l = dat" +
-                    "a.length; i < l; i++) {\r\n    var chr = data.charAt(i);\r\n\r\n    if (\':\' != chr) {\r" +
-                    "\n      length += chr;\r\n    } else {\r\n      if (\'\' == length || (length != (n = N" +
-                    "umber(length)))) {\r\n        // parser error - ignoring payload\r\n        return c" +
-                    "allback(err, 0, 1);\r\n      }\r\n\r\n      msg = data.substr(i + 1, n);\r\n\r\n      if (" +
-                    "length != msg.length) {\r\n        // parser error - ignoring payload\r\n        ret" +
-                    "urn callback(err, 0, 1);\r\n      }\r\n\r\n      if (msg.length) {\r\n        packet = e" +
-                    "xports.decodePacket(msg, binaryType, true);\r\n\r\n        if (err.type == packet.ty" +
-                    "pe && err.data == packet.data) {\r\n          // parser error in individual packet" +
-                    " - ignoring payload\r\n          return callback(err, 0, 1);\r\n        }\r\n\r\n       " +
-                    " var ret = callback(packet, i + n, l);\r\n        if (false === ret) return;\r\n    " +
-                    "  }\r\n\r\n      // advance cursor\r\n      i += n;\r\n      length = \'\';\r\n    }\r\n  }\r\n\r" +
-                    "\n  if (length != \'\') {\r\n    // parser error - ignoring payload\r\n    return callb" +
-                    "ack(err, 0, 1);\r\n  }\r\n\r\n};\r\n\r\n/**\r\n * Encodes multiple messages (payload) as bin" +
-                    "ary.\r\n *\r\n * <1 = binary, 0 = string><number from 0-9><number from 0-9>[...]<num" +
-                    "ber\r\n * 255><data>\r\n *\r\n * Example:\r\n * 1 3 255 1 2 3, if the binary contents ar" +
-                    "e interpreted as 8 bit integers\r\n *\r\n * @param {Array} packets\r\n * @return {Arra" +
-                    "yBuffer} encoded payload\r\n * @api private\r\n */\r\n\r\nexports.encodePayloadAsArrayBu" +
-                    "ffer = function(packets, callback) {\r\n  if (!packets.length) {\r\n    return callb" +
-                    "ack(new ArrayBuffer(0));\r\n  }\r\n\r\n  function encodeOne(packet, doneCallback) {\r\n " +
-                    "   exports.encodePacket(packet, true, true, function(data) {\r\n      return doneC" +
-                    "allback(null, data);\r\n    });\r\n  }\r\n\r\n  map(packets, encodeOne, function(err, en" +
-                    "codedPackets) {\r\n    var totalLength = encodedPackets.reduce(function(acc, p) {\r" +
-                    "\n      var len;\r\n      if (typeof p === \'string\'){\r\n        len = p.length;\r\n   " +
-                    "   } else {\r\n        len = p.byteLength;\r\n      }\r\n      return acc + len.toStri" +
-                    "ng().length + len + 2; // string/binary identifier + separator = 2\r\n    }, 0);\r\n" +
-                    "\r\n    var resultArray = new Uint8Array(totalLength);\r\n\r\n    var bufferIndex = 0;" +
-                    "\r\n    encodedPackets.forEach(function(p) {\r\n      var isString = typeof p === \'s" +
-                    "tring\';\r\n      var ab = p;\r\n      if (isString) {\r\n        var view = new Uint8A" +
-                    "rray(p.length);\r\n        for (var i = 0; i < p.length; i++) {\r\n          view[i]" +
-                    " = p.charCodeAt(i);\r\n        }\r\n        ab = view.buffer;\r\n      }\r\n\r\n      if (" +
-                    "isString) { // not true binary\r\n        resultArray[bufferIndex++] = 0;\r\n      }" +
-                    " else { // true binary\r\n        resultArray[bufferIndex++] = 1;\r\n      }\r\n\r\n    " +
-                    "  var lenStr = ab.byteLength.toString();\r\n      for (var i = 0; i < lenStr.lengt" +
-                    "h; i++) {\r\n        resultArray[bufferIndex++] = parseInt(lenStr[i]);\r\n      }\r\n " +
-                    "     resultArray[bufferIndex++] = 255;\r\n\r\n      var view = new Uint8Array(ab);\r\n" +
-                    "      for (var i = 0; i < view.length; i++) {\r\n        resultArray[bufferIndex++" +
-                    "] = view[i];\r\n      }\r\n    });\r\n\r\n    return callback(resultArray.buffer);\r\n  })" +
-                    ";\r\n};\r\n\r\n/**\r\n * Encode as Blob\r\n */\r\n\r\nexports.encodePayloadAsBlob = function(p" +
-                    "ackets, callback) {\r\n  function encodeOne(packet, doneCallback) {\r\n    exports.e" +
-                    "ncodePacket(packet, true, true, function(encoded) {\r\n      var binaryIdentifier " +
-                    "= new Uint8Array(1);\r\n      binaryIdentifier[0] = 1;\r\n      if (typeof encoded =" +
-                    "== \'string\') {\r\n        var view = new Uint8Array(encoded.length);\r\n        for " +
-                    "(var i = 0; i < encoded.length; i++) {\r\n          view[i] = encoded.charCodeAt(i" +
-                    ");\r\n        }\r\n        encoded = view.buffer;\r\n        binaryIdentifier[0] = 0;\r" +
-                    "\n      }\r\n\r\n      var len = (encoded instanceof ArrayBuffer)\r\n        ? encoded." +
-                    "byteLength\r\n        : encoded.size;\r\n\r\n      var lenStr = len.toString();\r\n     " +
-                    " var lengthAry = new Uint8Array(lenStr.length + 1);\r\n      for (var i = 0; i < l" +
-                    "enStr.length; i++) {\r\n        lengthAry[i] = parseInt(lenStr[i]);\r\n      }\r\n    " +
-                    "  lengthAry[lenStr.length] = 255;\r\n\r\n      if (Blob) {\r\n        var blob = new B" +
-                    "lob([binaryIdentifier.buffer, lengthAry.buffer, encoded]);\r\n        doneCallback" +
-                    "(null, blob);\r\n      }\r\n    });\r\n  }\r\n\r\n  map(packets, encodeOne, function(err, " +
-                    "results) {\r\n    return callback(new Blob(results));\r\n  });\r\n};\r\n\r\n/*\r\n * Decodes" +
-                    " data when a payload is maybe expected. Strings are decoded by\r\n * interpreting " +
-                    "each byte as a key code for entries marked to start with 0. See\r\n * description " +
-                    "of encodePayloadAsBinary\r\n *\r\n * @param {ArrayBuffer} data, callback method\r\n * " +
-                    "@api public\r\n */\r\n\r\nexports.decodePayloadAsBinary = function (data, binaryType, " +
-                    "callback) {\r\n  if (typeof binaryType === \'function\') {\r\n    callback = binaryTyp" +
-                    "e;\r\n    binaryType = null;\r\n  }\r\n\r\n  var bufferTail = data;\r\n  var buffers = [];" +
-                    "\r\n\r\n  var numberTooLong = false;\r\n  while (bufferTail.byteLength > 0) {\r\n    var" +
-                    " tailArray = new Uint8Array(bufferTail);\r\n    var isString = tailArray[0] === 0;" +
-                    "\r\n    var msgLength = \'\';\r\n\r\n    for (var i = 1; ; i++) {\r\n      if (tailArray[i" +
-                    "] == 255) break;\r\n\r\n      if (msgLength.length > 310) {\r\n        numberTooLong =" +
-                    " true;\r\n        break;\r\n      }\r\n\r\n      msgLength += tailArray[i];\r\n    }\r\n\r\n  " +
-                    "  if(numberTooLong) return callback(err, 0, 1);\r\n\r\n    bufferTail = sliceBuffer(" +
-                    "bufferTail, 2 + msgLength.length);\r\n    msgLength = parseInt(msgLength);\r\n\r\n    " +
-                    "var msg = sliceBuffer(bufferTail, 0, msgLength);\r\n    if (isString) {\r\n      try" +
-                    " {\r\n        msg = String.fromCharCode.apply(null, new Uint8Array(msg));\r\n      }" +
-                    " catch (e) {\r\n        // iPhone Safari doesn\'t let you apply to typed arrays\r\n  " +
-                    "      var typed = new Uint8Array(msg);\r\n        msg = \'\';\r\n        for (var i = " +
-                    "0; i < typed.length; i++) {\r\n          msg += String.fromCharCode(typed[i]);\r\n  " +
-                    "      }\r\n      }\r\n    }\r\n\r\n    buffers.push(msg);\r\n    bufferTail = sliceBuffer(" +
-                    "bufferTail, msgLength);\r\n  }\r\n\r\n  var total = buffers.length;\r\n  buffers.forEach" +
-                    "(function(buffer, i) {\r\n    callback(exports.decodePacket(buffer, binaryType, tr" +
-                    "ue), i, total);\r\n  });\r\n};\r\n\r\n}).call(this,typeof self !== \"undefined\" ? self : " +
-                    "typeof window !== \"undefined\" ? window : {})\r\n},{\"./keys\":18,\"after\":19,\"arraybu" +
-                    "ffer.slice\":20,\"base64-arraybuffer\":21,\"blob\":11,\"utf8\":22}],18:[function(_dereq" +
-                    "_,module,exports){\r\n\r\n/**\r\n * Gets the keys for an object.\r\n *\r\n * @return {Arra" +
-                    "y} keys\r\n * @api private\r\n */\r\n\r\nmodule.exports = Object.keys || function keys (" +
-                    "obj){\r\n  var arr = [];\r\n  var has = Object.prototype.hasOwnProperty;\r\n\r\n  for (v" +
-                    "ar i in obj) {\r\n    if (has.call(obj, i)) {\r\n      arr.push(i);\r\n    }\r\n  }\r\n  r" +
-                    "eturn arr;\r\n};\r\n\r\n},{}],19:[function(_dereq_,module,exports){\r\nmodule.exports = " +
-                    "after\r\n\r\nfunction after(count, callback, err_cb) {\r\n    var bail = false\r\n    er" +
-                    "r_cb = err_cb || noop\r\n    proxy.count = count\r\n\r\n    return (count === 0) ? cal" +
-                    "lback() : proxy\r\n\r\n    function proxy(err, result) {\r\n        if (proxy.count <=" +
-                    " 0) {\r\n            throw new Error(\'after called too many times\')\r\n        }\r\n  " +
-                    "      --proxy.count\r\n\r\n        // after first error, rest are passed to err_cb\r\n" +
-                    "        if (err) {\r\n            bail = true\r\n            callback(err)\r\n        " +
-                    "    // future error callbacks will go to error handler\r\n            callback = e" +
-                    "rr_cb\r\n        } else if (proxy.count === 0 && !bail) {\r\n            callback(nu" +
-                    "ll, result)\r\n        }\r\n    }\r\n}\r\n\r\nfunction noop() {}\r\n\r\n},{}],20:[function(_de" +
-                    "req_,module,exports){\r\n/**\r\n * An abstraction for slicing an arraybuffer even wh" +
-                    "en\r\n * ArrayBuffer.prototype.slice is not supported\r\n *\r\n * @api public\r\n */\r\n\r\n" +
-                    "module.exports = function(arraybuffer, start, end) {\r\n  var bytes = arraybuffer." +
-                    "byteLength;\r\n  start = start || 0;\r\n  end = end || bytes;\r\n\r\n  if (arraybuffer.s" +
-                    "lice) { return arraybuffer.slice(start, end); }\r\n\r\n  if (start < 0) { start += b" +
-                    "ytes; }\r\n  if (end < 0) { end += bytes; }\r\n  if (end > bytes) { end = bytes; }\r\n" +
-                    "\r\n  if (start >= bytes || start >= end || bytes === 0) {\r\n    return new ArrayBu" +
-                    "ffer(0);\r\n  }\r\n\r\n  var abv = new Uint8Array(arraybuffer);\r\n  var result = new Ui" +
-                    "nt8Array(end - start);\r\n  for (var i = start, ii = 0; i < end; i++, ii++) {\r\n   " +
-                    " result[ii] = abv[i];\r\n  }\r\n  return result.buffer;\r\n};\r\n\r\n},{}],21:[function(_d" +
-                    "ereq_,module,exports){\r\n/*\r\n * base64-arraybuffer\r\n * https://github.com/niklasv" +
-                    "h/base64-arraybuffer\r\n *\r\n * Copyright (c) 2012 Niklas von Hertzen\r\n * Licensed " +
-                    "under the MIT license.\r\n */\r\n(function(chars){\r\n  \"use strict\";\r\n\r\n  exports.enc" +
-                    "ode = function(arraybuffer) {\r\n    var bytes = new Uint8Array(arraybuffer),\r\n   " +
-                    " i, len = bytes.length, base64 = \"\";\r\n\r\n    for (i = 0; i < len; i+=3) {\r\n      " +
-                    "base64 += chars[bytes[i] >> 2];\r\n      base64 += chars[((bytes[i] & 3) << 4) | (" +
-                    "bytes[i + 1] >> 4)];\r\n      base64 += chars[((bytes[i + 1] & 15) << 2) | (bytes[" +
-                    "i + 2] >> 6)];\r\n      base64 += chars[bytes[i + 2] & 63];\r\n    }\r\n\r\n    if ((len" +
-                    " % 3) === 2) {\r\n      base64 = base64.substring(0, base64.length - 1) + \"=\";\r\n  " +
-                    "  } else if (len % 3 === 1) {\r\n      base64 = base64.substring(0, base64.length " +
-                    "- 2) + \"==\";\r\n    }\r\n\r\n    return base64;\r\n  };\r\n\r\n  exports.decode =  function(" +
-                    "base64) {\r\n    var bufferLength = base64.length * 0.75,\r\n    len = base64.length" +
-                    ", i, p = 0,\r\n    encoded1, encoded2, encoded3, encoded4;\r\n\r\n    if (base64[base6" +
-                    "4.length - 1] === \"=\") {\r\n      bufferLength--;\r\n      if (base64[base64.length " +
-                    "- 2] === \"=\") {\r\n        bufferLength--;\r\n      }\r\n    }\r\n\r\n    var arraybuffer " +
-                    "= new ArrayBuffer(bufferLength),\r\n    bytes = new Uint8Array(arraybuffer);\r\n\r\n  " +
-                    "  for (i = 0; i < len; i+=4) {\r\n      encoded1 = chars.indexOf(base64[i]);\r\n    " +
-                    "  encoded2 = chars.indexOf(base64[i+1]);\r\n      encoded3 = chars.indexOf(base64[" +
-                    "i+2]);\r\n      encoded4 = chars.indexOf(base64[i+3]);\r\n\r\n      bytes[p++] = (enco" +
-                    "ded1 << 2) | (encoded2 >> 4);\r\n      bytes[p++] = ((encoded2 & 15) << 4) | (enco" +
-                    "ded3 >> 2);\r\n      bytes[p++] = ((encoded3 & 3) << 6) | (encoded4 & 63);\r\n    }\r" +
-                    "\n\r\n    return arraybuffer;\r\n  };\r\n})(\"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnop" +
-                    "qrstuvwxyz0123456789+/\");\r\n\r\n},{}],22:[function(_dereq_,module,exports){\r\n(funct" +
-                    "ion (global){\r\n/*! http://mths.be/utf8js v2.0.0 by @mathias */\r\n;(function(root)" +
-                    " {\r\n\r\n\t// Detect free variables `exports`\r\n\tvar freeExports = typeof exports == " +
-                    "\'object\' && exports;\r\n\r\n\t// Detect free variable `module`\r\n\tvar freeModule = typ" +
-                    "eof module == \'object\' && module &&\r\n\t\tmodule.exports == freeExports && module;\r" +
-                    "\n\r\n\t// Detect free variable `global`, from Node.js or Browserified code,\r\n\t// an" +
-                    "d use it as `root`\r\n\tvar freeGlobal = typeof global == \'object\' && global;\r\n\tif " +
-                    "(freeGlobal.global === freeGlobal || freeGlobal.window === freeGlobal) {\r\n\t\troot" +
-                    " = freeGlobal;\r\n\t}\r\n\r\n\t/*-------------------------------------------------------" +
-                    "-------------------*/\r\n\r\n\tvar stringFromCharCode = String.fromCharCode;\r\n\r\n\t// T" +
-                    "aken from http://mths.be/punycode\r\n\tfunction ucs2decode(string) {\r\n\t\tvar output " +
-                    "= [];\r\n\t\tvar counter = 0;\r\n\t\tvar length = string.length;\r\n\t\tvar value;\r\n\t\tvar ex" +
-                    "tra;\r\n\t\twhile (counter < length) {\r\n\t\t\tvalue = string.charCodeAt(counter++);\r\n\t\t" +
-                    "\tif (value >= 0xD800 && value <= 0xDBFF && counter < length) {\r\n\t\t\t\t// high surr" +
-                    "ogate, and there is a next character\r\n\t\t\t\textra = string.charCodeAt(counter++);\r" +
-                    "\n\t\t\t\tif ((extra & 0xFC00) == 0xDC00) { // low surrogate\r\n\t\t\t\t\toutput.push(((valu" +
-                    "e & 0x3FF) << 10) + (extra & 0x3FF) + 0x10000);\r\n\t\t\t\t} else {\r\n\t\t\t\t\t// unmatched" +
-                    " surrogate; only append this code unit, in case the next\r\n\t\t\t\t\t// code unit is t" +
-                    "he high surrogate of a surrogate pair\r\n\t\t\t\t\toutput.push(value);\r\n\t\t\t\t\tcounter--;" +
-                    "\r\n\t\t\t\t}\r\n\t\t\t} else {\r\n\t\t\t\toutput.push(value);\r\n\t\t\t}\r\n\t\t}\r\n\t\treturn output;\r\n\t}\r\n" +
-                    "\r\n\t// Taken from http://mths.be/punycode\r\n\tfunction ucs2encode(array) {\r\n\t\tvar l" +
-                    "ength = array.length;\r\n\t\tvar index = -1;\r\n\t\tvar value;\r\n\t\tvar output = \'\';\r\n\t\twh" +
-                    "ile (++index < length) {\r\n\t\t\tvalue = array[index];\r\n\t\t\tif (value > 0xFFFF) {\r\n\t\t" +
-                    "\t\tvalue -= 0x10000;\r\n\t\t\t\toutput += stringFromCharCode(value >>> 10 & 0x3FF | 0xD" +
-                    "800);\r\n\t\t\t\tvalue = 0xDC00 | value & 0x3FF;\r\n\t\t\t}\r\n\t\t\toutput += stringFromCharCod" +
-                    "e(value);\r\n\t\t}\r\n\t\treturn output;\r\n\t}\r\n\r\n\t/*-------------------------------------" +
-                    "-------------------------------------*/\r\n\r\n\tfunction createByte(codePoint, shift" +
-                    ") {\r\n\t\treturn stringFromCharCode(((codePoint >> shift) & 0x3F) | 0x80);\r\n\t}\r\n\r\n\t" +
-                    "function encodeCodePoint(codePoint) {\r\n\t\tif ((codePoint & 0xFFFFFF80) == 0) { //" +
-                    " 1-byte sequence\r\n\t\t\treturn stringFromCharCode(codePoint);\r\n\t\t}\r\n\t\tvar symbol = " +
-                    "\'\';\r\n\t\tif ((codePoint & 0xFFFFF800) == 0) { // 2-byte sequence\r\n\t\t\tsymbol = stri" +
-                    "ngFromCharCode(((codePoint >> 6) & 0x1F) | 0xC0);\r\n\t\t}\r\n\t\telse if ((codePoint & " +
-                    "0xFFFF0000) == 0) { // 3-byte sequence\r\n\t\t\tsymbol = stringFromCharCode(((codePoi" +
-                    "nt >> 12) & 0x0F) | 0xE0);\r\n\t\t\tsymbol += createByte(codePoint, 6);\r\n\t\t}\r\n\t\telse " +
-                    "if ((codePoint & 0xFFE00000) == 0) { // 4-byte sequence\r\n\t\t\tsymbol = stringFromC" +
-                    "harCode(((codePoint >> 18) & 0x07) | 0xF0);\r\n\t\t\tsymbol += createByte(codePoint, " +
-                    "12);\r\n\t\t\tsymbol += createByte(codePoint, 6);\r\n\t\t}\r\n\t\tsymbol += stringFromCharCod" +
-                    "e((codePoint & 0x3F) | 0x80);\r\n\t\treturn symbol;\r\n\t}\r\n\r\n\tfunction utf8encode(stri" +
-                    "ng) {\r\n\t\tvar codePoints = ucs2decode(string);\r\n\r\n\t\t// console.log(JSON.stringify" +
-                    "(codePoints.map(function(x) {\r\n\t\t// \treturn \'U+\' + x.toString(16).toUpperCase();" +
-                    "\r\n\t\t// })));\r\n\r\n\t\tvar length = codePoints.length;\r\n\t\tvar index = -1;\r\n\t\tvar code" +
-                    "Point;\r\n\t\tvar byteString = \'\';\r\n\t\twhile (++index < length) {\r\n\t\t\tcodePoint = cod" +
-                    "ePoints[index];\r\n\t\t\tbyteString += encodeCodePoint(codePoint);\r\n\t\t}\r\n\t\treturn byt" +
-                    "eString;\r\n\t}\r\n\r\n\t/*-------------------------------------------------------------" +
-                    "-------------*/\r\n\r\n\tfunction readContinuationByte() {\r\n\t\tif (byteIndex >= byteCo" +
-                    "unt) {\r\n\t\t\tthrow Error(\'Invalid byte index\');\r\n\t\t}\r\n\r\n\t\tvar continuationByte = b" +
-                    "yteArray[byteIndex] & 0xFF;\r\n\t\tbyteIndex++;\r\n\r\n\t\tif ((continuationByte & 0xC0) =" +
-                    "= 0x80) {\r\n\t\t\treturn continuationByte & 0x3F;\r\n\t\t}\r\n\r\n\t\t// If we end up here, it" +
-                    "’s not a continuation byte\r\n\t\tthrow Error(\'Invalid continuation byte\');\r\n\t}\r\n\r\n\t" +
-                    "function decodeSymbol() {\r\n\t\tvar byte1;\r\n\t\tvar byte2;\r\n\t\tvar byte3;\r\n\t\tvar byte4" +
-                    ";\r\n\t\tvar codePoint;\r\n\r\n\t\tif (byteIndex > byteCount) {\r\n\t\t\tthrow Error(\'Invalid b" +
-                    "yte index\');\r\n\t\t}\r\n\r\n\t\tif (byteIndex == byteCount) {\r\n\t\t\treturn false;\r\n\t\t}\r\n\r\n\t" +
-                    "\t// Read first byte\r\n\t\tbyte1 = byteArray[byteIndex] & 0xFF;\r\n\t\tbyteIndex++;\r\n\r\n\t" +
-                    "\t// 1-byte sequence (no continuation bytes)\r\n\t\tif ((byte1 & 0x80) == 0) {\r\n\t\t\tre" +
-                    "turn byte1;\r\n\t\t}\r\n\r\n\t\t// 2-byte sequence\r\n\t\tif ((byte1 & 0xE0) == 0xC0) {\r\n\t\t\tva" +
-                    "r byte2 = readContinuationByte();\r\n\t\t\tcodePoint = ((byte1 & 0x1F) << 6) | byte2;" +
-                    "\r\n\t\t\tif (codePoint >= 0x80) {\r\n\t\t\t\treturn codePoint;\r\n\t\t\t} else {\r\n\t\t\t\tthrow Err" +
-                    "or(\'Invalid continuation byte\');\r\n\t\t\t}\r\n\t\t}\r\n\r\n\t\t// 3-byte sequence (may include" +
-                    " unpaired surrogates)\r\n\t\tif ((byte1 & 0xF0) == 0xE0) {\r\n\t\t\tbyte2 = readContinuat" +
-                    "ionByte();\r\n\t\t\tbyte3 = readContinuationByte();\r\n\t\t\tcodePoint = ((byte1 & 0x0F) <" +
-                    "< 12) | (byte2 << 6) | byte3;\r\n\t\t\tif (codePoint >= 0x0800) {\r\n\t\t\t\treturn codePoi" +
-                    "nt;\r\n\t\t\t} else {\r\n\t\t\t\tthrow Error(\'Invalid continuation byte\');\r\n\t\t\t}\r\n\t\t}\r\n\r\n\t\t" +
-                    "// 4-byte sequence\r\n\t\tif ((byte1 & 0xF8) == 0xF0) {\r\n\t\t\tbyte2 = readContinuation" +
-                    "Byte();\r\n\t\t\tbyte3 = readContinuationByte();\r\n\t\t\tbyte4 = readContinuationByte();\r" +
-                    "\n\t\t\tcodePoint = ((byte1 & 0x0F) << 0x12) | (byte2 << 0x0C) |\r\n\t\t\t\t(byte3 << 0x06" +
-                    ") | byte4;\r\n\t\t\tif (codePoint >= 0x010000 && codePoint <= 0x10FFFF) {\r\n\t\t\t\treturn" +
-                    " codePoint;\r\n\t\t\t}\r\n\t\t}\r\n\r\n\t\tthrow Error(\'Invalid UTF-8 detected\');\r\n\t}\r\n\r\n\tvar b" +
-                    "yteArray;\r\n\tvar byteCount;\r\n\tvar byteIndex;\r\n\tfunction utf8decode(byteString) {\r" +
-                    "\n\t\tbyteArray = ucs2decode(byteString);\r\n\t\tbyteCount = byteArray.length;\r\n\t\tbyteI" +
-                    "ndex = 0;\r\n\t\tvar codePoints = [];\r\n\t\tvar tmp;\r\n\t\twhile ((tmp = decodeSymbol()) !" +
-                    "== false) {\r\n\t\t\tcodePoints.push(tmp);\r\n\t\t}\r\n\t\treturn ucs2encode(codePoints);\r\n\t}" +
-                    "\r\n\r\n\t/*-------------------------------------------------------------------------" +
-                    "-*/\r\n\r\n\tvar utf8 = {\r\n\t\t\'version\': \'2.0.0\',\r\n\t\t\'encode\': utf8encode,\r\n\t\t\'decode\'" +
-                    ": utf8decode\r\n\t};\r\n\r\n\t// Some AMD build optimizers, like r.js, check for specifi" +
-                    "c condition patterns\r\n\t// like the following:\r\n\tif (\r\n\t\ttypeof define == \'functi" +
-                    "on\' &&\r\n\t\ttypeof define.amd == \'object\' &&\r\n\t\tdefine.amd\r\n\t) {\r\n\t\tdefine(functio" +
-                    "n() {\r\n\t\t\treturn utf8;\r\n\t\t});\r\n\t}\telse if (freeExports && !freeExports.nodeType)" +
-                    " {\r\n\t\tif (freeModule) { // in Node.js or RingoJS v0.8.0+\r\n\t\t\tfreeModule.exports " +
-                    "= utf8;\r\n\t\t} else { // in Narwhal or RingoJS v0.7.0-\r\n\t\t\tvar object = {};\r\n\t\t\tva" +
-                    "r hasOwnProperty = object.hasOwnProperty;\r\n\t\t\tfor (var key in utf8) {\r\n\t\t\t\thasOw" +
-                    "nProperty.call(utf8, key) && (freeExports[key] = utf8[key]);\r\n\t\t\t}\r\n\t\t}\r\n\t} else" +
-                    " { // in Rhino or a web browser\r\n\t\troot.utf8 = utf8;\r\n\t}\r\n\r\n}(this));\r\n\r\n}).call" +
-                    "(this,typeof self !== \"undefined\" ? self : typeof window !== \"undefined\" ? windo" +
-                    "w : {})\r\n},{}],23:[function(_dereq_,module,exports){\r\n\r\n/**\r\n * Module dependenc" +
-                    "ies.\r\n */\r\n\r\nvar global = _dereq_(\'global\');\r\n\r\n/**\r\n * Module exports.\r\n *\r\n * " +
-                    "Logic borrowed from Modernizr:\r\n *\r\n *   - https://github.com/Modernizr/Moderniz" +
-                    "r/blob/master/feature-detects/cors.js\r\n */\r\n\r\ntry {\r\n  module.exports = \'XMLHttp" +
-                    "Request\' in global &&\r\n    \'withCredentials\' in new global.XMLHttpRequest();\r\n} " +
-                    "catch (err) {\r\n  // if XMLHttp support is disabled in IE then it will throw\r\n  /" +
-                    "/ when trying to create\r\n  module.exports = false;\r\n}\r\n\r\n},{\"global\":24}],24:[fu" +
-                    "nction(_dereq_,module,exports){\r\n\r\n/**\r\n * Returns `this`. Execute this without " +
-                    "a \"context\" (i.e. without it being\r\n * attached to an object of the left-hand si" +
-                    "de), and `this` points to the\r\n * \"global\" scope of the current JS execution.\r\n " +
-                    "*/\r\n\r\nmodule.exports = (function () { return this; })();\r\n\r\n},{}],25:[function(_" +
-                    "dereq_,module,exports){\r\n\r\nvar indexOf = [].indexOf;\r\n\r\nmodule.exports = functio" +
-                    "n(arr, obj){\r\n  if (indexOf) return arr.indexOf(obj);\r\n  for (var i = 0; i < arr" +
-                    ".length; ++i) {\r\n    if (arr[i] === obj) return i;\r\n  }\r\n  return -1;\r\n};\r\n},{}]" +
-                    ",26:[function(_dereq_,module,exports){\r\n(function (global){\r\n/**\r\n * JSON parse." +
-                    "\r\n *\r\n * @see Based on jQuery#parseJSON (MIT) and JSON2\r\n * @api private\r\n */\r\n\r" +
-                    "\nvar rvalidchars = /^[\\],:{}\\s]*$/;\r\nvar rvalidescape = /\\\\(?:[\"\\\\\\/bfnrt]|u[0-9" +
-                    "a-fA-F]{4})/g;\r\nvar rvalidtokens = /\"[^\"\\\\\\n\\r]*\"|true|false|null|-?\\d+(?:\\.\\d*)" +
-                    "?(?:[eE][+\\-]?\\d+)?/g;\r\nvar rvalidbraces = /(?:^|:|,)(?:\\s*\\[)+/g;\r\nvar rtrimLef" +
-                    "t = /^\\s+/;\r\nvar rtrimRight = /\\s+$/;\r\n\r\nmodule.exports = function parsejson(dat" +
-                    "a) {\r\n  if (\'string\' != typeof data || !data) {\r\n    return null;\r\n  }\r\n\r\n  data" +
-                    " = data.replace(rtrimLeft, \'\').replace(rtrimRight, \'\');\r\n\r\n  // Attempt to parse" +
-                    " using the native JSON parser first\r\n  if (global.JSON && JSON.parse) {\r\n    ret" +
-                    "urn JSON.parse(data);\r\n  }\r\n\r\n  if (rvalidchars.test(data.replace(rvalidescape, " +
-                    "\'@\')\r\n      .replace(rvalidtokens, \']\')\r\n      .replace(rvalidbraces, \'\'))) {\r\n " +
-                    "   return (new Function(\'return \' + data))();\r\n  }\r\n};\r\n}).call(this,typeof self" +
-                    " !== \"undefined\" ? self : typeof window !== \"undefined\" ? window : {})\r\n},{}],27" +
-                    ":[function(_dereq_,module,exports){\r\n/**\r\n * Compiles a querystring\r\n * Returns " +
-                    "string representation of the object\r\n *\r\n * @param {Object}\r\n * @api private\r\n *" +
-                    "/\r\n\r\nexports.encode = function (obj) {\r\n  var str = \'\';\r\n\r\n  for (var i in obj) " +
-                    "{\r\n    if (obj.hasOwnProperty(i)) {\r\n      if (str.length) str += \'&\';\r\n      st" +
-                    "r += encodeURIComponent(i) + \'=\' + encodeURIComponent(obj[i]);\r\n    }\r\n  }\r\n\r\n  " +
-                    "return str;\r\n};\r\n\r\n/**\r\n * Parses a simple querystring into an object\r\n *\r\n * @p" +
-                    "aram {String} qs\r\n * @api private\r\n */\r\n\r\nexports.decode = function(qs){\r\n  var " +
-                    "qry = {};\r\n  var pairs = qs.split(\'&\');\r\n  for (var i = 0, l = pairs.length; i <" +
-                    " l; i++) {\r\n    var pair = pairs[i].split(\'=\');\r\n    qry[decodeURIComponent(pair" +
-                    "[0])] = decodeURIComponent(pair[1]);\r\n  }\r\n  return qry;\r\n};\r\n\r\n},{}],28:[functi" +
-                    "on(_dereq_,module,exports){\r\n/**\r\n * Parses an URI\r\n *\r\n * @author Steven Levith" +
-                    "an <stevenlevithan.com> (MIT license)\r\n * @api private\r\n */\r\n\r\nvar re = /^(?:(?!" +
-                    "[^:@]+:[^:@\\/]*@)(http|https|ws|wss):\\/\\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?((?:[" +
-                    "a-f0-9]{0,4}:){2,7}[a-f0-9]{0,4}|[^:\\/?#]*)(?::(\\d*))?)(((\\/(?:[^?#](?![^?#\\/]*\\" +
-                    ".[^?#\\/.]+(?:[?#]|$)))*\\/?)?([^?#\\/]*))(?:\\?([^#]*))?(?:#(.*))?)/;\r\n\r\nvar parts " +
-                    "= [\r\n    \'source\', \'protocol\', \'authority\', \'userInfo\', \'user\', \'password\', \'hos" +
-                    "t\', \'port\', \'relative\', \'path\', \'directory\', \'file\', \'query\', \'anchor\'\r\n];\r\n\r\nmo" +
-                    "dule.exports = function parseuri(str) {\r\n    var src = str,\r\n        b = str.ind" +
-                    "exOf(\'[\'),\r\n        e = str.indexOf(\']\');\r\n\r\n    if (b != -1 && e != -1) {\r\n    " +
-                    "    str = str.substring(0, b) + str.substring(b, e).replace(/:/g, \';\') + str.sub" +
-                    "string(e, str.length);\r\n    }\r\n\r\n    var m = re.exec(str || \'\'),\r\n        uri = " +
-                    "{},\r\n        i = 14;\r\n\r\n    while (i--) {\r\n        uri[parts[i]] = m[i] || \'\';\r\n" +
-                    "    }\r\n\r\n    if (b != -1 && e != -1) {\r\n        uri.source = src;\r\n        uri.h" +
-                    "ost = uri.host.substring(1, uri.host.length - 1).replace(/;/g, \':\');\r\n        ur" +
-                    "i.authority = uri.authority.replace(\'[\', \'\').replace(\']\', \'\').replace(/;/g, \':\')" +
-                    ";\r\n        uri.ipv6uri = true;\r\n    }\r\n\r\n    return uri;\r\n};\r\n\r\n},{}],29:[functi" +
-                    "on(_dereq_,module,exports){\r\n\r\n/**\r\n * Module dependencies.\r\n */\r\n\r\nvar global =" +
-                    " (function() { return this; })();\r\n\r\n/**\r\n * WebSocket constructor.\r\n */\r\n\r\nvar " +
-                    "WebSocket = global.WebSocket || global.MozWebSocket;\r\n\r\n/**\r\n * Module exports.\r" +
-                    "\n */\r\n\r\nmodule.exports = WebSocket ? ws : null;\r\n\r\n/**\r\n * WebSocket constructor" +
-                    ".\r\n *\r\n * The third `opts` options object gets ignored in web browsers, since it" +
-                    "\'s\r\n * non-standard, and throws a TypeError if passed to the constructor.\r\n * Se" +
-                    "e: https://github.com/einaros/ws/issues/227\r\n *\r\n * @param {String} uri\r\n * @par" +
-                    "am {Array} protocols (optional)\r\n * @param {Object) opts (optional)\r\n * @api pub" +
-                    "lic\r\n */\r\n\r\nfunction ws(uri, protocols, opts) {\r\n  var instance;\r\n  if (protocol" +
-                    "s) {\r\n    instance = new WebSocket(uri, protocols);\r\n  } else {\r\n    instance = " +
-                    "new WebSocket(uri);\r\n  }\r\n  return instance;\r\n}\r\n\r\nif (WebSocket) ws.prototype =" +
-                    " WebSocket.prototype;\r\n\r\n},{}]},{},[1])(1)\r\n});");
+                    "\n\nmodule.exports =  _dereq_(\'./lib/\');\n\n},{\"./lib/\":2}],2:[function(_dereq_,modu" +
+                    "le,exports){\n\nmodule.exports = _dereq_(\'./socket\');\n\n/**\n * Exports parser\n *\n *" +
+                    " @api public\n *\n */\nmodule.exports.parser = _dereq_(\'engine.io-parser\');\n\n},{\"./" +
+                    "socket\":3,\"engine.io-parser\":17}],3:[function(_dereq_,module,exports){\n(function" +
+                    " (global){\n/**\n * Module dependencies.\n */\n\nvar transports = _dereq_(\'./transpor" +
+                    "ts\');\nvar Emitter = _dereq_(\'component-emitter\');\nvar debug = _dereq_(\'debug\')(\'" +
+                    "engine.io-client:socket\');\nvar index = _dereq_(\'indexof\');\nvar parser = _dereq_(" +
+                    "\'engine.io-parser\');\nvar parseuri = _dereq_(\'parseuri\');\nvar parsejson = _dereq_" +
+                    "(\'parsejson\');\nvar parseqs = _dereq_(\'parseqs\');\n\n/**\n * Module exports.\n */\n\nmo" +
+                    "dule.exports = Socket;\n\n/**\n * Noop function.\n *\n * @api private\n */\n\nfunction n" +
+                    "oop(){}\n\n/**\n * Socket constructor.\n *\n * @param {String|Object} uri or options\n" +
+                    " * @param {Object} options\n * @api public\n */\n\nfunction Socket(uri, opts){\n  if " +
+                    "(!(this instanceof Socket)) return new Socket(uri, opts);\n\n  opts = opts || {};\n" +
+                    "\n  if (uri && \'object\' == typeof uri) {\n    opts = uri;\n    uri = null;\n  }\n\n  i" +
+                    "f (uri) {\n    uri = parseuri(uri);\n    opts.host = uri.host;\n    opts.secure = u" +
+                    "ri.protocol == \'https\' || uri.protocol == \'wss\';\n    opts.port = uri.port;\n    i" +
+                    "f (uri.query) opts.query = uri.query;\n  }\n\n  this.secure = null != opts.secure ?" +
+                    " opts.secure :\n    (global.location && \'https:\' == location.protocol);\n\n  if (op" +
+                    "ts.host) {\n    var pieces = opts.host.split(\':\');\n    opts.hostname = pieces.shi" +
+                    "ft();\n    if (pieces.length) opts.port = pieces.pop();\n  }\n\n  this.agent = opts." +
+                    "agent || false;\n  this.hostname = opts.hostname ||\n    (global.location ? locati" +
+                    "on.hostname : \'localhost\');\n  this.port = opts.port || (global.location && locat" +
+                    "ion.port ?\n       location.port :\n       (this.secure ? 443 : 80));\n  this.query" +
+                    " = opts.query || {};\n  if (\'string\' == typeof this.query) this.query = parseqs.d" +
+                    "ecode(this.query);\n  this.upgrade = false !== opts.upgrade;\n  this.path = (opts." +
+                    "path || \'/engine.io\').replace(/\\/$/, \'\') + \'/\';\n  this.forceJSONP = !!opts.force" +
+                    "JSONP;\n  this.jsonp = false !== opts.jsonp;\n  this.forceBase64 = !!opts.forceBas" +
+                    "e64;\n  this.enablesXDR = !!opts.enablesXDR;\n  this.timestampParam = opts.timesta" +
+                    "mpParam || \'t\';\n  this.timestampRequests = opts.timestampRequests;\n  this.transp" +
+                    "orts = opts.transports || [\'polling\', \'websocket\'];\n  this.readyState = \'\';\n  th" +
+                    "is.writeBuffer = [];\n  this.callbackBuffer = [];\n  this.policyPort = opts.policy" +
+                    "Port || 843;\n  this.rememberUpgrade = opts.rememberUpgrade || false;\n  this.open" +
+                    "();\n  this.binaryType = null;\n  this.onlyBinaryUpgrades = opts.onlyBinaryUpgrade" +
+                    "s;\n}\n\nSocket.priorWebsocketSuccess = false;\n\n/**\n * Mix in `Emitter`.\n */\n\nEmitt" +
+                    "er(Socket.prototype);\n\n/**\n * Protocol version.\n *\n * @api public\n */\n\nSocket.pr" +
+                    "otocol = parser.protocol; // this is an int\n\n/**\n * Expose deps for legacy compa" +
+                    "tibility\n * and standalone browser access.\n */\n\nSocket.Socket = Socket;\nSocket.T" +
+                    "ransport = _dereq_(\'./transport\');\nSocket.transports = _dereq_(\'./transports\');\n" +
+                    "Socket.parser = _dereq_(\'engine.io-parser\');\n\n/**\n * Creates transport of the gi" +
+                    "ven type.\n *\n * @param {String} transport name\n * @return {Transport}\n * @api pr" +
+                    "ivate\n */\n\nSocket.prototype.createTransport = function (name) {\n  debug(\'creatin" +
+                    "g transport \"%s\"\', name);\n  var query = clone(this.query);\n\n  // append engine.i" +
+                    "o protocol identifier\n  query.EIO = parser.protocol;\n\n  // transport name\n  quer" +
+                    "y.transport = name;\n\n  // session id if we already have one\n  if (this.id) query" +
+                    ".sid = this.id;\n\n  var transport = new transports[name]({\n    agent: this.agent," +
+                    "\n    hostname: this.hostname,\n    port: this.port,\n    secure: this.secure,\n    " +
+                    "path: this.path,\n    query: query,\n    forceJSONP: this.forceJSONP,\n    jsonp: t" +
+                    "his.jsonp,\n    forceBase64: this.forceBase64,\n    enablesXDR: this.enablesXDR,\n " +
+                    "   timestampRequests: this.timestampRequests,\n    timestampParam: this.timestamp" +
+                    "Param,\n    policyPort: this.policyPort,\n    socket: this\n  });\n\n  return transpo" +
+                    "rt;\n};\n\nfunction clone (obj) {\n  var o = {};\n  for (var i in obj) {\n    if (obj." +
+                    "hasOwnProperty(i)) {\n      o[i] = obj[i];\n    }\n  }\n  return o;\n}\n\n/**\n * Initia" +
+                    "lizes transport to use and starts probe.\n *\n * @api private\n */\nSocket.prototype" +
+                    ".open = function () {\n  var transport;\n  if (this.rememberUpgrade && Socket.prio" +
+                    "rWebsocketSuccess && this.transports.indexOf(\'websocket\') != -1) {\n    transport" +
+                    " = \'websocket\';\n  } else if (0 == this.transports.length) {\n    // Emit error on" +
+                    " next tick so it can be listened to\n    var self = this;\n    setTimeout(function" +
+                    "() {\n      self.emit(\'error\', \'No transports available\');\n    }, 0);\n    return;" +
+                    "\n  } else {\n    transport = this.transports[0];\n  }\n  this.readyState = \'opening" +
+                    "\';\n\n  // Retry with the next transport if the transport is disabled (jsonp: fals" +
+                    "e)\n  var transport;\n  try {\n    transport = this.createTransport(transport);\n  }" +
+                    " catch (e) {\n    this.transports.shift();\n    this.open();\n    return;\n  }\n\n  tr" +
+                    "ansport.open();\n  this.setTransport(transport);\n};\n\n/**\n * Sets the current tran" +
+                    "sport. Disables the existing one (if any).\n *\n * @api private\n */\n\nSocket.protot" +
+                    "ype.setTransport = function(transport){\n  debug(\'setting transport %s\', transpor" +
+                    "t.name);\n  var self = this;\n\n  if (this.transport) {\n    debug(\'clearing existin" +
+                    "g transport %s\', this.transport.name);\n    this.transport.removeAllListeners();\n" +
+                    "  }\n\n  // set up transport\n  this.transport = transport;\n\n  // set up transport " +
+                    "listeners\n  transport\n  .on(\'drain\', function(){\n    self.onDrain();\n  })\n  .on(" +
+                    "\'packet\', function(packet){\n    self.onPacket(packet);\n  })\n  .on(\'error\', funct" +
+                    "ion(e){\n    self.onError(e);\n  })\n  .on(\'close\', function(){\n    self.onClose(\'t" +
+                    "ransport close\');\n  });\n};\n\n/**\n * Probes a transport.\n *\n * @param {String} tra" +
+                    "nsport name\n * @api private\n */\n\nSocket.prototype.probe = function (name) {\n  de" +
+                    "bug(\'probing transport \"%s\"\', name);\n  var transport = this.createTransport(name" +
+                    ", { probe: 1 })\n    , failed = false\n    , self = this;\n\n  Socket.priorWebsocket" +
+                    "Success = false;\n\n  function onTransportOpen(){\n    if (self.onlyBinaryUpgrades)" +
+                    " {\n      var upgradeLosesBinary = !this.supportsBinary && self.transport.support" +
+                    "sBinary;\n      failed = failed || upgradeLosesBinary;\n    }\n    if (failed) retu" +
+                    "rn;\n\n    debug(\'probe transport \"%s\" opened\', name);\n    transport.send([{ type:" +
+                    " \'ping\', data: \'probe\' }]);\n    transport.once(\'packet\', function (msg) {\n      " +
+                    "if (failed) return;\n      if (\'pong\' == msg.type && \'probe\' == msg.data) {\n     " +
+                    "   debug(\'probe transport \"%s\" pong\', name);\n        self.upgrading = true;\n    " +
+                    "    self.emit(\'upgrading\', transport);\n        if (!transport) return;\n        S" +
+                    "ocket.priorWebsocketSuccess = \'websocket\' == transport.name;\n\n        debug(\'pau" +
+                    "sing current transport \"%s\"\', self.transport.name);\n        self.transport.pause" +
+                    "(function () {\n          if (failed) return;\n          if (\'closed\' == self.read" +
+                    "yState) return;\n          debug(\'changing transport and sending upgrade packet\')" +
+                    ";\n\n          cleanup();\n\n          self.setTransport(transport);\n          trans" +
+                    "port.send([{ type: \'upgrade\' }]);\n          self.emit(\'upgrade\', transport);\n   " +
+                    "       transport = null;\n          self.upgrading = false;\n          self.flush(" +
+                    ");\n        });\n      } else {\n        debug(\'probe transport \"%s\" failed\', name)" +
+                    ";\n        var err = new Error(\'probe error\');\n        err.transport = transport." +
+                    "name;\n        self.emit(\'upgradeError\', err);\n      }\n    });\n  }\n\n  function fr" +
+                    "eezeTransport() {\n    if (failed) return;\n\n    // Any callback called by transpo" +
+                    "rt should be ignored since now\n    failed = true;\n\n    cleanup();\n\n    transport" +
+                    ".close();\n    transport = null;\n  }\n\n  //Handle any error that happens while pro" +
+                    "bing\n  function onerror(err) {\n    var error = new Error(\'probe error: \' + err);" +
+                    "\n    error.transport = transport.name;\n\n    freezeTransport();\n\n    debug(\'probe" +
+                    " transport \"%s\" failed because of error: %s\', name, err);\n\n    self.emit(\'upgrad" +
+                    "eError\', error);\n  }\n\n  function onTransportClose(){\n    onerror(\"transport clos" +
+                    "ed\");\n  }\n\n  //When the socket is closed while we\'re probing\n  function onclose(" +
+                    "){\n    onerror(\"socket closed\");\n  }\n\n  //When the socket is upgraded while we\'r" +
+                    "e probing\n  function onupgrade(to){\n    if (transport && to.name != transport.na" +
+                    "me) {\n      debug(\'\"%s\" works - aborting \"%s\"\', to.name, transport.name);\n      " +
+                    "freezeTransport();\n    }\n  }\n\n  //Remove all listeners on the transport and on s" +
+                    "elf\n  function cleanup(){\n    transport.removeListener(\'open\', onTransportOpen);" +
+                    "\n    transport.removeListener(\'error\', onerror);\n    transport.removeListener(\'c" +
+                    "lose\', onTransportClose);\n    self.removeListener(\'close\', onclose);\n    self.re" +
+                    "moveListener(\'upgrading\', onupgrade);\n  }\n\n  transport.once(\'open\', onTransportO" +
+                    "pen);\n  transport.once(\'error\', onerror);\n  transport.once(\'close\', onTransportC" +
+                    "lose);\n\n  this.once(\'close\', onclose);\n  this.once(\'upgrading\', onupgrade);\n\n  t" +
+                    "ransport.open();\n\n};\n\n/**\n * Called when connection is deemed open.\n *\n * @api p" +
+                    "ublic\n */\n\nSocket.prototype.onOpen = function () {\n  debug(\'socket open\');\n  thi" +
+                    "s.readyState = \'open\';\n  Socket.priorWebsocketSuccess = \'websocket\' == this.tran" +
+                    "sport.name;\n  this.emit(\'open\');\n  this.flush();\n\n  // we check for `readyState`" +
+                    " in case an `open`\n  // listener already closed the socket\n  if (\'open\' == this." +
+                    "readyState && this.upgrade && this.transport.pause) {\n    debug(\'starting upgrad" +
+                    "e probes\');\n    for (var i = 0, l = this.upgrades.length; i < l; i++) {\n      th" +
+                    "is.probe(this.upgrades[i]);\n    }\n  }\n};\n\n/**\n * Handles a packet.\n *\n * @api pr" +
+                    "ivate\n */\n\nSocket.prototype.onPacket = function (packet) {\n  if (\'opening\' == th" +
+                    "is.readyState || \'open\' == this.readyState) {\n    debug(\'socket receive: type \"%" +
+                    "s\", data \"%s\"\', packet.type, packet.data);\n\n    this.emit(\'packet\', packet);\n\n  " +
+                    "  // Socket is live - any packet counts\n    this.emit(\'heartbeat\');\n\n    switch " +
+                    "(packet.type) {\n      case \'open\':\n        this.onHandshake(parsejson(packet.dat" +
+                    "a));\n        break;\n\n      case \'pong\':\n        this.setPing();\n        break;\n\n" +
+                    "      case \'error\':\n        var err = new Error(\'server error\');\n        err.cod" +
+                    "e = packet.data;\n        this.emit(\'error\', err);\n        break;\n\n      case \'me" +
+                    "ssage\':\n        this.emit(\'data\', packet.data);\n        this.emit(\'message\', pac" +
+                    "ket.data);\n        break;\n    }\n  } else {\n    debug(\'packet received with socke" +
+                    "t readyState \"%s\"\', this.readyState);\n  }\n};\n\n/**\n * Called upon handshake compl" +
+                    "etion.\n *\n * @param {Object} handshake obj\n * @api private\n */\n\nSocket.prototype" +
+                    ".onHandshake = function (data) {\n  this.emit(\'handshake\', data);\n  this.id = dat" +
+                    "a.sid;\n  this.transport.query.sid = data.sid;\n  this.upgrades = this.filterUpgra" +
+                    "des(data.upgrades);\n  this.pingInterval = data.pingInterval;\n  this.pingTimeout " +
+                    "= data.pingTimeout;\n  this.onOpen();\n  // In case open handler closes socket\n  i" +
+                    "f  (\'closed\' == this.readyState) return;\n  this.setPing();\n\n  // Prolong livenes" +
+                    "s of socket on heartbeat\n  this.removeListener(\'heartbeat\', this.onHeartbeat);\n " +
+                    " this.on(\'heartbeat\', this.onHeartbeat);\n};\n\n/**\n * Resets ping timeout.\n *\n * @" +
+                    "api private\n */\n\nSocket.prototype.onHeartbeat = function (timeout) {\n  clearTime" +
+                    "out(this.pingTimeoutTimer);\n  var self = this;\n  self.pingTimeoutTimer = setTime" +
+                    "out(function () {\n    if (\'closed\' == self.readyState) return;\n    self.onClose(" +
+                    "\'ping timeout\');\n  }, timeout || (self.pingInterval + self.pingTimeout));\n};\n\n/*" +
+                    "*\n * Pings server every `this.pingInterval` and expects response\n * within `this" +
+                    ".pingTimeout` or closes connection.\n *\n * @api private\n */\n\nSocket.prototype.set" +
+                    "Ping = function () {\n  var self = this;\n  clearTimeout(self.pingIntervalTimer);\n" +
+                    "  self.pingIntervalTimer = setTimeout(function () {\n    debug(\'writing ping pack" +
+                    "et - expecting pong within %sms\', self.pingTimeout);\n    self.ping();\n    self.o" +
+                    "nHeartbeat(self.pingTimeout);\n  }, self.pingInterval);\n};\n\n/**\n* Sends a ping pa" +
+                    "cket.\n*\n* @api public\n*/\n\nSocket.prototype.ping = function () {\n  this.sendPacke" +
+                    "t(\'ping\');\n};\n\n/**\n * Called on `drain` event\n *\n * @api private\n */\n\nSocket.pro" +
+                    "totype.onDrain = function() {\n  for (var i = 0; i < this.prevBufferLen; i++) {\n " +
+                    "   if (this.callbackBuffer[i]) {\n      this.callbackBuffer[i]();\n    }\n  }\n\n  th" +
+                    "is.writeBuffer.splice(0, this.prevBufferLen);\n  this.callbackBuffer.splice(0, th" +
+                    "is.prevBufferLen);\n\n  // setting prevBufferLen = 0 is very important\n  // for ex" +
+                    "ample, when upgrading, upgrade packet is sent over,\n  // and a nonzero prevBuffe" +
+                    "rLen could cause problems on `drain`\n  this.prevBufferLen = 0;\n\n  if (this.write" +
+                    "Buffer.length == 0) {\n    this.emit(\'drain\');\n  } else {\n    this.flush();\n  }\n}" +
+                    ";\n\n/**\n * Flush write buffers.\n *\n * @api private\n */\n\nSocket.prototype.flush = " +
+                    "function () {\n  if (\'closed\' != this.readyState && this.transport.writable &&\n  " +
+                    "  !this.upgrading && this.writeBuffer.length) {\n    debug(\'flushing %d packets i" +
+                    "n socket\', this.writeBuffer.length);\n    this.transport.send(this.writeBuffer);\n" +
+                    "    // keep track of current length of writeBuffer\n    // splice writeBuffer and" +
+                    " callbackBuffer on `drain`\n    this.prevBufferLen = this.writeBuffer.length;\n   " +
+                    " this.emit(\'flush\');\n  }\n};\n\n/**\n * Sends a message.\n *\n * @param {String} messa" +
+                    "ge.\n * @param {Function} callback function.\n * @return {Socket} for chaining.\n *" +
+                    " @api public\n */\n\nSocket.prototype.write =\nSocket.prototype.send = function (msg" +
+                    ", fn) {\n  this.sendPacket(\'message\', msg, fn);\n  return this;\n};\n\n/**\n * Sends a" +
+                    " packet.\n *\n * @param {String} packet type.\n * @param {String} data.\n * @param {" +
+                    "Function} callback function.\n * @api private\n */\n\nSocket.prototype.sendPacket = " +
+                    "function (type, data, fn) {\n  if (\'closing\' == this.readyState || \'closed\' == th" +
+                    "is.readyState) {\n    return;\n  }\n\n  var packet = { type: type, data: data };\n  t" +
+                    "his.emit(\'packetCreate\', packet);\n  this.writeBuffer.push(packet);\n  this.callba" +
+                    "ckBuffer.push(fn);\n  this.flush();\n};\n\n/**\n * Closes the connection.\n *\n * @api " +
+                    "private\n */\n\nSocket.prototype.close = function () {\n  if (\'opening\' == this.read" +
+                    "yState || \'open\' == this.readyState) {\n    this.readyState = \'closing\';\n\n    var" +
+                    " self = this;\n\n    function close() {\n      self.onClose(\'forced close\');\n      " +
+                    "debug(\'socket closing - telling transport to close\');\n      self.transport.close" +
+                    "();\n    }\n\n    function cleanupAndClose() {\n      self.removeListener(\'upgrade\'," +
+                    " cleanupAndClose);\n      self.removeListener(\'upgradeError\', cleanupAndClose);\n " +
+                    "     close();\n    }\n\n    function waitForUpgrade() {\n      // wait for upgrade t" +
+                    "o finish since we can\'t send packets while pausing a transport\n      self.once(\'" +
+                    "upgrade\', cleanupAndClose);\n      self.once(\'upgradeError\', cleanupAndClose);\n  " +
+                    "  }\n\n    if (this.writeBuffer.length) {\n      this.once(\'drain\', function() {\n  " +
+                    "      if (this.upgrading) {\n          waitForUpgrade();\n        } else {\n       " +
+                    "   close();\n        }\n      });\n    } else if (this.upgrading) {\n      waitForUp" +
+                    "grade();\n    } else {\n      close();\n    }\n  }\n\n  return this;\n};\n\n/**\n * Called" +
+                    " upon transport error\n *\n * @api private\n */\n\nSocket.prototype.onError = functio" +
+                    "n (err) {\n  debug(\'socket error %j\', err);\n  Socket.priorWebsocketSuccess = fals" +
+                    "e;\n  this.emit(\'error\', err);\n  this.onClose(\'transport error\', err);\n};\n\n/**\n *" +
+                    " Called upon transport close.\n *\n * @api private\n */\n\nSocket.prototype.onClose =" +
+                    " function (reason, desc) {\n  if (\'opening\' == this.readyState || \'open\' == this." +
+                    "readyState || \'closing\' == this.readyState) {\n    debug(\'socket close with reaso" +
+                    "n: \"%s\"\', reason);\n    var self = this;\n\n    // clear timers\n    clearTimeout(th" +
+                    "is.pingIntervalTimer);\n    clearTimeout(this.pingTimeoutTimer);\n\n    // clean bu" +
+                    "ffers in next tick, so developers can still\n    // grab the buffers on `close` e" +
+                    "vent\n    setTimeout(function() {\n      self.writeBuffer = [];\n      self.callbac" +
+                    "kBuffer = [];\n      self.prevBufferLen = 0;\n    }, 0);\n\n    // stop event from f" +
+                    "iring again for transport\n    this.transport.removeAllListeners(\'close\');\n\n    /" +
+                    "/ ensure transport won\'t stay open\n    this.transport.close();\n\n    // ignore fu" +
+                    "rther transport communication\n    this.transport.removeAllListeners();\n\n    // s" +
+                    "et ready state\n    this.readyState = \'closed\';\n\n    // clear session id\n    this" +
+                    ".id = null;\n\n    // emit close event\n    this.emit(\'close\', reason, desc);\n  }\n}" +
+                    ";\n\n/**\n * Filters upgrades, returning only those matching client transports.\n *\n" +
+                    " * @param {Array} server upgrades\n * @api private\n *\n */\n\nSocket.prototype.filte" +
+                    "rUpgrades = function (upgrades) {\n  var filteredUpgrades = [];\n  for (var i = 0," +
+                    " j = upgrades.length; i<j; i++) {\n    if (~index(this.transports, upgrades[i])) " +
+                    "filteredUpgrades.push(upgrades[i]);\n  }\n  return filteredUpgrades;\n};\n\n}).call(t" +
+                    "his,typeof self !== \"undefined\" ? self : typeof window !== \"undefined\" ? window " +
+                    ": {})\n},{\"./transport\":4,\"./transports\":5,\"component-emitter\":12,\"debug\":14,\"eng" +
+                    "ine.io-parser\":17,\"indexof\":25,\"parsejson\":26,\"parseqs\":27,\"parseuri\":28}],4:[fu" +
+                    "nction(_dereq_,module,exports){\n/**\n * Module dependencies.\n */\n\nvar parser = _d" +
+                    "ereq_(\'engine.io-parser\');\nvar Emitter = _dereq_(\'component-emitter\');\n\n/**\n * M" +
+                    "odule exports.\n */\n\nmodule.exports = Transport;\n\n/**\n * Transport abstract const" +
+                    "ructor.\n *\n * @param {Object} options.\n * @api private\n */\n\nfunction Transport (" +
+                    "opts) {\n  this.path = opts.path;\n  this.hostname = opts.hostname;\n  this.port = " +
+                    "opts.port;\n  this.secure = opts.secure;\n  this.query = opts.query;\n  this.timest" +
+                    "ampParam = opts.timestampParam;\n  this.timestampRequests = opts.timestampRequest" +
+                    "s;\n  this.readyState = \'\';\n  this.agent = opts.agent || false;\n  this.socket = o" +
+                    "pts.socket;\n  this.enablesXDR = opts.enablesXDR;\n}\n\n/**\n * Mix in `Emitter`.\n */" +
+                    "\n\nEmitter(Transport.prototype);\n\n/**\n * A counter used to prevent collisions in " +
+                    "the timestamps used\n * for cache busting.\n */\n\nTransport.timestamps = 0;\n\n/**\n *" +
+                    " Emits an error.\n *\n * @param {String} str\n * @return {Transport} for chaining\n " +
+                    "* @api public\n */\n\nTransport.prototype.onError = function (msg, desc) {\n  var er" +
+                    "r = new Error(msg);\n  err.type = \'TransportError\';\n  err.description = desc;\n  t" +
+                    "his.emit(\'error\', err);\n  return this;\n};\n\n/**\n * Opens the transport.\n *\n * @ap" +
+                    "i public\n */\n\nTransport.prototype.open = function () {\n  if (\'closed\' == this.re" +
+                    "adyState || \'\' == this.readyState) {\n    this.readyState = \'opening\';\n    this.d" +
+                    "oOpen();\n  }\n\n  return this;\n};\n\n/**\n * Closes the transport.\n *\n * @api private" +
+                    "\n */\n\nTransport.prototype.close = function () {\n  if (\'opening\' == this.readySta" +
+                    "te || \'open\' == this.readyState) {\n    this.doClose();\n    this.onClose();\n  }\n\n" +
+                    "  return this;\n};\n\n/**\n * Sends multiple packets.\n *\n * @param {Array} packets\n " +
+                    "* @api private\n */\n\nTransport.prototype.send = function(packets){\n  if (\'open\' =" +
+                    "= this.readyState) {\n    this.write(packets);\n  } else {\n    throw new Error(\'Tr" +
+                    "ansport not open\');\n  }\n};\n\n/**\n * Called upon open\n *\n * @api private\n */\n\nTran" +
+                    "sport.prototype.onOpen = function () {\n  this.readyState = \'open\';\n  this.writab" +
+                    "le = true;\n  this.emit(\'open\');\n};\n\n/**\n * Called with data.\n *\n * @param {Strin" +
+                    "g} data\n * @api private\n */\n\nTransport.prototype.onData = function(data){\n  var " +
+                    "packet = parser.decodePacket(data, this.socket.binaryType);\n  this.onPacket(pack" +
+                    "et);\n};\n\n/**\n * Called with a decoded packet.\n */\n\nTransport.prototype.onPacket " +
+                    "= function (packet) {\n  this.emit(\'packet\', packet);\n};\n\n/**\n * Called upon clos" +
+                    "e.\n *\n * @api private\n */\n\nTransport.prototype.onClose = function () {\n  this.re" +
+                    "adyState = \'closed\';\n  this.emit(\'close\');\n};\n\n},{\"component-emitter\":12,\"engine" +
+                    ".io-parser\":17}],5:[function(_dereq_,module,exports){\n(function (global){\n/**\n *" +
+                    " Module dependencies\n */\n\nvar XMLHttpRequest = _dereq_(\'xmlhttprequest\');\nvar XH" +
+                    "R = _dereq_(\'./polling-xhr\');\nvar JSONP = _dereq_(\'./polling-jsonp\');\nvar websoc" +
+                    "ket = _dereq_(\'./websocket\');\n\n/**\n * Export transports.\n */\n\nexports.polling = " +
+                    "polling;\nexports.websocket = websocket;\n\n/**\n * Polling transport polymorphic co" +
+                    "nstructor.\n * Decides on xhr vs jsonp based on feature detection.\n *\n * @api pri" +
+                    "vate\n */\n\nfunction polling(opts){\n  var xhr;\n  var xd = false;\n  var xs = false;" +
+                    "\n  var jsonp = false !== opts.jsonp;\n\n  if (global.location) {\n    var isSSL = \'" +
+                    "https:\' == location.protocol;\n    var port = location.port;\n\n    // some user ag" +
+                    "ents have empty `location.port`\n    if (!port) {\n      port = isSSL ? 443 : 80;\n" +
+                    "    }\n\n    xd = opts.hostname != location.hostname || port != opts.port;\n    xs " +
+                    "= opts.secure != isSSL;\n  }\n\n  opts.xdomain = xd;\n  opts.xscheme = xs;\n  xhr = n" +
+                    "ew XMLHttpRequest(opts);\n\n  if (\'open\' in xhr && !opts.forceJSONP) {\n    return " +
+                    "new XHR(opts);\n  } else {\n    if (!jsonp) throw new Error(\'JSONP disabled\');\n   " +
+                    " return new JSONP(opts);\n  }\n}\n\n}).call(this,typeof self !== \"undefined\" ? self " +
+                    ": typeof window !== \"undefined\" ? window : {})\n},{\"./polling-jsonp\":6,\"./polling" +
+                    "-xhr\":7,\"./websocket\":9,\"xmlhttprequest\":10}],6:[function(_dereq_,module,exports" +
+                    "){\n(function (global){\n\n/**\n * Module requirements.\n */\n\nvar Polling = _dereq_(\'" +
+                    "./polling\');\nvar inherit = _dereq_(\'component-inherit\');\n\n/**\n * Module exports." +
+                    "\n */\n\nmodule.exports = JSONPPolling;\n\n/**\n * Cached regular expressions.\n */\n\nva" +
+                    "r rNewline = /\\n/g;\nvar rEscapedNewline = /\\\\n/g;\n\n/**\n * Global JSONP callbacks" +
+                    ".\n */\n\nvar callbacks;\n\n/**\n * Callbacks count.\n */\n\nvar index = 0;\n\n/**\n * Noop." +
+                    "\n */\n\nfunction empty () { }\n\n/**\n * JSONP Polling constructor.\n *\n * @param {Obj" +
+                    "ect} opts.\n * @api public\n */\n\nfunction JSONPPolling (opts) {\n  Polling.call(thi" +
+                    "s, opts);\n\n  this.query = this.query || {};\n\n  // define global callbacks array " +
+                    "if not present\n  // we do this here (lazily) to avoid unneeded global pollution\n" +
+                    "  if (!callbacks) {\n    // we need to consider multiple engines in the same page" +
+                    "\n    if (!global.___eio) global.___eio = [];\n    callbacks = global.___eio;\n  }\n" +
+                    "\n  // callback identifier\n  this.index = callbacks.length;\n\n  // add callback to" +
+                    " jsonp global\n  var self = this;\n  callbacks.push(function (msg) {\n    self.onDa" +
+                    "ta(msg);\n  });\n\n  // append to query string\n  this.query.j = this.index;\n\n  // p" +
+                    "revent spurious errors from being emitted when the window is unloaded\n  if (glob" +
+                    "al.document && global.addEventListener) {\n    global.addEventListener(\'beforeunl" +
+                    "oad\', function () {\n      if (self.script) self.script.onerror = empty;\n    }, f" +
+                    "alse);\n  }\n}\n\n/**\n * Inherits from Polling.\n */\n\ninherit(JSONPPolling, Polling);" +
+                    "\n\n/*\n * JSONP only supports binary as base64 encoded strings\n */\n\nJSONPPolling.p" +
+                    "rototype.supportsBinary = false;\n\n/**\n * Closes the socket.\n *\n * @api private\n " +
+                    "*/\n\nJSONPPolling.prototype.doClose = function () {\n  if (this.script) {\n    this" +
+                    ".script.parentNode.removeChild(this.script);\n    this.script = null;\n  }\n\n  if (" +
+                    "this.form) {\n    this.form.parentNode.removeChild(this.form);\n    this.form = nu" +
+                    "ll;\n    this.iframe = null;\n  }\n\n  Polling.prototype.doClose.call(this);\n};\n\n/**" +
+                    "\n * Starts a poll cycle.\n *\n * @api private\n */\n\nJSONPPolling.prototype.doPoll =" +
+                    " function () {\n  var self = this;\n  var script = document.createElement(\'script\'" +
+                    ");\n\n  if (this.script) {\n    this.script.parentNode.removeChild(this.script);\n  " +
+                    "  this.script = null;\n  }\n\n  script.async = true;\n  script.src = this.uri();\n  s" +
+                    "cript.onerror = function(e){\n    self.onError(\'jsonp poll error\',e);\n  };\n\n  var" +
+                    " insertAt = document.getElementsByTagName(\'script\')[0];\n  insertAt.parentNode.in" +
+                    "sertBefore(script, insertAt);\n  this.script = script;\n\n  var isUAgecko = \'undefi" +
+                    "ned\' != typeof navigator && /gecko/i.test(navigator.userAgent);\n  \n  if (isUAgec" +
+                    "ko) {\n    setTimeout(function () {\n      var iframe = document.createElement(\'if" +
+                    "rame\');\n      document.body.appendChild(iframe);\n      document.body.removeChild" +
+                    "(iframe);\n    }, 100);\n  }\n};\n\n/**\n * Writes with a hidden iframe.\n *\n * @param " +
+                    "{String} data to send\n * @param {Function} called upon flush.\n * @api private\n *" +
+                    "/\n\nJSONPPolling.prototype.doWrite = function (data, fn) {\n  var self = this;\n\n  " +
+                    "if (!this.form) {\n    var form = document.createElement(\'form\');\n    var area = " +
+                    "document.createElement(\'textarea\');\n    var id = this.iframeId = \'eio_iframe_\' +" +
+                    " this.index;\n    var iframe;\n\n    form.className = \'socketio\';\n    form.style.po" +
+                    "sition = \'absolute\';\n    form.style.top = \'-1000px\';\n    form.style.left = \'-100" +
+                    "0px\';\n    form.target = id;\n    form.method = \'POST\';\n    form.setAttribute(\'acc" +
+                    "ept-charset\', \'utf-8\');\n    area.name = \'d\';\n    form.appendChild(area);\n    doc" +
+                    "ument.body.appendChild(form);\n\n    this.form = form;\n    this.area = area;\n  }\n\n" +
+                    "  this.form.action = this.uri();\n\n  function complete () {\n    initIframe();\n   " +
+                    " fn();\n  }\n\n  function initIframe () {\n    if (self.iframe) {\n      try {\n      " +
+                    "  self.form.removeChild(self.iframe);\n      } catch (e) {\n        self.onError(\'" +
+                    "jsonp polling iframe removal error\', e);\n      }\n    }\n\n    try {\n      // ie6 d" +
+                    "ynamic iframes with target=\"\" support (thanks Chris Lambacher)\n      var html = " +
+                    "\'<iframe src=\"javascript:0\" name=\"\'+ self.iframeId +\'\">\';\n      iframe = documen" +
+                    "t.createElement(html);\n    } catch (e) {\n      iframe = document.createElement(\'" +
+                    "iframe\');\n      iframe.name = self.iframeId;\n      iframe.src = \'javascript:0\';\n" +
+                    "    }\n\n    iframe.id = self.iframeId;\n\n    self.form.appendChild(iframe);\n    se" +
+                    "lf.iframe = iframe;\n  }\n\n  initIframe();\n\n  // escape \\n to prevent it from bein" +
+                    "g converted into \\r\\n by some UAs\n  // double escaping is required for escaped n" +
+                    "ew lines because unescaping of new lines can be done safely on server-side\n  dat" +
+                    "a = data.replace(rEscapedNewline, \'\\\\\\n\');\n  this.area.value = data.replace(rNew" +
+                    "line, \'\\\\n\');\n\n  try {\n    this.form.submit();\n  } catch(e) {}\n\n  if (this.ifram" +
+                    "e.attachEvent) {\n    this.iframe.onreadystatechange = function(){\n      if (self" +
+                    ".iframe.readyState == \'complete\') {\n        complete();\n      }\n    };\n  } else " +
+                    "{\n    this.iframe.onload = complete;\n  }\n};\n\n}).call(this,typeof self !== \"undef" +
+                    "ined\" ? self : typeof window !== \"undefined\" ? window : {})\n},{\"./polling\":8,\"co" +
+                    "mponent-inherit\":13}],7:[function(_dereq_,module,exports){\n(function (global){\n/" +
+                    "**\n * Module requirements.\n */\n\nvar XMLHttpRequest = _dereq_(\'xmlhttprequest\');\n" +
+                    "var Polling = _dereq_(\'./polling\');\nvar Emitter = _dereq_(\'component-emitter\');\n" +
+                    "var inherit = _dereq_(\'component-inherit\');\nvar debug = _dereq_(\'debug\')(\'engine" +
+                    ".io-client:polling-xhr\');\n\n/**\n * Module exports.\n */\n\nmodule.exports = XHR;\nmod" +
+                    "ule.exports.Request = Request;\n\n/**\n * Empty function\n */\n\nfunction empty(){}\n\n/" +
+                    "**\n * XHR Polling constructor.\n *\n * @param {Object} opts\n * @api public\n */\n\nfu" +
+                    "nction XHR(opts){\n  Polling.call(this, opts);\n\n  if (global.location) {\n    var " +
+                    "isSSL = \'https:\' == location.protocol;\n    var port = location.port;\n\n    // som" +
+                    "e user agents have empty `location.port`\n    if (!port) {\n      port = isSSL ? 4" +
+                    "43 : 80;\n    }\n\n    this.xd = opts.hostname != global.location.hostname ||\n     " +
+                    " port != opts.port;\n    this.xs = opts.secure != isSSL;\n  }\n}\n\n/**\n * Inherits f" +
+                    "rom Polling.\n */\n\ninherit(XHR, Polling);\n\n/**\n * XHR supports binary\n */\n\nXHR.pr" +
+                    "ototype.supportsBinary = true;\n\n/**\n * Creates a request.\n *\n * @param {String} " +
+                    "method\n * @api private\n */\n\nXHR.prototype.request = function(opts){\n  opts = opt" +
+                    "s || {};\n  opts.uri = this.uri();\n  opts.xd = this.xd;\n  opts.xs = this.xs;\n  op" +
+                    "ts.agent = this.agent || false;\n  opts.supportsBinary = this.supportsBinary;\n  o" +
+                    "pts.enablesXDR = this.enablesXDR;\n  return new Request(opts);\n};\n\n/**\n * Sends d" +
+                    "ata.\n *\n * @param {String} data to send.\n * @param {Function} called upon flush." +
+                    "\n * @api private\n */\n\nXHR.prototype.doWrite = function(data, fn){\n  var isBinary" +
+                    " = typeof data !== \'string\' && data !== undefined;\n  var req = this.request({ me" +
+                    "thod: \'POST\', data: data, isBinary: isBinary });\n  var self = this;\n  req.on(\'su" +
+                    "ccess\', fn);\n  req.on(\'error\', function(err){\n    self.onError(\'xhr post error\'," +
+                    " err);\n  });\n  this.sendXhr = req;\n};\n\n/**\n * Starts a poll cycle.\n *\n * @api pr" +
+                    "ivate\n */\n\nXHR.prototype.doPoll = function(){\n  debug(\'xhr poll\');\n  var req = t" +
+                    "his.request();\n  var self = this;\n  req.on(\'data\', function(data){\n    self.onDa" +
+                    "ta(data);\n  });\n  req.on(\'error\', function(err){\n    self.onError(\'xhr poll erro" +
+                    "r\', err);\n  });\n  this.pollXhr = req;\n};\n\n/**\n * Request constructor\n *\n * @para" +
+                    "m {Object} options\n * @api public\n */\n\nfunction Request(opts){\n  this.method = o" +
+                    "pts.method || \'GET\';\n  this.uri = opts.uri;\n  this.xd = !!opts.xd;\n  this.xs = !" +
+                    "!opts.xs;\n  this.async = false !== opts.async;\n  this.data = undefined != opts.d" +
+                    "ata ? opts.data : null;\n  this.agent = opts.agent;\n  this.isBinary = opts.isBina" +
+                    "ry;\n  this.supportsBinary = opts.supportsBinary;\n  this.enablesXDR = opts.enable" +
+                    "sXDR;\n  this.create();\n}\n\n/**\n * Mix in `Emitter`.\n */\n\nEmitter(Request.prototyp" +
+                    "e);\n\n/**\n * Creates the XHR object and sends the request.\n *\n * @api private\n */" +
+                    "\n\nRequest.prototype.create = function(){\n  var xhr = this.xhr = new XMLHttpReque" +
+                    "st({ agent: this.agent, xdomain: this.xd, xscheme: this.xs, enablesXDR: this.ena" +
+                    "blesXDR });\n  var self = this;\n\n  try {\n    debug(\'xhr open %s: %s\', this.method" +
+                    ", this.uri);\n    xhr.open(this.method, this.uri, this.async);\n    if (this.suppo" +
+                    "rtsBinary) {\n      // This has to be done after open because Firefox is stupid\n " +
+                    "     // http://stackoverflow.com/questions/13216903/get-binary-data-with-xmlhttp" +
+                    "request-in-a-firefox-extension\n      xhr.responseType = \'arraybuffer\';\n    }\n\n  " +
+                    "  if (\'POST\' == this.method) {\n      try {\n        if (this.isBinary) {\n        " +
+                    "  xhr.setRequestHeader(\'Content-type\', \'application/octet-stream\');\n        } el" +
+                    "se {\n          xhr.setRequestHeader(\'Content-type\', \'text/plain;charset=UTF-8\');" +
+                    "\n        }\n      } catch (e) {}\n    }\n\n    // ie6 check\n    if (\'withCredentials" +
+                    "\' in xhr) {\n      xhr.withCredentials = true;\n    }\n\n    if (this.hasXDR()) {\n  " +
+                    "    xhr.onload = function(){\n        self.onLoad();\n      };\n      xhr.onerror =" +
+                    " function(){\n        self.onError(xhr.responseText);\n      };\n    } else {\n     " +
+                    " xhr.onreadystatechange = function(){\n        if (4 != xhr.readyState) return;\n " +
+                    "       if (200 == xhr.status || 1223 == xhr.status) {\n          self.onLoad();\n " +
+                    "       } else {\n          // make sure the `error` event handler that\'s user-set" +
+                    "\n          // does not throw in the same tick and gets caught here\n          set" +
+                    "Timeout(function(){\n            self.onError(xhr.status);\n          }, 0);\n     " +
+                    "   }\n      };\n    }\n\n    debug(\'xhr data %s\', this.data);\n    xhr.send(this.data" +
+                    ");\n  } catch (e) {\n    // Need to defer since .create() is called directly fhrom" +
+                    " the constructor\n    // and thus the \'error\' event can only be only bound *after" +
+                    "* this exception\n    // occurs.  Therefore, also, we cannot throw here at all.\n " +
+                    "   setTimeout(function() {\n      self.onError(e);\n    }, 0);\n    return;\n  }\n\n  " +
+                    "if (global.document) {\n    this.index = Request.requestsCount++;\n    Request.req" +
+                    "uests[this.index] = this;\n  }\n};\n\n/**\n * Called upon successful response.\n *\n * " +
+                    "@api private\n */\n\nRequest.prototype.onSuccess = function(){\n  this.emit(\'success" +
+                    "\');\n  this.cleanup();\n};\n\n/**\n * Called if we have data.\n *\n * @api private\n */\n" +
+                    "\nRequest.prototype.onData = function(data){\n  this.emit(\'data\', data);\n  this.on" +
+                    "Success();\n};\n\n/**\n * Called upon error.\n *\n * @api private\n */\n\nRequest.prototy" +
+                    "pe.onError = function(err){\n  this.emit(\'error\', err);\n  this.cleanup();\n};\n\n/**" +
+                    "\n * Cleans up house.\n *\n * @api private\n */\n\nRequest.prototype.cleanup = functio" +
+                    "n(){\n  if (\'undefined\' == typeof this.xhr || null === this.xhr) {\n    return;\n  " +
+                    "}\n  // xmlhttprequest\n  if (this.hasXDR()) {\n    this.xhr.onload = this.xhr.oner" +
+                    "ror = empty;\n  } else {\n    this.xhr.onreadystatechange = empty;\n  }\n\n  try {\n  " +
+                    "  this.xhr.abort();\n  } catch(e) {}\n\n  if (global.document) {\n    delete Request" +
+                    ".requests[this.index];\n  }\n\n  this.xhr = null;\n};\n\n/**\n * Called upon load.\n *\n " +
+                    "* @api private\n */\n\nRequest.prototype.onLoad = function(){\n  var data;\n  try {\n " +
+                    "   var contentType;\n    try {\n      contentType = this.xhr.getResponseHeader(\'Co" +
+                    "ntent-Type\').split(\';\')[0];\n    } catch (e) {}\n    if (contentType === \'applicat" +
+                    "ion/octet-stream\') {\n      data = this.xhr.response;\n    } else {\n      if (!thi" +
+                    "s.supportsBinary) {\n        data = this.xhr.responseText;\n      } else {\n       " +
+                    " data = \'ok\';\n      }\n    }\n  } catch (e) {\n    this.onError(e);\n  }\n  if (null " +
+                    "!= data) {\n    this.onData(data);\n  }\n};\n\n/**\n * Check if it has XDomainRequest." +
+                    "\n *\n * @api private\n */\n\nRequest.prototype.hasXDR = function(){\n  return \'undefi" +
+                    "ned\' !== typeof global.XDomainRequest && !this.xs && this.enablesXDR;\n};\n\n/**\n *" +
+                    " Aborts the request.\n *\n * @api public\n */\n\nRequest.prototype.abort = function()" +
+                    "{\n  this.cleanup();\n};\n\n/**\n * Aborts pending requests when unloading the window" +
+                    ". This is needed to prevent\n * memory leaks (e.g. when using IE) and to ensure t" +
+                    "hat no spurious error is\n * emitted.\n */\n\nif (global.document) {\n  Request.reque" +
+                    "stsCount = 0;\n  Request.requests = {};\n  if (global.attachEvent) {\n    global.at" +
+                    "tachEvent(\'onunload\', unloadHandler);\n  } else if (global.addEventListener) {\n  " +
+                    "  global.addEventListener(\'beforeunload\', unloadHandler, false);\n  }\n}\n\nfunction" +
+                    " unloadHandler() {\n  for (var i in Request.requests) {\n    if (Request.requests." +
+                    "hasOwnProperty(i)) {\n      Request.requests[i].abort();\n    }\n  }\n}\n\n}).call(thi" +
+                    "s,typeof self !== \"undefined\" ? self : typeof window !== \"undefined\" ? window : " +
+                    "{})\n},{\"./polling\":8,\"component-emitter\":12,\"component-inherit\":13,\"debug\":14,\"x" +
+                    "mlhttprequest\":10}],8:[function(_dereq_,module,exports){\n/**\n * Module dependenc" +
+                    "ies.\n */\n\nvar Transport = _dereq_(\'../transport\');\nvar parseqs = _dereq_(\'parseq" +
+                    "s\');\nvar parser = _dereq_(\'engine.io-parser\');\nvar inherit = _dereq_(\'component-" +
+                    "inherit\');\nvar debug = _dereq_(\'debug\')(\'engine.io-client:polling\');\n\n/**\n * Mod" +
+                    "ule exports.\n */\n\nmodule.exports = Polling;\n\n/**\n * Is XHR2 supported?\n */\n\nvar " +
+                    "hasXHR2 = (function() {\n  var XMLHttpRequest = _dereq_(\'xmlhttprequest\');\n  var " +
+                    "xhr = new XMLHttpRequest({ xdomain: false });\n  return null != xhr.responseType;" +
+                    "\n})();\n\n/**\n * Polling interface.\n *\n * @param {Object} opts\n * @api private\n */" +
+                    "\n\nfunction Polling(opts){\n  var forceBase64 = (opts && opts.forceBase64);\n  if (" +
+                    "!hasXHR2 || forceBase64) {\n    this.supportsBinary = false;\n  }\n  Transport.call" +
+                    "(this, opts);\n}\n\n/**\n * Inherits from Transport.\n */\n\ninherit(Polling, Transport" +
+                    ");\n\n/**\n * Transport name.\n */\n\nPolling.prototype.name = \'polling\';\n\n/**\n * Open" +
+                    "s the socket (triggers polling). We write a PING message to determine\n * when th" +
+                    "e transport is open.\n *\n * @api private\n */\n\nPolling.prototype.doOpen = function" +
+                    "(){\n  this.poll();\n};\n\n/**\n * Pauses polling.\n *\n * @param {Function} callback u" +
+                    "pon buffers are flushed and transport is paused\n * @api private\n */\n\nPolling.pro" +
+                    "totype.pause = function(onPause){\n  var pending = 0;\n  var self = this;\n\n  this." +
+                    "readyState = \'pausing\';\n\n  function pause(){\n    debug(\'paused\');\n    self.ready" +
+                    "State = \'paused\';\n    onPause();\n  }\n\n  if (this.polling || !this.writable) {\n  " +
+                    "  var total = 0;\n\n    if (this.polling) {\n      debug(\'we are currently polling " +
+                    "- waiting to pause\');\n      total++;\n      this.once(\'pollComplete\', function(){" +
+                    "\n        debug(\'pre-pause polling complete\');\n        --total || pause();\n      " +
+                    "});\n    }\n\n    if (!this.writable) {\n      debug(\'we are currently writing - wai" +
+                    "ting to pause\');\n      total++;\n      this.once(\'drain\', function(){\n        deb" +
+                    "ug(\'pre-pause writing complete\');\n        --total || pause();\n      });\n    }\n  " +
+                    "} else {\n    pause();\n  }\n};\n\n/**\n * Starts polling cycle.\n *\n * @api public\n */" +
+                    "\n\nPolling.prototype.poll = function(){\n  debug(\'polling\');\n  this.polling = true" +
+                    ";\n  this.doPoll();\n  this.emit(\'poll\');\n};\n\n/**\n * Overloads onData to detect pa" +
+                    "yloads.\n *\n * @api private\n */\n\nPolling.prototype.onData = function(data){\n  var" +
+                    " self = this;\n  debug(\'polling got data %s\', data);\n  var callback = function(pa" +
+                    "cket, index, total) {\n    // if its the first message we consider the transport " +
+                    "open\n    if (\'opening\' == self.readyState) {\n      self.onOpen();\n    }\n\n    // " +
+                    "if its a close packet, we close the ongoing requests\n    if (\'close\' == packet.t" +
+                    "ype) {\n      self.onClose();\n      return false;\n    }\n\n    // otherwise bypass " +
+                    "onData and handle the message\n    self.onPacket(packet);\n  };\n\n  // decode paylo" +
+                    "ad\n  parser.decodePayload(data, this.socket.binaryType, callback);\n\n  // if an e" +
+                    "vent did not trigger closing\n  if (\'closed\' != this.readyState) {\n    // if we g" +
+                    "ot data we\'re not polling\n    this.polling = false;\n    this.emit(\'pollComplete\'" +
+                    ");\n\n    if (\'open\' == this.readyState) {\n      this.poll();\n    } else {\n      d" +
+                    "ebug(\'ignoring poll - transport state \"%s\"\', this.readyState);\n    }\n  }\n};\n\n/**" +
+                    "\n * For polling, send a close packet.\n *\n * @api private\n */\n\nPolling.prototype." +
+                    "doClose = function(){\n  var self = this;\n\n  function close(){\n    debug(\'writing" +
+                    " close packet\');\n    self.write([{ type: \'close\' }]);\n  }\n\n  if (\'open\' == this." +
+                    "readyState) {\n    debug(\'transport open - closing\');\n    close();\n  } else {\n   " +
+                    " // in case we\'re trying to close while\n    // handshaking is in progress (GH-16" +
+                    "4)\n    debug(\'transport not open - deferring close\');\n    this.once(\'open\', clos" +
+                    "e);\n  }\n};\n\n/**\n * Writes a packets payload.\n *\n * @param {Array} data packets\n " +
+                    "* @param {Function} drain callback\n * @api private\n */\n\nPolling.prototype.write " +
+                    "= function(packets){\n  var self = this;\n  this.writable = false;\n  var callbackf" +
+                    "n = function() {\n    self.writable = true;\n    self.emit(\'drain\');\n  };\n\n  var s" +
+                    "elf = this;\n  parser.encodePayload(packets, this.supportsBinary, function(data) " +
+                    "{\n    self.doWrite(data, callbackfn);\n  });\n};\n\n/**\n * Generates uri for connect" +
+                    "ion.\n *\n * @api private\n */\n\nPolling.prototype.uri = function(){\n  var query = t" +
+                    "his.query || {};\n  var schema = this.secure ? \'https\' : \'http\';\n  var port = \'\';" +
+                    "\n\n  // cache busting is forced\n  if (false !== this.timestampRequests) {\n    que" +
+                    "ry[this.timestampParam] = +new Date + \'-\' + Transport.timestamps++;\n  }\n\n  if (!" +
+                    "this.supportsBinary && !query.sid) {\n    query.b64 = 1;\n  }\n\n  query = parseqs.e" +
+                    "ncode(query);\n\n  // avoid port if default for schema\n  if (this.port && ((\'https" +
+                    "\' == schema && this.port != 443) ||\n     (\'http\' == schema && this.port != 80)))" +
+                    " {\n    port = \':\' + this.port;\n  }\n\n  // prepend ? to query\n  if (query.length) " +
+                    "{\n    query = \'?\' + query;\n  }\n\n  return schema + \'://\' + this.hostname + port +" +
+                    " this.path + query;\n};\n\n},{\"../transport\":4,\"component-inherit\":13,\"debug\":14,\"e" +
+                    "ngine.io-parser\":17,\"parseqs\":27,\"xmlhttprequest\":10}],9:[function(_dereq_,modul" +
+                    "e,exports){\n/**\n * Module dependencies.\n */\n\nvar Transport = _dereq_(\'../transpo" +
+                    "rt\');\nvar parser = _dereq_(\'engine.io-parser\');\nvar parseqs = _dereq_(\'parseqs\')" +
+                    ";\nvar inherit = _dereq_(\'component-inherit\');\nvar debug = _dereq_(\'debug\')(\'engi" +
+                    "ne.io-client:websocket\');\n\n/**\n * `ws` exposes a WebSocket-compatible interface " +
+                    "in\n * Node, or the `WebSocket` or `MozWebSocket` globals\n * in the browser.\n */\n" +
+                    "\nvar WebSocket = _dereq_(\'ws\');\n\n/**\n * Module exports.\n */\n\nmodule.exports = WS" +
+                    ";\n\n/**\n * WebSocket transport constructor.\n *\n * @api {Object} connection option" +
+                    "s\n * @api public\n */\n\nfunction WS(opts){\n  var forceBase64 = (opts && opts.force" +
+                    "Base64);\n  if (forceBase64) {\n    this.supportsBinary = false;\n  }\n  Transport.c" +
+                    "all(this, opts);\n}\n\n/**\n * Inherits from Transport.\n */\n\ninherit(WS, Transport);" +
+                    "\n\n/**\n * Transport name.\n *\n * @api public\n */\n\nWS.prototype.name = \'websocket\';" +
+                    "\n\n/*\n * WebSockets support binary\n */\n\nWS.prototype.supportsBinary = true;\n\n/**\n" +
+                    " * Opens socket.\n *\n * @api private\n */\n\nWS.prototype.doOpen = function(){\n  if " +
+                    "(!this.check()) {\n    // let probe timeout\n    return;\n  }\n\n  var self = this;\n " +
+                    " var uri = this.uri();\n  var protocols = void(0);\n  var opts = { agent: this.age" +
+                    "nt };\n\n  this.ws = new WebSocket(uri, protocols, opts);\n\n  if (this.ws.binaryTyp" +
+                    "e === undefined) {\n    this.supportsBinary = false;\n  }\n\n  this.ws.binaryType = " +
+                    "\'arraybuffer\';\n  this.addEventListeners();\n};\n\n/**\n * Adds event listeners to th" +
+                    "e socket\n *\n * @api private\n */\n\nWS.prototype.addEventListeners = function(){\n  " +
+                    "var self = this;\n\n  this.ws.onopen = function(){\n    self.onOpen();\n  };\n  this." +
+                    "ws.onclose = function(){\n    self.onClose();\n  };\n  this.ws.onmessage = function" +
+                    "(ev){\n    self.onData(ev.data);\n  };\n  this.ws.onerror = function(e){\n    self.o" +
+                    "nError(\'websocket error\', e);\n  };\n};\n\n/**\n * Override `onData` to use a timer o" +
+                    "n iOS.\n * See: https://gist.github.com/mloughran/2052006\n *\n * @api private\n */\n" +
+                    "\nif (\'undefined\' != typeof navigator\n  && /iPad|iPhone|iPod/i.test(navigator.use" +
+                    "rAgent)) {\n  WS.prototype.onData = function(data){\n    var self = this;\n    setT" +
+                    "imeout(function(){\n      Transport.prototype.onData.call(self, data);\n    }, 0);" +
+                    "\n  };\n}\n\n/**\n * Writes data to socket.\n *\n * @param {Array} array of packets.\n *" +
+                    " @api private\n */\n\nWS.prototype.write = function(packets){\n  var self = this;\n  " +
+                    "this.writable = false;\n  // encodePacket efficient as it uses WS framing\n  // no" +
+                    " need for encodePayload\n  for (var i = 0, l = packets.length; i < l; i++) {\n    " +
+                    "parser.encodePacket(packets[i], this.supportsBinary, function(data) {\n      //So" +
+                    "metimes the websocket has already been closed but the browser didn\'t\n      //hav" +
+                    "e a chance of informing us about it yet, in that case send will\n      //throw an" +
+                    " error\n      try {\n        self.ws.send(data);\n      } catch (e){\n        debug(" +
+                    "\'websocket closed before onclose event\');\n      }\n    });\n  }\n\n  function ondrai" +
+                    "n() {\n    self.writable = true;\n    self.emit(\'drain\');\n  }\n  // fake drain\n  //" +
+                    " defer to next tick to allow Socket to clear writeBuffer\n  setTimeout(ondrain, 0" +
+                    ");\n};\n\n/**\n * Called upon close\n *\n * @api private\n */\n\nWS.prototype.onClose = f" +
+                    "unction(){\n  Transport.prototype.onClose.call(this);\n};\n\n/**\n * Closes socket.\n " +
+                    "*\n * @api private\n */\n\nWS.prototype.doClose = function(){\n  if (typeof this.ws !" +
+                    "== \'undefined\') {\n    this.ws.close();\n  }\n};\n\n/**\n * Generates uri for connecti" +
+                    "on.\n *\n * @api private\n */\n\nWS.prototype.uri = function(){\n  var query = this.qu" +
+                    "ery || {};\n  var schema = this.secure ? \'wss\' : \'ws\';\n  var port = \'\';\n\n  // avo" +
+                    "id port if default for schema\n  if (this.port && ((\'wss\' == schema && this.port " +
+                    "!= 443)\n    || (\'ws\' == schema && this.port != 80))) {\n    port = \':\' + this.por" +
+                    "t;\n  }\n\n  // append timestamp to URI\n  if (this.timestampRequests) {\n    query[t" +
+                    "his.timestampParam] = +new Date;\n  }\n\n  // communicate binary support capabiliti" +
+                    "es\n  if (!this.supportsBinary) {\n    query.b64 = 1;\n  }\n\n  query = parseqs.encod" +
+                    "e(query);\n\n  // prepend ? to query\n  if (query.length) {\n    query = \'?\' + query" +
+                    ";\n  }\n\n  return schema + \'://\' + this.hostname + port + this.path + query;\n};\n\n/" +
+                    "**\n * Feature detection for WebSocket.\n *\n * @return {Boolean} whether this tran" +
+                    "sport is available.\n * @api public\n */\n\nWS.prototype.check = function(){\n  retur" +
+                    "n !!WebSocket && !(\'__initialize\' in WebSocket && this.name === WS.prototype.nam" +
+                    "e);\n};\n\n},{\"../transport\":4,\"component-inherit\":13,\"debug\":14,\"engine.io-parser\"" +
+                    ":17,\"parseqs\":27,\"ws\":29}],10:[function(_dereq_,module,exports){\n// browser shim" +
+                    " for xmlhttprequest module\nvar hasCORS = _dereq_(\'has-cors\');\n\nmodule.exports = " +
+                    "function(opts) {\n  var xdomain = opts.xdomain;\n\n  // scheme must be same when us" +
+                    "ign XDomainRequest\n  // http://blogs.msdn.com/b/ieinternals/archive/2010/05/13/x" +
+                    "domainrequest-restrictions-limitations-and-workarounds.aspx\n  var xscheme = opts" +
+                    ".xscheme;\n\n  // XDomainRequest has a flow of not sending cookie, therefore it sh" +
+                    "ould be disabled as a default.\n  // https://github.com/Automattic/engine.io-clie" +
+                    "nt/pull/217\n  var enablesXDR = opts.enablesXDR;\n\n  // XMLHttpRequest can be disa" +
+                    "bled on IE\n  try {\n    if (\'undefined\' != typeof XMLHttpRequest && (!xdomain || " +
+                    "hasCORS)) {\n      return new XMLHttpRequest();\n    }\n  } catch (e) { }\n\n  // Use" +
+                    " XDomainRequest for IE8 if enablesXDR is true\n  // because loading bar keeps fla" +
+                    "shing when using jsonp-polling\n  // https://github.com/yujiosaka/socke.io-ie8-lo" +
+                    "ading-example\n  try {\n    if (\'undefined\' != typeof XDomainRequest && !xscheme &" +
+                    "& enablesXDR) {\n      return new XDomainRequest();\n    }\n  } catch (e) { }\n\n  if" +
+                    " (!xdomain) {\n    try {\n      return new ActiveXObject(\'Microsoft.XMLHTTP\');\n   " +
+                    " } catch(e) { }\n  }\n}\n\n},{\"has-cors\":23}],11:[function(_dereq_,module,exports){\n" +
+                    "(function (global){\n/**\n * Create a blob builder even when vendor prefixes exist" +
+                    "\n */\n\nvar BlobBuilder = global.BlobBuilder\n  || global.WebKitBlobBuilder\n  || gl" +
+                    "obal.MSBlobBuilder\n  || global.MozBlobBuilder;\n\n/**\n * Check if Blob constructor" +
+                    " is supported\n */\n\nvar blobSupported = (function() {\n  try {\n    var b = new Blo" +
+                    "b([\'hi\']);\n    return b.size == 2;\n  } catch(e) {\n    return false;\n  }\n})();\n\n/" +
+                    "**\n * Check if BlobBuilder is supported\n */\n\nvar blobBuilderSupported = BlobBuil" +
+                    "der\n  && BlobBuilder.prototype.append\n  && BlobBuilder.prototype.getBlob;\n\nfunct" +
+                    "ion BlobBuilderConstructor(ary, options) {\n  options = options || {};\n\n  var bb " +
+                    "= new BlobBuilder();\n  for (var i = 0; i < ary.length; i++) {\n    bb.append(ary[" +
+                    "i]);\n  }\n  return (options.type) ? bb.getBlob(options.type) : bb.getBlob();\n};\n\n" +
+                    "module.exports = (function() {\n  if (blobSupported) {\n    return global.Blob;\n  " +
+                    "} else if (blobBuilderSupported) {\n    return BlobBuilderConstructor;\n  } else {" +
+                    "\n    return undefined;\n  }\n})();\n\n}).call(this,typeof self !== \"undefined\" ? sel" +
+                    "f : typeof window !== \"undefined\" ? window : {})\n},{}],12:[function(_dereq_,modu" +
+                    "le,exports){\n\n/**\n * Expose `Emitter`.\n */\n\nmodule.exports = Emitter;\n\n/**\n * In" +
+                    "itialize a new `Emitter`.\n *\n * @api public\n */\n\nfunction Emitter(obj) {\n  if (o" +
+                    "bj) return mixin(obj);\n};\n\n/**\n * Mixin the emitter properties.\n *\n * @param {Ob" +
+                    "ject} obj\n * @return {Object}\n * @api private\n */\n\nfunction mixin(obj) {\n  for (" +
+                    "var key in Emitter.prototype) {\n    obj[key] = Emitter.prototype[key];\n  }\n  ret" +
+                    "urn obj;\n}\n\n/**\n * Listen on the given `event` with `fn`.\n *\n * @param {String} " +
+                    "event\n * @param {Function} fn\n * @return {Emitter}\n * @api public\n */\n\nEmitter.p" +
+                    "rototype.on =\nEmitter.prototype.addEventListener = function(event, fn){\n  this._" +
+                    "callbacks = this._callbacks || {};\n  (this._callbacks[event] = this._callbacks[e" +
+                    "vent] || [])\n    .push(fn);\n  return this;\n};\n\n/**\n * Adds an `event` listener t" +
+                    "hat will be invoked a single\n * time then automatically removed.\n *\n * @param {S" +
+                    "tring} event\n * @param {Function} fn\n * @return {Emitter}\n * @api public\n */\n\nEm" +
+                    "itter.prototype.once = function(event, fn){\n  var self = this;\n  this._callbacks" +
+                    " = this._callbacks || {};\n\n  function on() {\n    self.off(event, on);\n    fn.app" +
+                    "ly(this, arguments);\n  }\n\n  on.fn = fn;\n  this.on(event, on);\n  return this;\n};\n" +
+                    "\n/**\n * Remove the given callback for `event` or all\n * registered callbacks.\n *" +
+                    "\n * @param {String} event\n * @param {Function} fn\n * @return {Emitter}\n * @api p" +
+                    "ublic\n */\n\nEmitter.prototype.off =\nEmitter.prototype.removeListener =\nEmitter.pr" +
+                    "ototype.removeAllListeners =\nEmitter.prototype.removeEventListener = function(ev" +
+                    "ent, fn){\n  this._callbacks = this._callbacks || {};\n\n  // all\n  if (0 == argume" +
+                    "nts.length) {\n    this._callbacks = {};\n    return this;\n  }\n\n  // specific even" +
+                    "t\n  var callbacks = this._callbacks[event];\n  if (!callbacks) return this;\n\n  //" +
+                    " remove all handlers\n  if (1 == arguments.length) {\n    delete this._callbacks[e" +
+                    "vent];\n    return this;\n  }\n\n  // remove specific handler\n  var cb;\n  for (var i" +
+                    " = 0; i < callbacks.length; i++) {\n    cb = callbacks[i];\n    if (cb === fn || c" +
+                    "b.fn === fn) {\n      callbacks.splice(i, 1);\n      break;\n    }\n  }\n  return thi" +
+                    "s;\n};\n\n/**\n * Emit `event` with the given args.\n *\n * @param {String} event\n * @" +
+                    "param {Mixed} ...\n * @return {Emitter}\n */\n\nEmitter.prototype.emit = function(ev" +
+                    "ent){\n  this._callbacks = this._callbacks || {};\n  var args = [].slice.call(argu" +
+                    "ments, 1)\n    , callbacks = this._callbacks[event];\n\n  if (callbacks) {\n    call" +
+                    "backs = callbacks.slice(0);\n    for (var i = 0, len = callbacks.length; i < len;" +
+                    " ++i) {\n      callbacks[i].apply(this, args);\n    }\n  }\n\n  return this;\n};\n\n/**\n" +
+                    " * Return array of callbacks for `event`.\n *\n * @param {String} event\n * @return" +
+                    " {Array}\n * @api public\n */\n\nEmitter.prototype.listeners = function(event){\n  th" +
+                    "is._callbacks = this._callbacks || {};\n  return this._callbacks[event] || [];\n};" +
+                    "\n\n/**\n * Check if this emitter has `event` handlers.\n *\n * @param {String} event" +
+                    "\n * @return {Boolean}\n * @api public\n */\n\nEmitter.prototype.hasListeners = funct" +
+                    "ion(event){\n  return !! this.listeners(event).length;\n};\n\n},{}],13:[function(_de" +
+                    "req_,module,exports){\n\nmodule.exports = function(a, b){\n  var fn = function(){};" +
+                    "\n  fn.prototype = b.prototype;\n  a.prototype = new fn;\n  a.prototype.constructor" +
+                    " = a;\n};\n},{}],14:[function(_dereq_,module,exports){\n\n/**\n * This is the web bro" +
+                    "wser implementation of `debug()`.\n *\n * Expose `debug()` as the module.\n */\n\nexp" +
+                    "orts = module.exports = _dereq_(\'./debug\');\nexports.log = log;\nexports.formatArg" +
+                    "s = formatArgs;\nexports.save = save;\nexports.load = load;\nexports.useColors = us" +
+                    "eColors;\n\n/**\n * Colors.\n */\n\nexports.colors = [\n  \'lightseagreen\',\n  \'forestgre" +
+                    "en\',\n  \'goldenrod\',\n  \'dodgerblue\',\n  \'darkorchid\',\n  \'crimson\'\n];\n\n/**\n * Curre" +
+                    "ntly only WebKit-based Web Inspectors, Firefox >= v31,\n * and the Firebug extens" +
+                    "ion (any Firefox version) are known\n * to support \"%c\" CSS customizations.\n *\n *" +
+                    " TODO: add a `localStorage` variable to explicitly enable/disable colors\n */\n\nfu" +
+                    "nction useColors() {\n  // is webkit? http://stackoverflow.com/a/16459606/376773\n" +
+                    "  return (\'WebkitAppearance\' in document.documentElement.style) ||\n    // is fir" +
+                    "ebug? http://stackoverflow.com/a/398120/376773\n    (window.console && (console.f" +
+                    "irebug || (console.exception && console.table))) ||\n    // is firefox >= v31?\n  " +
+                    "  // https://developer.mozilla.org/en-US/docs/Tools/Web_Console#Styling_messages" +
+                    "\n    (navigator.userAgent.toLowerCase().match(/firefox\\/(\\d+)/) && parseInt(RegE" +
+                    "xp.$1, 10) >= 31);\n}\n\n/**\n * Map %j to `JSON.stringify()`, since no Web Inspecto" +
+                    "rs do that by default.\n */\n\nexports.formatters.j = function(v) {\n  return JSON.s" +
+                    "tringify(v);\n};\n\n\n/**\n * Colorize log arguments if enabled.\n *\n * @api public\n *" +
+                    "/\n\nfunction formatArgs() {\n  var args = arguments;\n  var useColors = this.useCol" +
+                    "ors;\n\n  args[0] = (useColors ? \'%c\' : \'\')\n    + this.namespace\n    + (useColors " +
+                    "? \' %c\' : \' \')\n    + args[0]\n    + (useColors ? \'%c \' : \' \')\n    + \'+\' + exports" +
+                    ".humanize(this.diff);\n\n  if (!useColors) return args;\n\n  var c = \'color: \' + thi" +
+                    "s.color;\n  args = [args[0], c, \'color: inherit\'].concat(Array.prototype.slice.ca" +
+                    "ll(args, 1));\n\n  // the final \"%c\" is somewhat tricky, because there could be ot" +
+                    "her\n  // arguments passed either before or after the %c, so we need to\n  // figu" +
+                    "re out the correct index to insert the CSS into\n  var index = 0;\n  var lastC = 0" +
+                    ";\n  args[0].replace(/%[a-z%]/g, function(match) {\n    if (\'%\' === match) return;" +
+                    "\n    index++;\n    if (\'%c\' === match) {\n      // we only are interested in the *" +
+                    "last* %c\n      // (the user may have provided their own)\n      lastC = index;\n  " +
+                    "  }\n  });\n\n  args.splice(lastC, 0, c);\n  return args;\n}\n\n/**\n * Invokes `console" +
+                    ".log()` when available.\n * No-op when `console.log` is not a \"function\".\n *\n * @" +
+                    "api public\n */\n\nfunction log() {\n  // This hackery is required for IE8,\n  // whe" +
+                    "re the `console.log` function doesn\'t have \'apply\'\n  return \'object\' == typeof c" +
+                    "onsole\n    && \'function\' == typeof console.log\n    && Function.prototype.apply.c" +
+                    "all(console.log, console, arguments);\n}\n\n/**\n * Save `namespaces`.\n *\n * @param " +
+                    "{String} namespaces\n * @api private\n */\n\nfunction save(namespaces) {\n  try {\n   " +
+                    " if (null == namespaces) {\n      localStorage.removeItem(\'debug\');\n    } else {\n" +
+                    "      localStorage.debug = namespaces;\n    }\n  } catch(e) {}\n}\n\n/**\n * Load `nam" +
+                    "espaces`.\n *\n * @return {String} returns the previously persisted debug modes\n *" +
+                    " @api private\n */\n\nfunction load() {\n  var r;\n  try {\n    r = localStorage.debug" +
+                    ";\n  } catch(e) {}\n  return r;\n}\n\n/**\n * Enable namespaces listed in `localStorag" +
+                    "e.debug` initially.\n */\n\nexports.enable(load());\n\n},{\"./debug\":15}],15:[function" +
+                    "(_dereq_,module,exports){\n\n/**\n * This is the common logic for both the Node.js " +
+                    "and web browser\n * implementations of `debug()`.\n *\n * Expose `debug()` as the m" +
+                    "odule.\n */\n\nexports = module.exports = debug;\nexports.coerce = coerce;\nexports.d" +
+                    "isable = disable;\nexports.enable = enable;\nexports.enabled = enabled;\nexports.hu" +
+                    "manize = _dereq_(\'ms\');\n\n/**\n * The currently active debug mode names, and names" +
+                    " to skip.\n */\n\nexports.names = [];\nexports.skips = [];\n\n/**\n * Map of special \"%" +
+                    "n\" handling functions, for the debug \"format\" argument.\n *\n * Valid key names ar" +
+                    "e a single, lowercased letter, i.e. \"n\".\n */\n\nexports.formatters = {};\n\n/**\n * P" +
+                    "reviously assigned color.\n */\n\nvar prevColor = 0;\n\n/**\n * Previous log timestamp" +
+                    ".\n */\n\nvar prevTime;\n\n/**\n * Select a color.\n *\n * @return {Number}\n * @api priv" +
+                    "ate\n */\n\nfunction selectColor() {\n  return exports.colors[prevColor++ % exports." +
+                    "colors.length];\n}\n\n/**\n * Create a debugger with the given `namespace`.\n *\n * @p" +
+                    "aram {String} namespace\n * @return {Function}\n * @api public\n */\n\nfunction debug" +
+                    "(namespace) {\n\n  // define the `disabled` version\n  function disabled() {\n  }\n  " +
+                    "disabled.enabled = false;\n\n  // define the `enabled` version\n  function enabled(" +
+                    ") {\n\n    var self = enabled;\n\n    // set `diff` timestamp\n    var curr = +new Da" +
+                    "te();\n    var ms = curr - (prevTime || curr);\n    self.diff = ms;\n    self.prev " +
+                    "= prevTime;\n    self.curr = curr;\n    prevTime = curr;\n\n    // add the `color` i" +
+                    "f not set\n    if (null == self.useColors) self.useColors = exports.useColors();\n" +
+                    "    if (null == self.color && self.useColors) self.color = selectColor();\n\n    v" +
+                    "ar args = Array.prototype.slice.call(arguments);\n\n    args[0] = exports.coerce(a" +
+                    "rgs[0]);\n\n    if (\'string\' !== typeof args[0]) {\n      // anything else let\'s in" +
+                    "spect with %o\n      args = [\'%o\'].concat(args);\n    }\n\n    // apply any `formatt" +
+                    "ers` transformations\n    var index = 0;\n    args[0] = args[0].replace(/%([a-z%])" +
+                    "/g, function(match, format) {\n      // if we encounter an escaped % then don\'t i" +
+                    "ncrease the array index\n      if (match === \'%\') return match;\n      index++;\n  " +
+                    "    var formatter = exports.formatters[format];\n      if (\'function\' === typeof " +
+                    "formatter) {\n        var val = args[index];\n        match = formatter.call(self," +
+                    " val);\n\n        // now we need to remove `args[index]` since it\'s inlined in the" +
+                    " `format`\n        args.splice(index, 1);\n        index--;\n      }\n      return m" +
+                    "atch;\n    });\n\n    if (\'function\' === typeof exports.formatArgs) {\n      args = " +
+                    "exports.formatArgs.apply(self, args);\n    }\n    var logFn = enabled.log || expor" +
+                    "ts.log || console.log.bind(console);\n    logFn.apply(self, args);\n  }\n  enabled." +
+                    "enabled = true;\n\n  var fn = exports.enabled(namespace) ? enabled : disabled;\n\n  " +
+                    "fn.namespace = namespace;\n\n  return fn;\n}\n\n/**\n * Enables a debug mode by namesp" +
+                    "aces. This can include modes\n * separated by a colon and wildcards.\n *\n * @param" +
+                    " {String} namespaces\n * @api public\n */\n\nfunction enable(namespaces) {\n  exports" +
+                    ".save(namespaces);\n\n  var split = (namespaces || \'\').split(/[\\s,]+/);\n  var len " +
+                    "= split.length;\n\n  for (var i = 0; i < len; i++) {\n    if (!split[i]) continue; " +
+                    "// ignore empty strings\n    namespaces = split[i].replace(/\\*/g, \'.*?\');\n    if " +
+                    "(namespaces[0] === \'-\') {\n      exports.skips.push(new RegExp(\'^\' + namespaces.s" +
+                    "ubstr(1) + \'$\'));\n    } else {\n      exports.names.push(new RegExp(\'^\' + namespa" +
+                    "ces + \'$\'));\n    }\n  }\n}\n\n/**\n * Disable debug output.\n *\n * @api public\n */\n\nfu" +
+                    "nction disable() {\n  exports.enable(\'\');\n}\n\n/**\n * Returns true if the given mod" +
+                    "e name is enabled, false otherwise.\n *\n * @param {String} name\n * @return {Boole" +
+                    "an}\n * @api public\n */\n\nfunction enabled(name) {\n  var i, len;\n  for (i = 0, len" +
+                    " = exports.skips.length; i < len; i++) {\n    if (exports.skips[i].test(name)) {\n" +
+                    "      return false;\n    }\n  }\n  for (i = 0, len = exports.names.length; i < len;" +
+                    " i++) {\n    if (exports.names[i].test(name)) {\n      return true;\n    }\n  }\n  re" +
+                    "turn false;\n}\n\n/**\n * Coerce `val`.\n *\n * @param {Mixed} val\n * @return {Mixed}\n" +
+                    " * @api private\n */\n\nfunction coerce(val) {\n  if (val instanceof Error) return v" +
+                    "al.stack || val.message;\n  return val;\n}\n\n},{\"ms\":16}],16:[function(_dereq_,modu" +
+                    "le,exports){\n/**\n * Helpers.\n */\n\nvar s = 1000;\nvar m = s * 60;\nvar h = m * 60;\n" +
+                    "var d = h * 24;\nvar y = d * 365.25;\n\n/**\n * Parse or format the given `val`.\n *\n" +
+                    " * Options:\n *\n *  - `long` verbose formatting [false]\n *\n * @param {String|Numb" +
+                    "er} val\n * @param {Object} options\n * @return {String|Number}\n * @api public\n */" +
+                    "\n\nmodule.exports = function(val, options){\n  options = options || {};\n  if (\'str" +
+                    "ing\' == typeof val) return parse(val);\n  return options.long\n    ? _long(val)\n  " +
+                    "  : _short(val);\n};\n\n/**\n * Parse the given `str` and return milliseconds.\n *\n *" +
+                    " @param {String} str\n * @return {Number}\n * @api private\n */\n\nfunction parse(str" +
+                    ") {\n  var match = /^((?:\\d+)?\\.?\\d+) *(ms|seconds?|s|minutes?|m|hours?|h|days?|d" +
+                    "|years?|y)?$/i.exec(str);\n  if (!match) return;\n  var n = parseFloat(match[1]);\n" +
+                    "  var type = (match[2] || \'ms\').toLowerCase();\n  switch (type) {\n    case \'years" +
+                    "\':\n    case \'year\':\n    case \'y\':\n      return n * y;\n    case \'days\':\n    case " +
+                    "\'day\':\n    case \'d\':\n      return n * d;\n    case \'hours\':\n    case \'hour\':\n    " +
+                    "case \'h\':\n      return n * h;\n    case \'minutes\':\n    case \'minute\':\n    case \'m" +
+                    "\':\n      return n * m;\n    case \'seconds\':\n    case \'second\':\n    case \'s\':\n    " +
+                    "  return n * s;\n    case \'ms\':\n      return n;\n  }\n}\n\n/**\n * Short format for `m" +
+                    "s`.\n *\n * @param {Number} ms\n * @return {String}\n * @api private\n */\n\nfunction _" +
+                    "short(ms) {\n  if (ms >= d) return Math.round(ms / d) + \'d\';\n  if (ms >= h) retur" +
+                    "n Math.round(ms / h) + \'h\';\n  if (ms >= m) return Math.round(ms / m) + \'m\';\n  if" +
+                    " (ms >= s) return Math.round(ms / s) + \'s\';\n  return ms + \'ms\';\n}\n\n/**\n * Long f" +
+                    "ormat for `ms`.\n *\n * @param {Number} ms\n * @return {String}\n * @api private\n */" +
+                    "\n\nfunction _long(ms) {\n  return plural(ms, d, \'day\')\n    || plural(ms, h, \'hour\'" +
+                    ")\n    || plural(ms, m, \'minute\')\n    || plural(ms, s, \'second\')\n    || ms + \' ms" +
+                    "\';\n}\n\n/**\n * Pluralization helper.\n */\n\nfunction plural(ms, n, name) {\n  if (ms " +
+                    "< n) return;\n  if (ms < n * 1.5) return Math.floor(ms / n) + \' \' + name;\n  retur" +
+                    "n Math.ceil(ms / n) + \' \' + name + \'s\';\n}\n\n},{}],17:[function(_dereq_,module,exp" +
+                    "orts){\n(function (global){\n/**\n * Module dependencies.\n */\n\nvar keys = _dereq_(\'" +
+                    "./keys\');\nvar sliceBuffer = _dereq_(\'arraybuffer.slice\');\nvar base64encoder = _d" +
+                    "ereq_(\'base64-arraybuffer\');\nvar after = _dereq_(\'after\');\nvar utf8 = _dereq_(\'u" +
+                    "tf8\');\n\n/**\n * Check if we are running an android browser. That requires us to u" +
+                    "se\n * ArrayBuffer with polling transports...\n *\n * http://ghinda.net/jpeg-blob-a" +
+                    "jax-android/\n */\n\nvar isAndroid = navigator.userAgent.match(/Android/i);\n\n/**\n *" +
+                    " Current protocol version.\n */\n\nexports.protocol = 3;\n\n/**\n * Packet types.\n */\n" +
+                    "\nvar packets = exports.packets = {\n    open:     0    // non-ws\n  , close:    1 " +
+                    "   // non-ws\n  , ping:     2\n  , pong:     3\n  , message:  4\n  , upgrade:  5\n  ," +
+                    " noop:     6\n};\n\nvar packetslist = keys(packets);\n\n/**\n * Premade error packet.\n" +
+                    " */\n\nvar err = { type: \'error\', data: \'parser error\' };\n\n/**\n * Create a blob ap" +
+                    "i even for blob builder when vendor prefixes exist\n */\n\nvar Blob = _dereq_(\'blob" +
+                    "\');\n\n/**\n * Encodes a packet.\n *\n *     <packet type id> [ <data> ]\n *\n * Exampl" +
+                    "e:\n *\n *     5hello world\n *     3\n *     4\n *\n * Binary is encoded in an identi" +
+                    "cal principle\n *\n * @api private\n */\n\nexports.encodePacket = function (packet, s" +
+                    "upportsBinary, utf8encode, callback) {\n  if (\'function\' == typeof supportsBinary" +
+                    ") {\n    callback = supportsBinary;\n    supportsBinary = false;\n  }\n\n  if (\'funct" +
+                    "ion\' == typeof utf8encode) {\n    callback = utf8encode;\n    utf8encode = null;\n " +
+                    " }\n\n  var data = (packet.data === undefined)\n    ? undefined\n    : packet.data.b" +
+                    "uffer || packet.data;\n\n  if (global.ArrayBuffer && data instanceof ArrayBuffer) " +
+                    "{\n    return encodeArrayBuffer(packet, supportsBinary, callback);\n  } else if (B" +
+                    "lob && data instanceof global.Blob) {\n    return encodeBlob(packet, supportsBina" +
+                    "ry, callback);\n  }\n\n  // Sending data as a utf-8 string\n  var encoded = packets[" +
+                    "packet.type];\n\n  // data fragment is optional\n  if (undefined !== packet.data) {" +
+                    "\n    encoded += utf8encode ? utf8.encode(String(packet.data)) : String(packet.da" +
+                    "ta);\n  }\n\n  return callback(\'\' + encoded);\n\n};\n\n/**\n * Encode packet helpers for" +
+                    " binary types\n */\n\nfunction encodeArrayBuffer(packet, supportsBinary, callback) " +
+                    "{\n  if (!supportsBinary) {\n    return exports.encodeBase64Packet(packet, callbac" +
+                    "k);\n  }\n\n  var data = packet.data;\n  var contentArray = new Uint8Array(data);\n  " +
+                    "var resultBuffer = new Uint8Array(1 + data.byteLength);\n\n  resultBuffer[0] = pac" +
+                    "kets[packet.type];\n  for (var i = 0; i < contentArray.length; i++) {\n    resultB" +
+                    "uffer[i+1] = contentArray[i];\n  }\n\n  return callback(resultBuffer.buffer);\n}\n\nfu" +
+                    "nction encodeBlobAsArrayBuffer(packet, supportsBinary, callback) {\n  if (!suppor" +
+                    "tsBinary) {\n    return exports.encodeBase64Packet(packet, callback);\n  }\n\n  var " +
+                    "fr = new FileReader();\n  fr.onload = function() {\n    packet.data = fr.result;\n " +
+                    "   exports.encodePacket(packet, supportsBinary, true, callback);\n  };\n  return f" +
+                    "r.readAsArrayBuffer(packet.data);\n}\n\nfunction encodeBlob(packet, supportsBinary," +
+                    " callback) {\n  if (!supportsBinary) {\n    return exports.encodeBase64Packet(pack" +
+                    "et, callback);\n  }\n\n  if (isAndroid) {\n    return encodeBlobAsArrayBuffer(packet" +
+                    ", supportsBinary, callback);\n  }\n\n  var length = new Uint8Array(1);\n  length[0] " +
+                    "= packets[packet.type];\n  var blob = new Blob([length.buffer, packet.data]);\n\n  " +
+                    "return callback(blob);\n}\n\n/**\n * Encodes a packet with binary data in a base64 s" +
+                    "tring\n *\n * @param {Object} packet, has `type` and `data`\n * @return {String} ba" +
+                    "se64 encoded message\n */\n\nexports.encodeBase64Packet = function(packet, callback" +
+                    ") {\n  var message = \'b\' + exports.packets[packet.type];\n  if (Blob && packet.dat" +
+                    "a instanceof Blob) {\n    var fr = new FileReader();\n    fr.onload = function() {" +
+                    "\n      var b64 = fr.result.split(\',\')[1];\n      callback(message + b64);\n    };\n" +
+                    "    return fr.readAsDataURL(packet.data);\n  }\n\n  var b64data;\n  try {\n    b64dat" +
+                    "a = String.fromCharCode.apply(null, new Uint8Array(packet.data));\n  } catch (e) " +
+                    "{\n    // iPhone Safari doesn\'t let you apply with typed arrays\n    var typed = n" +
+                    "ew Uint8Array(packet.data);\n    var basic = new Array(typed.length);\n    for (va" +
+                    "r i = 0; i < typed.length; i++) {\n      basic[i] = typed[i];\n    }\n    b64data =" +
+                    " String.fromCharCode.apply(null, basic);\n  }\n  message += global.btoa(b64data);\n" +
+                    "  return callback(message);\n};\n\n/**\n * Decodes a packet. Changes format to Blob " +
+                    "if requested.\n *\n * @return {Object} with `type` and `data` (if any)\n * @api pri" +
+                    "vate\n */\n\nexports.decodePacket = function (data, binaryType, utf8decode) {\n  // " +
+                    "String data\n  if (typeof data == \'string\' || data === undefined) {\n    if (data." +
+                    "charAt(0) == \'b\') {\n      return exports.decodeBase64Packet(data.substr(1), bina" +
+                    "ryType);\n    }\n\n    if (utf8decode) {\n      try {\n        data = utf8.decode(dat" +
+                    "a);\n      } catch (e) {\n        return err;\n      }\n    }\n    var type = data.ch" +
+                    "arAt(0);\n\n    if (Number(type) != type || !packetslist[type]) {\n      return err" +
+                    ";\n    }\n\n    if (data.length > 1) {\n      return { type: packetslist[type], data" +
+                    ": data.substring(1) };\n    } else {\n      return { type: packetslist[type] };\n  " +
+                    "  }\n  }\n\n  var asArray = new Uint8Array(data);\n  var type = asArray[0];\n  var re" +
+                    "st = sliceBuffer(data, 1);\n  if (Blob && binaryType === \'blob\') {\n    rest = new" +
+                    " Blob([rest]);\n  }\n  return { type: packetslist[type], data: rest };\n};\n\n/**\n * " +
+                    "Decodes a packet encoded in a base64 string\n *\n * @param {String} base64 encoded" +
+                    " message\n * @return {Object} with `type` and `data` (if any)\n */\n\nexports.decode" +
+                    "Base64Packet = function(msg, binaryType) {\n  var type = packetslist[msg.charAt(0" +
+                    ")];\n  if (!global.ArrayBuffer) {\n    return { type: type, data: { base64: true, " +
+                    "data: msg.substr(1) } };\n  }\n\n  var data = base64encoder.decode(msg.substr(1));\n" +
+                    "\n  if (binaryType === \'blob\' && Blob) {\n    data = new Blob([data]);\n  }\n\n  retu" +
+                    "rn { type: type, data: data };\n};\n\n/**\n * Encodes multiple messages (payload).\n " +
+                    "*\n *     <length>:data\n *\n * Example:\n *\n *     11:hello world2:hi\n *\n * If any " +
+                    "contents are binary, they will be encoded as base64 strings. Base64\n * encoded s" +
+                    "trings are marked with a b before the length specifier\n *\n * @param {Array} pack" +
+                    "ets\n * @api private\n */\n\nexports.encodePayload = function (packets, supportsBina" +
+                    "ry, callback) {\n  if (typeof supportsBinary == \'function\') {\n    callback = supp" +
+                    "ortsBinary;\n    supportsBinary = null;\n  }\n\n  if (supportsBinary) {\n    if (Blob" +
+                    " && !isAndroid) {\n      return exports.encodePayloadAsBlob(packets, callback);\n " +
+                    "   }\n\n    return exports.encodePayloadAsArrayBuffer(packets, callback);\n  }\n\n  i" +
+                    "f (!packets.length) {\n    return callback(\'0:\');\n  }\n\n  function setLengthHeader" +
+                    "(message) {\n    return message.length + \':\' + message;\n  }\n\n  function encodeOne" +
+                    "(packet, doneCallback) {\n    exports.encodePacket(packet, supportsBinary, true, " +
+                    "function(message) {\n      doneCallback(null, setLengthHeader(message));\n    });\n" +
+                    "  }\n\n  map(packets, encodeOne, function(err, results) {\n    return callback(resu" +
+                    "lts.join(\'\'));\n  });\n};\n\n/**\n * Async array map using after\n */\n\nfunction map(ar" +
+                    "y, each, done) {\n  var result = new Array(ary.length);\n  var next = after(ary.le" +
+                    "ngth, done);\n\n  var eachWithIndex = function(i, el, cb) {\n    each(el, function(" +
+                    "error, msg) {\n      result[i] = msg;\n      cb(error, result);\n    });\n  };\n\n  fo" +
+                    "r (var i = 0; i < ary.length; i++) {\n    eachWithIndex(i, ary[i], next);\n  }\n}\n\n" +
+                    "/*\n * Decodes data when a payload is maybe expected. Possible binary contents ar" +
+                    "e\n * decoded from their base64 representation\n *\n * @param {String} data, callba" +
+                    "ck method\n * @api public\n */\n\nexports.decodePayload = function (data, binaryType" +
+                    ", callback) {\n  if (typeof data != \'string\') {\n    return exports.decodePayloadA" +
+                    "sBinary(data, binaryType, callback);\n  }\n\n  if (typeof binaryType === \'function\'" +
+                    ") {\n    callback = binaryType;\n    binaryType = null;\n  }\n\n  var packet;\n  if (d" +
+                    "ata == \'\') {\n    // parser error - ignoring payload\n    return callback(err, 0, " +
+                    "1);\n  }\n\n  var length = \'\'\n    , n, msg;\n\n  for (var i = 0, l = data.length; i <" +
+                    " l; i++) {\n    var chr = data.charAt(i);\n\n    if (\':\' != chr) {\n      length += " +
+                    "chr;\n    } else {\n      if (\'\' == length || (length != (n = Number(length)))) {\n" +
+                    "        // parser error - ignoring payload\n        return callback(err, 0, 1);\n " +
+                    "     }\n\n      msg = data.substr(i + 1, n);\n\n      if (length != msg.length) {\n  " +
+                    "      // parser error - ignoring payload\n        return callback(err, 0, 1);\n   " +
+                    "   }\n\n      if (msg.length) {\n        packet = exports.decodePacket(msg, binaryT" +
+                    "ype, true);\n\n        if (err.type == packet.type && err.data == packet.data) {\n " +
+                    "         // parser error in individual packet - ignoring payload\n          retur" +
+                    "n callback(err, 0, 1);\n        }\n\n        var ret = callback(packet, i + n, l);\n" +
+                    "        if (false === ret) return;\n      }\n\n      // advance cursor\n      i += n" +
+                    ";\n      length = \'\';\n    }\n  }\n\n  if (length != \'\') {\n    // parser error - igno" +
+                    "ring payload\n    return callback(err, 0, 1);\n  }\n\n};\n\n/**\n * Encodes multiple me" +
+                    "ssages (payload) as binary.\n *\n * <1 = binary, 0 = string><number from 0-9><numb" +
+                    "er from 0-9>[...]<number\n * 255><data>\n *\n * Example:\n * 1 3 255 1 2 3, if the b" +
+                    "inary contents are interpreted as 8 bit integers\n *\n * @param {Array} packets\n *" +
+                    " @return {ArrayBuffer} encoded payload\n * @api private\n */\n\nexports.encodePayloa" +
+                    "dAsArrayBuffer = function(packets, callback) {\n  if (!packets.length) {\n    retu" +
+                    "rn callback(new ArrayBuffer(0));\n  }\n\n  function encodeOne(packet, doneCallback)" +
+                    " {\n    exports.encodePacket(packet, true, true, function(data) {\n      return do" +
+                    "neCallback(null, data);\n    });\n  }\n\n  map(packets, encodeOne, function(err, enc" +
+                    "odedPackets) {\n    var totalLength = encodedPackets.reduce(function(acc, p) {\n  " +
+                    "    var len;\n      if (typeof p === \'string\'){\n        len = p.length;\n      } e" +
+                    "lse {\n        len = p.byteLength;\n      }\n      return acc + len.toString().leng" +
+                    "th + len + 2; // string/binary identifier + separator = 2\n    }, 0);\n\n    var re" +
+                    "sultArray = new Uint8Array(totalLength);\n\n    var bufferIndex = 0;\n    encodedPa" +
+                    "ckets.forEach(function(p) {\n      var isString = typeof p === \'string\';\n      va" +
+                    "r ab = p;\n      if (isString) {\n        var view = new Uint8Array(p.length);\n   " +
+                    "     for (var i = 0; i < p.length; i++) {\n          view[i] = p.charCodeAt(i);\n " +
+                    "       }\n        ab = view.buffer;\n      }\n\n      if (isString) { // not true bi" +
+                    "nary\n        resultArray[bufferIndex++] = 0;\n      } else { // true binary\n     " +
+                    "   resultArray[bufferIndex++] = 1;\n      }\n\n      var lenStr = ab.byteLength.toS" +
+                    "tring();\n      for (var i = 0; i < lenStr.length; i++) {\n        resultArray[buf" +
+                    "ferIndex++] = parseInt(lenStr[i]);\n      }\n      resultArray[bufferIndex++] = 25" +
+                    "5;\n\n      var view = new Uint8Array(ab);\n      for (var i = 0; i < view.length; " +
+                    "i++) {\n        resultArray[bufferIndex++] = view[i];\n      }\n    });\n\n    return" +
+                    " callback(resultArray.buffer);\n  });\n};\n\n/**\n * Encode as Blob\n */\n\nexports.enco" +
+                    "dePayloadAsBlob = function(packets, callback) {\n  function encodeOne(packet, don" +
+                    "eCallback) {\n    exports.encodePacket(packet, true, true, function(encoded) {\n  " +
+                    "    var binaryIdentifier = new Uint8Array(1);\n      binaryIdentifier[0] = 1;\n   " +
+                    "   if (typeof encoded === \'string\') {\n        var view = new Uint8Array(encoded." +
+                    "length);\n        for (var i = 0; i < encoded.length; i++) {\n          view[i] = " +
+                    "encoded.charCodeAt(i);\n        }\n        encoded = view.buffer;\n        binaryId" +
+                    "entifier[0] = 0;\n      }\n\n      var len = (encoded instanceof ArrayBuffer)\n     " +
+                    "   ? encoded.byteLength\n        : encoded.size;\n\n      var lenStr = len.toString" +
+                    "();\n      var lengthAry = new Uint8Array(lenStr.length + 1);\n      for (var i = " +
+                    "0; i < lenStr.length; i++) {\n        lengthAry[i] = parseInt(lenStr[i]);\n      }" +
+                    "\n      lengthAry[lenStr.length] = 255;\n\n      if (Blob) {\n        var blob = new" +
+                    " Blob([binaryIdentifier.buffer, lengthAry.buffer, encoded]);\n        doneCallbac" +
+                    "k(null, blob);\n      }\n    });\n  }\n\n  map(packets, encodeOne, function(err, resu" +
+                    "lts) {\n    return callback(new Blob(results));\n  });\n};\n\n/*\n * Decodes data when" +
+                    " a payload is maybe expected. Strings are decoded by\n * interpreting each byte a" +
+                    "s a key code for entries marked to start with 0. See\n * description of encodePay" +
+                    "loadAsBinary\n *\n * @param {ArrayBuffer} data, callback method\n * @api public\n */" +
+                    "\n\nexports.decodePayloadAsBinary = function (data, binaryType, callback) {\n  if (" +
+                    "typeof binaryType === \'function\') {\n    callback = binaryType;\n    binaryType = " +
+                    "null;\n  }\n\n  var bufferTail = data;\n  var buffers = [];\n\n  var numberTooLong = f" +
+                    "alse;\n  while (bufferTail.byteLength > 0) {\n    var tailArray = new Uint8Array(b" +
+                    "ufferTail);\n    var isString = tailArray[0] === 0;\n    var msgLength = \'\';\n\n    " +
+                    "for (var i = 1; ; i++) {\n      if (tailArray[i] == 255) break;\n\n      if (msgLen" +
+                    "gth.length > 310) {\n        numberTooLong = true;\n        break;\n      }\n\n      " +
+                    "msgLength += tailArray[i];\n    }\n\n    if(numberTooLong) return callback(err, 0, " +
+                    "1);\n\n    bufferTail = sliceBuffer(bufferTail, 2 + msgLength.length);\n    msgLeng" +
+                    "th = parseInt(msgLength);\n\n    var msg = sliceBuffer(bufferTail, 0, msgLength);\n" +
+                    "    if (isString) {\n      try {\n        msg = String.fromCharCode.apply(null, ne" +
+                    "w Uint8Array(msg));\n      } catch (e) {\n        // iPhone Safari doesn\'t let you" +
+                    " apply to typed arrays\n        var typed = new Uint8Array(msg);\n        msg = \'\'" +
+                    ";\n        for (var i = 0; i < typed.length; i++) {\n          msg += String.fromC" +
+                    "harCode(typed[i]);\n        }\n      }\n    }\n\n    buffers.push(msg);\n    bufferTai" +
+                    "l = sliceBuffer(bufferTail, msgLength);\n  }\n\n  var total = buffers.length;\n  buf" +
+                    "fers.forEach(function(buffer, i) {\n    callback(exports.decodePacket(buffer, bin" +
+                    "aryType, true), i, total);\n  });\n};\n\n}).call(this,typeof self !== \"undefined\" ? " +
+                    "self : typeof window !== \"undefined\" ? window : {})\n},{\"./keys\":18,\"after\":19,\"a" +
+                    "rraybuffer.slice\":20,\"base64-arraybuffer\":21,\"blob\":11,\"utf8\":22}],18:[function(" +
+                    "_dereq_,module,exports){\n\n/**\n * Gets the keys for an object.\n *\n * @return {Arr" +
+                    "ay} keys\n * @api private\n */\n\nmodule.exports = Object.keys || function keys (obj" +
+                    "){\n  var arr = [];\n  var has = Object.prototype.hasOwnProperty;\n\n  for (var i in" +
+                    " obj) {\n    if (has.call(obj, i)) {\n      arr.push(i);\n    }\n  }\n  return arr;\n}" +
+                    ";\n\n},{}],19:[function(_dereq_,module,exports){\nmodule.exports = after\n\nfunction " +
+                    "after(count, callback, err_cb) {\n    var bail = false\n    err_cb = err_cb || noo" +
+                    "p\n    proxy.count = count\n\n    return (count === 0) ? callback() : proxy\n\n    fu" +
+                    "nction proxy(err, result) {\n        if (proxy.count <= 0) {\n            throw ne" +
+                    "w Error(\'after called too many times\')\n        }\n        --proxy.count\n\n        " +
+                    "// after first error, rest are passed to err_cb\n        if (err) {\n            b" +
+                    "ail = true\n            callback(err)\n            // future error callbacks will " +
+                    "go to error handler\n            callback = err_cb\n        } else if (proxy.count" +
+                    " === 0 && !bail) {\n            callback(null, result)\n        }\n    }\n}\n\nfunctio" +
+                    "n noop() {}\n\n},{}],20:[function(_dereq_,module,exports){\n/**\n * An abstraction f" +
+                    "or slicing an arraybuffer even when\n * ArrayBuffer.prototype.slice is not suppor" +
+                    "ted\n *\n * @api public\n */\n\nmodule.exports = function(arraybuffer, start, end) {\n" +
+                    "  var bytes = arraybuffer.byteLength;\n  start = start || 0;\n  end = end || bytes" +
+                    ";\n\n  if (arraybuffer.slice) { return arraybuffer.slice(start, end); }\n\n  if (sta" +
+                    "rt < 0) { start += bytes; }\n  if (end < 0) { end += bytes; }\n  if (end > bytes) " +
+                    "{ end = bytes; }\n\n  if (start >= bytes || start >= end || bytes === 0) {\n    ret" +
+                    "urn new ArrayBuffer(0);\n  }\n\n  var abv = new Uint8Array(arraybuffer);\n  var resu" +
+                    "lt = new Uint8Array(end - start);\n  for (var i = start, ii = 0; i < end; i++, ii" +
+                    "++) {\n    result[ii] = abv[i];\n  }\n  return result.buffer;\n};\n\n},{}],21:[functio" +
+                    "n(_dereq_,module,exports){\n/*\n * base64-arraybuffer\n * https://github.com/niklas" +
+                    "vh/base64-arraybuffer\n *\n * Copyright (c) 2012 Niklas von Hertzen\n * Licensed un" +
+                    "der the MIT license.\n */\n(function(chars){\n  \"use strict\";\n\n  exports.encode = f" +
+                    "unction(arraybuffer) {\n    var bytes = new Uint8Array(arraybuffer),\n    i, len =" +
+                    " bytes.length, base64 = \"\";\n\n    for (i = 0; i < len; i+=3) {\n      base64 += ch" +
+                    "ars[bytes[i] >> 2];\n      base64 += chars[((bytes[i] & 3) << 4) | (bytes[i + 1] " +
+                    ">> 4)];\n      base64 += chars[((bytes[i + 1] & 15) << 2) | (bytes[i + 2] >> 6)];" +
+                    "\n      base64 += chars[bytes[i + 2] & 63];\n    }\n\n    if ((len % 3) === 2) {\n   " +
+                    "   base64 = base64.substring(0, base64.length - 1) + \"=\";\n    } else if (len % 3" +
+                    " === 1) {\n      base64 = base64.substring(0, base64.length - 2) + \"==\";\n    }\n\n " +
+                    "   return base64;\n  };\n\n  exports.decode =  function(base64) {\n    var bufferLen" +
+                    "gth = base64.length * 0.75,\n    len = base64.length, i, p = 0,\n    encoded1, enc" +
+                    "oded2, encoded3, encoded4;\n\n    if (base64[base64.length - 1] === \"=\") {\n      b" +
+                    "ufferLength--;\n      if (base64[base64.length - 2] === \"=\") {\n        bufferLeng" +
+                    "th--;\n      }\n    }\n\n    var arraybuffer = new ArrayBuffer(bufferLength),\n    by" +
+                    "tes = new Uint8Array(arraybuffer);\n\n    for (i = 0; i < len; i+=4) {\n      encod" +
+                    "ed1 = chars.indexOf(base64[i]);\n      encoded2 = chars.indexOf(base64[i+1]);\n   " +
+                    "   encoded3 = chars.indexOf(base64[i+2]);\n      encoded4 = chars.indexOf(base64[" +
+                    "i+3]);\n\n      bytes[p++] = (encoded1 << 2) | (encoded2 >> 4);\n      bytes[p++] =" +
+                    " ((encoded2 & 15) << 4) | (encoded3 >> 2);\n      bytes[p++] = ((encoded3 & 3) <<" +
+                    " 6) | (encoded4 & 63);\n    }\n\n    return arraybuffer;\n  };\n})(\"ABCDEFGHIJKLMNOPQ" +
+                    "RSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/\");\n\n},{}],22:[function(_dereq_,m" +
+                    "odule,exports){\n(function (global){\n/*! http://mths.be/utf8js v2.0.0 by @mathias" +
+                    " */\n;(function(root) {\n\n\t// Detect free variables `exports`\n\tvar freeExports = t" +
+                    "ypeof exports == \'object\' && exports;\n\n\t// Detect free variable `module`\n\tvar fr" +
+                    "eeModule = typeof module == \'object\' && module &&\n\t\tmodule.exports == freeExport" +
+                    "s && module;\n\n\t// Detect free variable `global`, from Node.js or Browserified co" +
+                    "de,\n\t// and use it as `root`\n\tvar freeGlobal = typeof global == \'object\' && glob" +
+                    "al;\n\tif (freeGlobal.global === freeGlobal || freeGlobal.window === freeGlobal) {" +
+                    "\n\t\troot = freeGlobal;\n\t}\n\n\t/*---------------------------------------------------" +
+                    "-----------------------*/\n\n\tvar stringFromCharCode = String.fromCharCode;\n\n\t// T" +
+                    "aken from http://mths.be/punycode\n\tfunction ucs2decode(string) {\n\t\tvar output = " +
+                    "[];\n\t\tvar counter = 0;\n\t\tvar length = string.length;\n\t\tvar value;\n\t\tvar extra;\n\t" +
+                    "\twhile (counter < length) {\n\t\t\tvalue = string.charCodeAt(counter++);\n\t\t\tif (valu" +
+                    "e >= 0xD800 && value <= 0xDBFF && counter < length) {\n\t\t\t\t// high surrogate, and" +
+                    " there is a next character\n\t\t\t\textra = string.charCodeAt(counter++);\n\t\t\t\tif ((ex" +
+                    "tra & 0xFC00) == 0xDC00) { // low surrogate\n\t\t\t\t\toutput.push(((value & 0x3FF) <<" +
+                    " 10) + (extra & 0x3FF) + 0x10000);\n\t\t\t\t} else {\n\t\t\t\t\t// unmatched surrogate; onl" +
+                    "y append this code unit, in case the next\n\t\t\t\t\t// code unit is the high surrogat" +
+                    "e of a surrogate pair\n\t\t\t\t\toutput.push(value);\n\t\t\t\t\tcounter--;\n\t\t\t\t}\n\t\t\t} else {" +
+                    "\n\t\t\t\toutput.push(value);\n\t\t\t}\n\t\t}\n\t\treturn output;\n\t}\n\n\t// Taken from http://mth" +
+                    "s.be/punycode\n\tfunction ucs2encode(array) {\n\t\tvar length = array.length;\n\t\tvar i" +
+                    "ndex = -1;\n\t\tvar value;\n\t\tvar output = \'\';\n\t\twhile (++index < length) {\n\t\t\tvalue" +
+                    " = array[index];\n\t\t\tif (value > 0xFFFF) {\n\t\t\t\tvalue -= 0x10000;\n\t\t\t\toutput += st" +
+                    "ringFromCharCode(value >>> 10 & 0x3FF | 0xD800);\n\t\t\t\tvalue = 0xDC00 | value & 0x" +
+                    "3FF;\n\t\t\t}\n\t\t\toutput += stringFromCharCode(value);\n\t\t}\n\t\treturn output;\n\t}\n\n\t/*--" +
+                    "------------------------------------------------------------------------*/\n\n\tfun" +
+                    "ction createByte(codePoint, shift) {\n\t\treturn stringFromCharCode(((codePoint >> " +
+                    "shift) & 0x3F) | 0x80);\n\t}\n\n\tfunction encodeCodePoint(codePoint) {\n\t\tif ((codePo" +
+                    "int & 0xFFFFFF80) == 0) { // 1-byte sequence\n\t\t\treturn stringFromCharCode(codePo" +
+                    "int);\n\t\t}\n\t\tvar symbol = \'\';\n\t\tif ((codePoint & 0xFFFFF800) == 0) { // 2-byte se" +
+                    "quence\n\t\t\tsymbol = stringFromCharCode(((codePoint >> 6) & 0x1F) | 0xC0);\n\t\t}\n\t\te" +
+                    "lse if ((codePoint & 0xFFFF0000) == 0) { // 3-byte sequence\n\t\t\tsymbol = stringFr" +
+                    "omCharCode(((codePoint >> 12) & 0x0F) | 0xE0);\n\t\t\tsymbol += createByte(codePoint" +
+                    ", 6);\n\t\t}\n\t\telse if ((codePoint & 0xFFE00000) == 0) { // 4-byte sequence\n\t\t\tsymb" +
+                    "ol = stringFromCharCode(((codePoint >> 18) & 0x07) | 0xF0);\n\t\t\tsymbol += createB" +
+                    "yte(codePoint, 12);\n\t\t\tsymbol += createByte(codePoint, 6);\n\t\t}\n\t\tsymbol += strin" +
+                    "gFromCharCode((codePoint & 0x3F) | 0x80);\n\t\treturn symbol;\n\t}\n\n\tfunction utf8enc" +
+                    "ode(string) {\n\t\tvar codePoints = ucs2decode(string);\n\n\t\t// console.log(JSON.stri" +
+                    "ngify(codePoints.map(function(x) {\n\t\t// \treturn \'U+\' + x.toString(16).toUpperCas" +
+                    "e();\n\t\t// })));\n\n\t\tvar length = codePoints.length;\n\t\tvar index = -1;\n\t\tvar codeP" +
+                    "oint;\n\t\tvar byteString = \'\';\n\t\twhile (++index < length) {\n\t\t\tcodePoint = codePoi" +
+                    "nts[index];\n\t\t\tbyteString += encodeCodePoint(codePoint);\n\t\t}\n\t\treturn byteString" +
+                    ";\n\t}\n\n\t/*-----------------------------------------------------------------------" +
+                    "---*/\n\n\tfunction readContinuationByte() {\n\t\tif (byteIndex >= byteCount) {\n\t\t\tthr" +
+                    "ow Error(\'Invalid byte index\');\n\t\t}\n\n\t\tvar continuationByte = byteArray[byteInde" +
+                    "x] & 0xFF;\n\t\tbyteIndex++;\n\n\t\tif ((continuationByte & 0xC0) == 0x80) {\n\t\t\treturn " +
+                    "continuationByte & 0x3F;\n\t\t}\n\n\t\t// If we end up here, it’s not a continuation by" +
+                    "te\n\t\tthrow Error(\'Invalid continuation byte\');\n\t}\n\n\tfunction decodeSymbol() {\n\t\t" +
+                    "var byte1;\n\t\tvar byte2;\n\t\tvar byte3;\n\t\tvar byte4;\n\t\tvar codePoint;\n\n\t\tif (byteIn" +
+                    "dex > byteCount) {\n\t\t\tthrow Error(\'Invalid byte index\');\n\t\t}\n\n\t\tif (byteIndex ==" +
+                    " byteCount) {\n\t\t\treturn false;\n\t\t}\n\n\t\t// Read first byte\n\t\tbyte1 = byteArray[byt" +
+                    "eIndex] & 0xFF;\n\t\tbyteIndex++;\n\n\t\t// 1-byte sequence (no continuation bytes)\n\t\ti" +
+                    "f ((byte1 & 0x80) == 0) {\n\t\t\treturn byte1;\n\t\t}\n\n\t\t// 2-byte sequence\n\t\tif ((byte" +
+                    "1 & 0xE0) == 0xC0) {\n\t\t\tvar byte2 = readContinuationByte();\n\t\t\tcodePoint = ((byt" +
+                    "e1 & 0x1F) << 6) | byte2;\n\t\t\tif (codePoint >= 0x80) {\n\t\t\t\treturn codePoint;\n\t\t\t}" +
+                    " else {\n\t\t\t\tthrow Error(\'Invalid continuation byte\');\n\t\t\t}\n\t\t}\n\n\t\t// 3-byte sequ" +
+                    "ence (may include unpaired surrogates)\n\t\tif ((byte1 & 0xF0) == 0xE0) {\n\t\t\tbyte2 " +
+                    "= readContinuationByte();\n\t\t\tbyte3 = readContinuationByte();\n\t\t\tcodePoint = ((by" +
+                    "te1 & 0x0F) << 12) | (byte2 << 6) | byte3;\n\t\t\tif (codePoint >= 0x0800) {\n\t\t\t\tret" +
+                    "urn codePoint;\n\t\t\t} else {\n\t\t\t\tthrow Error(\'Invalid continuation byte\');\n\t\t\t}\n\t\t" +
+                    "}\n\n\t\t// 4-byte sequence\n\t\tif ((byte1 & 0xF8) == 0xF0) {\n\t\t\tbyte2 = readContinuat" +
+                    "ionByte();\n\t\t\tbyte3 = readContinuationByte();\n\t\t\tbyte4 = readContinuationByte();" +
+                    "\n\t\t\tcodePoint = ((byte1 & 0x0F) << 0x12) | (byte2 << 0x0C) |\n\t\t\t\t(byte3 << 0x06)" +
+                    " | byte4;\n\t\t\tif (codePoint >= 0x010000 && codePoint <= 0x10FFFF) {\n\t\t\t\treturn co" +
+                    "dePoint;\n\t\t\t}\n\t\t}\n\n\t\tthrow Error(\'Invalid UTF-8 detected\');\n\t}\n\n\tvar byteArray;\n" +
+                    "\tvar byteCount;\n\tvar byteIndex;\n\tfunction utf8decode(byteString) {\n\t\tbyteArray =" +
+                    " ucs2decode(byteString);\n\t\tbyteCount = byteArray.length;\n\t\tbyteIndex = 0;\n\t\tvar " +
+                    "codePoints = [];\n\t\tvar tmp;\n\t\twhile ((tmp = decodeSymbol()) !== false) {\n\t\t\tcode" +
+                    "Points.push(tmp);\n\t\t}\n\t\treturn ucs2encode(codePoints);\n\t}\n\n\t/*------------------" +
+                    "--------------------------------------------------------*/\n\n\tvar utf8 = {\n\t\t\'ver" +
+                    "sion\': \'2.0.0\',\n\t\t\'encode\': utf8encode,\n\t\t\'decode\': utf8decode\n\t};\n\n\t// Some AMD" +
+                    " build optimizers, like r.js, check for specific condition patterns\n\t// like the" +
+                    " following:\n\tif (\n\t\ttypeof define == \'function\' &&\n\t\ttypeof define.amd == \'objec" +
+                    "t\' &&\n\t\tdefine.amd\n\t) {\n\t\tdefine(function() {\n\t\t\treturn utf8;\n\t\t});\n\t}\telse if (" +
+                    "freeExports && !freeExports.nodeType) {\n\t\tif (freeModule) { // in Node.js or Rin" +
+                    "goJS v0.8.0+\n\t\t\tfreeModule.exports = utf8;\n\t\t} else { // in Narwhal or RingoJS v" +
+                    "0.7.0-\n\t\t\tvar object = {};\n\t\t\tvar hasOwnProperty = object.hasOwnProperty;\n\t\t\tfor" +
+                    " (var key in utf8) {\n\t\t\t\thasOwnProperty.call(utf8, key) && (freeExports[key] = u" +
+                    "tf8[key]);\n\t\t\t}\n\t\t}\n\t} else { // in Rhino or a web browser\n\t\troot.utf8 = utf8;\n\t" +
+                    "}\n\n}(this));\n\n}).call(this,typeof self !== \"undefined\" ? self : typeof window !=" +
+                    "= \"undefined\" ? window : {})\n},{}],23:[function(_dereq_,module,exports){\n\n/**\n *" +
+                    " Module dependencies.\n */\n\nvar global = _dereq_(\'global\');\n\n/**\n * Module export" +
+                    "s.\n *\n * Logic borrowed from Modernizr:\n *\n *   - https://github.com/Modernizr/M" +
+                    "odernizr/blob/master/feature-detects/cors.js\n */\n\ntry {\n  module.exports = \'XMLH" +
+                    "ttpRequest\' in global &&\n    \'withCredentials\' in new global.XMLHttpRequest();\n}" +
+                    " catch (err) {\n  // if XMLHttp support is disabled in IE then it will throw\n  //" +
+                    " when trying to create\n  module.exports = false;\n}\n\n},{\"global\":24}],24:[functio" +
+                    "n(_dereq_,module,exports){\n\n/**\n * Returns `this`. Execute this without a \"conte" +
+                    "xt\" (i.e. without it being\n * attached to an object of the left-hand side), and " +
+                    "`this` points to the\n * \"global\" scope of the current JS execution.\n */\n\nmodule." +
+                    "exports = (function () { return this; })();\n\n},{}],25:[function(_dereq_,module,e" +
+                    "xports){\n\nvar indexOf = [].indexOf;\n\nmodule.exports = function(arr, obj){\n  if (" +
+                    "indexOf) return arr.indexOf(obj);\n  for (var i = 0; i < arr.length; ++i) {\n    i" +
+                    "f (arr[i] === obj) return i;\n  }\n  return -1;\n};\n},{}],26:[function(_dereq_,modu" +
+                    "le,exports){\n(function (global){\n/**\n * JSON parse.\n *\n * @see Based on jQuery#p" +
+                    "arseJSON (MIT) and JSON2\n * @api private\n */\n\nvar rvalidchars = /^[\\],:{}\\s]*$/;" +
+                    "\nvar rvalidescape = /\\\\(?:[\"\\\\\\/bfnrt]|u[0-9a-fA-F]{4})/g;\nvar rvalidtokens = /\"" +
+                    "[^\"\\\\\\n\\r]*\"|true|false|null|-?\\d+(?:\\.\\d*)?(?:[eE][+\\-]?\\d+)?/g;\nvar rvalidbrac" +
+                    "es = /(?:^|:|,)(?:\\s*\\[)+/g;\nvar rtrimLeft = /^\\s+/;\nvar rtrimRight = /\\s+$/;\n\nm" +
+                    "odule.exports = function parsejson(data) {\n  if (\'string\' != typeof data || !dat" +
+                    "a) {\n    return null;\n  }\n\n  data = data.replace(rtrimLeft, \'\').replace(rtrimRig" +
+                    "ht, \'\');\n\n  // Attempt to parse using the native JSON parser first\n  if (global." +
+                    "JSON && JSON.parse) {\n    return JSON.parse(data);\n  }\n\n  if (rvalidchars.test(d" +
+                    "ata.replace(rvalidescape, \'@\')\n      .replace(rvalidtokens, \']\')\n      .replace(" +
+                    "rvalidbraces, \'\'))) {\n    return (new Function(\'return \' + data))();\n  }\n};\n}).c" +
+                    "all(this,typeof self !== \"undefined\" ? self : typeof window !== \"undefined\" ? wi" +
+                    "ndow : {})\n},{}],27:[function(_dereq_,module,exports){\n/**\n * Compiles a queryst" +
+                    "ring\n * Returns string representation of the object\n *\n * @param {Object}\n * @ap" +
+                    "i private\n */\n\nexports.encode = function (obj) {\n  var str = \'\';\n\n  for (var i i" +
+                    "n obj) {\n    if (obj.hasOwnProperty(i)) {\n      if (str.length) str += \'&\';\n    " +
+                    "  str += encodeURIComponent(i) + \'=\' + encodeURIComponent(obj[i]);\n    }\n  }\n\n  " +
+                    "return str;\n};\n\n/**\n * Parses a simple querystring into an object\n *\n * @param {" +
+                    "String} qs\n * @api private\n */\n\nexports.decode = function(qs){\n  var qry = {};\n " +
+                    " var pairs = qs.split(\'&\');\n  for (var i = 0, l = pairs.length; i < l; i++) {\n  " +
+                    "  var pair = pairs[i].split(\'=\');\n    qry[decodeURIComponent(pair[0])] = decodeU" +
+                    "RIComponent(pair[1]);\n  }\n  return qry;\n};\n\n},{}],28:[function(_dereq_,module,ex" +
+                    "ports){\n/**\n * Parses an URI\n *\n * @author Steven Levithan <stevenlevithan.com> " +
+                    "(MIT license)\n * @api private\n */\n\nvar re = /^(?:(?![^:@]+:[^:@\\/]*@)(http|https" +
+                    "|ws|wss):\\/\\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?((?:[a-f0-9]{0,4}:){2,7}[a-f0-9]{" +
+                    "0,4}|[^:\\/?#]*)(?::(\\d*))?)(((\\/(?:[^?#](?![^?#\\/]*\\.[^?#\\/.]+(?:[?#]|$)))*\\/?)?" +
+                    "([^?#\\/]*))(?:\\?([^#]*))?(?:#(.*))?)/;\n\nvar parts = [\n    \'source\', \'protocol\', " +
+                    "\'authority\', \'userInfo\', \'user\', \'password\', \'host\', \'port\', \'relative\', \'path\'," +
+                    " \'directory\', \'file\', \'query\', \'anchor\'\n];\n\nmodule.exports = function parseuri(s" +
+                    "tr) {\n    var src = str,\n        b = str.indexOf(\'[\'),\n        e = str.indexOf(\'" +
+                    "]\');\n\n    if (b != -1 && e != -1) {\n        str = str.substring(0, b) + str.subs" +
+                    "tring(b, e).replace(/:/g, \';\') + str.substring(e, str.length);\n    }\n\n    var m " +
+                    "= re.exec(str || \'\'),\n        uri = {},\n        i = 14;\n\n    while (i--) {\n     " +
+                    "   uri[parts[i]] = m[i] || \'\';\n    }\n\n    if (b != -1 && e != -1) {\n        uri." +
+                    "source = src;\n        uri.host = uri.host.substring(1, uri.host.length - 1).repl" +
+                    "ace(/;/g, \':\');\n        uri.authority = uri.authority.replace(\'[\', \'\').replace(\'" +
+                    "]\', \'\').replace(/;/g, \':\');\n        uri.ipv6uri = true;\n    }\n\n    return uri;\n}" +
+                    ";\n\n},{}],29:[function(_dereq_,module,exports){\n\n/**\n * Module dependencies.\n */\n" +
+                    "\nvar global = (function() { return this; })();\n\n/**\n * WebSocket constructor.\n *" +
+                    "/\n\nvar WebSocket = global.WebSocket || global.MozWebSocket;\n\n/**\n * Module expor" +
+                    "ts.\n */\n\nmodule.exports = WebSocket ? ws : null;\n\n/**\n * WebSocket constructor.\n" +
+                    " *\n * The third `opts` options object gets ignored in web browsers, since it\'s\n " +
+                    "* non-standard, and throws a TypeError if passed to the constructor.\n * See: htt" +
+                    "ps://github.com/einaros/ws/issues/227\n *\n * @param {String} uri\n * @param {Array" +
+                    "} protocols (optional)\n * @param {Object) opts (optional)\n * @api public\n */\n\nfu" +
+                    "nction ws(uri, protocols, opts) {\n  var instance;\n  if (protocols) {\n    instanc" +
+                    "e = new WebSocket(uri, protocols);\n  } else {\n    instance = new WebSocket(uri);" +
+                    "\n  }\n  return instance;\n}\n\nif (WebSocket) ws.prototype = WebSocket.prototype;\n\n}" +
+                    ",{}]},{},[1])(1)\n});");
             this.Write(" ");
             
             #line 13 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
@@ -1822,7 +1774,7 @@ namespace Spike.Build.JavaScript
             
             #line default
             #line hidden
-            this.Write("u, request);\r\n\t}\r\n\r\n");
+            this.Write("u, writer);\r\n\t}\r\n\r\n");
             
             #line 52 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\ServerChannel.t4"
  } 
@@ -1836,77 +1788,84 @@ namespace Spike.Build.JavaScript
             
             #line default
             #line hidden
-            this.Write("\t\t\t\t\r\n\t\t\tcase 0x");
+            this.Write("\t\t\t\r\n\t\t\t// ");
             
-            #line 58 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\ServerChannel.t4"
+            #line 59 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\ServerChannel.t4"
+            this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name));
+            
+            #line default
+            #line hidden
+            this.Write(" \t\r\n\t\t\tcase 0x");
+            
+            #line 60 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\ServerChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Id.ToString("X")));
             
             #line default
             #line hidden
             this.Write("u: {\r\n\t\t\t\t");
             
-            #line 59 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\ServerChannel.t4"
+            #line 61 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\ServerChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Compressed ? "reader.Decompress();" : ""));
             
             #line default
             #line hidden
             this.Write("\r\n\t\t\t\tvar packet = new Object();\r\n");
             
-            #line 61 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\ServerChannel.t4"
+            #line 63 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\ServerChannel.t4"
 				foreach(var member in receive.Members){ 
             
             #line default
             #line hidden
             this.Write("\t\t\t\tpacket.");
             
-            #line 62 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\ServerChannel.t4"
+            #line 64 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\ServerChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name.CamelCase()));
             
             #line default
             #line hidden
             this.Write(" = reader.read");
             
-            #line 62 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\ServerChannel.t4"
+            #line 64 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\ServerChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "ArrayOf" : string.Empty));
             
             #line default
             #line hidden
             
-            #line 62 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\ServerChannel.t4"
+            #line 64 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\ServerChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Type));
             
             #line default
             #line hidden
             this.Write("();\r\n");
             
-            #line 63 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\ServerChannel.t4"
+            #line 65 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\ServerChannel.t4"
 				} 
             
             #line default
             #line hidden
-            this.Write("\r\n\t\t\t\t// Call the event now\r\n\t\t\t\tif (");
-            
-            #line 66 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\ServerChannel.t4"
-            this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name.CamelCase()));
-            
-            #line default
-            #line hidden
-            this.Write(" != null)\r\n\t\t\t\t\t");
+            this.Write("\r\n\t\t\t\tif (");
             
             #line 67 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\ServerChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name.CamelCase()));
             
             #line default
             #line hidden
-            this.Write("(packet, this);\r\n\t\t\t\tbreak;\r\n\t\t\t\t}\r\n\r\n");
+            this.Write(" != null)\r\n\t\t\t\t\t");
             
-            #line 71 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\ServerChannel.t4"
+            #line 68 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\ServerChannel.t4"
+            this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name.CamelCase()));
+            
+            #line default
+            #line hidden
+            this.Write("(packet, this);\r\n\r\n\t\t\t} break;\r\n\r\n");
+            
+            #line 72 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\ServerChannel.t4"
 				} 
             
             #line default
             #line hidden
-            this.Write("\r\n\t\t\t\tdefault: throw new Error(\"Received an unknown packet with \'\" + key + \"\' key" +
-                    ".\");\r\n\t\t\t}\r\n\t\t}\r\n\r\n\r\n}\r\n");
+            this.Write("\r\n\t\t\tdefault: throw new Error(\"Received an unknown packet with \'\" + key + \"\' key." +
+                    "\");\r\n\t\t}\r\n\t}\r\n\r\n\r\n}\r\n");
             this.Write(" ");
             
             #line 15 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"

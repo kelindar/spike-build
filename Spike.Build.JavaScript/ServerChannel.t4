@@ -46,7 +46,7 @@
 <#		} #>
 		
 		<#= send.Compressed ? "writer.compress();" : "" #>
-		this.send(0x<#= send.Id.ToString("X") #>u, request);
+		this.send(0x<#= send.Id.ToString("X") #>u, writer);
 	}
 
 <# } #>
@@ -54,7 +54,9 @@
 	// Dispatcher
 	this.onReceive = function(key, reader){
 		switch (key){
-<#			foreach(var receive in Model.Receives){ #>				
+<#			foreach(var receive in Model.Receives){ #>
+			
+			// <#= receive.Name #> 	
 			case 0x<#= receive.Id.ToString("X") #>u: {
 				<#= receive.Compressed ? "reader.Decompress();" : "" #>
 				var packet = new Object();
@@ -62,17 +64,16 @@
 				packet.<#= member.Name.CamelCase() #> = reader.read<#= member.IsList ? "ArrayOf" : string.Empty #><#= member.Type #>();
 <#				} #>
 
-				// Call the event now
 				if (<#= receive.Name.CamelCase() #> != null)
 					<#= receive.Name.CamelCase() #>(packet, this);
-				break;
-				}
+
+			} break;
 
 <#				} #>
 
-				default: throw new Error("Received an unknown packet with '" + key + "' key.");
-			}
+			default: throw new Error("Received an unknown packet with '" + key + "' key.");
 		}
+	}
 
 
 }
