@@ -15,7 +15,7 @@ spike.ByteArray = function(data){
 	/* By default: allow exceptions */
 	this.allowExceptions = true;
 };
-with({p: ByteArray.prototype}){
+with({p: spike.ByteArray.prototype}){
 
 	/* Writes a floating-point value to the underlying buffer. */
 	p.writeFloat = function(number, precisionBits, exponentBits){

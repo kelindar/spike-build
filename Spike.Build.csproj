@@ -237,7 +237,6 @@
     <Compile Include="Spike.Build.Runtime\CustomType.cs" />
     <Compile Include="Spike.Build.Runtime\Exceptions.cs" />
     <Compile Include="Spike.Build.Runtime\Extentions.cs" />
-    <Compile Include="Spike.Build.Runtime\IBuilder.cs" />
     <Compile Include="Spike.Build.Java\TcpChannelTemplate.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

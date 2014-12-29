@@ -45,6 +45,21 @@ namespace Spike.Build
     }
 
     /// <summary>
+    /// Contract that represents a builder.
+    /// </summary>
+    internal interface IBuilder
+    {
+        /// <summary>
+        /// Build the model of the specified type.
+        /// </summary>
+        /// <param name="model">The model to build.</param>
+        /// <param name="output">The output type.</param>
+        /// <param name="format">The format to apply.</param>
+        void Build(Model model, string output = null, string format = null);
+
+    }
+
+    /// <summary>
     /// Represents a base builder for various client builders, containing helper methods.
     /// </summary>
     internal abstract class BuilderBase : IBuilder

@@ -40,130 +40,130 @@ namespace Spike.Build.JavaScript
                     "ction(data){\r\n\t\r\n\t/* The buffer containing the byte data */\r\n\tthis.data = data;\r" +
                     "\n\t\r\n\t/* Current position in the buffer */\r\n\tthis.position = 0;\r\n\r\n\t/* By default" +
                     ": use big endian */\r\n\tthis.bigEndian = true;\r\n\r\n\t/* By default: allow exceptions" +
-                    " */\r\n\tthis.allowExceptions = true;\r\n};\r\nwith({p: ByteArray.prototype}){\r\n\r\n\t/* W" +
-                    "rites a floating-point value to the underlying buffer. */\r\n\tp.writeFloat = funct" +
-                    "ion(number, precisionBits, exponentBits){\r\n\t\tvar bias = Math.pow(2, exponentBits" +
-                    " - 1) - 1, minExp = -bias + 1, maxExp = bias, minUnnormExp = minExp - precisionB" +
-                    "its,\r\n\t\tstatus = isNaN(n = parseFloat(number)) || n == -Infinity || n == +Infini" +
-                    "ty ? n : 0,\r\n\t\texp = 0, len = 2 * bias + 1 + precisionBits + 3, bin = new Array(" +
-                    "len),\r\n\t\tsignal = (n = status !== 0 ? 0 : n) < 0, n = Math.abs(n), intPart = Mat" +
-                    "h.floor(n), floatPart = n - intPart,\r\n\t\ti, lastBit, rounded, j, result;\r\n\t\tfor(i" +
-                    " = len; i; bin[--i] = 0);\r\n\t\tfor(i = bias + 2; intPart && i; bin[--i] = intPart " +
-                    "% 2, intPart = Math.floor(intPart / 2));\r\n\t\tfor(i = bias + 1; floatPart > 0 && i" +
-                    "; (bin[++i] = ((floatPart *= 2) >= 1) - 0) && --floatPart);\r\n\t\tfor(i = -1; ++i <" +
-                    " len && !bin[i];);\r\n\t\tif(bin[(lastBit = precisionBits - 1 + (i = (exp = bias + 1" +
-                    " - i) >= minExp && exp <= maxExp ? i + 1 : bias + 1 - (exp = minExp - 1))) + 1])" +
-                    "{\r\n\t\t\tif(!(rounded = bin[lastBit]))\r\n\t\t\t\tfor(j = lastBit + 2; !rounded && j < le" +
-                    "n; rounded = bin[j++]);\r\n\t\t\tfor(j = lastBit + 1; rounded && --j >= 0; (bin[j] = " +
-                    "!bin[j] - 0) && (rounded = 0));\r\n\t\t}\r\n\t\tfor(i = i - 2 < 0 ? -1 : i - 3; ++i < le" +
-                    "n && !bin[i];);\r\n\r\n\t\t(exp = bias + 1 - i) >= minExp && exp <= maxExp ? ++i : exp" +
-                    " < minExp &&\r\n\t\t\t(exp != bias + 1 - len && exp < minUnnormExp && this.warn(\'enco" +
-                    "deFloat::float underflow\'), i = bias + 1 - (exp = minExp - 1));\r\n\t\t(intPart || s" +
-                    "tatus !== 0) && (this.warn(intPart ? \'encodeFloat::float overflow\' : \'encodeFloa" +
-                    "t::\' + status),\r\n\t\t\texp = maxExp + 1, i = bias + 2, status == -Infinity ? signal" +
-                    " = 1 : isNaN(status) && (bin[i] = 1));\r\n\t\tfor(n = Math.abs(exp + bias), j = expo" +
-                    "nentBits + 1, result = \'\'; --j; result = (n % 2) + result, n = n >>= 1);\r\n\t\tfor(" +
-                    "n = 0, j = 0, i = (result = (signal ? \'1\' : \'0\') + result + bin.slice(i, i + pre" +
-                    "cisionBits).join(\'\')).length, r = [];\r\n\t\t\ti; n += (1 << j) * result.charAt(--i)," +
-                    " j == 7 && (r[r.length] = String.fromCharCode(n), n = 0), j = (j + 1) % 8);\r\n\t\tr" +
-                    "[r.length] = n ? String.fromCharCode(n) : \'\';\r\n\t\tthis.data += (this.bigEndian ? " +
-                    "r.reverse() : r).join(\'\');\r\n\t};\r\n\r\n\t/* Writes a integral value to the underlying" +
-                    " buffer. */\r\n\tp.writeInt = function(number, bits, signed){\r\n\t    var max = Math." +
-                    "pow(2, bits), r = [];\r\n\t    var maxs = Math.pow(2, bits - 1);\r\n\t\t(signed && (num" +
-                    "ber >= maxs || number < -maxs)) && this.warn(\'writeInt::overflow\') && (number = " +
-                    "0);\r\n\t\t(!signed && (number >= max || (number < -(max >> 1)))) && this.warn(\'writ" +
-                    "eUInt::overflow\') && (number = 0);\r\n\t\tnumber < 0 && (number += max);\r\n\t\tfor(; nu" +
-                    "mber; r[r.length] = String.fromCharCode(number % 256), number = Math.floor(numbe" +
-                    "r / 256));\r\n\t\tfor(bits = -(-bits >> 3) - r.length; bits--; r[r.length] = \'\\0\');\r" +
-                    "\n\t\tthis.data += (this.bigEndian ? r.reverse() : r).join(\'\');\r\n\t};\r\n\r\n\t/* Writes " +
-                    "an unsigned byte value to the underlying buffer. */\r\n\tp.writeByte = function(num" +
-                    "ber){\r\n\t\tthis.writeInt(number, 8, false);\r\n\t};\r\n\r\n\t/* Writes bytes to the underl" +
-                    "ying buffer. */\r\n\tp.writeBytes = function(bytes){\r\n\t\tthis.data += bytes;\r\n\t};\r\n\r" +
-                    "\n\t/* Reads a floating-point value from the underlying buffer. */\r\n\tp.readFloat =" +
-                    " function(precisionBits, exponentBits){\r\n\t\tvar blen = (precisionBits + exponentB" +
-                    "its + 1) / 8;\r\n\t\tvar data = this.data.slice(this.position, this.position + blen)" +
-                    ";\r\n\t\tthis.position += blen;\r\n\t\tvar b = ((b = new this.Buffer(this.bigEndian, dat" +
-                    "a)).checkBuffer(precisionBits + exponentBits + 1), b),\r\n\t\t\tbias = Math.pow(2, ex" +
-                    "ponentBits - 1) - 1, signal = b.readBits(precisionBits + exponentBits, 1),\r\n\t\t\te" +
-                    "xponent = b.readBits(precisionBits, exponentBits), significand = 0,\r\n\t\t\tdivisor " +
-                    "= 2, curByte = b.buffer.length + (-precisionBits >> 3) - 1,\r\n\t\t\tbyteValue, start" +
-                    "Bit, mask;\r\n\t\tdo\r\n\t\t\tfor(byteValue = b.buffer[ ++curByte ], startBit = precision" +
-                    "Bits % 8 || 8, mask = 1 << startBit;\r\n\t\t\t\tmask >>= 1; (byteValue & mask) && (sig" +
-                    "nificand += 1 / divisor), divisor *= 2);\r\n\t\twhile(precisionBits -= startBit);\r\n\t" +
-                    "\treturn exponent == (bias << 1) + 1 ? significand ? NaN : signal ? -Infinity : +" +
-                    "Infinity\r\n\t\t\t: (1 + signal * -2) * (exponent || significand ? !exponent ? Math.p" +
-                    "ow(2, -bias + 1) * significand\r\n\t\t\t: Math.pow(2, exponent - bias) * (1 + signifi" +
-                    "cand) : 0);\r\n\t};\r\n\r\n\t/* Reads an integral value from the underlying buffer. */\r\n" +
-                    "\tp.readInt = function(bits, signed){\r\n\t\tvar blen = bits / 8;\r\n\t\tvar data = this." +
-                    "data.slice(this.position, this.position + blen);\r\n\t\tthis.position += blen;\r\n\t\tva" +
-                    "r b = new this.Buffer(this.bigEndian, data), x = b.readBits(0, bits), max = Math" +
-                    ".pow(2, bits);\r\n\t\treturn signed && x >= max / 2 ? x - max : x;\r\n\t};\r\n\r\n\t/* Reads" +
-                    " an unsigned byte value from the underlying buffer. */\r\n\tp.readByte = function()" +
-                    "{\r\n\t\treturn this.readInt(8, false);\r\n\t};\r\n\r\n\t/* Reads bytes from the underlying " +
-                    "buffer. */\r\n\tp.readBytes = function(count){\r\n\t\tvar r = this.data.slice(this.posi" +
-                    "tion, this.position + count);\r\n\t\tthis.position += count;\r\n\t\treturn r;\r\n\t};\r\n\r\n\t/" +
-                    "* Gets a byte value on a specified position */\r\n\tp.getAt = function(index){\r\n\t\tr" +
-                    "eturn this.data.charCodeAt(index) & 0xff;\r\n\t};\r\n\r\n\t/* Appends the underlying buf" +
-                    "fer data to the specified buffer. */\r\n\tp.readBytesTo = function(targetBuffer, co" +
-                    "unt){\r\n\t\ttargetBuffer.data += this.data.slice(this.position, this.position + cou" +
-                    "nt);\r\n\t\tthis.position += count;\r\n\t};\r\n\r\n\t/* Appends the underlying buffer data t" +
-                    "o the specified buffer. */\r\n\tp.getSize = function(){\r\n\t\treturn this.data.length;" +
-                    "\r\n\t};\r\n\r\n\t/* Gets the byte array data as base64 encoded string */\r\n\tp.toBase64 =" +
-                    " function(){\r\n\t\tvar cleanBuffer = new Array();\r\n\t\tvar result = \"\";\r\n\r\n\t   \tfor(v" +
-                    "ar i=0; i<this.getSize(); ++i)\r\n\t\t\tcleanBuffer.push(this.getAt(i));\r\n\t\tfor (var " +
-                    "i = 0; i < cleanBuffer.length; i++)\r\n\t\t\tresult += String.fromCharCode(cleanBuffe" +
-                    "r[i]);\t\r\n\r\n\t\tif (typeof(btoa) === \'function\') {\r\n\t\t\treturn btoa(result);\r\n\t\t} el" +
-                    "se {\r\n\t\t\treturn this._btoa(result);\r\n\t\t}\r\n\t};\r\n\r\n\t/* Writes base 64 encoded stri" +
-                    "ng to the buffer after decoding it */\r\n\tp.writeBase64 = function(input){\r\n\t\tif (" +
-                    "typeof(atob) === \'function\') {\r\n\t\t\tthis.writeBytes(atob(input));\r\n\t\t} else {\r\n\t\t" +
-                    "\tthis.writeBytes(this._atob(input));\r\n\t\t}\r\n\t};\r\n\r\n     /* btoa() for Internet Ex" +
-                    "plorer */\r\n     p._btoa = function(str) {\r\n          var chars = \'ABCDEFGHIJKLMN" +
-                    "OPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=\';\r\n          var encoded = [" +
-                    "];\r\n          var c = 0;\r\n          while (c < str.length) {\r\n              var " +
-                    "b0 = str.charCodeAt(c++);\r\n              var b1 = str.charCodeAt(c++);\r\n        " +
-                    "      var b2 = str.charCodeAt(c++);\r\n              var buf = (b0 << 16) + ((b1 |" +
-                    "| 0) << 8) + (b2 || 0);\r\n              var i0 = (buf & (63 << 18)) >> 18;\r\n     " +
-                    "         var i1 = (buf & (63 << 12)) >> 12;\r\n              var i2 = isNaN(b1) ? " +
-                    "64 : (buf & (63 << 6)) >> 6;\r\n              var i3 = isNaN(b2) ? 64 : (buf & 63)" +
-                    ";\r\n              encoded[encoded.length] = chars.charAt(i0);\r\n              enco" +
-                    "ded[encoded.length] = chars.charAt(i1);\r\n              encoded[encoded.length] =" +
-                    " chars.charAt(i2);\r\n              encoded[encoded.length] = chars.charAt(i3);\r\n " +
-                    "         }\r\n          return encoded.join(\'\');\r\n      };\r\n\r\n\t/* atob() for Inter" +
-                    "net Explorer */\r\n\tp._atob = function(input) {\r\n\t    var b64array = \"ABCDEFGHIJKL" +
-                    "MNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=\";\r\n\t    var output = \"\";\r\n" +
-                    "\t    var hex = \"\";\r\n\t    var chr1, chr2, chr3 = \"\";\r\n\t    var enc1, enc2, enc3, " +
-                    "enc4 = \"\";\r\n\t    var i = 0;\r\n\t\r\n\t    input = input.replace(/[^A-Za-z0-9\\+\\/\\=]/g" +
-                    ", \"\");\r\n\t\r\n\t    do {\r\n\t        enc1 = b64array.indexOf(input.charAt(i++));\r\n\t   " +
-                    "     enc2 = b64array.indexOf(input.charAt(i++));\r\n\t        enc3 = b64array.index" +
-                    "Of(input.charAt(i++));\r\n\t        enc4 = b64array.indexOf(input.charAt(i++));\r\n\t " +
-                    "       \r\n\t        chr1 = (enc1 << 2) | (enc2 >> 4);\r\n\t        chr2 = ((enc2 & 15" +
-                    ") << 4) | (enc3 >> 2);\r\n\t        chr3 = ((enc3 & 3) << 6) | enc4;\r\n\t        \r\n\t " +
-                    "       output = output + String.fromCharCode(chr1);\r\n\t        \r\n\t        if (enc" +
-                    "3 != 64) {\r\n\t            output = output + String.fromCharCode(chr2);\r\n\t        " +
-                    "}\r\n\t        if (enc4 != 64) {\r\n\t            output = output + String.fromCharCod" +
-                    "e(chr3);\r\n\t        }\r\n\t    \r\n\t        chr1 = chr2 = chr3 = \"\";\r\n\t        enc1 = " +
-                    "enc2 = enc3 = enc4 = \"\";\r\n\t    \r\n\t    } while (i < input.length);\r\n\r\n\t    return" +
-                    " output;\r\n\t};\r\n\r\n\r\n\twith({p: (p.Buffer = function(bigEndian, buffer){\r\n\t\tthis.bi" +
-                    "gEndian = bigEndian || 0, this.buffer = [], this.setBuffer(buffer);\r\n\t}).prototy" +
-                    "pe}){\r\n\t\tp.readBits = function(start, length){\r\n\t\t\t//shl fix: Henri Torgemane ~1" +
-                    "996 (compressed by Jonas Raoni)\r\n\t\t\tfunction shl(a, b){\r\n\t\t\t\tfor(++b; --b; a = (" +
-                    "(a %= 0x7fffffff + 1) & 0x40000000) == 0x40000000 ? a * 2 : (a - 0x40000000) * 2" +
-                    " + 0x7fffffff + 1);\r\n\t\t\t\treturn a;\r\n\t\t\t}\r\n\t\t\tif(start < 0 || length <= 0)\r\n\t\t\t\tr" +
-                    "eturn 0;\r\n\t\t\tthis.checkBuffer(start + length);\r\n\t\t\tfor(var offsetLeft, offsetRig" +
-                    "ht = start % 8, curByte = this.buffer.length - (start >> 3) - 1,\r\n\t\t\t\tlastByte =" +
-                    " this.buffer.length + (-(start + length) >> 3), diff = curByte - lastByte,\r\n\t\t\t\t" +
-                    "sum = ((this.buffer[ curByte ] >> offsetRight) & ((1 << (diff ? 8 - offsetRight " +
-                    ": length)) - 1))\r\n\t\t\t\t+ (diff && (offsetLeft = (start + length) % 8) ? (this.buf" +
-                    "fer[ lastByte++ ] & ((1 << offsetLeft) - 1))\r\n\t\t\t\t<< (diff-- << 3) - offsetRight" +
-                    " : 0); diff; sum += shl(this.buffer[ lastByte++ ], (diff-- << 3) - offsetRight)\r" +
-                    "\n\t\t\t);\r\n\t\t\treturn sum;\r\n\t\t};\r\n\t\tp.setBuffer = function(data){\r\n\t\t\tif(data){\r\n\t\t\t" +
-                    "\tfor(var l, i = l = data.length, b = this.buffer = new Array(l); i; b[l - i] = d" +
-                    "ata.charCodeAt(--i));\r\n\t\t\t\tthis.bigEndian && b.reverse();\r\n\t\t\t}\r\n\t\t};\r\n\t\tp.hasNe" +
-                    "ededBits = function(neededBits){\r\n\t\t\treturn this.buffer.length >= -(-neededBits " +
-                    ">> 3);\r\n\t\t};\r\n\t\tp.checkBuffer = function(neededBits){\r\n\t\t\tif(!this.hasNeededBits" +
-                    "(neededBits))\r\n\t\t\t\tthrow new Error(\'checkBuffer::missing bytes\');\r\n\t\t};\r\n\t}\r\n\tp." +
-                    "warn = function(msg){\r\n\t\tif(this.allowExceptions)\r\n\t\t\tthrow new Error(msg);\r\n\t\tr" +
-                    "eturn 1;\r\n\t};\r\n\r\n}");
+                    " */\r\n\tthis.allowExceptions = true;\r\n};\r\nwith({p: spike.ByteArray.prototype}){\r\n\r" +
+                    "\n\t/* Writes a floating-point value to the underlying buffer. */\r\n\tp.writeFloat =" +
+                    " function(number, precisionBits, exponentBits){\r\n\t\tvar bias = Math.pow(2, expone" +
+                    "ntBits - 1) - 1, minExp = -bias + 1, maxExp = bias, minUnnormExp = minExp - prec" +
+                    "isionBits,\r\n\t\tstatus = isNaN(n = parseFloat(number)) || n == -Infinity || n == +" +
+                    "Infinity ? n : 0,\r\n\t\texp = 0, len = 2 * bias + 1 + precisionBits + 3, bin = new " +
+                    "Array(len),\r\n\t\tsignal = (n = status !== 0 ? 0 : n) < 0, n = Math.abs(n), intPart" +
+                    " = Math.floor(n), floatPart = n - intPart,\r\n\t\ti, lastBit, rounded, j, result;\r\n\t" +
+                    "\tfor(i = len; i; bin[--i] = 0);\r\n\t\tfor(i = bias + 2; intPart && i; bin[--i] = in" +
+                    "tPart % 2, intPart = Math.floor(intPart / 2));\r\n\t\tfor(i = bias + 1; floatPart > " +
+                    "0 && i; (bin[++i] = ((floatPart *= 2) >= 1) - 0) && --floatPart);\r\n\t\tfor(i = -1;" +
+                    " ++i < len && !bin[i];);\r\n\t\tif(bin[(lastBit = precisionBits - 1 + (i = (exp = bi" +
+                    "as + 1 - i) >= minExp && exp <= maxExp ? i + 1 : bias + 1 - (exp = minExp - 1)))" +
+                    " + 1]){\r\n\t\t\tif(!(rounded = bin[lastBit]))\r\n\t\t\t\tfor(j = lastBit + 2; !rounded && " +
+                    "j < len; rounded = bin[j++]);\r\n\t\t\tfor(j = lastBit + 1; rounded && --j >= 0; (bin" +
+                    "[j] = !bin[j] - 0) && (rounded = 0));\r\n\t\t}\r\n\t\tfor(i = i - 2 < 0 ? -1 : i - 3; ++" +
+                    "i < len && !bin[i];);\r\n\r\n\t\t(exp = bias + 1 - i) >= minExp && exp <= maxExp ? ++i" +
+                    " : exp < minExp &&\r\n\t\t\t(exp != bias + 1 - len && exp < minUnnormExp && this.warn" +
+                    "(\'encodeFloat::float underflow\'), i = bias + 1 - (exp = minExp - 1));\r\n\t\t(intPar" +
+                    "t || status !== 0) && (this.warn(intPart ? \'encodeFloat::float overflow\' : \'enco" +
+                    "deFloat::\' + status),\r\n\t\t\texp = maxExp + 1, i = bias + 2, status == -Infinity ? " +
+                    "signal = 1 : isNaN(status) && (bin[i] = 1));\r\n\t\tfor(n = Math.abs(exp + bias), j " +
+                    "= exponentBits + 1, result = \'\'; --j; result = (n % 2) + result, n = n >>= 1);\r\n" +
+                    "\t\tfor(n = 0, j = 0, i = (result = (signal ? \'1\' : \'0\') + result + bin.slice(i, i" +
+                    " + precisionBits).join(\'\')).length, r = [];\r\n\t\t\ti; n += (1 << j) * result.charAt" +
+                    "(--i), j == 7 && (r[r.length] = String.fromCharCode(n), n = 0), j = (j + 1) % 8)" +
+                    ";\r\n\t\tr[r.length] = n ? String.fromCharCode(n) : \'\';\r\n\t\tthis.data += (this.bigEnd" +
+                    "ian ? r.reverse() : r).join(\'\');\r\n\t};\r\n\r\n\t/* Writes a integral value to the unde" +
+                    "rlying buffer. */\r\n\tp.writeInt = function(number, bits, signed){\r\n\t    var max =" +
+                    " Math.pow(2, bits), r = [];\r\n\t    var maxs = Math.pow(2, bits - 1);\r\n\t\t(signed &" +
+                    "& (number >= maxs || number < -maxs)) && this.warn(\'writeInt::overflow\') && (num" +
+                    "ber = 0);\r\n\t\t(!signed && (number >= max || (number < -(max >> 1)))) && this.warn" +
+                    "(\'writeUInt::overflow\') && (number = 0);\r\n\t\tnumber < 0 && (number += max);\r\n\t\tfo" +
+                    "r(; number; r[r.length] = String.fromCharCode(number % 256), number = Math.floor" +
+                    "(number / 256));\r\n\t\tfor(bits = -(-bits >> 3) - r.length; bits--; r[r.length] = \'" +
+                    "\\0\');\r\n\t\tthis.data += (this.bigEndian ? r.reverse() : r).join(\'\');\r\n\t};\r\n\r\n\t/* W" +
+                    "rites an unsigned byte value to the underlying buffer. */\r\n\tp.writeByte = functi" +
+                    "on(number){\r\n\t\tthis.writeInt(number, 8, false);\r\n\t};\r\n\r\n\t/* Writes bytes to the " +
+                    "underlying buffer. */\r\n\tp.writeBytes = function(bytes){\r\n\t\tthis.data += bytes;\r\n" +
+                    "\t};\r\n\r\n\t/* Reads a floating-point value from the underlying buffer. */\r\n\tp.readF" +
+                    "loat = function(precisionBits, exponentBits){\r\n\t\tvar blen = (precisionBits + exp" +
+                    "onentBits + 1) / 8;\r\n\t\tvar data = this.data.slice(this.position, this.position +" +
+                    " blen);\r\n\t\tthis.position += blen;\r\n\t\tvar b = ((b = new this.Buffer(this.bigEndia" +
+                    "n, data)).checkBuffer(precisionBits + exponentBits + 1), b),\r\n\t\t\tbias = Math.pow" +
+                    "(2, exponentBits - 1) - 1, signal = b.readBits(precisionBits + exponentBits, 1)," +
+                    "\r\n\t\t\texponent = b.readBits(precisionBits, exponentBits), significand = 0,\r\n\t\t\tdi" +
+                    "visor = 2, curByte = b.buffer.length + (-precisionBits >> 3) - 1,\r\n\t\t\tbyteValue," +
+                    " startBit, mask;\r\n\t\tdo\r\n\t\t\tfor(byteValue = b.buffer[ ++curByte ], startBit = pre" +
+                    "cisionBits % 8 || 8, mask = 1 << startBit;\r\n\t\t\t\tmask >>= 1; (byteValue & mask) &" +
+                    "& (significand += 1 / divisor), divisor *= 2);\r\n\t\twhile(precisionBits -= startBi" +
+                    "t);\r\n\t\treturn exponent == (bias << 1) + 1 ? significand ? NaN : signal ? -Infini" +
+                    "ty : +Infinity\r\n\t\t\t: (1 + signal * -2) * (exponent || significand ? !exponent ? " +
+                    "Math.pow(2, -bias + 1) * significand\r\n\t\t\t: Math.pow(2, exponent - bias) * (1 + s" +
+                    "ignificand) : 0);\r\n\t};\r\n\r\n\t/* Reads an integral value from the underlying buffer" +
+                    ". */\r\n\tp.readInt = function(bits, signed){\r\n\t\tvar blen = bits / 8;\r\n\t\tvar data =" +
+                    " this.data.slice(this.position, this.position + blen);\r\n\t\tthis.position += blen;" +
+                    "\r\n\t\tvar b = new this.Buffer(this.bigEndian, data), x = b.readBits(0, bits), max " +
+                    "= Math.pow(2, bits);\r\n\t\treturn signed && x >= max / 2 ? x - max : x;\r\n\t};\r\n\r\n\t/*" +
+                    " Reads an unsigned byte value from the underlying buffer. */\r\n\tp.readByte = func" +
+                    "tion(){\r\n\t\treturn this.readInt(8, false);\r\n\t};\r\n\r\n\t/* Reads bytes from the under" +
+                    "lying buffer. */\r\n\tp.readBytes = function(count){\r\n\t\tvar r = this.data.slice(thi" +
+                    "s.position, this.position + count);\r\n\t\tthis.position += count;\r\n\t\treturn r;\r\n\t};" +
+                    "\r\n\r\n\t/* Gets a byte value on a specified position */\r\n\tp.getAt = function(index)" +
+                    "{\r\n\t\treturn this.data.charCodeAt(index) & 0xff;\r\n\t};\r\n\r\n\t/* Appends the underlyi" +
+                    "ng buffer data to the specified buffer. */\r\n\tp.readBytesTo = function(targetBuff" +
+                    "er, count){\r\n\t\ttargetBuffer.data += this.data.slice(this.position, this.position" +
+                    " + count);\r\n\t\tthis.position += count;\r\n\t};\r\n\r\n\t/* Appends the underlying buffer " +
+                    "data to the specified buffer. */\r\n\tp.getSize = function(){\r\n\t\treturn this.data.l" +
+                    "ength;\r\n\t};\r\n\r\n\t/* Gets the byte array data as base64 encoded string */\r\n\tp.toBa" +
+                    "se64 = function(){\r\n\t\tvar cleanBuffer = new Array();\r\n\t\tvar result = \"\";\r\n\r\n\t   " +
+                    "\tfor(var i=0; i<this.getSize(); ++i)\r\n\t\t\tcleanBuffer.push(this.getAt(i));\r\n\t\tfor" +
+                    " (var i = 0; i < cleanBuffer.length; i++)\r\n\t\t\tresult += String.fromCharCode(clea" +
+                    "nBuffer[i]);\t\r\n\r\n\t\tif (typeof(btoa) === \'function\') {\r\n\t\t\treturn btoa(result);\r\n" +
+                    "\t\t} else {\r\n\t\t\treturn this._btoa(result);\r\n\t\t}\r\n\t};\r\n\r\n\t/* Writes base 64 encode" +
+                    "d string to the buffer after decoding it */\r\n\tp.writeBase64 = function(input){\r\n" +
+                    "\t\tif (typeof(atob) === \'function\') {\r\n\t\t\tthis.writeBytes(atob(input));\r\n\t\t} else" +
+                    " {\r\n\t\t\tthis.writeBytes(this._atob(input));\r\n\t\t}\r\n\t};\r\n\r\n     /* btoa() for Inter" +
+                    "net Explorer */\r\n     p._btoa = function(str) {\r\n          var chars = \'ABCDEFGH" +
+                    "IJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=\';\r\n          var encod" +
+                    "ed = [];\r\n          var c = 0;\r\n          while (c < str.length) {\r\n            " +
+                    "  var b0 = str.charCodeAt(c++);\r\n              var b1 = str.charCodeAt(c++);\r\n  " +
+                    "            var b2 = str.charCodeAt(c++);\r\n              var buf = (b0 << 16) + " +
+                    "((b1 || 0) << 8) + (b2 || 0);\r\n              var i0 = (buf & (63 << 18)) >> 18;\r" +
+                    "\n              var i1 = (buf & (63 << 12)) >> 12;\r\n              var i2 = isNaN(" +
+                    "b1) ? 64 : (buf & (63 << 6)) >> 6;\r\n              var i3 = isNaN(b2) ? 64 : (buf" +
+                    " & 63);\r\n              encoded[encoded.length] = chars.charAt(i0);\r\n            " +
+                    "  encoded[encoded.length] = chars.charAt(i1);\r\n              encoded[encoded.len" +
+                    "gth] = chars.charAt(i2);\r\n              encoded[encoded.length] = chars.charAt(i" +
+                    "3);\r\n          }\r\n          return encoded.join(\'\');\r\n      };\r\n\r\n\t/* atob() for" +
+                    " Internet Explorer */\r\n\tp._atob = function(input) {\r\n\t    var b64array = \"ABCDEF" +
+                    "GHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=\";\r\n\t    var output =" +
+                    " \"\";\r\n\t    var hex = \"\";\r\n\t    var chr1, chr2, chr3 = \"\";\r\n\t    var enc1, enc2, " +
+                    "enc3, enc4 = \"\";\r\n\t    var i = 0;\r\n\t\r\n\t    input = input.replace(/[^A-Za-z0-9\\+\\" +
+                    "/\\=]/g, \"\");\r\n\t\r\n\t    do {\r\n\t        enc1 = b64array.indexOf(input.charAt(i++));" +
+                    "\r\n\t        enc2 = b64array.indexOf(input.charAt(i++));\r\n\t        enc3 = b64array" +
+                    ".indexOf(input.charAt(i++));\r\n\t        enc4 = b64array.indexOf(input.charAt(i++)" +
+                    ");\r\n\t        \r\n\t        chr1 = (enc1 << 2) | (enc2 >> 4);\r\n\t        chr2 = ((enc" +
+                    "2 & 15) << 4) | (enc3 >> 2);\r\n\t        chr3 = ((enc3 & 3) << 6) | enc4;\r\n\t      " +
+                    "  \r\n\t        output = output + String.fromCharCode(chr1);\r\n\t        \r\n\t        i" +
+                    "f (enc3 != 64) {\r\n\t            output = output + String.fromCharCode(chr2);\r\n\t  " +
+                    "      }\r\n\t        if (enc4 != 64) {\r\n\t            output = output + String.fromC" +
+                    "harCode(chr3);\r\n\t        }\r\n\t    \r\n\t        chr1 = chr2 = chr3 = \"\";\r\n\t        e" +
+                    "nc1 = enc2 = enc3 = enc4 = \"\";\r\n\t    \r\n\t    } while (i < input.length);\r\n\r\n\t    " +
+                    "return output;\r\n\t};\r\n\r\n\r\n\twith({p: (p.Buffer = function(bigEndian, buffer){\r\n\t\tt" +
+                    "his.bigEndian = bigEndian || 0, this.buffer = [], this.setBuffer(buffer);\r\n\t}).p" +
+                    "rototype}){\r\n\t\tp.readBits = function(start, length){\r\n\t\t\t//shl fix: Henri Torgem" +
+                    "ane ~1996 (compressed by Jonas Raoni)\r\n\t\t\tfunction shl(a, b){\r\n\t\t\t\tfor(++b; --b;" +
+                    " a = ((a %= 0x7fffffff + 1) & 0x40000000) == 0x40000000 ? a * 2 : (a - 0x4000000" +
+                    "0) * 2 + 0x7fffffff + 1);\r\n\t\t\t\treturn a;\r\n\t\t\t}\r\n\t\t\tif(start < 0 || length <= 0)\r" +
+                    "\n\t\t\t\treturn 0;\r\n\t\t\tthis.checkBuffer(start + length);\r\n\t\t\tfor(var offsetLeft, off" +
+                    "setRight = start % 8, curByte = this.buffer.length - (start >> 3) - 1,\r\n\t\t\t\tlast" +
+                    "Byte = this.buffer.length + (-(start + length) >> 3), diff = curByte - lastByte," +
+                    "\r\n\t\t\t\tsum = ((this.buffer[ curByte ] >> offsetRight) & ((1 << (diff ? 8 - offset" +
+                    "Right : length)) - 1))\r\n\t\t\t\t+ (diff && (offsetLeft = (start + length) % 8) ? (th" +
+                    "is.buffer[ lastByte++ ] & ((1 << offsetLeft) - 1))\r\n\t\t\t\t<< (diff-- << 3) - offse" +
+                    "tRight : 0); diff; sum += shl(this.buffer[ lastByte++ ], (diff-- << 3) - offsetR" +
+                    "ight)\r\n\t\t\t);\r\n\t\t\treturn sum;\r\n\t\t};\r\n\t\tp.setBuffer = function(data){\r\n\t\t\tif(data)" +
+                    "{\r\n\t\t\t\tfor(var l, i = l = data.length, b = this.buffer = new Array(l); i; b[l - " +
+                    "i] = data.charCodeAt(--i));\r\n\t\t\t\tthis.bigEndian && b.reverse();\r\n\t\t\t}\r\n\t\t};\r\n\t\tp" +
+                    ".hasNeededBits = function(neededBits){\r\n\t\t\treturn this.buffer.length >= -(-neede" +
+                    "dBits >> 3);\r\n\t\t};\r\n\t\tp.checkBuffer = function(neededBits){\r\n\t\t\tif(!this.hasNeed" +
+                    "edBits(neededBits))\r\n\t\t\t\tthrow new Error(\'checkBuffer::missing bytes\');\r\n\t\t};\r\n\t" +
+                    "}\r\n\tp.warn = function(msg){\r\n\t\tif(this.allowExceptions)\r\n\t\t\tthrow new Error(msg)" +
+                    ";\r\n\t\treturn 1;\r\n\t};\r\n\r\n}");
             
             #line 9 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
  } 
@@ -262,7 +262,7 @@ namespace Spike.Build.JavaScript
                     ";\r\n\t\t\t\toidx++;\r\n\t\t\t\t\r\n\t\t\t\tdo\r\n\t\t\t\t{\r\n\t\t\t\t\toutput.writeByte(output.getAt(referenc" +
                     "e));\r\n\t\t\t\t\treference++;\r\n\t\t\t\t\toidx++;\r\n\t\t\t\t}\r\n\t\t\t\twhile ((--len) != 0);\r\n\t\t\t}\r\n\t" +
                     "\t}\r\n\t\twhile (iidx < inputLength);\r\n\t\t\r\n\t\toutput.length = oidx;\r\n\t\treturn output;" +
-                    "\r\n\t}\r\n\t\r\n}");
+                    "\r\n\t}\r\n\t\r\n};");
             
             #line 10 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
  } 
@@ -276,103 +276,103 @@ namespace Spike.Build.JavaScript
             #line default
             #line hidden
             this.Write(" ");
-            this.Write("spike.PacketWriter = function(bufferTowrite){\r\n\tthis.buffer = new ByteArray([]);\r" +
-                    "\n}\r\n\r\n/* Compresses the packet */\r\nspike.PacketWriter.prototype.compress = funct" +
-                    "ion()\r\n{\t\t\t\r\n\tthis.buffer = new spike.PacketCompressor().compress(this.buffer, t" +
-                    "his.buffer.getSize());\r\n}\t\r\n\t\r\nspike.PacketWriter.prototype.writeBoolean = funct" +
-                    "ion(value){\r\n\tif(value){\r\n\t\tthis.buffer.writeInt(1, 8, false);\r\n\t}else{\r\n\t\tthis." +
-                    "buffer.writeInt(0, 8, false);\r\n\t}\r\n}\r\n\t\r\nspike.PacketWriter.prototype.writeKey =" +
-                    " function(value){\r\n\tfor(var i=0; i < 8; i+=2)\r\n\t{\r\n\t\tvar s = value.charAt(i) + v" +
-                    "alue.charAt(i + 1);\r\n\t\tvar b = parseInt(s, 16);\r\n\t\tthis.buffer.writeInt(b, 8, fa" +
-                    "lse);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeByte = function(value){\r\n\tthis" +
-                    ".buffer.writeInt(value, 8, false);\r\n}\r\n\t\r\nspike.PacketWriter.prototype.writeSByt" +
-                    "e = function(value){\r\n\tthis.buffer.writeInt(value, 8, true);\r\n}\r\n\t\r\nspike.Packet" +
-                    "Writer.prototype.writeInt16 = function(value){\r\n\tthis.buffer.writeInt(value, 16," +
-                    " true);\r\n}\r\n\t\r\nspike.PacketWriter.prototype.writeInt32 = function(value){\r\n\tthis" +
-                    ".buffer.writeInt(value, 32, true);\r\n}\r\n\t\r\nspike.PacketWriter.prototype.writeInt6" +
-                    "4 = function(value){\r\n\tthis.buffer.writeInt(value, 64, true);\r\n}\r\n\t\r\nspike.Packe" +
-                    "tWriter.prototype.writeUInt16 = function(value){\r\n\tthis.buffer.writeInt(value, 1" +
-                    "6, false);\r\n}\r\n\t\r\nspike.PacketWriter.prototype.writeUInt32 = function(value){\r\n\t" +
-                    "this.buffer.writeInt(value, 32, false);\r\n}\r\n\t\r\nspike.PacketWriter.prototype.writ" +
-                    "eUInt64 = function(value){\r\n\tthis.buffer.writeInt(value, 64, false);\r\n}\r\n\r\nspike" +
-                    ".PacketWriter.prototype.writeDateTime = function(value){\r\n\tthis.writeInt16(value" +
-                    ".getFullYear());\r\n\tthis.writeInt16(value.getMonth() + 1);\r\n\tthis.writeInt16(valu" +
-                    "e.getDate());\r\n\tthis.writeInt16(value.getHours());\r\n\tthis.writeInt16(value.getMi" +
-                    "nutes());\r\n\tthis.writeInt16(value.getSeconds());\r\n\tthis.writeInt16(value.getMill" +
-                    "iseconds());\r\n}\r\n\r\nspike.PacketWriter.prototype.writeSingle = function(value){\r\n" +
-                    "\tthis.buffer.writeFloat(value, 23, 8);\r\n}\r\n\t\r\nspike.PacketWriter.prototype.write" +
-                    "Double = function(value){\r\n\tthis.buffer.writeFloat(value, 52, 11);\r\n}\r\n\t\r\nspike." +
-                    "PacketWriter.prototype.writeString = function(value){\r\n\tif(value == \'undefined\' " +
-                    "|| value == null || value.length == 0){\r\n\t\tthis.writeInt32(0);\t\t\r\n\t}else{\r\n\t\tval" +
-                    "ue = unescape(encodeURIComponent(value));\r\n\t\tthis.writeInt32(value.length);\r\n\t\tt" +
-                    "his.buffer.writeBytes(value);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeDynami" +
-                    "c = function(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"number\")\r\n\t{\r\n\t\tt" +
-                    "his.writeByte(1);\r\n\t\tthis.writeString(\"Double\");\r\n\t\tthis.writeDouble(value);\r\n\t}" +
-                    "\r\n\telse if(type == \"boolean\")\r\n\t{\r\n\t\tthis.writeByte(1);\r\n\t\tthis.writeString(\"Boo" +
-                    "lean\");\r\n\t\tthis.writeBoolean(value);\r\n\t}\r\n\telse if(type == \"string\")\r\n\t{\r\n\t\tthis" +
-                    ".writeByte(1);\r\n\t\tthis.writeString(\"String\");\r\n\t\tthis.writeString(value);\r\n\t}\r\n\t" +
-                    "else if(type == \"object\" && value instanceof Date)\r\n\t{\r\n\t\tthis.writeByte(1);\r\n\t\t" +
-                    "this.writeString(\"DateTime\");\r\n\t\tthis.writeDateTime(value);\r\n\t}\r\n\telse\r\n\t{\r\n\t\tth" +
-                    "is.writeByte(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfByte = funct" +
-                    "ion(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" && value instanceo" +
-                    "f ByteArray){\r\n\t\tthis.writeInt32(value.getSize());\r\n\t\tthis.buffer.writeBytes(val" +
-                    "ue.data);\r\n\t}else{\r\n\t\tthis.writeInt32(value.length);\r\n\t\tthis.buffer.writeBytes(v" +
-                    "alue);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfUInt16 = function(valu" +
-                    "e){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" && value instanceof Array)" +
-                    "{\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(" +
-                    "var i=0; i<value.length; ++i){\r\n\t\t\tthis.writeUInt16(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\t" +
-                    "this.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfInt16 = f" +
-                    "unction(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" && value insta" +
-                    "nceof Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\tret" +
-                    "urn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.writeInt16(value[i]);\r\n\t\t}\r\n" +
+            this.Write("spike.PacketWriter = function(bufferTowrite){\r\n\tthis.buffer = new spike.ByteArray" +
+                    "([]);\r\n}\r\n\r\n/* Compresses the packet */\r\nspike.PacketWriter.prototype.compress =" +
+                    " function()\r\n{\t\t\t\r\n\tthis.buffer = new spike.PacketCompressor().compress(this.buf" +
+                    "fer, this.buffer.getSize());\r\n}\t\r\n\t\r\nspike.PacketWriter.prototype.writeBoolean =" +
+                    " function(value){\r\n\tif(value){\r\n\t\tthis.buffer.writeInt(1, 8, false);\r\n\t}else{\r\n\t" +
+                    "\tthis.buffer.writeInt(0, 8, false);\r\n\t}\r\n}\r\n\t\r\nspike.PacketWriter.prototype.writ" +
+                    "eKey = function(value){\r\n\tfor(var i=0; i < 8; i+=2)\r\n\t{\r\n\t\tvar s = value.charAt(" +
+                    "i) + value.charAt(i + 1);\r\n\t\tvar b = parseInt(s, 16);\r\n\t\tthis.buffer.writeInt(b," +
+                    " 8, false);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeByte = function(value){\r" +
+                    "\n\tthis.buffer.writeInt(value, 8, false);\r\n}\r\n\t\r\nspike.PacketWriter.prototype.wri" +
+                    "teSByte = function(value){\r\n\tthis.buffer.writeInt(value, 8, true);\r\n}\r\n\t\r\nspike." +
+                    "PacketWriter.prototype.writeInt16 = function(value){\r\n\tthis.buffer.writeInt(valu" +
+                    "e, 16, true);\r\n}\r\n\t\r\nspike.PacketWriter.prototype.writeInt32 = function(value){\r" +
+                    "\n\tthis.buffer.writeInt(value, 32, true);\r\n}\r\n\t\r\nspike.PacketWriter.prototype.wri" +
+                    "teInt64 = function(value){\r\n\tthis.buffer.writeInt(value, 64, true);\r\n}\r\n\t\r\nspike" +
+                    ".PacketWriter.prototype.writeUInt16 = function(value){\r\n\tthis.buffer.writeInt(va" +
+                    "lue, 16, false);\r\n}\r\n\t\r\nspike.PacketWriter.prototype.writeUInt32 = function(valu" +
+                    "e){\r\n\tthis.buffer.writeInt(value, 32, false);\r\n}\r\n\t\r\nspike.PacketWriter.prototyp" +
+                    "e.writeUInt64 = function(value){\r\n\tthis.buffer.writeInt(value, 64, false);\r\n}\r\n\r" +
+                    "\nspike.PacketWriter.prototype.writeDateTime = function(value){\r\n\tthis.writeInt16" +
+                    "(value.getFullYear());\r\n\tthis.writeInt16(value.getMonth() + 1);\r\n\tthis.writeInt1" +
+                    "6(value.getDate());\r\n\tthis.writeInt16(value.getHours());\r\n\tthis.writeInt16(value" +
+                    ".getMinutes());\r\n\tthis.writeInt16(value.getSeconds());\r\n\tthis.writeInt16(value.g" +
+                    "etMilliseconds());\r\n}\r\n\r\nspike.PacketWriter.prototype.writeSingle = function(val" +
+                    "ue){\r\n\tthis.buffer.writeFloat(value, 23, 8);\r\n}\r\n\t\r\nspike.PacketWriter.prototype" +
+                    ".writeDouble = function(value){\r\n\tthis.buffer.writeFloat(value, 52, 11);\r\n}\r\n\t\r\n" +
+                    "spike.PacketWriter.prototype.writeString = function(value){\r\n\tif(value == \'undef" +
+                    "ined\' || value == null || value.length == 0){\r\n\t\tthis.writeInt32(0);\t\t\r\n\t}else{\r" +
+                    "\n\t\tvalue = unescape(encodeURIComponent(value));\r\n\t\tthis.writeInt32(value.length)" +
+                    ";\r\n\t\tthis.buffer.writeBytes(value);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.write" +
+                    "Dynamic = function(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"number\")\r\n\t" +
+                    "{\r\n\t\tthis.writeByte(1);\r\n\t\tthis.writeString(\"Double\");\r\n\t\tthis.writeDouble(value" +
+                    ");\r\n\t}\r\n\telse if(type == \"boolean\")\r\n\t{\r\n\t\tthis.writeByte(1);\r\n\t\tthis.writeStrin" +
+                    "g(\"Boolean\");\r\n\t\tthis.writeBoolean(value);\r\n\t}\r\n\telse if(type == \"string\")\r\n\t{\r\n" +
+                    "\t\tthis.writeByte(1);\r\n\t\tthis.writeString(\"String\");\r\n\t\tthis.writeString(value);\r" +
+                    "\n\t}\r\n\telse if(type == \"object\" && value instanceof Date)\r\n\t{\r\n\t\tthis.writeByte(1" +
+                    ");\r\n\t\tthis.writeString(\"DateTime\");\r\n\t\tthis.writeDateTime(value);\r\n\t}\r\n\telse\r\n\t{" +
+                    "\r\n\t\tthis.writeByte(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfByte =" +
+                    " function(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" && value ins" +
+                    "tanceof ByteArray){\r\n\t\tthis.writeInt32(value.getSize());\r\n\t\tthis.buffer.writeByt" +
+                    "es(value.data);\r\n\t}else{\r\n\t\tthis.writeInt32(value.length);\r\n\t\tthis.buffer.writeB" +
+                    "ytes(value);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfUInt16 = functio" +
+                    "n(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" && value instanceof " +
+                    "Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n" +
+                    "\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.writeUInt16(value[i]);\r\n\t\t}\r\n\t}els" +
+                    "e{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfInt" +
+                    "16 = function(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" && value" +
+                    " instanceof Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(value.length == 0)\r\n" +
+                    "\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.writeInt16(value[i]);\r" +
+                    "\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writ" +
+                    "eArrayOfInt32 = function(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"objec" +
+                    "t\" && value instanceof Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(value.len" +
+                    "gth == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.writeInt32(" +
+                    "value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.pro" +
+                    "totype.writeArrayOfUInt32 = function(value){\r\n\tvar type = typeof(value);\r\n\tif(ty" +
+                    "pe == \"object\" && value instanceof Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\t" +
+                    "if(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis" +
+                    ".writeUInt32(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.Pac" +
+                    "ketWriter.prototype.writeArrayOfInt64 = function(value){\r\n\tvar type = typeof(val" +
+                    "ue);\r\n\tif(type == \"object\" && value instanceof Array){\r\n\t\tthis.writeInt32(value." +
+                    "length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++" +
+                    "i){\r\n\t\t\tthis.writeInt64(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n" +
+                    "\r\nspike.PacketWriter.prototype.writeArrayOfUInt64 = function(value){\r\n\tvar type " +
+                    "= typeof(value);\r\n\tif(type == \"object\" && value instanceof Array){\r\n\t\tthis.write" +
+                    "Int32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<valu" +
+                    "e.length; ++i){\r\n\t\t\tthis.writeUInt64(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32" +
+                    "(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfDouble = function(value)" +
+                    "{\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" && value instanceof Array){\r" +
+                    "\n\t\tthis.writeInt32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(va" +
+                    "r i=0; i<value.length; ++i){\r\n\t\t\tthis.writeDouble(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tth" +
+                    "is.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfSingle = fu" +
+                    "nction(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" && value instan" +
+                    "ceof Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\tretu" +
+                    "rn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.writeSingle(value[i]);\r\n\t\t}\r\n" +
                     "\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArray" +
-                    "OfInt32 = function(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" && " +
-                    "value instanceof Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(value.length ==" +
-                    " 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.writeInt32(value[" +
-                    "i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype" +
-                    ".writeArrayOfUInt32 = function(value){\r\n\tvar type = typeof(value);\r\n\tif(type == " +
-                    "\"object\" && value instanceof Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(val" +
-                    "ue.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.write" +
-                    "UInt32(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWri" +
-                    "ter.prototype.writeArrayOfInt64 = function(value){\r\n\tvar type = typeof(value);\r\n" +
-                    "\tif(type == \"object\" && value instanceof Array){\r\n\t\tthis.writeInt32(value.length" +
-                    ");\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t" +
-                    "\t\tthis.writeInt64(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspik" +
-                    "e.PacketWriter.prototype.writeArrayOfUInt64 = function(value){\r\n\tvar type = type" +
-                    "of(value);\r\n\tif(type == \"object\" && value instanceof Array){\r\n\t\tthis.writeInt32(" +
-                    "value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.leng" +
-                    "th; ++i){\r\n\t\t\tthis.writeUInt64(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n" +
-                    "\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfDouble = function(value){\r\n\tva" +
-                    "r type = typeof(value);\r\n\tif(type == \"object\" && value instanceof Array){\r\n\t\tthi" +
-                    "s.writeInt32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0;" +
-                    " i<value.length; ++i){\r\n\t\t\tthis.writeDouble(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.wri" +
-                    "teInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfSingle = function" +
-                    "(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" && value instanceof A" +
-                    "rray){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t" +
-                    "\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.writeSingle(value[i]);\r\n\t\t}\r\n\t}else" +
-                    "{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfDate" +
-                    "Time = function(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" && val" +
-                    "ue instanceof Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(value.length == 0)" +
-                    "\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.writeDateTime(value[" +
-                    "i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype" +
-                    ".writeArrayOfString = function(value){\r\n\tvar type = typeof(value);\r\n\tif(type == " +
-                    "\"object\" && value instanceof Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(val" +
-                    "ue.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.write" +
-                    "String(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWri" +
-                    "ter.prototype.writeArrayOfBoolean = function(value){\r\n\tvar type = typeof(value);" +
-                    "\r\n\tif(type == \"object\" && value instanceof Array){\r\n\t\tthis.writeInt32(value.leng" +
-                    "th);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r" +
-                    "\n\t\t\tthis.writeBoolean(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\n" +
-                    "spike.PacketWriter.prototype.writeArrayOfDynamic = function(value){\r\n\tvar type =" +
-                    " typeof(value);\r\n\tif(type == \"object\" && value instanceof Array){\r\n\t\tthis.writeI" +
-                    "nt32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value" +
-                    ".length; ++i){\r\n\t\t\tthis.writeDynamic(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32" +
-                    "(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArray = function(value){\r\n\tvar " +
+                    "OfDateTime = function(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" " +
+                    "&& value instanceof Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(value.length" +
+                    " == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.writeDateTime(" +
+                    "value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.pro" +
+                    "totype.writeArrayOfString = function(value){\r\n\tvar type = typeof(value);\r\n\tif(ty" +
+                    "pe == \"object\" && value instanceof Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\t" +
+                    "if(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis" +
+                    ".writeString(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.Pac" +
+                    "ketWriter.prototype.writeArrayOfBoolean = function(value){\r\n\tvar type = typeof(v" +
+                    "alue);\r\n\tif(type == \"object\" && value instanceof Array){\r\n\t\tthis.writeInt32(valu" +
+                    "e.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; " +
+                    "++i){\r\n\t\t\tthis.writeBoolean(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r" +
+                    "\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfDynamic = function(value){\r\n\tvar " +
                     "type = typeof(value);\r\n\tif(type == \"object\" && value instanceof Array){\r\n\t\tthis." +
                     "writeInt32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i" +
-                    "<value.length; ++i){\r\n\t\t\tif(value[i].write != \'undefined\'){\r\n\t\t\t\tvalue[i].write(" +
-                    "this);\r\n\t\t\t}else{\r\n\t\t\t\tthrow \"Unable to write, the array contains unknown elemen" +
-                    "ts\";\r\n\t\t\t}\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\n\r\n");
+                    "<value.length; ++i){\r\n\t\t\tthis.writeDynamic(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writ" +
+                    "eInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArray = function(value){\r" +
+                    "\n\tvar type = typeof(value);\r\n\tif(type == \"object\" && value instanceof Array){\r\n\t" +
+                    "\tthis.writeInt32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var " +
+                    "i=0; i<value.length; ++i){\r\n\t\t\tif(value[i].write != \'undefined\'){\r\n\t\t\t\tvalue[i]." +
+                    "write(this);\r\n\t\t\t}else{\r\n\t\t\t\tthrow \"Unable to write, the array contains unknown " +
+                    "elements\";\r\n\t\t\t}\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\n\r\n");
             
             #line 318 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
  foreach(var customType in Model.CustomTypes) { 
@@ -842,875 +842,876 @@ namespace Spike.Build.JavaScript
                     ": {})\n},{\"./transport\":4,\"./transports\":5,\"component-emitter\":12,\"debug\":14,\"eng" +
                     "ine.io-parser\":17,\"indexof\":25,\"parsejson\":26,\"parseqs\":27,\"parseuri\":28}],4:[fu" +
                     "nction(_dereq_,module,exports){\n/**\n * Module dependencies.\n */\n\nvar parser = _d" +
-                    "ereq_(\'engine.io-parser\');\nvar Emitter = _dereq_(\'component-emitter\');\n\n/**\n * M" +
-                    "odule exports.\n */\n\nmodule.exports = Transport;\n\n/**\n * Transport abstract const" +
-                    "ructor.\n *\n * @param {Object} options.\n * @api private\n */\n\nfunction Transport (" +
-                    "opts) {\n  this.path = opts.path;\n  this.hostname = opts.hostname;\n  this.port = " +
-                    "opts.port;\n  this.secure = opts.secure;\n  this.query = opts.query;\n  this.timest" +
-                    "ampParam = opts.timestampParam;\n  this.timestampRequests = opts.timestampRequest" +
-                    "s;\n  this.readyState = \'\';\n  this.agent = opts.agent || false;\n  this.socket = o" +
-                    "pts.socket;\n  this.enablesXDR = opts.enablesXDR;\n}\n\n/**\n * Mix in `Emitter`.\n */" +
-                    "\n\nEmitter(Transport.prototype);\n\n/**\n * A counter used to prevent collisions in " +
-                    "the timestamps used\n * for cache busting.\n */\n\nTransport.timestamps = 0;\n\n/**\n *" +
-                    " Emits an error.\n *\n * @param {String} str\n * @return {Transport} for chaining\n " +
-                    "* @api public\n */\n\nTransport.prototype.onError = function (msg, desc) {\n  var er" +
-                    "r = new Error(msg);\n  err.type = \'TransportError\';\n  err.description = desc;\n  t" +
-                    "his.emit(\'error\', err);\n  return this;\n};\n\n/**\n * Opens the transport.\n *\n * @ap" +
-                    "i public\n */\n\nTransport.prototype.open = function () {\n  if (\'closed\' == this.re" +
-                    "adyState || \'\' == this.readyState) {\n    this.readyState = \'opening\';\n    this.d" +
-                    "oOpen();\n  }\n\n  return this;\n};\n\n/**\n * Closes the transport.\n *\n * @api private" +
-                    "\n */\n\nTransport.prototype.close = function () {\n  if (\'opening\' == this.readySta" +
-                    "te || \'open\' == this.readyState) {\n    this.doClose();\n    this.onClose();\n  }\n\n" +
-                    "  return this;\n};\n\n/**\n * Sends multiple packets.\n *\n * @param {Array} packets\n " +
-                    "* @api private\n */\n\nTransport.prototype.send = function(packets){\n  if (\'open\' =" +
-                    "= this.readyState) {\n    this.write(packets);\n  } else {\n    throw new Error(\'Tr" +
-                    "ansport not open\');\n  }\n};\n\n/**\n * Called upon open\n *\n * @api private\n */\n\nTran" +
-                    "sport.prototype.onOpen = function () {\n  this.readyState = \'open\';\n  this.writab" +
-                    "le = true;\n  this.emit(\'open\');\n};\n\n/**\n * Called with data.\n *\n * @param {Strin" +
-                    "g} data\n * @api private\n */\n\nTransport.prototype.onData = function(data){\n  var " +
-                    "packet = parser.decodePacket(data, this.socket.binaryType);\n  this.onPacket(pack" +
-                    "et);\n};\n\n/**\n * Called with a decoded packet.\n */\n\nTransport.prototype.onPacket " +
-                    "= function (packet) {\n  this.emit(\'packet\', packet);\n};\n\n/**\n * Called upon clos" +
-                    "e.\n *\n * @api private\n */\n\nTransport.prototype.onClose = function () {\n  this.re" +
-                    "adyState = \'closed\';\n  this.emit(\'close\');\n};\n\n},{\"component-emitter\":12,\"engine" +
-                    ".io-parser\":17}],5:[function(_dereq_,module,exports){\n(function (global){\n/**\n *" +
-                    " Module dependencies\n */\n\nvar XMLHttpRequest = _dereq_(\'xmlhttprequest\');\nvar XH" +
-                    "R = _dereq_(\'./polling-xhr\');\nvar JSONP = _dereq_(\'./polling-jsonp\');\nvar websoc" +
-                    "ket = _dereq_(\'./websocket\');\n\n/**\n * Export transports.\n */\n\nexports.polling = " +
-                    "polling;\nexports.websocket = websocket;\n\n/**\n * Polling transport polymorphic co" +
-                    "nstructor.\n * Decides on xhr vs jsonp based on feature detection.\n *\n * @api pri" +
-                    "vate\n */\n\nfunction polling(opts){\n  var xhr;\n  var xd = false;\n  var xs = false;" +
-                    "\n  var jsonp = false !== opts.jsonp;\n\n  if (global.location) {\n    var isSSL = \'" +
-                    "https:\' == location.protocol;\n    var port = location.port;\n\n    // some user ag" +
-                    "ents have empty `location.port`\n    if (!port) {\n      port = isSSL ? 443 : 80;\n" +
-                    "    }\n\n    xd = opts.hostname != location.hostname || port != opts.port;\n    xs " +
-                    "= opts.secure != isSSL;\n  }\n\n  opts.xdomain = xd;\n  opts.xscheme = xs;\n  xhr = n" +
-                    "ew XMLHttpRequest(opts);\n\n  if (\'open\' in xhr && !opts.forceJSONP) {\n    return " +
-                    "new XHR(opts);\n  } else {\n    if (!jsonp) throw new Error(\'JSONP disabled\');\n   " +
-                    " return new JSONP(opts);\n  }\n}\n\n}).call(this,typeof self !== \"undefined\" ? self " +
-                    ": typeof window !== \"undefined\" ? window : {})\n},{\"./polling-jsonp\":6,\"./polling" +
-                    "-xhr\":7,\"./websocket\":9,\"xmlhttprequest\":10}],6:[function(_dereq_,module,exports" +
-                    "){\n(function (global){\n\n/**\n * Module requirements.\n */\n\nvar Polling = _dereq_(\'" +
-                    "./polling\');\nvar inherit = _dereq_(\'component-inherit\');\n\n/**\n * Module exports." +
-                    "\n */\n\nmodule.exports = JSONPPolling;\n\n/**\n * Cached regular expressions.\n */\n\nva" +
-                    "r rNewline = /\\n/g;\nvar rEscapedNewline = /\\\\n/g;\n\n/**\n * Global JSONP callbacks" +
-                    ".\n */\n\nvar callbacks;\n\n/**\n * Callbacks count.\n */\n\nvar index = 0;\n\n/**\n * Noop." +
-                    "\n */\n\nfunction empty () { }\n\n/**\n * JSONP Polling constructor.\n *\n * @param {Obj" +
-                    "ect} opts.\n * @api public\n */\n\nfunction JSONPPolling (opts) {\n  Polling.call(thi" +
-                    "s, opts);\n\n  this.query = this.query || {};\n\n  // define global callbacks array " +
-                    "if not present\n  // we do this here (lazily) to avoid unneeded global pollution\n" +
-                    "  if (!callbacks) {\n    // we need to consider multiple engines in the same page" +
-                    "\n    if (!global.___eio) global.___eio = [];\n    callbacks = global.___eio;\n  }\n" +
-                    "\n  // callback identifier\n  this.index = callbacks.length;\n\n  // add callback to" +
-                    " jsonp global\n  var self = this;\n  callbacks.push(function (msg) {\n    self.onDa" +
-                    "ta(msg);\n  });\n\n  // append to query string\n  this.query.j = this.index;\n\n  // p" +
-                    "revent spurious errors from being emitted when the window is unloaded\n  if (glob" +
-                    "al.document && global.addEventListener) {\n    global.addEventListener(\'beforeunl" +
-                    "oad\', function () {\n      if (self.script) self.script.onerror = empty;\n    }, f" +
-                    "alse);\n  }\n}\n\n/**\n * Inherits from Polling.\n */\n\ninherit(JSONPPolling, Polling);" +
-                    "\n\n/*\n * JSONP only supports binary as base64 encoded strings\n */\n\nJSONPPolling.p" +
-                    "rototype.supportsBinary = false;\n\n/**\n * Closes the socket.\n *\n * @api private\n " +
-                    "*/\n\nJSONPPolling.prototype.doClose = function () {\n  if (this.script) {\n    this" +
-                    ".script.parentNode.removeChild(this.script);\n    this.script = null;\n  }\n\n  if (" +
-                    "this.form) {\n    this.form.parentNode.removeChild(this.form);\n    this.form = nu" +
-                    "ll;\n    this.iframe = null;\n  }\n\n  Polling.prototype.doClose.call(this);\n};\n\n/**" +
-                    "\n * Starts a poll cycle.\n *\n * @api private\n */\n\nJSONPPolling.prototype.doPoll =" +
-                    " function () {\n  var self = this;\n  var script = document.createElement(\'script\'" +
-                    ");\n\n  if (this.script) {\n    this.script.parentNode.removeChild(this.script);\n  " +
-                    "  this.script = null;\n  }\n\n  script.async = true;\n  script.src = this.uri();\n  s" +
-                    "cript.onerror = function(e){\n    self.onError(\'jsonp poll error\',e);\n  };\n\n  var" +
-                    " insertAt = document.getElementsByTagName(\'script\')[0];\n  insertAt.parentNode.in" +
-                    "sertBefore(script, insertAt);\n  this.script = script;\n\n  var isUAgecko = \'undefi" +
-                    "ned\' != typeof navigator && /gecko/i.test(navigator.userAgent);\n  \n  if (isUAgec" +
-                    "ko) {\n    setTimeout(function () {\n      var iframe = document.createElement(\'if" +
-                    "rame\');\n      document.body.appendChild(iframe);\n      document.body.removeChild" +
-                    "(iframe);\n    }, 100);\n  }\n};\n\n/**\n * Writes with a hidden iframe.\n *\n * @param " +
-                    "{String} data to send\n * @param {Function} called upon flush.\n * @api private\n *" +
-                    "/\n\nJSONPPolling.prototype.doWrite = function (data, fn) {\n  var self = this;\n\n  " +
-                    "if (!this.form) {\n    var form = document.createElement(\'form\');\n    var area = " +
-                    "document.createElement(\'textarea\');\n    var id = this.iframeId = \'eio_iframe_\' +" +
-                    " this.index;\n    var iframe;\n\n    form.className = \'socketio\';\n    form.style.po" +
-                    "sition = \'absolute\';\n    form.style.top = \'-1000px\';\n    form.style.left = \'-100" +
-                    "0px\';\n    form.target = id;\n    form.method = \'POST\';\n    form.setAttribute(\'acc" +
-                    "ept-charset\', \'utf-8\');\n    area.name = \'d\';\n    form.appendChild(area);\n    doc" +
-                    "ument.body.appendChild(form);\n\n    this.form = form;\n    this.area = area;\n  }\n\n" +
-                    "  this.form.action = this.uri();\n\n  function complete () {\n    initIframe();\n   " +
-                    " fn();\n  }\n\n  function initIframe () {\n    if (self.iframe) {\n      try {\n      " +
-                    "  self.form.removeChild(self.iframe);\n      } catch (e) {\n        self.onError(\'" +
-                    "jsonp polling iframe removal error\', e);\n      }\n    }\n\n    try {\n      // ie6 d" +
-                    "ynamic iframes with target=\"\" support (thanks Chris Lambacher)\n      var html = " +
-                    "\'<iframe src=\"javascript:0\" name=\"\'+ self.iframeId +\'\">\';\n      iframe = documen" +
-                    "t.createElement(html);\n    } catch (e) {\n      iframe = document.createElement(\'" +
-                    "iframe\');\n      iframe.name = self.iframeId;\n      iframe.src = \'javascript:0\';\n" +
-                    "    }\n\n    iframe.id = self.iframeId;\n\n    self.form.appendChild(iframe);\n    se" +
-                    "lf.iframe = iframe;\n  }\n\n  initIframe();\n\n  // escape \\n to prevent it from bein" +
-                    "g converted into \\r\\n by some UAs\n  // double escaping is required for escaped n" +
-                    "ew lines because unescaping of new lines can be done safely on server-side\n  dat" +
-                    "a = data.replace(rEscapedNewline, \'\\\\\\n\');\n  this.area.value = data.replace(rNew" +
-                    "line, \'\\\\n\');\n\n  try {\n    this.form.submit();\n  } catch(e) {}\n\n  if (this.ifram" +
-                    "e.attachEvent) {\n    this.iframe.onreadystatechange = function(){\n      if (self" +
-                    ".iframe.readyState == \'complete\') {\n        complete();\n      }\n    };\n  } else " +
-                    "{\n    this.iframe.onload = complete;\n  }\n};\n\n}).call(this,typeof self !== \"undef" +
-                    "ined\" ? self : typeof window !== \"undefined\" ? window : {})\n},{\"./polling\":8,\"co" +
-                    "mponent-inherit\":13}],7:[function(_dereq_,module,exports){\n(function (global){\n/" +
-                    "**\n * Module requirements.\n */\n\nvar XMLHttpRequest = _dereq_(\'xmlhttprequest\');\n" +
-                    "var Polling = _dereq_(\'./polling\');\nvar Emitter = _dereq_(\'component-emitter\');\n" +
-                    "var inherit = _dereq_(\'component-inherit\');\nvar debug = _dereq_(\'debug\')(\'engine" +
-                    ".io-client:polling-xhr\');\n\n/**\n * Module exports.\n */\n\nmodule.exports = XHR;\nmod" +
-                    "ule.exports.Request = Request;\n\n/**\n * Empty function\n */\n\nfunction empty(){}\n\n/" +
-                    "**\n * XHR Polling constructor.\n *\n * @param {Object} opts\n * @api public\n */\n\nfu" +
-                    "nction XHR(opts){\n  Polling.call(this, opts);\n\n  if (global.location) {\n    var " +
-                    "isSSL = \'https:\' == location.protocol;\n    var port = location.port;\n\n    // som" +
-                    "e user agents have empty `location.port`\n    if (!port) {\n      port = isSSL ? 4" +
-                    "43 : 80;\n    }\n\n    this.xd = opts.hostname != global.location.hostname ||\n     " +
-                    " port != opts.port;\n    this.xs = opts.secure != isSSL;\n  }\n}\n\n/**\n * Inherits f" +
-                    "rom Polling.\n */\n\ninherit(XHR, Polling);\n\n/**\n * XHR supports binary\n */\n\nXHR.pr" +
-                    "ototype.supportsBinary = true;\n\n/**\n * Creates a request.\n *\n * @param {String} " +
-                    "method\n * @api private\n */\n\nXHR.prototype.request = function(opts){\n  opts = opt" +
-                    "s || {};\n  opts.uri = this.uri();\n  opts.xd = this.xd;\n  opts.xs = this.xs;\n  op" +
-                    "ts.agent = this.agent || false;\n  opts.supportsBinary = this.supportsBinary;\n  o" +
-                    "pts.enablesXDR = this.enablesXDR;\n  return new Request(opts);\n};\n\n/**\n * Sends d" +
-                    "ata.\n *\n * @param {String} data to send.\n * @param {Function} called upon flush." +
-                    "\n * @api private\n */\n\nXHR.prototype.doWrite = function(data, fn){\n  var isBinary" +
-                    " = typeof data !== \'string\' && data !== undefined;\n  var req = this.request({ me" +
-                    "thod: \'POST\', data: data, isBinary: isBinary });\n  var self = this;\n  req.on(\'su" +
-                    "ccess\', fn);\n  req.on(\'error\', function(err){\n    self.onError(\'xhr post error\'," +
-                    " err);\n  });\n  this.sendXhr = req;\n};\n\n/**\n * Starts a poll cycle.\n *\n * @api pr" +
-                    "ivate\n */\n\nXHR.prototype.doPoll = function(){\n  debug(\'xhr poll\');\n  var req = t" +
-                    "his.request();\n  var self = this;\n  req.on(\'data\', function(data){\n    self.onDa" +
-                    "ta(data);\n  });\n  req.on(\'error\', function(err){\n    self.onError(\'xhr poll erro" +
-                    "r\', err);\n  });\n  this.pollXhr = req;\n};\n\n/**\n * Request constructor\n *\n * @para" +
-                    "m {Object} options\n * @api public\n */\n\nfunction Request(opts){\n  this.method = o" +
-                    "pts.method || \'GET\';\n  this.uri = opts.uri;\n  this.xd = !!opts.xd;\n  this.xs = !" +
-                    "!opts.xs;\n  this.async = false !== opts.async;\n  this.data = undefined != opts.d" +
-                    "ata ? opts.data : null;\n  this.agent = opts.agent;\n  this.isBinary = opts.isBina" +
-                    "ry;\n  this.supportsBinary = opts.supportsBinary;\n  this.enablesXDR = opts.enable" +
-                    "sXDR;\n  this.create();\n}\n\n/**\n * Mix in `Emitter`.\n */\n\nEmitter(Request.prototyp" +
-                    "e);\n\n/**\n * Creates the XHR object and sends the request.\n *\n * @api private\n */" +
-                    "\n\nRequest.prototype.create = function(){\n  var xhr = this.xhr = new XMLHttpReque" +
-                    "st({ agent: this.agent, xdomain: this.xd, xscheme: this.xs, enablesXDR: this.ena" +
-                    "blesXDR });\n  var self = this;\n\n  try {\n    debug(\'xhr open %s: %s\', this.method" +
-                    ", this.uri);\n    xhr.open(this.method, this.uri, this.async);\n    if (this.suppo" +
-                    "rtsBinary) {\n      // This has to be done after open because Firefox is stupid\n " +
-                    "     // http://stackoverflow.com/questions/13216903/get-binary-data-with-xmlhttp" +
-                    "request-in-a-firefox-extension\n      xhr.responseType = \'arraybuffer\';\n    }\n\n  " +
-                    "  if (\'POST\' == this.method) {\n      try {\n        if (this.isBinary) {\n        " +
-                    "  xhr.setRequestHeader(\'Content-type\', \'application/octet-stream\');\n        } el" +
-                    "se {\n          xhr.setRequestHeader(\'Content-type\', \'text/plain;charset=UTF-8\');" +
-                    "\n        }\n      } catch (e) {}\n    }\n\n    // ie6 check\n    if (\'withCredentials" +
-                    "\' in xhr) {\n      xhr.withCredentials = true;\n    }\n\n    if (this.hasXDR()) {\n  " +
-                    "    xhr.onload = function(){\n        self.onLoad();\n      };\n      xhr.onerror =" +
-                    " function(){\n        self.onError(xhr.responseText);\n      };\n    } else {\n     " +
-                    " xhr.onreadystatechange = function(){\n        if (4 != xhr.readyState) return;\n " +
-                    "       if (200 == xhr.status || 1223 == xhr.status) {\n          self.onLoad();\n " +
-                    "       } else {\n          // make sure the `error` event handler that\'s user-set" +
-                    "\n          // does not throw in the same tick and gets caught here\n          set" +
-                    "Timeout(function(){\n            self.onError(xhr.status);\n          }, 0);\n     " +
-                    "   }\n      };\n    }\n\n    debug(\'xhr data %s\', this.data);\n    xhr.send(this.data" +
-                    ");\n  } catch (e) {\n    // Need to defer since .create() is called directly fhrom" +
-                    " the constructor\n    // and thus the \'error\' event can only be only bound *after" +
-                    "* this exception\n    // occurs.  Therefore, also, we cannot throw here at all.\n " +
-                    "   setTimeout(function() {\n      self.onError(e);\n    }, 0);\n    return;\n  }\n\n  " +
-                    "if (global.document) {\n    this.index = Request.requestsCount++;\n    Request.req" +
-                    "uests[this.index] = this;\n  }\n};\n\n/**\n * Called upon successful response.\n *\n * " +
-                    "@api private\n */\n\nRequest.prototype.onSuccess = function(){\n  this.emit(\'success" +
-                    "\');\n  this.cleanup();\n};\n\n/**\n * Called if we have data.\n *\n * @api private\n */\n" +
-                    "\nRequest.prototype.onData = function(data){\n  this.emit(\'data\', data);\n  this.on" +
-                    "Success();\n};\n\n/**\n * Called upon error.\n *\n * @api private\n */\n\nRequest.prototy" +
-                    "pe.onError = function(err){\n  this.emit(\'error\', err);\n  this.cleanup();\n};\n\n/**" +
-                    "\n * Cleans up house.\n *\n * @api private\n */\n\nRequest.prototype.cleanup = functio" +
-                    "n(){\n  if (\'undefined\' == typeof this.xhr || null === this.xhr) {\n    return;\n  " +
-                    "}\n  // xmlhttprequest\n  if (this.hasXDR()) {\n    this.xhr.onload = this.xhr.oner" +
-                    "ror = empty;\n  } else {\n    this.xhr.onreadystatechange = empty;\n  }\n\n  try {\n  " +
-                    "  this.xhr.abort();\n  } catch(e) {}\n\n  if (global.document) {\n    delete Request" +
-                    ".requests[this.index];\n  }\n\n  this.xhr = null;\n};\n\n/**\n * Called upon load.\n *\n " +
-                    "* @api private\n */\n\nRequest.prototype.onLoad = function(){\n  var data;\n  try {\n " +
-                    "   var contentType;\n    try {\n      contentType = this.xhr.getResponseHeader(\'Co" +
-                    "ntent-Type\').split(\';\')[0];\n    } catch (e) {}\n    if (contentType === \'applicat" +
-                    "ion/octet-stream\') {\n      data = this.xhr.response;\n    } else {\n      if (!thi" +
-                    "s.supportsBinary) {\n        data = this.xhr.responseText;\n      } else {\n       " +
-                    " data = \'ok\';\n      }\n    }\n  } catch (e) {\n    this.onError(e);\n  }\n  if (null " +
-                    "!= data) {\n    this.onData(data);\n  }\n};\n\n/**\n * Check if it has XDomainRequest." +
-                    "\n *\n * @api private\n */\n\nRequest.prototype.hasXDR = function(){\n  return \'undefi" +
-                    "ned\' !== typeof global.XDomainRequest && !this.xs && this.enablesXDR;\n};\n\n/**\n *" +
-                    " Aborts the request.\n *\n * @api public\n */\n\nRequest.prototype.abort = function()" +
-                    "{\n  this.cleanup();\n};\n\n/**\n * Aborts pending requests when unloading the window" +
-                    ". This is needed to prevent\n * memory leaks (e.g. when using IE) and to ensure t" +
-                    "hat no spurious error is\n * emitted.\n */\n\nif (global.document) {\n  Request.reque" +
-                    "stsCount = 0;\n  Request.requests = {};\n  if (global.attachEvent) {\n    global.at" +
-                    "tachEvent(\'onunload\', unloadHandler);\n  } else if (global.addEventListener) {\n  " +
-                    "  global.addEventListener(\'beforeunload\', unloadHandler, false);\n  }\n}\n\nfunction" +
-                    " unloadHandler() {\n  for (var i in Request.requests) {\n    if (Request.requests." +
-                    "hasOwnProperty(i)) {\n      Request.requests[i].abort();\n    }\n  }\n}\n\n}).call(thi" +
-                    "s,typeof self !== \"undefined\" ? self : typeof window !== \"undefined\" ? window : " +
-                    "{})\n},{\"./polling\":8,\"component-emitter\":12,\"component-inherit\":13,\"debug\":14,\"x" +
-                    "mlhttprequest\":10}],8:[function(_dereq_,module,exports){\n/**\n * Module dependenc" +
-                    "ies.\n */\n\nvar Transport = _dereq_(\'../transport\');\nvar parseqs = _dereq_(\'parseq" +
-                    "s\');\nvar parser = _dereq_(\'engine.io-parser\');\nvar inherit = _dereq_(\'component-" +
-                    "inherit\');\nvar debug = _dereq_(\'debug\')(\'engine.io-client:polling\');\n\n/**\n * Mod" +
-                    "ule exports.\n */\n\nmodule.exports = Polling;\n\n/**\n * Is XHR2 supported?\n */\n\nvar " +
-                    "hasXHR2 = (function() {\n  var XMLHttpRequest = _dereq_(\'xmlhttprequest\');\n  var " +
-                    "xhr = new XMLHttpRequest({ xdomain: false });\n  return null != xhr.responseType;" +
-                    "\n})();\n\n/**\n * Polling interface.\n *\n * @param {Object} opts\n * @api private\n */" +
-                    "\n\nfunction Polling(opts){\n  var forceBase64 = (opts && opts.forceBase64);\n  if (" +
-                    "!hasXHR2 || forceBase64) {\n    this.supportsBinary = false;\n  }\n  Transport.call" +
-                    "(this, opts);\n}\n\n/**\n * Inherits from Transport.\n */\n\ninherit(Polling, Transport" +
-                    ");\n\n/**\n * Transport name.\n */\n\nPolling.prototype.name = \'polling\';\n\n/**\n * Open" +
-                    "s the socket (triggers polling). We write a PING message to determine\n * when th" +
-                    "e transport is open.\n *\n * @api private\n */\n\nPolling.prototype.doOpen = function" +
-                    "(){\n  this.poll();\n};\n\n/**\n * Pauses polling.\n *\n * @param {Function} callback u" +
-                    "pon buffers are flushed and transport is paused\n * @api private\n */\n\nPolling.pro" +
-                    "totype.pause = function(onPause){\n  var pending = 0;\n  var self = this;\n\n  this." +
-                    "readyState = \'pausing\';\n\n  function pause(){\n    debug(\'paused\');\n    self.ready" +
-                    "State = \'paused\';\n    onPause();\n  }\n\n  if (this.polling || !this.writable) {\n  " +
-                    "  var total = 0;\n\n    if (this.polling) {\n      debug(\'we are currently polling " +
-                    "- waiting to pause\');\n      total++;\n      this.once(\'pollComplete\', function(){" +
-                    "\n        debug(\'pre-pause polling complete\');\n        --total || pause();\n      " +
-                    "});\n    }\n\n    if (!this.writable) {\n      debug(\'we are currently writing - wai" +
-                    "ting to pause\');\n      total++;\n      this.once(\'drain\', function(){\n        deb" +
-                    "ug(\'pre-pause writing complete\');\n        --total || pause();\n      });\n    }\n  " +
-                    "} else {\n    pause();\n  }\n};\n\n/**\n * Starts polling cycle.\n *\n * @api public\n */" +
-                    "\n\nPolling.prototype.poll = function(){\n  debug(\'polling\');\n  this.polling = true" +
-                    ";\n  this.doPoll();\n  this.emit(\'poll\');\n};\n\n/**\n * Overloads onData to detect pa" +
-                    "yloads.\n *\n * @api private\n */\n\nPolling.prototype.onData = function(data){\n  var" +
-                    " self = this;\n  debug(\'polling got data %s\', data);\n  var callback = function(pa" +
-                    "cket, index, total) {\n    // if its the first message we consider the transport " +
-                    "open\n    if (\'opening\' == self.readyState) {\n      self.onOpen();\n    }\n\n    // " +
-                    "if its a close packet, we close the ongoing requests\n    if (\'close\' == packet.t" +
-                    "ype) {\n      self.onClose();\n      return false;\n    }\n\n    // otherwise bypass " +
-                    "onData and handle the message\n    self.onPacket(packet);\n  };\n\n  // decode paylo" +
-                    "ad\n  parser.decodePayload(data, this.socket.binaryType, callback);\n\n  // if an e" +
-                    "vent did not trigger closing\n  if (\'closed\' != this.readyState) {\n    // if we g" +
-                    "ot data we\'re not polling\n    this.polling = false;\n    this.emit(\'pollComplete\'" +
-                    ");\n\n    if (\'open\' == this.readyState) {\n      this.poll();\n    } else {\n      d" +
-                    "ebug(\'ignoring poll - transport state \"%s\"\', this.readyState);\n    }\n  }\n};\n\n/**" +
-                    "\n * For polling, send a close packet.\n *\n * @api private\n */\n\nPolling.prototype." +
-                    "doClose = function(){\n  var self = this;\n\n  function close(){\n    debug(\'writing" +
-                    " close packet\');\n    self.write([{ type: \'close\' }]);\n  }\n\n  if (\'open\' == this." +
-                    "readyState) {\n    debug(\'transport open - closing\');\n    close();\n  } else {\n   " +
-                    " // in case we\'re trying to close while\n    // handshaking is in progress (GH-16" +
-                    "4)\n    debug(\'transport not open - deferring close\');\n    this.once(\'open\', clos" +
-                    "e);\n  }\n};\n\n/**\n * Writes a packets payload.\n *\n * @param {Array} data packets\n " +
-                    "* @param {Function} drain callback\n * @api private\n */\n\nPolling.prototype.write " +
-                    "= function(packets){\n  var self = this;\n  this.writable = false;\n  var callbackf" +
-                    "n = function() {\n    self.writable = true;\n    self.emit(\'drain\');\n  };\n\n  var s" +
-                    "elf = this;\n  parser.encodePayload(packets, this.supportsBinary, function(data) " +
-                    "{\n    self.doWrite(data, callbackfn);\n  });\n};\n\n/**\n * Generates uri for connect" +
-                    "ion.\n *\n * @api private\n */\n\nPolling.prototype.uri = function(){\n  var query = t" +
-                    "his.query || {};\n  var schema = this.secure ? \'https\' : \'http\';\n  var port = \'\';" +
-                    "\n\n  // cache busting is forced\n  if (false !== this.timestampRequests) {\n    que" +
-                    "ry[this.timestampParam] = +new Date + \'-\' + Transport.timestamps++;\n  }\n\n  if (!" +
-                    "this.supportsBinary && !query.sid) {\n    query.b64 = 1;\n  }\n\n  query = parseqs.e" +
-                    "ncode(query);\n\n  // avoid port if default for schema\n  if (this.port && ((\'https" +
-                    "\' == schema && this.port != 443) ||\n     (\'http\' == schema && this.port != 80)))" +
-                    " {\n    port = \':\' + this.port;\n  }\n\n  // prepend ? to query\n  if (query.length) " +
-                    "{\n    query = \'?\' + query;\n  }\n\n  return schema + \'://\' + this.hostname + port +" +
-                    " this.path + query;\n};\n\n},{\"../transport\":4,\"component-inherit\":13,\"debug\":14,\"e" +
-                    "ngine.io-parser\":17,\"parseqs\":27,\"xmlhttprequest\":10}],9:[function(_dereq_,modul" +
-                    "e,exports){\n/**\n * Module dependencies.\n */\n\nvar Transport = _dereq_(\'../transpo" +
-                    "rt\');\nvar parser = _dereq_(\'engine.io-parser\');\nvar parseqs = _dereq_(\'parseqs\')" +
-                    ";\nvar inherit = _dereq_(\'component-inherit\');\nvar debug = _dereq_(\'debug\')(\'engi" +
-                    "ne.io-client:websocket\');\n\n/**\n * `ws` exposes a WebSocket-compatible interface " +
-                    "in\n * Node, or the `WebSocket` or `MozWebSocket` globals\n * in the browser.\n */\n" +
-                    "\nvar WebSocket = _dereq_(\'ws\');\n\n/**\n * Module exports.\n */\n\nmodule.exports = WS" +
-                    ";\n\n/**\n * WebSocket transport constructor.\n *\n * @api {Object} connection option" +
-                    "s\n * @api public\n */\n\nfunction WS(opts){\n  var forceBase64 = (opts && opts.force" +
-                    "Base64);\n  if (forceBase64) {\n    this.supportsBinary = false;\n  }\n  Transport.c" +
-                    "all(this, opts);\n}\n\n/**\n * Inherits from Transport.\n */\n\ninherit(WS, Transport);" +
-                    "\n\n/**\n * Transport name.\n *\n * @api public\n */\n\nWS.prototype.name = \'websocket\';" +
-                    "\n\n/*\n * WebSockets support binary\n */\n\nWS.prototype.supportsBinary = true;\n\n/**\n" +
-                    " * Opens socket.\n *\n * @api private\n */\n\nWS.prototype.doOpen = function(){\n  if " +
-                    "(!this.check()) {\n    // let probe timeout\n    return;\n  }\n\n  var self = this;\n " +
-                    " var uri = this.uri();\n  var protocols = void(0);\n  var opts = { agent: this.age" +
-                    "nt };\n\n  this.ws = new WebSocket(uri, protocols, opts);\n\n  if (this.ws.binaryTyp" +
-                    "e === undefined) {\n    this.supportsBinary = false;\n  }\n\n  this.ws.binaryType = " +
-                    "\'arraybuffer\';\n  this.addEventListeners();\n};\n\n/**\n * Adds event listeners to th" +
-                    "e socket\n *\n * @api private\n */\n\nWS.prototype.addEventListeners = function(){\n  " +
-                    "var self = this;\n\n  this.ws.onopen = function(){\n    self.onOpen();\n  };\n  this." +
-                    "ws.onclose = function(){\n    self.onClose();\n  };\n  this.ws.onmessage = function" +
-                    "(ev){\n    self.onData(ev.data);\n  };\n  this.ws.onerror = function(e){\n    self.o" +
-                    "nError(\'websocket error\', e);\n  };\n};\n\n/**\n * Override `onData` to use a timer o" +
-                    "n iOS.\n * See: https://gist.github.com/mloughran/2052006\n *\n * @api private\n */\n" +
-                    "\nif (\'undefined\' != typeof navigator\n  && /iPad|iPhone|iPod/i.test(navigator.use" +
-                    "rAgent)) {\n  WS.prototype.onData = function(data){\n    var self = this;\n    setT" +
-                    "imeout(function(){\n      Transport.prototype.onData.call(self, data);\n    }, 0);" +
-                    "\n  };\n}\n\n/**\n * Writes data to socket.\n *\n * @param {Array} array of packets.\n *" +
-                    " @api private\n */\n\nWS.prototype.write = function(packets){\n  var self = this;\n  " +
-                    "this.writable = false;\n  // encodePacket efficient as it uses WS framing\n  // no" +
-                    " need for encodePayload\n  for (var i = 0, l = packets.length; i < l; i++) {\n    " +
-                    "parser.encodePacket(packets[i], this.supportsBinary, function(data) {\n      //So" +
-                    "metimes the websocket has already been closed but the browser didn\'t\n      //hav" +
-                    "e a chance of informing us about it yet, in that case send will\n      //throw an" +
-                    " error\n      try {\n        self.ws.send(data);\n      } catch (e){\n        debug(" +
-                    "\'websocket closed before onclose event\');\n      }\n    });\n  }\n\n  function ondrai" +
-                    "n() {\n    self.writable = true;\n    self.emit(\'drain\');\n  }\n  // fake drain\n  //" +
-                    " defer to next tick to allow Socket to clear writeBuffer\n  setTimeout(ondrain, 0" +
-                    ");\n};\n\n/**\n * Called upon close\n *\n * @api private\n */\n\nWS.prototype.onClose = f" +
-                    "unction(){\n  Transport.prototype.onClose.call(this);\n};\n\n/**\n * Closes socket.\n " +
-                    "*\n * @api private\n */\n\nWS.prototype.doClose = function(){\n  if (typeof this.ws !" +
-                    "== \'undefined\') {\n    this.ws.close();\n  }\n};\n\n/**\n * Generates uri for connecti" +
-                    "on.\n *\n * @api private\n */\n\nWS.prototype.uri = function(){\n  var query = this.qu" +
-                    "ery || {};\n  var schema = this.secure ? \'wss\' : \'ws\';\n  var port = \'\';\n\n  // avo" +
-                    "id port if default for schema\n  if (this.port && ((\'wss\' == schema && this.port " +
-                    "!= 443)\n    || (\'ws\' == schema && this.port != 80))) {\n    port = \':\' + this.por" +
-                    "t;\n  }\n\n  // append timestamp to URI\n  if (this.timestampRequests) {\n    query[t" +
-                    "his.timestampParam] = +new Date;\n  }\n\n  // communicate binary support capabiliti" +
-                    "es\n  if (!this.supportsBinary) {\n    query.b64 = 1;\n  }\n\n  query = parseqs.encod" +
-                    "e(query);\n\n  // prepend ? to query\n  if (query.length) {\n    query = \'?\' + query" +
-                    ";\n  }\n\n  return schema + \'://\' + this.hostname + port + this.path + query;\n};\n\n/" +
-                    "**\n * Feature detection for WebSocket.\n *\n * @return {Boolean} whether this tran" +
-                    "sport is available.\n * @api public\n */\n\nWS.prototype.check = function(){\n  retur" +
-                    "n !!WebSocket && !(\'__initialize\' in WebSocket && this.name === WS.prototype.nam" +
-                    "e);\n};\n\n},{\"../transport\":4,\"component-inherit\":13,\"debug\":14,\"engine.io-parser\"" +
-                    ":17,\"parseqs\":27,\"ws\":29}],10:[function(_dereq_,module,exports){\n// browser shim" +
-                    " for xmlhttprequest module\nvar hasCORS = _dereq_(\'has-cors\');\n\nmodule.exports = " +
-                    "function(opts) {\n  var xdomain = opts.xdomain;\n\n  // scheme must be same when us" +
-                    "ign XDomainRequest\n  // http://blogs.msdn.com/b/ieinternals/archive/2010/05/13/x" +
-                    "domainrequest-restrictions-limitations-and-workarounds.aspx\n  var xscheme = opts" +
-                    ".xscheme;\n\n  // XDomainRequest has a flow of not sending cookie, therefore it sh" +
-                    "ould be disabled as a default.\n  // https://github.com/Automattic/engine.io-clie" +
-                    "nt/pull/217\n  var enablesXDR = opts.enablesXDR;\n\n  // XMLHttpRequest can be disa" +
-                    "bled on IE\n  try {\n    if (\'undefined\' != typeof XMLHttpRequest && (!xdomain || " +
-                    "hasCORS)) {\n      return new XMLHttpRequest();\n    }\n  } catch (e) { }\n\n  // Use" +
-                    " XDomainRequest for IE8 if enablesXDR is true\n  // because loading bar keeps fla" +
-                    "shing when using jsonp-polling\n  // https://github.com/yujiosaka/socke.io-ie8-lo" +
-                    "ading-example\n  try {\n    if (\'undefined\' != typeof XDomainRequest && !xscheme &" +
-                    "& enablesXDR) {\n      return new XDomainRequest();\n    }\n  } catch (e) { }\n\n  if" +
-                    " (!xdomain) {\n    try {\n      return new ActiveXObject(\'Microsoft.XMLHTTP\');\n   " +
-                    " } catch(e) { }\n  }\n}\n\n},{\"has-cors\":23}],11:[function(_dereq_,module,exports){\n" +
-                    "(function (global){\n/**\n * Create a blob builder even when vendor prefixes exist" +
-                    "\n */\n\nvar BlobBuilder = global.BlobBuilder\n  || global.WebKitBlobBuilder\n  || gl" +
-                    "obal.MSBlobBuilder\n  || global.MozBlobBuilder;\n\n/**\n * Check if Blob constructor" +
-                    " is supported\n */\n\nvar blobSupported = (function() {\n  try {\n    var b = new Blo" +
-                    "b([\'hi\']);\n    return b.size == 2;\n  } catch(e) {\n    return false;\n  }\n})();\n\n/" +
-                    "**\n * Check if BlobBuilder is supported\n */\n\nvar blobBuilderSupported = BlobBuil" +
-                    "der\n  && BlobBuilder.prototype.append\n  && BlobBuilder.prototype.getBlob;\n\nfunct" +
-                    "ion BlobBuilderConstructor(ary, options) {\n  options = options || {};\n\n  var bb " +
-                    "= new BlobBuilder();\n  for (var i = 0; i < ary.length; i++) {\n    bb.append(ary[" +
-                    "i]);\n  }\n  return (options.type) ? bb.getBlob(options.type) : bb.getBlob();\n};\n\n" +
-                    "module.exports = (function() {\n  if (blobSupported) {\n    return global.Blob;\n  " +
-                    "} else if (blobBuilderSupported) {\n    return BlobBuilderConstructor;\n  } else {" +
-                    "\n    return undefined;\n  }\n})();\n\n}).call(this,typeof self !== \"undefined\" ? sel" +
-                    "f : typeof window !== \"undefined\" ? window : {})\n},{}],12:[function(_dereq_,modu" +
-                    "le,exports){\n\n/**\n * Expose `Emitter`.\n */\n\nmodule.exports = Emitter;\n\n/**\n * In" +
-                    "itialize a new `Emitter`.\n *\n * @api public\n */\n\nfunction Emitter(obj) {\n  if (o" +
-                    "bj) return mixin(obj);\n};\n\n/**\n * Mixin the emitter properties.\n *\n * @param {Ob" +
-                    "ject} obj\n * @return {Object}\n * @api private\n */\n\nfunction mixin(obj) {\n  for (" +
-                    "var key in Emitter.prototype) {\n    obj[key] = Emitter.prototype[key];\n  }\n  ret" +
-                    "urn obj;\n}\n\n/**\n * Listen on the given `event` with `fn`.\n *\n * @param {String} " +
-                    "event\n * @param {Function} fn\n * @return {Emitter}\n * @api public\n */\n\nEmitter.p" +
-                    "rototype.on =\nEmitter.prototype.addEventListener = function(event, fn){\n  this._" +
-                    "callbacks = this._callbacks || {};\n  (this._callbacks[event] = this._callbacks[e" +
-                    "vent] || [])\n    .push(fn);\n  return this;\n};\n\n/**\n * Adds an `event` listener t" +
-                    "hat will be invoked a single\n * time then automatically removed.\n *\n * @param {S" +
-                    "tring} event\n * @param {Function} fn\n * @return {Emitter}\n * @api public\n */\n\nEm" +
-                    "itter.prototype.once = function(event, fn){\n  var self = this;\n  this._callbacks" +
-                    " = this._callbacks || {};\n\n  function on() {\n    self.off(event, on);\n    fn.app" +
-                    "ly(this, arguments);\n  }\n\n  on.fn = fn;\n  this.on(event, on);\n  return this;\n};\n" +
-                    "\n/**\n * Remove the given callback for `event` or all\n * registered callbacks.\n *" +
-                    "\n * @param {String} event\n * @param {Function} fn\n * @return {Emitter}\n * @api p" +
-                    "ublic\n */\n\nEmitter.prototype.off =\nEmitter.prototype.removeListener =\nEmitter.pr" +
-                    "ototype.removeAllListeners =\nEmitter.prototype.removeEventListener = function(ev" +
-                    "ent, fn){\n  this._callbacks = this._callbacks || {};\n\n  // all\n  if (0 == argume" +
-                    "nts.length) {\n    this._callbacks = {};\n    return this;\n  }\n\n  // specific even" +
-                    "t\n  var callbacks = this._callbacks[event];\n  if (!callbacks) return this;\n\n  //" +
-                    " remove all handlers\n  if (1 == arguments.length) {\n    delete this._callbacks[e" +
-                    "vent];\n    return this;\n  }\n\n  // remove specific handler\n  var cb;\n  for (var i" +
-                    " = 0; i < callbacks.length; i++) {\n    cb = callbacks[i];\n    if (cb === fn || c" +
-                    "b.fn === fn) {\n      callbacks.splice(i, 1);\n      break;\n    }\n  }\n  return thi" +
-                    "s;\n};\n\n/**\n * Emit `event` with the given args.\n *\n * @param {String} event\n * @" +
-                    "param {Mixed} ...\n * @return {Emitter}\n */\n\nEmitter.prototype.emit = function(ev" +
-                    "ent){\n  this._callbacks = this._callbacks || {};\n  var args = [].slice.call(argu" +
-                    "ments, 1)\n    , callbacks = this._callbacks[event];\n\n  if (callbacks) {\n    call" +
-                    "backs = callbacks.slice(0);\n    for (var i = 0, len = callbacks.length; i < len;" +
-                    " ++i) {\n      callbacks[i].apply(this, args);\n    }\n  }\n\n  return this;\n};\n\n/**\n" +
-                    " * Return array of callbacks for `event`.\n *\n * @param {String} event\n * @return" +
-                    " {Array}\n * @api public\n */\n\nEmitter.prototype.listeners = function(event){\n  th" +
-                    "is._callbacks = this._callbacks || {};\n  return this._callbacks[event] || [];\n};" +
-                    "\n\n/**\n * Check if this emitter has `event` handlers.\n *\n * @param {String} event" +
-                    "\n * @return {Boolean}\n * @api public\n */\n\nEmitter.prototype.hasListeners = funct" +
-                    "ion(event){\n  return !! this.listeners(event).length;\n};\n\n},{}],13:[function(_de" +
-                    "req_,module,exports){\n\nmodule.exports = function(a, b){\n  var fn = function(){};" +
-                    "\n  fn.prototype = b.prototype;\n  a.prototype = new fn;\n  a.prototype.constructor" +
-                    " = a;\n};\n},{}],14:[function(_dereq_,module,exports){\n\n/**\n * This is the web bro" +
-                    "wser implementation of `debug()`.\n *\n * Expose `debug()` as the module.\n */\n\nexp" +
-                    "orts = module.exports = _dereq_(\'./debug\');\nexports.log = log;\nexports.formatArg" +
-                    "s = formatArgs;\nexports.save = save;\nexports.load = load;\nexports.useColors = us" +
-                    "eColors;\n\n/**\n * Colors.\n */\n\nexports.colors = [\n  \'lightseagreen\',\n  \'forestgre" +
-                    "en\',\n  \'goldenrod\',\n  \'dodgerblue\',\n  \'darkorchid\',\n  \'crimson\'\n];\n\n/**\n * Curre" +
-                    "ntly only WebKit-based Web Inspectors, Firefox >= v31,\n * and the Firebug extens" +
-                    "ion (any Firefox version) are known\n * to support \"%c\" CSS customizations.\n *\n *" +
-                    " TODO: add a `localStorage` variable to explicitly enable/disable colors\n */\n\nfu" +
-                    "nction useColors() {\n  // is webkit? http://stackoverflow.com/a/16459606/376773\n" +
-                    "  return (\'WebkitAppearance\' in document.documentElement.style) ||\n    // is fir" +
-                    "ebug? http://stackoverflow.com/a/398120/376773\n    (window.console && (console.f" +
-                    "irebug || (console.exception && console.table))) ||\n    // is firefox >= v31?\n  " +
-                    "  // https://developer.mozilla.org/en-US/docs/Tools/Web_Console#Styling_messages" +
-                    "\n    (navigator.userAgent.toLowerCase().match(/firefox\\/(\\d+)/) && parseInt(RegE" +
-                    "xp.$1, 10) >= 31);\n}\n\n/**\n * Map %j to `JSON.stringify()`, since no Web Inspecto" +
-                    "rs do that by default.\n */\n\nexports.formatters.j = function(v) {\n  return JSON.s" +
-                    "tringify(v);\n};\n\n\n/**\n * Colorize log arguments if enabled.\n *\n * @api public\n *" +
-                    "/\n\nfunction formatArgs() {\n  var args = arguments;\n  var useColors = this.useCol" +
-                    "ors;\n\n  args[0] = (useColors ? \'%c\' : \'\')\n    + this.namespace\n    + (useColors " +
-                    "? \' %c\' : \' \')\n    + args[0]\n    + (useColors ? \'%c \' : \' \')\n    + \'+\' + exports" +
-                    ".humanize(this.diff);\n\n  if (!useColors) return args;\n\n  var c = \'color: \' + thi" +
-                    "s.color;\n  args = [args[0], c, \'color: inherit\'].concat(Array.prototype.slice.ca" +
-                    "ll(args, 1));\n\n  // the final \"%c\" is somewhat tricky, because there could be ot" +
-                    "her\n  // arguments passed either before or after the %c, so we need to\n  // figu" +
-                    "re out the correct index to insert the CSS into\n  var index = 0;\n  var lastC = 0" +
-                    ";\n  args[0].replace(/%[a-z%]/g, function(match) {\n    if (\'%\' === match) return;" +
-                    "\n    index++;\n    if (\'%c\' === match) {\n      // we only are interested in the *" +
-                    "last* %c\n      // (the user may have provided their own)\n      lastC = index;\n  " +
-                    "  }\n  });\n\n  args.splice(lastC, 0, c);\n  return args;\n}\n\n/**\n * Invokes `console" +
-                    ".log()` when available.\n * No-op when `console.log` is not a \"function\".\n *\n * @" +
-                    "api public\n */\n\nfunction log() {\n  // This hackery is required for IE8,\n  // whe" +
-                    "re the `console.log` function doesn\'t have \'apply\'\n  return \'object\' == typeof c" +
-                    "onsole\n    && \'function\' == typeof console.log\n    && Function.prototype.apply.c" +
-                    "all(console.log, console, arguments);\n}\n\n/**\n * Save `namespaces`.\n *\n * @param " +
-                    "{String} namespaces\n * @api private\n */\n\nfunction save(namespaces) {\n  try {\n   " +
-                    " if (null == namespaces) {\n      localStorage.removeItem(\'debug\');\n    } else {\n" +
-                    "      localStorage.debug = namespaces;\n    }\n  } catch(e) {}\n}\n\n/**\n * Load `nam" +
-                    "espaces`.\n *\n * @return {String} returns the previously persisted debug modes\n *" +
-                    " @api private\n */\n\nfunction load() {\n  var r;\n  try {\n    r = localStorage.debug" +
-                    ";\n  } catch(e) {}\n  return r;\n}\n\n/**\n * Enable namespaces listed in `localStorag" +
-                    "e.debug` initially.\n */\n\nexports.enable(load());\n\n},{\"./debug\":15}],15:[function" +
-                    "(_dereq_,module,exports){\n\n/**\n * This is the common logic for both the Node.js " +
-                    "and web browser\n * implementations of `debug()`.\n *\n * Expose `debug()` as the m" +
-                    "odule.\n */\n\nexports = module.exports = debug;\nexports.coerce = coerce;\nexports.d" +
-                    "isable = disable;\nexports.enable = enable;\nexports.enabled = enabled;\nexports.hu" +
-                    "manize = _dereq_(\'ms\');\n\n/**\n * The currently active debug mode names, and names" +
-                    " to skip.\n */\n\nexports.names = [];\nexports.skips = [];\n\n/**\n * Map of special \"%" +
-                    "n\" handling functions, for the debug \"format\" argument.\n *\n * Valid key names ar" +
-                    "e a single, lowercased letter, i.e. \"n\".\n */\n\nexports.formatters = {};\n\n/**\n * P" +
-                    "reviously assigned color.\n */\n\nvar prevColor = 0;\n\n/**\n * Previous log timestamp" +
-                    ".\n */\n\nvar prevTime;\n\n/**\n * Select a color.\n *\n * @return {Number}\n * @api priv" +
-                    "ate\n */\n\nfunction selectColor() {\n  return exports.colors[prevColor++ % exports." +
-                    "colors.length];\n}\n\n/**\n * Create a debugger with the given `namespace`.\n *\n * @p" +
-                    "aram {String} namespace\n * @return {Function}\n * @api public\n */\n\nfunction debug" +
-                    "(namespace) {\n\n  // define the `disabled` version\n  function disabled() {\n  }\n  " +
-                    "disabled.enabled = false;\n\n  // define the `enabled` version\n  function enabled(" +
-                    ") {\n\n    var self = enabled;\n\n    // set `diff` timestamp\n    var curr = +new Da" +
-                    "te();\n    var ms = curr - (prevTime || curr);\n    self.diff = ms;\n    self.prev " +
-                    "= prevTime;\n    self.curr = curr;\n    prevTime = curr;\n\n    // add the `color` i" +
-                    "f not set\n    if (null == self.useColors) self.useColors = exports.useColors();\n" +
-                    "    if (null == self.color && self.useColors) self.color = selectColor();\n\n    v" +
-                    "ar args = Array.prototype.slice.call(arguments);\n\n    args[0] = exports.coerce(a" +
-                    "rgs[0]);\n\n    if (\'string\' !== typeof args[0]) {\n      // anything else let\'s in" +
-                    "spect with %o\n      args = [\'%o\'].concat(args);\n    }\n\n    // apply any `formatt" +
-                    "ers` transformations\n    var index = 0;\n    args[0] = args[0].replace(/%([a-z%])" +
-                    "/g, function(match, format) {\n      // if we encounter an escaped % then don\'t i" +
-                    "ncrease the array index\n      if (match === \'%\') return match;\n      index++;\n  " +
-                    "    var formatter = exports.formatters[format];\n      if (\'function\' === typeof " +
-                    "formatter) {\n        var val = args[index];\n        match = formatter.call(self," +
-                    " val);\n\n        // now we need to remove `args[index]` since it\'s inlined in the" +
-                    " `format`\n        args.splice(index, 1);\n        index--;\n      }\n      return m" +
-                    "atch;\n    });\n\n    if (\'function\' === typeof exports.formatArgs) {\n      args = " +
-                    "exports.formatArgs.apply(self, args);\n    }\n    var logFn = enabled.log || expor" +
-                    "ts.log || console.log.bind(console);\n    logFn.apply(self, args);\n  }\n  enabled." +
-                    "enabled = true;\n\n  var fn = exports.enabled(namespace) ? enabled : disabled;\n\n  " +
-                    "fn.namespace = namespace;\n\n  return fn;\n}\n\n/**\n * Enables a debug mode by namesp" +
-                    "aces. This can include modes\n * separated by a colon and wildcards.\n *\n * @param" +
-                    " {String} namespaces\n * @api public\n */\n\nfunction enable(namespaces) {\n  exports" +
-                    ".save(namespaces);\n\n  var split = (namespaces || \'\').split(/[\\s,]+/);\n  var len " +
-                    "= split.length;\n\n  for (var i = 0; i < len; i++) {\n    if (!split[i]) continue; " +
-                    "// ignore empty strings\n    namespaces = split[i].replace(/\\*/g, \'.*?\');\n    if " +
-                    "(namespaces[0] === \'-\') {\n      exports.skips.push(new RegExp(\'^\' + namespaces.s" +
-                    "ubstr(1) + \'$\'));\n    } else {\n      exports.names.push(new RegExp(\'^\' + namespa" +
-                    "ces + \'$\'));\n    }\n  }\n}\n\n/**\n * Disable debug output.\n *\n * @api public\n */\n\nfu" +
-                    "nction disable() {\n  exports.enable(\'\');\n}\n\n/**\n * Returns true if the given mod" +
-                    "e name is enabled, false otherwise.\n *\n * @param {String} name\n * @return {Boole" +
-                    "an}\n * @api public\n */\n\nfunction enabled(name) {\n  var i, len;\n  for (i = 0, len" +
-                    " = exports.skips.length; i < len; i++) {\n    if (exports.skips[i].test(name)) {\n" +
-                    "      return false;\n    }\n  }\n  for (i = 0, len = exports.names.length; i < len;" +
-                    " i++) {\n    if (exports.names[i].test(name)) {\n      return true;\n    }\n  }\n  re" +
-                    "turn false;\n}\n\n/**\n * Coerce `val`.\n *\n * @param {Mixed} val\n * @return {Mixed}\n" +
-                    " * @api private\n */\n\nfunction coerce(val) {\n  if (val instanceof Error) return v" +
-                    "al.stack || val.message;\n  return val;\n}\n\n},{\"ms\":16}],16:[function(_dereq_,modu" +
-                    "le,exports){\n/**\n * Helpers.\n */\n\nvar s = 1000;\nvar m = s * 60;\nvar h = m * 60;\n" +
-                    "var d = h * 24;\nvar y = d * 365.25;\n\n/**\n * Parse or format the given `val`.\n *\n" +
-                    " * Options:\n *\n *  - `long` verbose formatting [false]\n *\n * @param {String|Numb" +
-                    "er} val\n * @param {Object} options\n * @return {String|Number}\n * @api public\n */" +
-                    "\n\nmodule.exports = function(val, options){\n  options = options || {};\n  if (\'str" +
-                    "ing\' == typeof val) return parse(val);\n  return options.long\n    ? _long(val)\n  " +
-                    "  : _short(val);\n};\n\n/**\n * Parse the given `str` and return milliseconds.\n *\n *" +
-                    " @param {String} str\n * @return {Number}\n * @api private\n */\n\nfunction parse(str" +
-                    ") {\n  var match = /^((?:\\d+)?\\.?\\d+) *(ms|seconds?|s|minutes?|m|hours?|h|days?|d" +
-                    "|years?|y)?$/i.exec(str);\n  if (!match) return;\n  var n = parseFloat(match[1]);\n" +
-                    "  var type = (match[2] || \'ms\').toLowerCase();\n  switch (type) {\n    case \'years" +
-                    "\':\n    case \'year\':\n    case \'y\':\n      return n * y;\n    case \'days\':\n    case " +
-                    "\'day\':\n    case \'d\':\n      return n * d;\n    case \'hours\':\n    case \'hour\':\n    " +
-                    "case \'h\':\n      return n * h;\n    case \'minutes\':\n    case \'minute\':\n    case \'m" +
-                    "\':\n      return n * m;\n    case \'seconds\':\n    case \'second\':\n    case \'s\':\n    " +
-                    "  return n * s;\n    case \'ms\':\n      return n;\n  }\n}\n\n/**\n * Short format for `m" +
-                    "s`.\n *\n * @param {Number} ms\n * @return {String}\n * @api private\n */\n\nfunction _" +
-                    "short(ms) {\n  if (ms >= d) return Math.round(ms / d) + \'d\';\n  if (ms >= h) retur" +
-                    "n Math.round(ms / h) + \'h\';\n  if (ms >= m) return Math.round(ms / m) + \'m\';\n  if" +
-                    " (ms >= s) return Math.round(ms / s) + \'s\';\n  return ms + \'ms\';\n}\n\n/**\n * Long f" +
-                    "ormat for `ms`.\n *\n * @param {Number} ms\n * @return {String}\n * @api private\n */" +
-                    "\n\nfunction _long(ms) {\n  return plural(ms, d, \'day\')\n    || plural(ms, h, \'hour\'" +
-                    ")\n    || plural(ms, m, \'minute\')\n    || plural(ms, s, \'second\')\n    || ms + \' ms" +
-                    "\';\n}\n\n/**\n * Pluralization helper.\n */\n\nfunction plural(ms, n, name) {\n  if (ms " +
-                    "< n) return;\n  if (ms < n * 1.5) return Math.floor(ms / n) + \' \' + name;\n  retur" +
-                    "n Math.ceil(ms / n) + \' \' + name + \'s\';\n}\n\n},{}],17:[function(_dereq_,module,exp" +
-                    "orts){\n(function (global){\n/**\n * Module dependencies.\n */\n\nvar keys = _dereq_(\'" +
-                    "./keys\');\nvar sliceBuffer = _dereq_(\'arraybuffer.slice\');\nvar base64encoder = _d" +
-                    "ereq_(\'base64-arraybuffer\');\nvar after = _dereq_(\'after\');\nvar utf8 = _dereq_(\'u" +
-                    "tf8\');\n\n/**\n * Check if we are running an android browser. That requires us to u" +
-                    "se\n * ArrayBuffer with polling transports...\n *\n * http://ghinda.net/jpeg-blob-a" +
-                    "jax-android/\n */\n\nvar isAndroid = navigator.userAgent.match(/Android/i);\n\n/**\n *" +
-                    " Current protocol version.\n */\n\nexports.protocol = 3;\n\n/**\n * Packet types.\n */\n" +
-                    "\nvar packets = exports.packets = {\n    open:     0    // non-ws\n  , close:    1 " +
-                    "   // non-ws\n  , ping:     2\n  , pong:     3\n  , message:  4\n  , upgrade:  5\n  ," +
-                    " noop:     6\n};\n\nvar packetslist = keys(packets);\n\n/**\n * Premade error packet.\n" +
-                    " */\n\nvar err = { type: \'error\', data: \'parser error\' };\n\n/**\n * Create a blob ap" +
-                    "i even for blob builder when vendor prefixes exist\n */\n\nvar Blob = _dereq_(\'blob" +
-                    "\');\n\n/**\n * Encodes a packet.\n *\n *     <packet type id> [ <data> ]\n *\n * Exampl" +
-                    "e:\n *\n *     5hello world\n *     3\n *     4\n *\n * Binary is encoded in an identi" +
-                    "cal principle\n *\n * @api private\n */\n\nexports.encodePacket = function (packet, s" +
-                    "upportsBinary, utf8encode, callback) {\n  if (\'function\' == typeof supportsBinary" +
-                    ") {\n    callback = supportsBinary;\n    supportsBinary = false;\n  }\n\n  if (\'funct" +
-                    "ion\' == typeof utf8encode) {\n    callback = utf8encode;\n    utf8encode = null;\n " +
-                    " }\n\n  var data = (packet.data === undefined)\n    ? undefined\n    : packet.data.b" +
-                    "uffer || packet.data;\n\n  if (global.ArrayBuffer && data instanceof ArrayBuffer) " +
-                    "{\n    return encodeArrayBuffer(packet, supportsBinary, callback);\n  } else if (B" +
-                    "lob && data instanceof global.Blob) {\n    return encodeBlob(packet, supportsBina" +
-                    "ry, callback);\n  }\n\n  // Sending data as a utf-8 string\n  var encoded = packets[" +
-                    "packet.type];\n\n  // data fragment is optional\n  if (undefined !== packet.data) {" +
-                    "\n    encoded += utf8encode ? utf8.encode(String(packet.data)) : String(packet.da" +
-                    "ta);\n  }\n\n  return callback(\'\' + encoded);\n\n};\n\n/**\n * Encode packet helpers for" +
-                    " binary types\n */\n\nfunction encodeArrayBuffer(packet, supportsBinary, callback) " +
-                    "{\n  if (!supportsBinary) {\n    return exports.encodeBase64Packet(packet, callbac" +
-                    "k);\n  }\n\n  var data = packet.data;\n  var contentArray = new Uint8Array(data);\n  " +
-                    "var resultBuffer = new Uint8Array(1 + data.byteLength);\n\n  resultBuffer[0] = pac" +
-                    "kets[packet.type];\n  for (var i = 0; i < contentArray.length; i++) {\n    resultB" +
-                    "uffer[i+1] = contentArray[i];\n  }\n\n  return callback(resultBuffer.buffer);\n}\n\nfu" +
-                    "nction encodeBlobAsArrayBuffer(packet, supportsBinary, callback) {\n  if (!suppor" +
-                    "tsBinary) {\n    return exports.encodeBase64Packet(packet, callback);\n  }\n\n  var " +
-                    "fr = new FileReader();\n  fr.onload = function() {\n    packet.data = fr.result;\n " +
-                    "   exports.encodePacket(packet, supportsBinary, true, callback);\n  };\n  return f" +
-                    "r.readAsArrayBuffer(packet.data);\n}\n\nfunction encodeBlob(packet, supportsBinary," +
-                    " callback) {\n  if (!supportsBinary) {\n    return exports.encodeBase64Packet(pack" +
-                    "et, callback);\n  }\n\n  if (isAndroid) {\n    return encodeBlobAsArrayBuffer(packet" +
-                    ", supportsBinary, callback);\n  }\n\n  var length = new Uint8Array(1);\n  length[0] " +
-                    "= packets[packet.type];\n  var blob = new Blob([length.buffer, packet.data]);\n\n  " +
-                    "return callback(blob);\n}\n\n/**\n * Encodes a packet with binary data in a base64 s" +
-                    "tring\n *\n * @param {Object} packet, has `type` and `data`\n * @return {String} ba" +
-                    "se64 encoded message\n */\n\nexports.encodeBase64Packet = function(packet, callback" +
-                    ") {\n  var message = \'b\' + exports.packets[packet.type];\n  if (Blob && packet.dat" +
-                    "a instanceof Blob) {\n    var fr = new FileReader();\n    fr.onload = function() {" +
-                    "\n      var b64 = fr.result.split(\',\')[1];\n      callback(message + b64);\n    };\n" +
-                    "    return fr.readAsDataURL(packet.data);\n  }\n\n  var b64data;\n  try {\n    b64dat" +
-                    "a = String.fromCharCode.apply(null, new Uint8Array(packet.data));\n  } catch (e) " +
-                    "{\n    // iPhone Safari doesn\'t let you apply with typed arrays\n    var typed = n" +
-                    "ew Uint8Array(packet.data);\n    var basic = new Array(typed.length);\n    for (va" +
-                    "r i = 0; i < typed.length; i++) {\n      basic[i] = typed[i];\n    }\n    b64data =" +
-                    " String.fromCharCode.apply(null, basic);\n  }\n  message += global.btoa(b64data);\n" +
-                    "  return callback(message);\n};\n\n/**\n * Decodes a packet. Changes format to Blob " +
-                    "if requested.\n *\n * @return {Object} with `type` and `data` (if any)\n * @api pri" +
-                    "vate\n */\n\nexports.decodePacket = function (data, binaryType, utf8decode) {\n  // " +
-                    "String data\n  if (typeof data == \'string\' || data === undefined) {\n    if (data." +
-                    "charAt(0) == \'b\') {\n      return exports.decodeBase64Packet(data.substr(1), bina" +
-                    "ryType);\n    }\n\n    if (utf8decode) {\n      try {\n        data = utf8.decode(dat" +
-                    "a);\n      } catch (e) {\n        return err;\n      }\n    }\n    var type = data.ch" +
-                    "arAt(0);\n\n    if (Number(type) != type || !packetslist[type]) {\n      return err" +
-                    ";\n    }\n\n    if (data.length > 1) {\n      return { type: packetslist[type], data" +
-                    ": data.substring(1) };\n    } else {\n      return { type: packetslist[type] };\n  " +
-                    "  }\n  }\n\n  var asArray = new Uint8Array(data);\n  var type = asArray[0];\n  var re" +
-                    "st = sliceBuffer(data, 1);\n  if (Blob && binaryType === \'blob\') {\n    rest = new" +
-                    " Blob([rest]);\n  }\n  return { type: packetslist[type], data: rest };\n};\n\n/**\n * " +
-                    "Decodes a packet encoded in a base64 string\n *\n * @param {String} base64 encoded" +
-                    " message\n * @return {Object} with `type` and `data` (if any)\n */\n\nexports.decode" +
-                    "Base64Packet = function(msg, binaryType) {\n  var type = packetslist[msg.charAt(0" +
-                    ")];\n  if (!global.ArrayBuffer) {\n    return { type: type, data: { base64: true, " +
-                    "data: msg.substr(1) } };\n  }\n\n  var data = base64encoder.decode(msg.substr(1));\n" +
-                    "\n  if (binaryType === \'blob\' && Blob) {\n    data = new Blob([data]);\n  }\n\n  retu" +
-                    "rn { type: type, data: data };\n};\n\n/**\n * Encodes multiple messages (payload).\n " +
-                    "*\n *     <length>:data\n *\n * Example:\n *\n *     11:hello world2:hi\n *\n * If any " +
-                    "contents are binary, they will be encoded as base64 strings. Base64\n * encoded s" +
-                    "trings are marked with a b before the length specifier\n *\n * @param {Array} pack" +
-                    "ets\n * @api private\n */\n\nexports.encodePayload = function (packets, supportsBina" +
-                    "ry, callback) {\n  if (typeof supportsBinary == \'function\') {\n    callback = supp" +
-                    "ortsBinary;\n    supportsBinary = null;\n  }\n\n  if (supportsBinary) {\n    if (Blob" +
-                    " && !isAndroid) {\n      return exports.encodePayloadAsBlob(packets, callback);\n " +
-                    "   }\n\n    return exports.encodePayloadAsArrayBuffer(packets, callback);\n  }\n\n  i" +
-                    "f (!packets.length) {\n    return callback(\'0:\');\n  }\n\n  function setLengthHeader" +
-                    "(message) {\n    return message.length + \':\' + message;\n  }\n\n  function encodeOne" +
-                    "(packet, doneCallback) {\n    exports.encodePacket(packet, supportsBinary, true, " +
-                    "function(message) {\n      doneCallback(null, setLengthHeader(message));\n    });\n" +
-                    "  }\n\n  map(packets, encodeOne, function(err, results) {\n    return callback(resu" +
-                    "lts.join(\'\'));\n  });\n};\n\n/**\n * Async array map using after\n */\n\nfunction map(ar" +
-                    "y, each, done) {\n  var result = new Array(ary.length);\n  var next = after(ary.le" +
-                    "ngth, done);\n\n  var eachWithIndex = function(i, el, cb) {\n    each(el, function(" +
-                    "error, msg) {\n      result[i] = msg;\n      cb(error, result);\n    });\n  };\n\n  fo" +
-                    "r (var i = 0; i < ary.length; i++) {\n    eachWithIndex(i, ary[i], next);\n  }\n}\n\n" +
-                    "/*\n * Decodes data when a payload is maybe expected. Possible binary contents ar" +
-                    "e\n * decoded from their base64 representation\n *\n * @param {String} data, callba" +
-                    "ck method\n * @api public\n */\n\nexports.decodePayload = function (data, binaryType" +
-                    ", callback) {\n  if (typeof data != \'string\') {\n    return exports.decodePayloadA" +
-                    "sBinary(data, binaryType, callback);\n  }\n\n  if (typeof binaryType === \'function\'" +
-                    ") {\n    callback = binaryType;\n    binaryType = null;\n  }\n\n  var packet;\n  if (d" +
-                    "ata == \'\') {\n    // parser error - ignoring payload\n    return callback(err, 0, " +
-                    "1);\n  }\n\n  var length = \'\'\n    , n, msg;\n\n  for (var i = 0, l = data.length; i <" +
-                    " l; i++) {\n    var chr = data.charAt(i);\n\n    if (\':\' != chr) {\n      length += " +
-                    "chr;\n    } else {\n      if (\'\' == length || (length != (n = Number(length)))) {\n" +
-                    "        // parser error - ignoring payload\n        return callback(err, 0, 1);\n " +
-                    "     }\n\n      msg = data.substr(i + 1, n);\n\n      if (length != msg.length) {\n  " +
-                    "      // parser error - ignoring payload\n        return callback(err, 0, 1);\n   " +
-                    "   }\n\n      if (msg.length) {\n        packet = exports.decodePacket(msg, binaryT" +
-                    "ype, true);\n\n        if (err.type == packet.type && err.data == packet.data) {\n " +
-                    "         // parser error in individual packet - ignoring payload\n          retur" +
-                    "n callback(err, 0, 1);\n        }\n\n        var ret = callback(packet, i + n, l);\n" +
-                    "        if (false === ret) return;\n      }\n\n      // advance cursor\n      i += n" +
-                    ";\n      length = \'\';\n    }\n  }\n\n  if (length != \'\') {\n    // parser error - igno" +
-                    "ring payload\n    return callback(err, 0, 1);\n  }\n\n};\n\n/**\n * Encodes multiple me" +
-                    "ssages (payload) as binary.\n *\n * <1 = binary, 0 = string><number from 0-9><numb" +
-                    "er from 0-9>[...]<number\n * 255><data>\n *\n * Example:\n * 1 3 255 1 2 3, if the b" +
-                    "inary contents are interpreted as 8 bit integers\n *\n * @param {Array} packets\n *" +
-                    " @return {ArrayBuffer} encoded payload\n * @api private\n */\n\nexports.encodePayloa" +
-                    "dAsArrayBuffer = function(packets, callback) {\n  if (!packets.length) {\n    retu" +
-                    "rn callback(new ArrayBuffer(0));\n  }\n\n  function encodeOne(packet, doneCallback)" +
-                    " {\n    exports.encodePacket(packet, true, true, function(data) {\n      return do" +
-                    "neCallback(null, data);\n    });\n  }\n\n  map(packets, encodeOne, function(err, enc" +
-                    "odedPackets) {\n    var totalLength = encodedPackets.reduce(function(acc, p) {\n  " +
-                    "    var len;\n      if (typeof p === \'string\'){\n        len = p.length;\n      } e" +
-                    "lse {\n        len = p.byteLength;\n      }\n      return acc + len.toString().leng" +
-                    "th + len + 2; // string/binary identifier + separator = 2\n    }, 0);\n\n    var re" +
-                    "sultArray = new Uint8Array(totalLength);\n\n    var bufferIndex = 0;\n    encodedPa" +
-                    "ckets.forEach(function(p) {\n      var isString = typeof p === \'string\';\n      va" +
-                    "r ab = p;\n      if (isString) {\n        var view = new Uint8Array(p.length);\n   " +
-                    "     for (var i = 0; i < p.length; i++) {\n          view[i] = p.charCodeAt(i);\n " +
-                    "       }\n        ab = view.buffer;\n      }\n\n      if (isString) { // not true bi" +
-                    "nary\n        resultArray[bufferIndex++] = 0;\n      } else { // true binary\n     " +
-                    "   resultArray[bufferIndex++] = 1;\n      }\n\n      var lenStr = ab.byteLength.toS" +
-                    "tring();\n      for (var i = 0; i < lenStr.length; i++) {\n        resultArray[buf" +
-                    "ferIndex++] = parseInt(lenStr[i]);\n      }\n      resultArray[bufferIndex++] = 25" +
-                    "5;\n\n      var view = new Uint8Array(ab);\n      for (var i = 0; i < view.length; " +
-                    "i++) {\n        resultArray[bufferIndex++] = view[i];\n      }\n    });\n\n    return" +
-                    " callback(resultArray.buffer);\n  });\n};\n\n/**\n * Encode as Blob\n */\n\nexports.enco" +
-                    "dePayloadAsBlob = function(packets, callback) {\n  function encodeOne(packet, don" +
-                    "eCallback) {\n    exports.encodePacket(packet, true, true, function(encoded) {\n  " +
-                    "    var binaryIdentifier = new Uint8Array(1);\n      binaryIdentifier[0] = 1;\n   " +
-                    "   if (typeof encoded === \'string\') {\n        var view = new Uint8Array(encoded." +
-                    "length);\n        for (var i = 0; i < encoded.length; i++) {\n          view[i] = " +
-                    "encoded.charCodeAt(i);\n        }\n        encoded = view.buffer;\n        binaryId" +
-                    "entifier[0] = 0;\n      }\n\n      var len = (encoded instanceof ArrayBuffer)\n     " +
-                    "   ? encoded.byteLength\n        : encoded.size;\n\n      var lenStr = len.toString" +
-                    "();\n      var lengthAry = new Uint8Array(lenStr.length + 1);\n      for (var i = " +
-                    "0; i < lenStr.length; i++) {\n        lengthAry[i] = parseInt(lenStr[i]);\n      }" +
-                    "\n      lengthAry[lenStr.length] = 255;\n\n      if (Blob) {\n        var blob = new" +
-                    " Blob([binaryIdentifier.buffer, lengthAry.buffer, encoded]);\n        doneCallbac" +
-                    "k(null, blob);\n      }\n    });\n  }\n\n  map(packets, encodeOne, function(err, resu" +
-                    "lts) {\n    return callback(new Blob(results));\n  });\n};\n\n/*\n * Decodes data when" +
-                    " a payload is maybe expected. Strings are decoded by\n * interpreting each byte a" +
-                    "s a key code for entries marked to start with 0. See\n * description of encodePay" +
-                    "loadAsBinary\n *\n * @param {ArrayBuffer} data, callback method\n * @api public\n */" +
-                    "\n\nexports.decodePayloadAsBinary = function (data, binaryType, callback) {\n  if (" +
-                    "typeof binaryType === \'function\') {\n    callback = binaryType;\n    binaryType = " +
-                    "null;\n  }\n\n  var bufferTail = data;\n  var buffers = [];\n\n  var numberTooLong = f" +
-                    "alse;\n  while (bufferTail.byteLength > 0) {\n    var tailArray = new Uint8Array(b" +
-                    "ufferTail);\n    var isString = tailArray[0] === 0;\n    var msgLength = \'\';\n\n    " +
-                    "for (var i = 1; ; i++) {\n      if (tailArray[i] == 255) break;\n\n      if (msgLen" +
-                    "gth.length > 310) {\n        numberTooLong = true;\n        break;\n      }\n\n      " +
-                    "msgLength += tailArray[i];\n    }\n\n    if(numberTooLong) return callback(err, 0, " +
-                    "1);\n\n    bufferTail = sliceBuffer(bufferTail, 2 + msgLength.length);\n    msgLeng" +
-                    "th = parseInt(msgLength);\n\n    var msg = sliceBuffer(bufferTail, 0, msgLength);\n" +
-                    "    if (isString) {\n      try {\n        msg = String.fromCharCode.apply(null, ne" +
-                    "w Uint8Array(msg));\n      } catch (e) {\n        // iPhone Safari doesn\'t let you" +
-                    " apply to typed arrays\n        var typed = new Uint8Array(msg);\n        msg = \'\'" +
-                    ";\n        for (var i = 0; i < typed.length; i++) {\n          msg += String.fromC" +
-                    "harCode(typed[i]);\n        }\n      }\n    }\n\n    buffers.push(msg);\n    bufferTai" +
-                    "l = sliceBuffer(bufferTail, msgLength);\n  }\n\n  var total = buffers.length;\n  buf" +
-                    "fers.forEach(function(buffer, i) {\n    callback(exports.decodePacket(buffer, bin" +
-                    "aryType, true), i, total);\n  });\n};\n\n}).call(this,typeof self !== \"undefined\" ? " +
-                    "self : typeof window !== \"undefined\" ? window : {})\n},{\"./keys\":18,\"after\":19,\"a" +
-                    "rraybuffer.slice\":20,\"base64-arraybuffer\":21,\"blob\":11,\"utf8\":22}],18:[function(" +
-                    "_dereq_,module,exports){\n\n/**\n * Gets the keys for an object.\n *\n * @return {Arr" +
-                    "ay} keys\n * @api private\n */\n\nmodule.exports = Object.keys || function keys (obj" +
-                    "){\n  var arr = [];\n  var has = Object.prototype.hasOwnProperty;\n\n  for (var i in" +
-                    " obj) {\n    if (has.call(obj, i)) {\n      arr.push(i);\n    }\n  }\n  return arr;\n}" +
-                    ";\n\n},{}],19:[function(_dereq_,module,exports){\nmodule.exports = after\n\nfunction " +
-                    "after(count, callback, err_cb) {\n    var bail = false\n    err_cb = err_cb || noo" +
-                    "p\n    proxy.count = count\n\n    return (count === 0) ? callback() : proxy\n\n    fu" +
-                    "nction proxy(err, result) {\n        if (proxy.count <= 0) {\n            throw ne" +
-                    "w Error(\'after called too many times\')\n        }\n        --proxy.count\n\n        " +
-                    "// after first error, rest are passed to err_cb\n        if (err) {\n            b" +
-                    "ail = true\n            callback(err)\n            // future error callbacks will " +
-                    "go to error handler\n            callback = err_cb\n        } else if (proxy.count" +
-                    " === 0 && !bail) {\n            callback(null, result)\n        }\n    }\n}\n\nfunctio" +
-                    "n noop() {}\n\n},{}],20:[function(_dereq_,module,exports){\n/**\n * An abstraction f" +
-                    "or slicing an arraybuffer even when\n * ArrayBuffer.prototype.slice is not suppor" +
-                    "ted\n *\n * @api public\n */\n\nmodule.exports = function(arraybuffer, start, end) {\n" +
-                    "  var bytes = arraybuffer.byteLength;\n  start = start || 0;\n  end = end || bytes" +
-                    ";\n\n  if (arraybuffer.slice) { return arraybuffer.slice(start, end); }\n\n  if (sta" +
-                    "rt < 0) { start += bytes; }\n  if (end < 0) { end += bytes; }\n  if (end > bytes) " +
-                    "{ end = bytes; }\n\n  if (start >= bytes || start >= end || bytes === 0) {\n    ret" +
-                    "urn new ArrayBuffer(0);\n  }\n\n  var abv = new Uint8Array(arraybuffer);\n  var resu" +
-                    "lt = new Uint8Array(end - start);\n  for (var i = start, ii = 0; i < end; i++, ii" +
-                    "++) {\n    result[ii] = abv[i];\n  }\n  return result.buffer;\n};\n\n},{}],21:[functio" +
-                    "n(_dereq_,module,exports){\n/*\n * base64-arraybuffer\n * https://github.com/niklas" +
-                    "vh/base64-arraybuffer\n *\n * Copyright (c) 2012 Niklas von Hertzen\n * Licensed un" +
-                    "der the MIT license.\n */\n(function(chars){\n  \"use strict\";\n\n  exports.encode = f" +
-                    "unction(arraybuffer) {\n    var bytes = new Uint8Array(arraybuffer),\n    i, len =" +
-                    " bytes.length, base64 = \"\";\n\n    for (i = 0; i < len; i+=3) {\n      base64 += ch" +
-                    "ars[bytes[i] >> 2];\n      base64 += chars[((bytes[i] & 3) << 4) | (bytes[i + 1] " +
-                    ">> 4)];\n      base64 += chars[((bytes[i + 1] & 15) << 2) | (bytes[i + 2] >> 6)];" +
-                    "\n      base64 += chars[bytes[i + 2] & 63];\n    }\n\n    if ((len % 3) === 2) {\n   " +
-                    "   base64 = base64.substring(0, base64.length - 1) + \"=\";\n    } else if (len % 3" +
-                    " === 1) {\n      base64 = base64.substring(0, base64.length - 2) + \"==\";\n    }\n\n " +
-                    "   return base64;\n  };\n\n  exports.decode =  function(base64) {\n    var bufferLen" +
-                    "gth = base64.length * 0.75,\n    len = base64.length, i, p = 0,\n    encoded1, enc" +
-                    "oded2, encoded3, encoded4;\n\n    if (base64[base64.length - 1] === \"=\") {\n      b" +
-                    "ufferLength--;\n      if (base64[base64.length - 2] === \"=\") {\n        bufferLeng" +
-                    "th--;\n      }\n    }\n\n    var arraybuffer = new ArrayBuffer(bufferLength),\n    by" +
-                    "tes = new Uint8Array(arraybuffer);\n\n    for (i = 0; i < len; i+=4) {\n      encod" +
-                    "ed1 = chars.indexOf(base64[i]);\n      encoded2 = chars.indexOf(base64[i+1]);\n   " +
-                    "   encoded3 = chars.indexOf(base64[i+2]);\n      encoded4 = chars.indexOf(base64[" +
-                    "i+3]);\n\n      bytes[p++] = (encoded1 << 2) | (encoded2 >> 4);\n      bytes[p++] =" +
-                    " ((encoded2 & 15) << 4) | (encoded3 >> 2);\n      bytes[p++] = ((encoded3 & 3) <<" +
-                    " 6) | (encoded4 & 63);\n    }\n\n    return arraybuffer;\n  };\n})(\"ABCDEFGHIJKLMNOPQ" +
-                    "RSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/\");\n\n},{}],22:[function(_dereq_,m" +
-                    "odule,exports){\n(function (global){\n/*! http://mths.be/utf8js v2.0.0 by @mathias" +
-                    " */\n;(function(root) {\n\n\t// Detect free variables `exports`\n\tvar freeExports = t" +
-                    "ypeof exports == \'object\' && exports;\n\n\t// Detect free variable `module`\n\tvar fr" +
-                    "eeModule = typeof module == \'object\' && module &&\n\t\tmodule.exports == freeExport" +
-                    "s && module;\n\n\t// Detect free variable `global`, from Node.js or Browserified co" +
-                    "de,\n\t// and use it as `root`\n\tvar freeGlobal = typeof global == \'object\' && glob" +
-                    "al;\n\tif (freeGlobal.global === freeGlobal || freeGlobal.window === freeGlobal) {" +
-                    "\n\t\troot = freeGlobal;\n\t}\n\n\t/*---------------------------------------------------" +
-                    "-----------------------*/\n\n\tvar stringFromCharCode = String.fromCharCode;\n\n\t// T" +
-                    "aken from http://mths.be/punycode\n\tfunction ucs2decode(string) {\n\t\tvar output = " +
-                    "[];\n\t\tvar counter = 0;\n\t\tvar length = string.length;\n\t\tvar value;\n\t\tvar extra;\n\t" +
-                    "\twhile (counter < length) {\n\t\t\tvalue = string.charCodeAt(counter++);\n\t\t\tif (valu" +
-                    "e >= 0xD800 && value <= 0xDBFF && counter < length) {\n\t\t\t\t// high surrogate, and" +
-                    " there is a next character\n\t\t\t\textra = string.charCodeAt(counter++);\n\t\t\t\tif ((ex" +
-                    "tra & 0xFC00) == 0xDC00) { // low surrogate\n\t\t\t\t\toutput.push(((value & 0x3FF) <<" +
-                    " 10) + (extra & 0x3FF) + 0x10000);\n\t\t\t\t} else {\n\t\t\t\t\t// unmatched surrogate; onl" +
-                    "y append this code unit, in case the next\n\t\t\t\t\t// code unit is the high surrogat" +
-                    "e of a surrogate pair\n\t\t\t\t\toutput.push(value);\n\t\t\t\t\tcounter--;\n\t\t\t\t}\n\t\t\t} else {" +
-                    "\n\t\t\t\toutput.push(value);\n\t\t\t}\n\t\t}\n\t\treturn output;\n\t}\n\n\t// Taken from http://mth" +
-                    "s.be/punycode\n\tfunction ucs2encode(array) {\n\t\tvar length = array.length;\n\t\tvar i" +
-                    "ndex = -1;\n\t\tvar value;\n\t\tvar output = \'\';\n\t\twhile (++index < length) {\n\t\t\tvalue" +
-                    " = array[index];\n\t\t\tif (value > 0xFFFF) {\n\t\t\t\tvalue -= 0x10000;\n\t\t\t\toutput += st" +
-                    "ringFromCharCode(value >>> 10 & 0x3FF | 0xD800);\n\t\t\t\tvalue = 0xDC00 | value & 0x" +
-                    "3FF;\n\t\t\t}\n\t\t\toutput += stringFromCharCode(value);\n\t\t}\n\t\treturn output;\n\t}\n\n\t/*--" +
-                    "------------------------------------------------------------------------*/\n\n\tfun" +
-                    "ction createByte(codePoint, shift) {\n\t\treturn stringFromCharCode(((codePoint >> " +
-                    "shift) & 0x3F) | 0x80);\n\t}\n\n\tfunction encodeCodePoint(codePoint) {\n\t\tif ((codePo" +
-                    "int & 0xFFFFFF80) == 0) { // 1-byte sequence\n\t\t\treturn stringFromCharCode(codePo" +
-                    "int);\n\t\t}\n\t\tvar symbol = \'\';\n\t\tif ((codePoint & 0xFFFFF800) == 0) { // 2-byte se" +
-                    "quence\n\t\t\tsymbol = stringFromCharCode(((codePoint >> 6) & 0x1F) | 0xC0);\n\t\t}\n\t\te" +
-                    "lse if ((codePoint & 0xFFFF0000) == 0) { // 3-byte sequence\n\t\t\tsymbol = stringFr" +
-                    "omCharCode(((codePoint >> 12) & 0x0F) | 0xE0);\n\t\t\tsymbol += createByte(codePoint" +
-                    ", 6);\n\t\t}\n\t\telse if ((codePoint & 0xFFE00000) == 0) { // 4-byte sequence\n\t\t\tsymb" +
-                    "ol = stringFromCharCode(((codePoint >> 18) & 0x07) | 0xF0);\n\t\t\tsymbol += createB" +
-                    "yte(codePoint, 12);\n\t\t\tsymbol += createByte(codePoint, 6);\n\t\t}\n\t\tsymbol += strin" +
-                    "gFromCharCode((codePoint & 0x3F) | 0x80);\n\t\treturn symbol;\n\t}\n\n\tfunction utf8enc" +
-                    "ode(string) {\n\t\tvar codePoints = ucs2decode(string);\n\n\t\t// console.log(JSON.stri" +
-                    "ngify(codePoints.map(function(x) {\n\t\t// \treturn \'U+\' + x.toString(16).toUpperCas" +
-                    "e();\n\t\t// })));\n\n\t\tvar length = codePoints.length;\n\t\tvar index = -1;\n\t\tvar codeP" +
-                    "oint;\n\t\tvar byteString = \'\';\n\t\twhile (++index < length) {\n\t\t\tcodePoint = codePoi" +
-                    "nts[index];\n\t\t\tbyteString += encodeCodePoint(codePoint);\n\t\t}\n\t\treturn byteString" +
-                    ";\n\t}\n\n\t/*-----------------------------------------------------------------------" +
-                    "---*/\n\n\tfunction readContinuationByte() {\n\t\tif (byteIndex >= byteCount) {\n\t\t\tthr" +
-                    "ow Error(\'Invalid byte index\');\n\t\t}\n\n\t\tvar continuationByte = byteArray[byteInde" +
-                    "x] & 0xFF;\n\t\tbyteIndex++;\n\n\t\tif ((continuationByte & 0xC0) == 0x80) {\n\t\t\treturn " +
-                    "continuationByte & 0x3F;\n\t\t}\n\n\t\t// If we end up here, it’s not a continuation by" +
-                    "te\n\t\tthrow Error(\'Invalid continuation byte\');\n\t}\n\n\tfunction decodeSymbol() {\n\t\t" +
-                    "var byte1;\n\t\tvar byte2;\n\t\tvar byte3;\n\t\tvar byte4;\n\t\tvar codePoint;\n\n\t\tif (byteIn" +
-                    "dex > byteCount) {\n\t\t\tthrow Error(\'Invalid byte index\');\n\t\t}\n\n\t\tif (byteIndex ==" +
-                    " byteCount) {\n\t\t\treturn false;\n\t\t}\n\n\t\t// Read first byte\n\t\tbyte1 = byteArray[byt" +
-                    "eIndex] & 0xFF;\n\t\tbyteIndex++;\n\n\t\t// 1-byte sequence (no continuation bytes)\n\t\ti" +
-                    "f ((byte1 & 0x80) == 0) {\n\t\t\treturn byte1;\n\t\t}\n\n\t\t// 2-byte sequence\n\t\tif ((byte" +
-                    "1 & 0xE0) == 0xC0) {\n\t\t\tvar byte2 = readContinuationByte();\n\t\t\tcodePoint = ((byt" +
-                    "e1 & 0x1F) << 6) | byte2;\n\t\t\tif (codePoint >= 0x80) {\n\t\t\t\treturn codePoint;\n\t\t\t}" +
-                    " else {\n\t\t\t\tthrow Error(\'Invalid continuation byte\');\n\t\t\t}\n\t\t}\n\n\t\t// 3-byte sequ" +
-                    "ence (may include unpaired surrogates)\n\t\tif ((byte1 & 0xF0) == 0xE0) {\n\t\t\tbyte2 " +
-                    "= readContinuationByte();\n\t\t\tbyte3 = readContinuationByte();\n\t\t\tcodePoint = ((by" +
-                    "te1 & 0x0F) << 12) | (byte2 << 6) | byte3;\n\t\t\tif (codePoint >= 0x0800) {\n\t\t\t\tret" +
-                    "urn codePoint;\n\t\t\t} else {\n\t\t\t\tthrow Error(\'Invalid continuation byte\');\n\t\t\t}\n\t\t" +
-                    "}\n\n\t\t// 4-byte sequence\n\t\tif ((byte1 & 0xF8) == 0xF0) {\n\t\t\tbyte2 = readContinuat" +
-                    "ionByte();\n\t\t\tbyte3 = readContinuationByte();\n\t\t\tbyte4 = readContinuationByte();" +
-                    "\n\t\t\tcodePoint = ((byte1 & 0x0F) << 0x12) | (byte2 << 0x0C) |\n\t\t\t\t(byte3 << 0x06)" +
-                    " | byte4;\n\t\t\tif (codePoint >= 0x010000 && codePoint <= 0x10FFFF) {\n\t\t\t\treturn co" +
-                    "dePoint;\n\t\t\t}\n\t\t}\n\n\t\tthrow Error(\'Invalid UTF-8 detected\');\n\t}\n\n\tvar byteArray;\n" +
-                    "\tvar byteCount;\n\tvar byteIndex;\n\tfunction utf8decode(byteString) {\n\t\tbyteArray =" +
-                    " ucs2decode(byteString);\n\t\tbyteCount = byteArray.length;\n\t\tbyteIndex = 0;\n\t\tvar " +
-                    "codePoints = [];\n\t\tvar tmp;\n\t\twhile ((tmp = decodeSymbol()) !== false) {\n\t\t\tcode" +
-                    "Points.push(tmp);\n\t\t}\n\t\treturn ucs2encode(codePoints);\n\t}\n\n\t/*------------------" +
-                    "--------------------------------------------------------*/\n\n\tvar utf8 = {\n\t\t\'ver" +
-                    "sion\': \'2.0.0\',\n\t\t\'encode\': utf8encode,\n\t\t\'decode\': utf8decode\n\t};\n\n\t// Some AMD" +
-                    " build optimizers, like r.js, check for specific condition patterns\n\t// like the" +
-                    " following:\n\tif (\n\t\ttypeof define == \'function\' &&\n\t\ttypeof define.amd == \'objec" +
-                    "t\' &&\n\t\tdefine.amd\n\t) {\n\t\tdefine(function() {\n\t\t\treturn utf8;\n\t\t});\n\t}\telse if (" +
-                    "freeExports && !freeExports.nodeType) {\n\t\tif (freeModule) { // in Node.js or Rin" +
-                    "goJS v0.8.0+\n\t\t\tfreeModule.exports = utf8;\n\t\t} else { // in Narwhal or RingoJS v" +
-                    "0.7.0-\n\t\t\tvar object = {};\n\t\t\tvar hasOwnProperty = object.hasOwnProperty;\n\t\t\tfor" +
-                    " (var key in utf8) {\n\t\t\t\thasOwnProperty.call(utf8, key) && (freeExports[key] = u" +
-                    "tf8[key]);\n\t\t\t}\n\t\t}\n\t} else { // in Rhino or a web browser\n\t\troot.utf8 = utf8;\n\t" +
-                    "}\n\n}(this));\n\n}).call(this,typeof self !== \"undefined\" ? self : typeof window !=" +
-                    "= \"undefined\" ? window : {})\n},{}],23:[function(_dereq_,module,exports){\n\n/**\n *" +
-                    " Module dependencies.\n */\n\nvar global = _dereq_(\'global\');\n\n/**\n * Module export" +
-                    "s.\n *\n * Logic borrowed from Modernizr:\n *\n *   - https://github.com/Modernizr/M" +
-                    "odernizr/blob/master/feature-detects/cors.js\n */\n\ntry {\n  module.exports = \'XMLH" +
-                    "ttpRequest\' in global &&\n    \'withCredentials\' in new global.XMLHttpRequest();\n}" +
-                    " catch (err) {\n  // if XMLHttp support is disabled in IE then it will throw\n  //" +
-                    " when trying to create\n  module.exports = false;\n}\n\n},{\"global\":24}],24:[functio" +
-                    "n(_dereq_,module,exports){\n\n/**\n * Returns `this`. Execute this without a \"conte" +
-                    "xt\" (i.e. without it being\n * attached to an object of the left-hand side), and " +
-                    "`this` points to the\n * \"global\" scope of the current JS execution.\n */\n\nmodule." +
-                    "exports = (function () { return this; })();\n\n},{}],25:[function(_dereq_,module,e" +
-                    "xports){\n\nvar indexOf = [].indexOf;\n\nmodule.exports = function(arr, obj){\n  if (" +
-                    "indexOf) return arr.indexOf(obj);\n  for (var i = 0; i < arr.length; ++i) {\n    i" +
-                    "f (arr[i] === obj) return i;\n  }\n  return -1;\n};\n},{}],26:[function(_dereq_,modu" +
-                    "le,exports){\n(function (global){\n/**\n * JSON parse.\n *\n * @see Based on jQuery#p" +
-                    "arseJSON (MIT) and JSON2\n * @api private\n */\n\nvar rvalidchars = /^[\\],:{}\\s]*$/;" +
-                    "\nvar rvalidescape = /\\\\(?:[\"\\\\\\/bfnrt]|u[0-9a-fA-F]{4})/g;\nvar rvalidtokens = /\"" +
-                    "[^\"\\\\\\n\\r]*\"|true|false|null|-?\\d+(?:\\.\\d*)?(?:[eE][+\\-]?\\d+)?/g;\nvar rvalidbrac" +
-                    "es = /(?:^|:|,)(?:\\s*\\[)+/g;\nvar rtrimLeft = /^\\s+/;\nvar rtrimRight = /\\s+$/;\n\nm" +
-                    "odule.exports = function parsejson(data) {\n  if (\'string\' != typeof data || !dat" +
-                    "a) {\n    return null;\n  }\n\n  data = data.replace(rtrimLeft, \'\').replace(rtrimRig" +
-                    "ht, \'\');\n\n  // Attempt to parse using the native JSON parser first\n  if (global." +
-                    "JSON && JSON.parse) {\n    return JSON.parse(data);\n  }\n\n  if (rvalidchars.test(d" +
-                    "ata.replace(rvalidescape, \'@\')\n      .replace(rvalidtokens, \']\')\n      .replace(" +
-                    "rvalidbraces, \'\'))) {\n    return (new Function(\'return \' + data))();\n  }\n};\n}).c" +
-                    "all(this,typeof self !== \"undefined\" ? self : typeof window !== \"undefined\" ? wi" +
-                    "ndow : {})\n},{}],27:[function(_dereq_,module,exports){\n/**\n * Compiles a queryst" +
-                    "ring\n * Returns string representation of the object\n *\n * @param {Object}\n * @ap" +
-                    "i private\n */\n\nexports.encode = function (obj) {\n  var str = \'\';\n\n  for (var i i" +
-                    "n obj) {\n    if (obj.hasOwnProperty(i)) {\n      if (str.length) str += \'&\';\n    " +
-                    "  str += encodeURIComponent(i) + \'=\' + encodeURIComponent(obj[i]);\n    }\n  }\n\n  " +
-                    "return str;\n};\n\n/**\n * Parses a simple querystring into an object\n *\n * @param {" +
-                    "String} qs\n * @api private\n */\n\nexports.decode = function(qs){\n  var qry = {};\n " +
-                    " var pairs = qs.split(\'&\');\n  for (var i = 0, l = pairs.length; i < l; i++) {\n  " +
-                    "  var pair = pairs[i].split(\'=\');\n    qry[decodeURIComponent(pair[0])] = decodeU" +
-                    "RIComponent(pair[1]);\n  }\n  return qry;\n};\n\n},{}],28:[function(_dereq_,module,ex" +
-                    "ports){\n/**\n * Parses an URI\n *\n * @author Steven Levithan <stevenlevithan.com> " +
-                    "(MIT license)\n * @api private\n */\n\nvar re = /^(?:(?![^:@]+:[^:@\\/]*@)(http|https" +
-                    "|ws|wss):\\/\\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?((?:[a-f0-9]{0,4}:){2,7}[a-f0-9]{" +
-                    "0,4}|[^:\\/?#]*)(?::(\\d*))?)(((\\/(?:[^?#](?![^?#\\/]*\\.[^?#\\/.]+(?:[?#]|$)))*\\/?)?" +
-                    "([^?#\\/]*))(?:\\?([^#]*))?(?:#(.*))?)/;\n\nvar parts = [\n    \'source\', \'protocol\', " +
-                    "\'authority\', \'userInfo\', \'user\', \'password\', \'host\', \'port\', \'relative\', \'path\'," +
-                    " \'directory\', \'file\', \'query\', \'anchor\'\n];\n\nmodule.exports = function parseuri(s" +
-                    "tr) {\n    var src = str,\n        b = str.indexOf(\'[\'),\n        e = str.indexOf(\'" +
-                    "]\');\n\n    if (b != -1 && e != -1) {\n        str = str.substring(0, b) + str.subs" +
-                    "tring(b, e).replace(/:/g, \';\') + str.substring(e, str.length);\n    }\n\n    var m " +
-                    "= re.exec(str || \'\'),\n        uri = {},\n        i = 14;\n\n    while (i--) {\n     " +
-                    "   uri[parts[i]] = m[i] || \'\';\n    }\n\n    if (b != -1 && e != -1) {\n        uri." +
-                    "source = src;\n        uri.host = uri.host.substring(1, uri.host.length - 1).repl" +
-                    "ace(/;/g, \':\');\n        uri.authority = uri.authority.replace(\'[\', \'\').replace(\'" +
-                    "]\', \'\').replace(/;/g, \':\');\n        uri.ipv6uri = true;\n    }\n\n    return uri;\n}" +
-                    ";\n\n},{}],29:[function(_dereq_,module,exports){\n\n/**\n * Module dependencies.\n */\n" +
-                    "\nvar global = (function() { return this; })();\n\n/**\n * WebSocket constructor.\n *" +
-                    "/\n\nvar WebSocket = global.WebSocket || global.MozWebSocket;\n\n/**\n * Module expor" +
-                    "ts.\n */\n\nmodule.exports = WebSocket ? ws : null;\n\n/**\n * WebSocket constructor.\n" +
-                    " *\n * The third `opts` options object gets ignored in web browsers, since it\'s\n " +
-                    "* non-standard, and throws a TypeError if passed to the constructor.\n * See: htt" +
-                    "ps://github.com/einaros/ws/issues/227\n *\n * @param {String} uri\n * @param {Array" +
-                    "} protocols (optional)\n * @param {Object) opts (optional)\n * @api public\n */\n\nfu" +
-                    "nction ws(uri, protocols, opts) {\n  var instance;\n  if (protocols) {\n    instanc" +
-                    "e = new WebSocket(uri, protocols);\n  } else {\n    instance = new WebSocket(uri);" +
-                    "\n  }\n  return instance;\n}\n\nif (WebSocket) ws.prototype = WebSocket.prototype;\n\n}" +
-                    ",{}]},{},[1])(1)\n});");
+                    "ereq_(\'engine.io-parser\');\nvar Emitter = _dereq_(\'component-emitter\');\n\nif(typeo" +
+                    "f spike === \'undefined\')\r\n\tspike = new Object();\nspike.Emitter = Emitter;\n\n/**\n " +
+                    "* Module exports.\n */\n\nmodule.exports = Transport;\n\n/**\n * Transport abstract co" +
+                    "nstructor.\n *\n * @param {Object} options.\n * @api private\n */\n\nfunction Transpor" +
+                    "t (opts) {\n  this.path = opts.path;\n  this.hostname = opts.hostname;\n  this.port" +
+                    " = opts.port;\n  this.secure = opts.secure;\n  this.query = opts.query;\n  this.tim" +
+                    "estampParam = opts.timestampParam;\n  this.timestampRequests = opts.timestampRequ" +
+                    "ests;\n  this.readyState = \'\';\n  this.agent = opts.agent || false;\n  this.socket " +
+                    "= opts.socket;\n  this.enablesXDR = opts.enablesXDR;\n}\n\n/**\n * Mix in `Emitter`.\n" +
+                    " */\n\nEmitter(Transport.prototype);\n\n/**\n * A counter used to prevent collisions " +
+                    "in the timestamps used\n * for cache busting.\n */\n\nTransport.timestamps = 0;\n\n/**" +
+                    "\n * Emits an error.\n *\n * @param {String} str\n * @return {Transport} for chainin" +
+                    "g\n * @api public\n */\n\nTransport.prototype.onError = function (msg, desc) {\n  var" +
+                    " err = new Error(msg);\n  err.type = \'TransportError\';\n  err.description = desc;\n" +
+                    "  this.emit(\'error\', err);\n  return this;\n};\n\n/**\n * Opens the transport.\n *\n * " +
+                    "@api public\n */\n\nTransport.prototype.open = function () {\n  if (\'closed\' == this" +
+                    ".readyState || \'\' == this.readyState) {\n    this.readyState = \'opening\';\n    thi" +
+                    "s.doOpen();\n  }\n\n  return this;\n};\n\n/**\n * Closes the transport.\n *\n * @api priv" +
+                    "ate\n */\n\nTransport.prototype.close = function () {\n  if (\'opening\' == this.ready" +
+                    "State || \'open\' == this.readyState) {\n    this.doClose();\n    this.onClose();\n  " +
+                    "}\n\n  return this;\n};\n\n/**\n * Sends multiple packets.\n *\n * @param {Array} packet" +
+                    "s\n * @api private\n */\n\nTransport.prototype.send = function(packets){\n  if (\'open" +
+                    "\' == this.readyState) {\n    this.write(packets);\n  } else {\n    throw new Error(" +
+                    "\'Transport not open\');\n  }\n};\n\n/**\n * Called upon open\n *\n * @api private\n */\n\nT" +
+                    "ransport.prototype.onOpen = function () {\n  this.readyState = \'open\';\n  this.wri" +
+                    "table = true;\n  this.emit(\'open\');\n};\n\n/**\n * Called with data.\n *\n * @param {St" +
+                    "ring} data\n * @api private\n */\n\nTransport.prototype.onData = function(data){\n  v" +
+                    "ar packet = parser.decodePacket(data, this.socket.binaryType);\n  this.onPacket(p" +
+                    "acket);\n};\n\n/**\n * Called with a decoded packet.\n */\n\nTransport.prototype.onPack" +
+                    "et = function (packet) {\n  this.emit(\'packet\', packet);\n};\n\n/**\n * Called upon c" +
+                    "lose.\n *\n * @api private\n */\n\nTransport.prototype.onClose = function () {\n  this" +
+                    ".readyState = \'closed\';\n  this.emit(\'close\');\n};\n\n},{\"component-emitter\":12,\"eng" +
+                    "ine.io-parser\":17}],5:[function(_dereq_,module,exports){\n(function (global){\n/**" +
+                    "\n * Module dependencies\n */\n\nvar XMLHttpRequest = _dereq_(\'xmlhttprequest\');\nvar" +
+                    " XHR = _dereq_(\'./polling-xhr\');\nvar JSONP = _dereq_(\'./polling-jsonp\');\nvar web" +
+                    "socket = _dereq_(\'./websocket\');\n\n/**\n * Export transports.\n */\n\nexports.polling" +
+                    " = polling;\nexports.websocket = websocket;\n\n/**\n * Polling transport polymorphic" +
+                    " constructor.\n * Decides on xhr vs jsonp based on feature detection.\n *\n * @api " +
+                    "private\n */\n\nfunction polling(opts){\n  var xhr;\n  var xd = false;\n  var xs = fal" +
+                    "se;\n  var jsonp = false !== opts.jsonp;\n\n  if (global.location) {\n    var isSSL " +
+                    "= \'https:\' == location.protocol;\n    var port = location.port;\n\n    // some user" +
+                    " agents have empty `location.port`\n    if (!port) {\n      port = isSSL ? 443 : 8" +
+                    "0;\n    }\n\n    xd = opts.hostname != location.hostname || port != opts.port;\n    " +
+                    "xs = opts.secure != isSSL;\n  }\n\n  opts.xdomain = xd;\n  opts.xscheme = xs;\n  xhr " +
+                    "= new XMLHttpRequest(opts);\n\n  if (\'open\' in xhr && !opts.forceJSONP) {\n    retu" +
+                    "rn new XHR(opts);\n  } else {\n    if (!jsonp) throw new Error(\'JSONP disabled\');\n" +
+                    "    return new JSONP(opts);\n  }\n}\n\n}).call(this,typeof self !== \"undefined\" ? se" +
+                    "lf : typeof window !== \"undefined\" ? window : {})\n},{\"./polling-jsonp\":6,\"./poll" +
+                    "ing-xhr\":7,\"./websocket\":9,\"xmlhttprequest\":10}],6:[function(_dereq_,module,expo" +
+                    "rts){\n(function (global){\n\n/**\n * Module requirements.\n */\n\nvar Polling = _dereq" +
+                    "_(\'./polling\');\nvar inherit = _dereq_(\'component-inherit\');\n\n/**\n * Module expor" +
+                    "ts.\n */\n\nmodule.exports = JSONPPolling;\n\n/**\n * Cached regular expressions.\n */\n" +
+                    "\nvar rNewline = /\\n/g;\nvar rEscapedNewline = /\\\\n/g;\n\n/**\n * Global JSONP callba" +
+                    "cks.\n */\n\nvar callbacks;\n\n/**\n * Callbacks count.\n */\n\nvar index = 0;\n\n/**\n * No" +
+                    "op.\n */\n\nfunction empty () { }\n\n/**\n * JSONP Polling constructor.\n *\n * @param {" +
+                    "Object} opts.\n * @api public\n */\n\nfunction JSONPPolling (opts) {\n  Polling.call(" +
+                    "this, opts);\n\n  this.query = this.query || {};\n\n  // define global callbacks arr" +
+                    "ay if not present\n  // we do this here (lazily) to avoid unneeded global polluti" +
+                    "on\n  if (!callbacks) {\n    // we need to consider multiple engines in the same p" +
+                    "age\n    if (!global.___eio) global.___eio = [];\n    callbacks = global.___eio;\n " +
+                    " }\n\n  // callback identifier\n  this.index = callbacks.length;\n\n  // add callback" +
+                    " to jsonp global\n  var self = this;\n  callbacks.push(function (msg) {\n    self.o" +
+                    "nData(msg);\n  });\n\n  // append to query string\n  this.query.j = this.index;\n\n  /" +
+                    "/ prevent spurious errors from being emitted when the window is unloaded\n  if (g" +
+                    "lobal.document && global.addEventListener) {\n    global.addEventListener(\'before" +
+                    "unload\', function () {\n      if (self.script) self.script.onerror = empty;\n    }" +
+                    ", false);\n  }\n}\n\n/**\n * Inherits from Polling.\n */\n\ninherit(JSONPPolling, Pollin" +
+                    "g);\n\n/*\n * JSONP only supports binary as base64 encoded strings\n */\n\nJSONPPollin" +
+                    "g.prototype.supportsBinary = false;\n\n/**\n * Closes the socket.\n *\n * @api privat" +
+                    "e\n */\n\nJSONPPolling.prototype.doClose = function () {\n  if (this.script) {\n    t" +
+                    "his.script.parentNode.removeChild(this.script);\n    this.script = null;\n  }\n\n  i" +
+                    "f (this.form) {\n    this.form.parentNode.removeChild(this.form);\n    this.form =" +
+                    " null;\n    this.iframe = null;\n  }\n\n  Polling.prototype.doClose.call(this);\n};\n\n" +
+                    "/**\n * Starts a poll cycle.\n *\n * @api private\n */\n\nJSONPPolling.prototype.doPol" +
+                    "l = function () {\n  var self = this;\n  var script = document.createElement(\'scri" +
+                    "pt\');\n\n  if (this.script) {\n    this.script.parentNode.removeChild(this.script);" +
+                    "\n    this.script = null;\n  }\n\n  script.async = true;\n  script.src = this.uri();\n" +
+                    "  script.onerror = function(e){\n    self.onError(\'jsonp poll error\',e);\n  };\n\n  " +
+                    "var insertAt = document.getElementsByTagName(\'script\')[0];\n  insertAt.parentNode" +
+                    ".insertBefore(script, insertAt);\n  this.script = script;\n\n  var isUAgecko = \'und" +
+                    "efined\' != typeof navigator && /gecko/i.test(navigator.userAgent);\n  \n  if (isUA" +
+                    "gecko) {\n    setTimeout(function () {\n      var iframe = document.createElement(" +
+                    "\'iframe\');\n      document.body.appendChild(iframe);\n      document.body.removeCh" +
+                    "ild(iframe);\n    }, 100);\n  }\n};\n\n/**\n * Writes with a hidden iframe.\n *\n * @par" +
+                    "am {String} data to send\n * @param {Function} called upon flush.\n * @api private" +
+                    "\n */\n\nJSONPPolling.prototype.doWrite = function (data, fn) {\n  var self = this;\n" +
+                    "\n  if (!this.form) {\n    var form = document.createElement(\'form\');\n    var area" +
+                    " = document.createElement(\'textarea\');\n    var id = this.iframeId = \'eio_iframe_" +
+                    "\' + this.index;\n    var iframe;\n\n    form.className = \'socketio\';\n    form.style" +
+                    ".position = \'absolute\';\n    form.style.top = \'-1000px\';\n    form.style.left = \'-" +
+                    "1000px\';\n    form.target = id;\n    form.method = \'POST\';\n    form.setAttribute(\'" +
+                    "accept-charset\', \'utf-8\');\n    area.name = \'d\';\n    form.appendChild(area);\n    " +
+                    "document.body.appendChild(form);\n\n    this.form = form;\n    this.area = area;\n  " +
+                    "}\n\n  this.form.action = this.uri();\n\n  function complete () {\n    initIframe();\n" +
+                    "    fn();\n  }\n\n  function initIframe () {\n    if (self.iframe) {\n      try {\n   " +
+                    "     self.form.removeChild(self.iframe);\n      } catch (e) {\n        self.onErro" +
+                    "r(\'jsonp polling iframe removal error\', e);\n      }\n    }\n\n    try {\n      // ie" +
+                    "6 dynamic iframes with target=\"\" support (thanks Chris Lambacher)\n      var html" +
+                    " = \'<iframe src=\"javascript:0\" name=\"\'+ self.iframeId +\'\">\';\n      iframe = docu" +
+                    "ment.createElement(html);\n    } catch (e) {\n      iframe = document.createElemen" +
+                    "t(\'iframe\');\n      iframe.name = self.iframeId;\n      iframe.src = \'javascript:0" +
+                    "\';\n    }\n\n    iframe.id = self.iframeId;\n\n    self.form.appendChild(iframe);\n   " +
+                    " self.iframe = iframe;\n  }\n\n  initIframe();\n\n  // escape \\n to prevent it from b" +
+                    "eing converted into \\r\\n by some UAs\n  // double escaping is required for escape" +
+                    "d new lines because unescaping of new lines can be done safely on server-side\n  " +
+                    "data = data.replace(rEscapedNewline, \'\\\\\\n\');\n  this.area.value = data.replace(r" +
+                    "Newline, \'\\\\n\');\n\n  try {\n    this.form.submit();\n  } catch(e) {}\n\n  if (this.if" +
+                    "rame.attachEvent) {\n    this.iframe.onreadystatechange = function(){\n      if (s" +
+                    "elf.iframe.readyState == \'complete\') {\n        complete();\n      }\n    };\n  } el" +
+                    "se {\n    this.iframe.onload = complete;\n  }\n};\n\n}).call(this,typeof self !== \"un" +
+                    "defined\" ? self : typeof window !== \"undefined\" ? window : {})\n},{\"./polling\":8," +
+                    "\"component-inherit\":13}],7:[function(_dereq_,module,exports){\n(function (global)" +
+                    "{\n/**\n * Module requirements.\n */\n\nvar XMLHttpRequest = _dereq_(\'xmlhttprequest\'" +
+                    ");\nvar Polling = _dereq_(\'./polling\');\nvar Emitter = _dereq_(\'component-emitter\'" +
+                    ");\nvar inherit = _dereq_(\'component-inherit\');\nvar debug = _dereq_(\'debug\')(\'eng" +
+                    "ine.io-client:polling-xhr\');\n\n/**\n * Module exports.\n */\n\nmodule.exports = XHR;\n" +
+                    "module.exports.Request = Request;\n\n/**\n * Empty function\n */\n\nfunction empty(){}" +
+                    "\n\n/**\n * XHR Polling constructor.\n *\n * @param {Object} opts\n * @api public\n */\n" +
+                    "\nfunction XHR(opts){\n  Polling.call(this, opts);\n\n  if (global.location) {\n    v" +
+                    "ar isSSL = \'https:\' == location.protocol;\n    var port = location.port;\n\n    // " +
+                    "some user agents have empty `location.port`\n    if (!port) {\n      port = isSSL " +
+                    "? 443 : 80;\n    }\n\n    this.xd = opts.hostname != global.location.hostname ||\n  " +
+                    "    port != opts.port;\n    this.xs = opts.secure != isSSL;\n  }\n}\n\n/**\n * Inherit" +
+                    "s from Polling.\n */\n\ninherit(XHR, Polling);\n\n/**\n * XHR supports binary\n */\n\nXHR" +
+                    ".prototype.supportsBinary = true;\n\n/**\n * Creates a request.\n *\n * @param {Strin" +
+                    "g} method\n * @api private\n */\n\nXHR.prototype.request = function(opts){\n  opts = " +
+                    "opts || {};\n  opts.uri = this.uri();\n  opts.xd = this.xd;\n  opts.xs = this.xs;\n " +
+                    " opts.agent = this.agent || false;\n  opts.supportsBinary = this.supportsBinary;\n" +
+                    "  opts.enablesXDR = this.enablesXDR;\n  return new Request(opts);\n};\n\n/**\n * Send" +
+                    "s data.\n *\n * @param {String} data to send.\n * @param {Function} called upon flu" +
+                    "sh.\n * @api private\n */\n\nXHR.prototype.doWrite = function(data, fn){\n  var isBin" +
+                    "ary = typeof data !== \'string\' && data !== undefined;\n  var req = this.request({" +
+                    " method: \'POST\', data: data, isBinary: isBinary });\n  var self = this;\n  req.on(" +
+                    "\'success\', fn);\n  req.on(\'error\', function(err){\n    self.onError(\'xhr post erro" +
+                    "r\', err);\n  });\n  this.sendXhr = req;\n};\n\n/**\n * Starts a poll cycle.\n *\n * @api" +
+                    " private\n */\n\nXHR.prototype.doPoll = function(){\n  debug(\'xhr poll\');\n  var req " +
+                    "= this.request();\n  var self = this;\n  req.on(\'data\', function(data){\n    self.o" +
+                    "nData(data);\n  });\n  req.on(\'error\', function(err){\n    self.onError(\'xhr poll e" +
+                    "rror\', err);\n  });\n  this.pollXhr = req;\n};\n\n/**\n * Request constructor\n *\n * @p" +
+                    "aram {Object} options\n * @api public\n */\n\nfunction Request(opts){\n  this.method " +
+                    "= opts.method || \'GET\';\n  this.uri = opts.uri;\n  this.xd = !!opts.xd;\n  this.xs " +
+                    "= !!opts.xs;\n  this.async = false !== opts.async;\n  this.data = undefined != opt" +
+                    "s.data ? opts.data : null;\n  this.agent = opts.agent;\n  this.isBinary = opts.isB" +
+                    "inary;\n  this.supportsBinary = opts.supportsBinary;\n  this.enablesXDR = opts.ena" +
+                    "blesXDR;\n  this.create();\n}\n\n/**\n * Mix in `Emitter`.\n */\n\nEmitter(Request.proto" +
+                    "type);\n\n/**\n * Creates the XHR object and sends the request.\n *\n * @api private\n" +
+                    " */\n\nRequest.prototype.create = function(){\n  var xhr = this.xhr = new XMLHttpRe" +
+                    "quest({ agent: this.agent, xdomain: this.xd, xscheme: this.xs, enablesXDR: this." +
+                    "enablesXDR });\n  var self = this;\n\n  try {\n    debug(\'xhr open %s: %s\', this.met" +
+                    "hod, this.uri);\n    xhr.open(this.method, this.uri, this.async);\n    if (this.su" +
+                    "pportsBinary) {\n      // This has to be done after open because Firefox is stupi" +
+                    "d\n      // http://stackoverflow.com/questions/13216903/get-binary-data-with-xmlh" +
+                    "ttprequest-in-a-firefox-extension\n      xhr.responseType = \'arraybuffer\';\n    }\n" +
+                    "\n    if (\'POST\' == this.method) {\n      try {\n        if (this.isBinary) {\n     " +
+                    "     xhr.setRequestHeader(\'Content-type\', \'application/octet-stream\');\n        }" +
+                    " else {\n          xhr.setRequestHeader(\'Content-type\', \'text/plain;charset=UTF-8" +
+                    "\');\n        }\n      } catch (e) {}\n    }\n\n    // ie6 check\n    if (\'withCredenti" +
+                    "als\' in xhr) {\n      xhr.withCredentials = true;\n    }\n\n    if (this.hasXDR()) {" +
+                    "\n      xhr.onload = function(){\n        self.onLoad();\n      };\n      xhr.onerro" +
+                    "r = function(){\n        self.onError(xhr.responseText);\n      };\n    } else {\n  " +
+                    "    xhr.onreadystatechange = function(){\n        if (4 != xhr.readyState) return" +
+                    ";\n        if (200 == xhr.status || 1223 == xhr.status) {\n          self.onLoad()" +
+                    ";\n        } else {\n          // make sure the `error` event handler that\'s user-" +
+                    "set\n          // does not throw in the same tick and gets caught here\n          " +
+                    "setTimeout(function(){\n            self.onError(xhr.status);\n          }, 0);\n  " +
+                    "      }\n      };\n    }\n\n    debug(\'xhr data %s\', this.data);\n    xhr.send(this.d" +
+                    "ata);\n  } catch (e) {\n    // Need to defer since .create() is called directly fh" +
+                    "rom the constructor\n    // and thus the \'error\' event can only be only bound *af" +
+                    "ter* this exception\n    // occurs.  Therefore, also, we cannot throw here at all" +
+                    ".\n    setTimeout(function() {\n      self.onError(e);\n    }, 0);\n    return;\n  }\n" +
+                    "\n  if (global.document) {\n    this.index = Request.requestsCount++;\n    Request." +
+                    "requests[this.index] = this;\n  }\n};\n\n/**\n * Called upon successful response.\n *\n" +
+                    " * @api private\n */\n\nRequest.prototype.onSuccess = function(){\n  this.emit(\'succ" +
+                    "ess\');\n  this.cleanup();\n};\n\n/**\n * Called if we have data.\n *\n * @api private\n " +
+                    "*/\n\nRequest.prototype.onData = function(data){\n  this.emit(\'data\', data);\n  this" +
+                    ".onSuccess();\n};\n\n/**\n * Called upon error.\n *\n * @api private\n */\n\nRequest.prot" +
+                    "otype.onError = function(err){\n  this.emit(\'error\', err);\n  this.cleanup();\n};\n\n" +
+                    "/**\n * Cleans up house.\n *\n * @api private\n */\n\nRequest.prototype.cleanup = func" +
+                    "tion(){\n  if (\'undefined\' == typeof this.xhr || null === this.xhr) {\n    return;" +
+                    "\n  }\n  // xmlhttprequest\n  if (this.hasXDR()) {\n    this.xhr.onload = this.xhr.o" +
+                    "nerror = empty;\n  } else {\n    this.xhr.onreadystatechange = empty;\n  }\n\n  try {" +
+                    "\n    this.xhr.abort();\n  } catch(e) {}\n\n  if (global.document) {\n    delete Requ" +
+                    "est.requests[this.index];\n  }\n\n  this.xhr = null;\n};\n\n/**\n * Called upon load.\n " +
+                    "*\n * @api private\n */\n\nRequest.prototype.onLoad = function(){\n  var data;\n  try " +
+                    "{\n    var contentType;\n    try {\n      contentType = this.xhr.getResponseHeader(" +
+                    "\'Content-Type\').split(\';\')[0];\n    } catch (e) {}\n    if (contentType === \'appli" +
+                    "cation/octet-stream\') {\n      data = this.xhr.response;\n    } else {\n      if (!" +
+                    "this.supportsBinary) {\n        data = this.xhr.responseText;\n      } else {\n    " +
+                    "    data = \'ok\';\n      }\n    }\n  } catch (e) {\n    this.onError(e);\n  }\n  if (nu" +
+                    "ll != data) {\n    this.onData(data);\n  }\n};\n\n/**\n * Check if it has XDomainReque" +
+                    "st.\n *\n * @api private\n */\n\nRequest.prototype.hasXDR = function(){\n  return \'und" +
+                    "efined\' !== typeof global.XDomainRequest && !this.xs && this.enablesXDR;\n};\n\n/**" +
+                    "\n * Aborts the request.\n *\n * @api public\n */\n\nRequest.prototype.abort = functio" +
+                    "n(){\n  this.cleanup();\n};\n\n/**\n * Aborts pending requests when unloading the win" +
+                    "dow. This is needed to prevent\n * memory leaks (e.g. when using IE) and to ensur" +
+                    "e that no spurious error is\n * emitted.\n */\n\nif (global.document) {\n  Request.re" +
+                    "questsCount = 0;\n  Request.requests = {};\n  if (global.attachEvent) {\n    global" +
+                    ".attachEvent(\'onunload\', unloadHandler);\n  } else if (global.addEventListener) {" +
+                    "\n    global.addEventListener(\'beforeunload\', unloadHandler, false);\n  }\n}\n\nfunct" +
+                    "ion unloadHandler() {\n  for (var i in Request.requests) {\n    if (Request.reques" +
+                    "ts.hasOwnProperty(i)) {\n      Request.requests[i].abort();\n    }\n  }\n}\n\n}).call(" +
+                    "this,typeof self !== \"undefined\" ? self : typeof window !== \"undefined\" ? window" +
+                    " : {})\n},{\"./polling\":8,\"component-emitter\":12,\"component-inherit\":13,\"debug\":14" +
+                    ",\"xmlhttprequest\":10}],8:[function(_dereq_,module,exports){\n/**\n * Module depend" +
+                    "encies.\n */\n\nvar Transport = _dereq_(\'../transport\');\nvar parseqs = _dereq_(\'par" +
+                    "seqs\');\nvar parser = _dereq_(\'engine.io-parser\');\nvar inherit = _dereq_(\'compone" +
+                    "nt-inherit\');\nvar debug = _dereq_(\'debug\')(\'engine.io-client:polling\');\n\n/**\n * " +
+                    "Module exports.\n */\n\nmodule.exports = Polling;\n\n/**\n * Is XHR2 supported?\n */\n\nv" +
+                    "ar hasXHR2 = (function() {\n  var XMLHttpRequest = _dereq_(\'xmlhttprequest\');\n  v" +
+                    "ar xhr = new XMLHttpRequest({ xdomain: false });\n  return null != xhr.responseTy" +
+                    "pe;\n})();\n\n/**\n * Polling interface.\n *\n * @param {Object} opts\n * @api private\n" +
+                    " */\n\nfunction Polling(opts){\n  var forceBase64 = (opts && opts.forceBase64);\n  i" +
+                    "f (!hasXHR2 || forceBase64) {\n    this.supportsBinary = false;\n  }\n  Transport.c" +
+                    "all(this, opts);\n}\n\n/**\n * Inherits from Transport.\n */\n\ninherit(Polling, Transp" +
+                    "ort);\n\n/**\n * Transport name.\n */\n\nPolling.prototype.name = \'polling\';\n\n/**\n * O" +
+                    "pens the socket (triggers polling). We write a PING message to determine\n * when" +
+                    " the transport is open.\n *\n * @api private\n */\n\nPolling.prototype.doOpen = funct" +
+                    "ion(){\n  this.poll();\n};\n\n/**\n * Pauses polling.\n *\n * @param {Function} callbac" +
+                    "k upon buffers are flushed and transport is paused\n * @api private\n */\n\nPolling." +
+                    "prototype.pause = function(onPause){\n  var pending = 0;\n  var self = this;\n\n  th" +
+                    "is.readyState = \'pausing\';\n\n  function pause(){\n    debug(\'paused\');\n    self.re" +
+                    "adyState = \'paused\';\n    onPause();\n  }\n\n  if (this.polling || !this.writable) {" +
+                    "\n    var total = 0;\n\n    if (this.polling) {\n      debug(\'we are currently polli" +
+                    "ng - waiting to pause\');\n      total++;\n      this.once(\'pollComplete\', function" +
+                    "(){\n        debug(\'pre-pause polling complete\');\n        --total || pause();\n   " +
+                    "   });\n    }\n\n    if (!this.writable) {\n      debug(\'we are currently writing - " +
+                    "waiting to pause\');\n      total++;\n      this.once(\'drain\', function(){\n        " +
+                    "debug(\'pre-pause writing complete\');\n        --total || pause();\n      });\n    }" +
+                    "\n  } else {\n    pause();\n  }\n};\n\n/**\n * Starts polling cycle.\n *\n * @api public\n" +
+                    " */\n\nPolling.prototype.poll = function(){\n  debug(\'polling\');\n  this.polling = t" +
+                    "rue;\n  this.doPoll();\n  this.emit(\'poll\');\n};\n\n/**\n * Overloads onData to detect" +
+                    " payloads.\n *\n * @api private\n */\n\nPolling.prototype.onData = function(data){\n  " +
+                    "var self = this;\n  debug(\'polling got data %s\', data);\n  var callback = function" +
+                    "(packet, index, total) {\n    // if its the first message we consider the transpo" +
+                    "rt open\n    if (\'opening\' == self.readyState) {\n      self.onOpen();\n    }\n\n    " +
+                    "// if its a close packet, we close the ongoing requests\n    if (\'close\' == packe" +
+                    "t.type) {\n      self.onClose();\n      return false;\n    }\n\n    // otherwise bypa" +
+                    "ss onData and handle the message\n    self.onPacket(packet);\n  };\n\n  // decode pa" +
+                    "yload\n  parser.decodePayload(data, this.socket.binaryType, callback);\n\n  // if a" +
+                    "n event did not trigger closing\n  if (\'closed\' != this.readyState) {\n    // if w" +
+                    "e got data we\'re not polling\n    this.polling = false;\n    this.emit(\'pollComple" +
+                    "te\');\n\n    if (\'open\' == this.readyState) {\n      this.poll();\n    } else {\n    " +
+                    "  debug(\'ignoring poll - transport state \"%s\"\', this.readyState);\n    }\n  }\n};\n\n" +
+                    "/**\n * For polling, send a close packet.\n *\n * @api private\n */\n\nPolling.prototy" +
+                    "pe.doClose = function(){\n  var self = this;\n\n  function close(){\n    debug(\'writ" +
+                    "ing close packet\');\n    self.write([{ type: \'close\' }]);\n  }\n\n  if (\'open\' == th" +
+                    "is.readyState) {\n    debug(\'transport open - closing\');\n    close();\n  } else {\n" +
+                    "    // in case we\'re trying to close while\n    // handshaking is in progress (GH" +
+                    "-164)\n    debug(\'transport not open - deferring close\');\n    this.once(\'open\', c" +
+                    "lose);\n  }\n};\n\n/**\n * Writes a packets payload.\n *\n * @param {Array} data packet" +
+                    "s\n * @param {Function} drain callback\n * @api private\n */\n\nPolling.prototype.wri" +
+                    "te = function(packets){\n  var self = this;\n  this.writable = false;\n  var callba" +
+                    "ckfn = function() {\n    self.writable = true;\n    self.emit(\'drain\');\n  };\n\n  va" +
+                    "r self = this;\n  parser.encodePayload(packets, this.supportsBinary, function(dat" +
+                    "a) {\n    self.doWrite(data, callbackfn);\n  });\n};\n\n/**\n * Generates uri for conn" +
+                    "ection.\n *\n * @api private\n */\n\nPolling.prototype.uri = function(){\n  var query " +
+                    "= this.query || {};\n  var schema = this.secure ? \'https\' : \'http\';\n  var port = " +
+                    "\'\';\n\n  // cache busting is forced\n  if (false !== this.timestampRequests) {\n    " +
+                    "query[this.timestampParam] = +new Date + \'-\' + Transport.timestamps++;\n  }\n\n  if" +
+                    " (!this.supportsBinary && !query.sid) {\n    query.b64 = 1;\n  }\n\n  query = parseq" +
+                    "s.encode(query);\n\n  // avoid port if default for schema\n  if (this.port && ((\'ht" +
+                    "tps\' == schema && this.port != 443) ||\n     (\'http\' == schema && this.port != 80" +
+                    "))) {\n    port = \':\' + this.port;\n  }\n\n  // prepend ? to query\n  if (query.lengt" +
+                    "h) {\n    query = \'?\' + query;\n  }\n\n  return schema + \'://\' + this.hostname + por" +
+                    "t + this.path + query;\n};\n\n},{\"../transport\":4,\"component-inherit\":13,\"debug\":14" +
+                    ",\"engine.io-parser\":17,\"parseqs\":27,\"xmlhttprequest\":10}],9:[function(_dereq_,mo" +
+                    "dule,exports){\n/**\n * Module dependencies.\n */\n\nvar Transport = _dereq_(\'../tran" +
+                    "sport\');\nvar parser = _dereq_(\'engine.io-parser\');\nvar parseqs = _dereq_(\'parseq" +
+                    "s\');\nvar inherit = _dereq_(\'component-inherit\');\nvar debug = _dereq_(\'debug\')(\'e" +
+                    "ngine.io-client:websocket\');\n\n/**\n * `ws` exposes a WebSocket-compatible interfa" +
+                    "ce in\n * Node, or the `WebSocket` or `MozWebSocket` globals\n * in the browser.\n " +
+                    "*/\n\nvar WebSocket = _dereq_(\'ws\');\n\n/**\n * Module exports.\n */\n\nmodule.exports =" +
+                    " WS;\n\n/**\n * WebSocket transport constructor.\n *\n * @api {Object} connection opt" +
+                    "ions\n * @api public\n */\n\nfunction WS(opts){\n  var forceBase64 = (opts && opts.fo" +
+                    "rceBase64);\n  if (forceBase64) {\n    this.supportsBinary = false;\n  }\n  Transpor" +
+                    "t.call(this, opts);\n}\n\n/**\n * Inherits from Transport.\n */\n\ninherit(WS, Transpor" +
+                    "t);\n\n/**\n * Transport name.\n *\n * @api public\n */\n\nWS.prototype.name = \'websocke" +
+                    "t\';\n\n/*\n * WebSockets support binary\n */\n\nWS.prototype.supportsBinary = true;\n\n/" +
+                    "**\n * Opens socket.\n *\n * @api private\n */\n\nWS.prototype.doOpen = function(){\n  " +
+                    "if (!this.check()) {\n    // let probe timeout\n    return;\n  }\n\n  var self = this" +
+                    ";\n  var uri = this.uri();\n  var protocols = void(0);\n  var opts = { agent: this." +
+                    "agent };\n\n  this.ws = new WebSocket(uri, protocols, opts);\n\n  if (this.ws.binary" +
+                    "Type === undefined) {\n    this.supportsBinary = false;\n  }\n\n  this.ws.binaryType" +
+                    " = \'arraybuffer\';\n  this.addEventListeners();\n};\n\n/**\n * Adds event listeners to" +
+                    " the socket\n *\n * @api private\n */\n\nWS.prototype.addEventListeners = function(){" +
+                    "\n  var self = this;\n\n  this.ws.onopen = function(){\n    self.onOpen();\n  };\n  th" +
+                    "is.ws.onclose = function(){\n    self.onClose();\n  };\n  this.ws.onmessage = funct" +
+                    "ion(ev){\n    self.onData(ev.data);\n  };\n  this.ws.onerror = function(e){\n    sel" +
+                    "f.onError(\'websocket error\', e);\n  };\n};\n\n/**\n * Override `onData` to use a time" +
+                    "r on iOS.\n * See: https://gist.github.com/mloughran/2052006\n *\n * @api private\n " +
+                    "*/\n\nif (\'undefined\' != typeof navigator\n  && /iPad|iPhone|iPod/i.test(navigator." +
+                    "userAgent)) {\n  WS.prototype.onData = function(data){\n    var self = this;\n    s" +
+                    "etTimeout(function(){\n      Transport.prototype.onData.call(self, data);\n    }, " +
+                    "0);\n  };\n}\n\n/**\n * Writes data to socket.\n *\n * @param {Array} array of packets." +
+                    "\n * @api private\n */\n\nWS.prototype.write = function(packets){\n  var self = this;" +
+                    "\n  this.writable = false;\n  // encodePacket efficient as it uses WS framing\n  //" +
+                    " no need for encodePayload\n  for (var i = 0, l = packets.length; i < l; i++) {\n " +
+                    "   parser.encodePacket(packets[i], this.supportsBinary, function(data) {\n      /" +
+                    "/Sometimes the websocket has already been closed but the browser didn\'t\n      //" +
+                    "have a chance of informing us about it yet, in that case send will\n      //throw" +
+                    " an error\n      try {\n        self.ws.send(data);\n      } catch (e){\n        deb" +
+                    "ug(\'websocket closed before onclose event\');\n      }\n    });\n  }\n\n  function ond" +
+                    "rain() {\n    self.writable = true;\n    self.emit(\'drain\');\n  }\n  // fake drain\n " +
+                    " // defer to next tick to allow Socket to clear writeBuffer\n  setTimeout(ondrain" +
+                    ", 0);\n};\n\n/**\n * Called upon close\n *\n * @api private\n */\n\nWS.prototype.onClose " +
+                    "= function(){\n  Transport.prototype.onClose.call(this);\n};\n\n/**\n * Closes socket" +
+                    ".\n *\n * @api private\n */\n\nWS.prototype.doClose = function(){\n  if (typeof this.w" +
+                    "s !== \'undefined\') {\n    this.ws.close();\n  }\n};\n\n/**\n * Generates uri for conne" +
+                    "ction.\n *\n * @api private\n */\n\nWS.prototype.uri = function(){\n  var query = this" +
+                    ".query || {};\n  var schema = this.secure ? \'wss\' : \'ws\';\n  var port = \'\';\n\n  // " +
+                    "avoid port if default for schema\n  if (this.port && ((\'wss\' == schema && this.po" +
+                    "rt != 443)\n    || (\'ws\' == schema && this.port != 80))) {\n    port = \':\' + this." +
+                    "port;\n  }\n\n  // append timestamp to URI\n  if (this.timestampRequests) {\n    quer" +
+                    "y[this.timestampParam] = +new Date;\n  }\n\n  // communicate binary support capabil" +
+                    "ities\n  if (!this.supportsBinary) {\n    query.b64 = 1;\n  }\n\n  query = parseqs.en" +
+                    "code(query);\n\n  // prepend ? to query\n  if (query.length) {\n    query = \'?\' + qu" +
+                    "ery;\n  }\n\n  return schema + \'://\' + this.hostname + port + this.path + query;\n};" +
+                    "\n\n/**\n * Feature detection for WebSocket.\n *\n * @return {Boolean} whether this t" +
+                    "ransport is available.\n * @api public\n */\n\nWS.prototype.check = function(){\n  re" +
+                    "turn !!WebSocket && !(\'__initialize\' in WebSocket && this.name === WS.prototype." +
+                    "name);\n};\n\n},{\"../transport\":4,\"component-inherit\":13,\"debug\":14,\"engine.io-pars" +
+                    "er\":17,\"parseqs\":27,\"ws\":29}],10:[function(_dereq_,module,exports){\n// browser s" +
+                    "him for xmlhttprequest module\nvar hasCORS = _dereq_(\'has-cors\');\n\nmodule.exports" +
+                    " = function(opts) {\n  var xdomain = opts.xdomain;\n\n  // scheme must be same when" +
+                    " usign XDomainRequest\n  // http://blogs.msdn.com/b/ieinternals/archive/2010/05/1" +
+                    "3/xdomainrequest-restrictions-limitations-and-workarounds.aspx\n  var xscheme = o" +
+                    "pts.xscheme;\n\n  // XDomainRequest has a flow of not sending cookie, therefore it" +
+                    " should be disabled as a default.\n  // https://github.com/Automattic/engine.io-c" +
+                    "lient/pull/217\n  var enablesXDR = opts.enablesXDR;\n\n  // XMLHttpRequest can be d" +
+                    "isabled on IE\n  try {\n    if (\'undefined\' != typeof XMLHttpRequest && (!xdomain " +
+                    "|| hasCORS)) {\n      return new XMLHttpRequest();\n    }\n  } catch (e) { }\n\n  // " +
+                    "Use XDomainRequest for IE8 if enablesXDR is true\n  // because loading bar keeps " +
+                    "flashing when using jsonp-polling\n  // https://github.com/yujiosaka/socke.io-ie8" +
+                    "-loading-example\n  try {\n    if (\'undefined\' != typeof XDomainRequest && !xschem" +
+                    "e && enablesXDR) {\n      return new XDomainRequest();\n    }\n  } catch (e) { }\n\n " +
+                    " if (!xdomain) {\n    try {\n      return new ActiveXObject(\'Microsoft.XMLHTTP\');\n" +
+                    "    } catch(e) { }\n  }\n}\n\n},{\"has-cors\":23}],11:[function(_dereq_,module,exports" +
+                    "){\n(function (global){\n/**\n * Create a blob builder even when vendor prefixes ex" +
+                    "ist\n */\n\nvar BlobBuilder = global.BlobBuilder\n  || global.WebKitBlobBuilder\n  ||" +
+                    " global.MSBlobBuilder\n  || global.MozBlobBuilder;\n\n/**\n * Check if Blob construc" +
+                    "tor is supported\n */\n\nvar blobSupported = (function() {\n  try {\n    var b = new " +
+                    "Blob([\'hi\']);\n    return b.size == 2;\n  } catch(e) {\n    return false;\n  }\n})();" +
+                    "\n\n/**\n * Check if BlobBuilder is supported\n */\n\nvar blobBuilderSupported = BlobB" +
+                    "uilder\n  && BlobBuilder.prototype.append\n  && BlobBuilder.prototype.getBlob;\n\nfu" +
+                    "nction BlobBuilderConstructor(ary, options) {\n  options = options || {};\n\n  var " +
+                    "bb = new BlobBuilder();\n  for (var i = 0; i < ary.length; i++) {\n    bb.append(a" +
+                    "ry[i]);\n  }\n  return (options.type) ? bb.getBlob(options.type) : bb.getBlob();\n}" +
+                    ";\n\nmodule.exports = (function() {\n  if (blobSupported) {\n    return global.Blob;" +
+                    "\n  } else if (blobBuilderSupported) {\n    return BlobBuilderConstructor;\n  } els" +
+                    "e {\n    return undefined;\n  }\n})();\n\n}).call(this,typeof self !== \"undefined\" ? " +
+                    "self : typeof window !== \"undefined\" ? window : {})\n},{}],12:[function(_dereq_,m" +
+                    "odule,exports){\n\n/**\n * Expose `Emitter`.\n */\n\nmodule.exports = Emitter;\n\n/**\n *" +
+                    " Initialize a new `Emitter`.\n *\n * @api public\n */\n\nfunction Emitter(obj) {\n  if" +
+                    " (obj) return mixin(obj);\n};\n\n/**\n * Mixin the emitter properties.\n *\n * @param " +
+                    "{Object} obj\n * @return {Object}\n * @api private\n */\n\nfunction mixin(obj) {\n  fo" +
+                    "r (var key in Emitter.prototype) {\n    obj[key] = Emitter.prototype[key];\n  }\n  " +
+                    "return obj;\n}\n\n/**\n * Listen on the given `event` with `fn`.\n *\n * @param {Strin" +
+                    "g} event\n * @param {Function} fn\n * @return {Emitter}\n * @api public\n */\n\nEmitte" +
+                    "r.prototype.on =\nEmitter.prototype.addEventListener = function(event, fn){\n  thi" +
+                    "s._callbacks = this._callbacks || {};\n  (this._callbacks[event] = this._callback" +
+                    "s[event] || [])\n    .push(fn);\n  return this;\n};\n\n/**\n * Adds an `event` listene" +
+                    "r that will be invoked a single\n * time then automatically removed.\n *\n * @param" +
+                    " {String} event\n * @param {Function} fn\n * @return {Emitter}\n * @api public\n */\n" +
+                    "\nEmitter.prototype.once = function(event, fn){\n  var self = this;\n  this._callba" +
+                    "cks = this._callbacks || {};\n\n  function on() {\n    self.off(event, on);\n    fn." +
+                    "apply(this, arguments);\n  }\n\n  on.fn = fn;\n  this.on(event, on);\n  return this;\n" +
+                    "};\n\n/**\n * Remove the given callback for `event` or all\n * registered callbacks." +
+                    "\n *\n * @param {String} event\n * @param {Function} fn\n * @return {Emitter}\n * @ap" +
+                    "i public\n */\n\nEmitter.prototype.off =\nEmitter.prototype.removeListener =\nEmitter" +
+                    ".prototype.removeAllListeners =\nEmitter.prototype.removeEventListener = function" +
+                    "(event, fn){\n  this._callbacks = this._callbacks || {};\n\n  // all\n  if (0 == arg" +
+                    "uments.length) {\n    this._callbacks = {};\n    return this;\n  }\n\n  // specific e" +
+                    "vent\n  var callbacks = this._callbacks[event];\n  if (!callbacks) return this;\n\n " +
+                    " // remove all handlers\n  if (1 == arguments.length) {\n    delete this._callback" +
+                    "s[event];\n    return this;\n  }\n\n  // remove specific handler\n  var cb;\n  for (va" +
+                    "r i = 0; i < callbacks.length; i++) {\n    cb = callbacks[i];\n    if (cb === fn |" +
+                    "| cb.fn === fn) {\n      callbacks.splice(i, 1);\n      break;\n    }\n  }\n  return " +
+                    "this;\n};\n\n/**\n * Emit `event` with the given args.\n *\n * @param {String} event\n " +
+                    "* @param {Mixed} ...\n * @return {Emitter}\n */\n\nEmitter.prototype.emit = function" +
+                    "(event){\n  this._callbacks = this._callbacks || {};\n  var args = [].slice.call(a" +
+                    "rguments, 1)\n    , callbacks = this._callbacks[event];\n\n  if (callbacks) {\n    c" +
+                    "allbacks = callbacks.slice(0);\n    for (var i = 0, len = callbacks.length; i < l" +
+                    "en; ++i) {\n      callbacks[i].apply(this, args);\n    }\n  }\n\n  return this;\n};\n\n/" +
+                    "**\n * Return array of callbacks for `event`.\n *\n * @param {String} event\n * @ret" +
+                    "urn {Array}\n * @api public\n */\n\nEmitter.prototype.listeners = function(event){\n " +
+                    " this._callbacks = this._callbacks || {};\n  return this._callbacks[event] || [];" +
+                    "\n};\n\n/**\n * Check if this emitter has `event` handlers.\n *\n * @param {String} ev" +
+                    "ent\n * @return {Boolean}\n * @api public\n */\n\nEmitter.prototype.hasListeners = fu" +
+                    "nction(event){\n  return !! this.listeners(event).length;\n};\n\n},{}],13:[function(" +
+                    "_dereq_,module,exports){\n\nmodule.exports = function(a, b){\n  var fn = function()" +
+                    "{};\n  fn.prototype = b.prototype;\n  a.prototype = new fn;\n  a.prototype.construc" +
+                    "tor = a;\n};\n},{}],14:[function(_dereq_,module,exports){\n\n/**\n * This is the web " +
+                    "browser implementation of `debug()`.\n *\n * Expose `debug()` as the module.\n */\n\n" +
+                    "exports = module.exports = _dereq_(\'./debug\');\nexports.log = log;\nexports.format" +
+                    "Args = formatArgs;\nexports.save = save;\nexports.load = load;\nexports.useColors =" +
+                    " useColors;\n\n/**\n * Colors.\n */\n\nexports.colors = [\n  \'lightseagreen\',\n  \'forest" +
+                    "green\',\n  \'goldenrod\',\n  \'dodgerblue\',\n  \'darkorchid\',\n  \'crimson\'\n];\n\n/**\n * Cu" +
+                    "rrently only WebKit-based Web Inspectors, Firefox >= v31,\n * and the Firebug ext" +
+                    "ension (any Firefox version) are known\n * to support \"%c\" CSS customizations.\n *" +
+                    "\n * TODO: add a `localStorage` variable to explicitly enable/disable colors\n */\n" +
+                    "\nfunction useColors() {\n  // is webkit? http://stackoverflow.com/a/16459606/3767" +
+                    "73\n  return (\'WebkitAppearance\' in document.documentElement.style) ||\n    // is " +
+                    "firebug? http://stackoverflow.com/a/398120/376773\n    (window.console && (consol" +
+                    "e.firebug || (console.exception && console.table))) ||\n    // is firefox >= v31?" +
+                    "\n    // https://developer.mozilla.org/en-US/docs/Tools/Web_Console#Styling_messa" +
+                    "ges\n    (navigator.userAgent.toLowerCase().match(/firefox\\/(\\d+)/) && parseInt(R" +
+                    "egExp.$1, 10) >= 31);\n}\n\n/**\n * Map %j to `JSON.stringify()`, since no Web Inspe" +
+                    "ctors do that by default.\n */\n\nexports.formatters.j = function(v) {\n  return JSO" +
+                    "N.stringify(v);\n};\n\n\n/**\n * Colorize log arguments if enabled.\n *\n * @api public" +
+                    "\n */\n\nfunction formatArgs() {\n  var args = arguments;\n  var useColors = this.use" +
+                    "Colors;\n\n  args[0] = (useColors ? \'%c\' : \'\')\n    + this.namespace\n    + (useColo" +
+                    "rs ? \' %c\' : \' \')\n    + args[0]\n    + (useColors ? \'%c \' : \' \')\n    + \'+\' + expo" +
+                    "rts.humanize(this.diff);\n\n  if (!useColors) return args;\n\n  var c = \'color: \' + " +
+                    "this.color;\n  args = [args[0], c, \'color: inherit\'].concat(Array.prototype.slice" +
+                    ".call(args, 1));\n\n  // the final \"%c\" is somewhat tricky, because there could be" +
+                    " other\n  // arguments passed either before or after the %c, so we need to\n  // f" +
+                    "igure out the correct index to insert the CSS into\n  var index = 0;\n  var lastC " +
+                    "= 0;\n  args[0].replace(/%[a-z%]/g, function(match) {\n    if (\'%\' === match) retu" +
+                    "rn;\n    index++;\n    if (\'%c\' === match) {\n      // we only are interested in th" +
+                    "e *last* %c\n      // (the user may have provided their own)\n      lastC = index;" +
+                    "\n    }\n  });\n\n  args.splice(lastC, 0, c);\n  return args;\n}\n\n/**\n * Invokes `cons" +
+                    "ole.log()` when available.\n * No-op when `console.log` is not a \"function\".\n *\n " +
+                    "* @api public\n */\n\nfunction log() {\n  // This hackery is required for IE8,\n  // " +
+                    "where the `console.log` function doesn\'t have \'apply\'\n  return \'object\' == typeo" +
+                    "f console\n    && \'function\' == typeof console.log\n    && Function.prototype.appl" +
+                    "y.call(console.log, console, arguments);\n}\n\n/**\n * Save `namespaces`.\n *\n * @par" +
+                    "am {String} namespaces\n * @api private\n */\n\nfunction save(namespaces) {\n  try {\n" +
+                    "    if (null == namespaces) {\n      localStorage.removeItem(\'debug\');\n    } else" +
+                    " {\n      localStorage.debug = namespaces;\n    }\n  } catch(e) {}\n}\n\n/**\n * Load `" +
+                    "namespaces`.\n *\n * @return {String} returns the previously persisted debug modes" +
+                    "\n * @api private\n */\n\nfunction load() {\n  var r;\n  try {\n    r = localStorage.de" +
+                    "bug;\n  } catch(e) {}\n  return r;\n}\n\n/**\n * Enable namespaces listed in `localSto" +
+                    "rage.debug` initially.\n */\n\nexports.enable(load());\n\n},{\"./debug\":15}],15:[funct" +
+                    "ion(_dereq_,module,exports){\n\n/**\n * This is the common logic for both the Node." +
+                    "js and web browser\n * implementations of `debug()`.\n *\n * Expose `debug()` as th" +
+                    "e module.\n */\n\nexports = module.exports = debug;\nexports.coerce = coerce;\nexport" +
+                    "s.disable = disable;\nexports.enable = enable;\nexports.enabled = enabled;\nexports" +
+                    ".humanize = _dereq_(\'ms\');\n\n/**\n * The currently active debug mode names, and na" +
+                    "mes to skip.\n */\n\nexports.names = [];\nexports.skips = [];\n\n/**\n * Map of special" +
+                    " \"%n\" handling functions, for the debug \"format\" argument.\n *\n * Valid key names" +
+                    " are a single, lowercased letter, i.e. \"n\".\n */\n\nexports.formatters = {};\n\n/**\n " +
+                    "* Previously assigned color.\n */\n\nvar prevColor = 0;\n\n/**\n * Previous log timest" +
+                    "amp.\n */\n\nvar prevTime;\n\n/**\n * Select a color.\n *\n * @return {Number}\n * @api p" +
+                    "rivate\n */\n\nfunction selectColor() {\n  return exports.colors[prevColor++ % expor" +
+                    "ts.colors.length];\n}\n\n/**\n * Create a debugger with the given `namespace`.\n *\n *" +
+                    " @param {String} namespace\n * @return {Function}\n * @api public\n */\n\nfunction de" +
+                    "bug(namespace) {\n\n  // define the `disabled` version\n  function disabled() {\n  }" +
+                    "\n  disabled.enabled = false;\n\n  // define the `enabled` version\n  function enabl" +
+                    "ed() {\n\n    var self = enabled;\n\n    // set `diff` timestamp\n    var curr = +new" +
+                    " Date();\n    var ms = curr - (prevTime || curr);\n    self.diff = ms;\n    self.pr" +
+                    "ev = prevTime;\n    self.curr = curr;\n    prevTime = curr;\n\n    // add the `color" +
+                    "` if not set\n    if (null == self.useColors) self.useColors = exports.useColors(" +
+                    ");\n    if (null == self.color && self.useColors) self.color = selectColor();\n\n  " +
+                    "  var args = Array.prototype.slice.call(arguments);\n\n    args[0] = exports.coerc" +
+                    "e(args[0]);\n\n    if (\'string\' !== typeof args[0]) {\n      // anything else let\'s" +
+                    " inspect with %o\n      args = [\'%o\'].concat(args);\n    }\n\n    // apply any `form" +
+                    "atters` transformations\n    var index = 0;\n    args[0] = args[0].replace(/%([a-z" +
+                    "%])/g, function(match, format) {\n      // if we encounter an escaped % then don\'" +
+                    "t increase the array index\n      if (match === \'%\') return match;\n      index++;" +
+                    "\n      var formatter = exports.formatters[format];\n      if (\'function\' === type" +
+                    "of formatter) {\n        var val = args[index];\n        match = formatter.call(se" +
+                    "lf, val);\n\n        // now we need to remove `args[index]` since it\'s inlined in " +
+                    "the `format`\n        args.splice(index, 1);\n        index--;\n      }\n      retur" +
+                    "n match;\n    });\n\n    if (\'function\' === typeof exports.formatArgs) {\n      args" +
+                    " = exports.formatArgs.apply(self, args);\n    }\n    var logFn = enabled.log || ex" +
+                    "ports.log || console.log.bind(console);\n    logFn.apply(self, args);\n  }\n  enabl" +
+                    "ed.enabled = true;\n\n  var fn = exports.enabled(namespace) ? enabled : disabled;\n" +
+                    "\n  fn.namespace = namespace;\n\n  return fn;\n}\n\n/**\n * Enables a debug mode by nam" +
+                    "espaces. This can include modes\n * separated by a colon and wildcards.\n *\n * @pa" +
+                    "ram {String} namespaces\n * @api public\n */\n\nfunction enable(namespaces) {\n  expo" +
+                    "rts.save(namespaces);\n\n  var split = (namespaces || \'\').split(/[\\s,]+/);\n  var l" +
+                    "en = split.length;\n\n  for (var i = 0; i < len; i++) {\n    if (!split[i]) continu" +
+                    "e; // ignore empty strings\n    namespaces = split[i].replace(/\\*/g, \'.*?\');\n    " +
+                    "if (namespaces[0] === \'-\') {\n      exports.skips.push(new RegExp(\'^\' + namespace" +
+                    "s.substr(1) + \'$\'));\n    } else {\n      exports.names.push(new RegExp(\'^\' + name" +
+                    "spaces + \'$\'));\n    }\n  }\n}\n\n/**\n * Disable debug output.\n *\n * @api public\n */\n" +
+                    "\nfunction disable() {\n  exports.enable(\'\');\n}\n\n/**\n * Returns true if the given " +
+                    "mode name is enabled, false otherwise.\n *\n * @param {String} name\n * @return {Bo" +
+                    "olean}\n * @api public\n */\n\nfunction enabled(name) {\n  var i, len;\n  for (i = 0, " +
+                    "len = exports.skips.length; i < len; i++) {\n    if (exports.skips[i].test(name))" +
+                    " {\n      return false;\n    }\n  }\n  for (i = 0, len = exports.names.length; i < l" +
+                    "en; i++) {\n    if (exports.names[i].test(name)) {\n      return true;\n    }\n  }\n " +
+                    " return false;\n}\n\n/**\n * Coerce `val`.\n *\n * @param {Mixed} val\n * @return {Mixe" +
+                    "d}\n * @api private\n */\n\nfunction coerce(val) {\n  if (val instanceof Error) retur" +
+                    "n val.stack || val.message;\n  return val;\n}\n\n},{\"ms\":16}],16:[function(_dereq_,m" +
+                    "odule,exports){\n/**\n * Helpers.\n */\n\nvar s = 1000;\nvar m = s * 60;\nvar h = m * 6" +
+                    "0;\nvar d = h * 24;\nvar y = d * 365.25;\n\n/**\n * Parse or format the given `val`.\n" +
+                    " *\n * Options:\n *\n *  - `long` verbose formatting [false]\n *\n * @param {String|N" +
+                    "umber} val\n * @param {Object} options\n * @return {String|Number}\n * @api public\n" +
+                    " */\n\nmodule.exports = function(val, options){\n  options = options || {};\n  if (\'" +
+                    "string\' == typeof val) return parse(val);\n  return options.long\n    ? _long(val)" +
+                    "\n    : _short(val);\n};\n\n/**\n * Parse the given `str` and return milliseconds.\n *" +
+                    "\n * @param {String} str\n * @return {Number}\n * @api private\n */\n\nfunction parse(" +
+                    "str) {\n  var match = /^((?:\\d+)?\\.?\\d+) *(ms|seconds?|s|minutes?|m|hours?|h|days" +
+                    "?|d|years?|y)?$/i.exec(str);\n  if (!match) return;\n  var n = parseFloat(match[1]" +
+                    ");\n  var type = (match[2] || \'ms\').toLowerCase();\n  switch (type) {\n    case \'ye" +
+                    "ars\':\n    case \'year\':\n    case \'y\':\n      return n * y;\n    case \'days\':\n    ca" +
+                    "se \'day\':\n    case \'d\':\n      return n * d;\n    case \'hours\':\n    case \'hour\':\n " +
+                    "   case \'h\':\n      return n * h;\n    case \'minutes\':\n    case \'minute\':\n    case" +
+                    " \'m\':\n      return n * m;\n    case \'seconds\':\n    case \'second\':\n    case \'s\':\n " +
+                    "     return n * s;\n    case \'ms\':\n      return n;\n  }\n}\n\n/**\n * Short format for" +
+                    " `ms`.\n *\n * @param {Number} ms\n * @return {String}\n * @api private\n */\n\nfunctio" +
+                    "n _short(ms) {\n  if (ms >= d) return Math.round(ms / d) + \'d\';\n  if (ms >= h) re" +
+                    "turn Math.round(ms / h) + \'h\';\n  if (ms >= m) return Math.round(ms / m) + \'m\';\n " +
+                    " if (ms >= s) return Math.round(ms / s) + \'s\';\n  return ms + \'ms\';\n}\n\n/**\n * Lon" +
+                    "g format for `ms`.\n *\n * @param {Number} ms\n * @return {String}\n * @api private\n" +
+                    " */\n\nfunction _long(ms) {\n  return plural(ms, d, \'day\')\n    || plural(ms, h, \'ho" +
+                    "ur\')\n    || plural(ms, m, \'minute\')\n    || plural(ms, s, \'second\')\n    || ms + \'" +
+                    " ms\';\n}\n\n/**\n * Pluralization helper.\n */\n\nfunction plural(ms, n, name) {\n  if (" +
+                    "ms < n) return;\n  if (ms < n * 1.5) return Math.floor(ms / n) + \' \' + name;\n  re" +
+                    "turn Math.ceil(ms / n) + \' \' + name + \'s\';\n}\n\n},{}],17:[function(_dereq_,module," +
+                    "exports){\n(function (global){\n/**\n * Module dependencies.\n */\n\nvar keys = _dereq" +
+                    "_(\'./keys\');\nvar sliceBuffer = _dereq_(\'arraybuffer.slice\');\nvar base64encoder =" +
+                    " _dereq_(\'base64-arraybuffer\');\nvar after = _dereq_(\'after\');\nvar utf8 = _dereq_" +
+                    "(\'utf8\');\n\n/**\n * Check if we are running an android browser. That requires us t" +
+                    "o use\n * ArrayBuffer with polling transports...\n *\n * http://ghinda.net/jpeg-blo" +
+                    "b-ajax-android/\n */\n\nvar isAndroid = navigator.userAgent.match(/Android/i);\n\n/**" +
+                    "\n * Current protocol version.\n */\n\nexports.protocol = 3;\n\n/**\n * Packet types.\n " +
+                    "*/\n\nvar packets = exports.packets = {\n    open:     0    // non-ws\n  , close:   " +
+                    " 1    // non-ws\n  , ping:     2\n  , pong:     3\n  , message:  4\n  , upgrade:  5\n" +
+                    "  , noop:     6\n};\n\nvar packetslist = keys(packets);\n\n/**\n * Premade error packe" +
+                    "t.\n */\n\nvar err = { type: \'error\', data: \'parser error\' };\n\n/**\n * Create a blob" +
+                    " api even for blob builder when vendor prefixes exist\n */\n\nvar Blob = _dereq_(\'b" +
+                    "lob\');\n\n/**\n * Encodes a packet.\n *\n *     <packet type id> [ <data> ]\n *\n * Exa" +
+                    "mple:\n *\n *     5hello world\n *     3\n *     4\n *\n * Binary is encoded in an ide" +
+                    "ntical principle\n *\n * @api private\n */\n\nexports.encodePacket = function (packet" +
+                    ", supportsBinary, utf8encode, callback) {\n  if (\'function\' == typeof supportsBin" +
+                    "ary) {\n    callback = supportsBinary;\n    supportsBinary = false;\n  }\n\n  if (\'fu" +
+                    "nction\' == typeof utf8encode) {\n    callback = utf8encode;\n    utf8encode = null" +
+                    ";\n  }\n\n  var data = (packet.data === undefined)\n    ? undefined\n    : packet.dat" +
+                    "a.buffer || packet.data;\n\n  if (global.ArrayBuffer && data instanceof ArrayBuffe" +
+                    "r) {\n    return encodeArrayBuffer(packet, supportsBinary, callback);\n  } else if" +
+                    " (Blob && data instanceof global.Blob) {\n    return encodeBlob(packet, supportsB" +
+                    "inary, callback);\n  }\n\n  // Sending data as a utf-8 string\n  var encoded = packe" +
+                    "ts[packet.type];\n\n  // data fragment is optional\n  if (undefined !== packet.data" +
+                    ") {\n    encoded += utf8encode ? utf8.encode(String(packet.data)) : String(packet" +
+                    ".data);\n  }\n\n  return callback(\'\' + encoded);\n\n};\n\n/**\n * Encode packet helpers " +
+                    "for binary types\n */\n\nfunction encodeArrayBuffer(packet, supportsBinary, callbac" +
+                    "k) {\n  if (!supportsBinary) {\n    return exports.encodeBase64Packet(packet, call" +
+                    "back);\n  }\n\n  var data = packet.data;\n  var contentArray = new Uint8Array(data);" +
+                    "\n  var resultBuffer = new Uint8Array(1 + data.byteLength);\n\n  resultBuffer[0] = " +
+                    "packets[packet.type];\n  for (var i = 0; i < contentArray.length; i++) {\n    resu" +
+                    "ltBuffer[i+1] = contentArray[i];\n  }\n\n  return callback(resultBuffer.buffer);\n}\n" +
+                    "\nfunction encodeBlobAsArrayBuffer(packet, supportsBinary, callback) {\n  if (!sup" +
+                    "portsBinary) {\n    return exports.encodeBase64Packet(packet, callback);\n  }\n\n  v" +
+                    "ar fr = new FileReader();\n  fr.onload = function() {\n    packet.data = fr.result" +
+                    ";\n    exports.encodePacket(packet, supportsBinary, true, callback);\n  };\n  retur" +
+                    "n fr.readAsArrayBuffer(packet.data);\n}\n\nfunction encodeBlob(packet, supportsBina" +
+                    "ry, callback) {\n  if (!supportsBinary) {\n    return exports.encodeBase64Packet(p" +
+                    "acket, callback);\n  }\n\n  if (isAndroid) {\n    return encodeBlobAsArrayBuffer(pac" +
+                    "ket, supportsBinary, callback);\n  }\n\n  var length = new Uint8Array(1);\n  length[" +
+                    "0] = packets[packet.type];\n  var blob = new Blob([length.buffer, packet.data]);\n" +
+                    "\n  return callback(blob);\n}\n\n/**\n * Encodes a packet with binary data in a base6" +
+                    "4 string\n *\n * @param {Object} packet, has `type` and `data`\n * @return {String}" +
+                    " base64 encoded message\n */\n\nexports.encodeBase64Packet = function(packet, callb" +
+                    "ack) {\n  var message = \'b\' + exports.packets[packet.type];\n  if (Blob && packet." +
+                    "data instanceof Blob) {\n    var fr = new FileReader();\n    fr.onload = function(" +
+                    ") {\n      var b64 = fr.result.split(\',\')[1];\n      callback(message + b64);\n    " +
+                    "};\n    return fr.readAsDataURL(packet.data);\n  }\n\n  var b64data;\n  try {\n    b64" +
+                    "data = String.fromCharCode.apply(null, new Uint8Array(packet.data));\n  } catch (" +
+                    "e) {\n    // iPhone Safari doesn\'t let you apply with typed arrays\n    var typed " +
+                    "= new Uint8Array(packet.data);\n    var basic = new Array(typed.length);\n    for " +
+                    "(var i = 0; i < typed.length; i++) {\n      basic[i] = typed[i];\n    }\n    b64dat" +
+                    "a = String.fromCharCode.apply(null, basic);\n  }\n  message += global.btoa(b64data" +
+                    ");\n  return callback(message);\n};\n\n/**\n * Decodes a packet. Changes format to Bl" +
+                    "ob if requested.\n *\n * @return {Object} with `type` and `data` (if any)\n * @api " +
+                    "private\n */\n\nexports.decodePacket = function (data, binaryType, utf8decode) {\n  " +
+                    "// String data\n  if (typeof data == \'string\' || data === undefined) {\n    if (da" +
+                    "ta.charAt(0) == \'b\') {\n      return exports.decodeBase64Packet(data.substr(1), b" +
+                    "inaryType);\n    }\n\n    if (utf8decode) {\n      try {\n        data = utf8.decode(" +
+                    "data);\n      } catch (e) {\n        return err;\n      }\n    }\n    var type = data" +
+                    ".charAt(0);\n\n    if (Number(type) != type || !packetslist[type]) {\n      return " +
+                    "err;\n    }\n\n    if (data.length > 1) {\n      return { type: packetslist[type], d" +
+                    "ata: data.substring(1) };\n    } else {\n      return { type: packetslist[type] };" +
+                    "\n    }\n  }\n\n  var asArray = new Uint8Array(data);\n  var type = asArray[0];\n  var" +
+                    " rest = sliceBuffer(data, 1);\n  if (Blob && binaryType === \'blob\') {\n    rest = " +
+                    "new Blob([rest]);\n  }\n  return { type: packetslist[type], data: rest };\n};\n\n/**\n" +
+                    " * Decodes a packet encoded in a base64 string\n *\n * @param {String} base64 enco" +
+                    "ded message\n * @return {Object} with `type` and `data` (if any)\n */\n\nexports.dec" +
+                    "odeBase64Packet = function(msg, binaryType) {\n  var type = packetslist[msg.charA" +
+                    "t(0)];\n  if (!global.ArrayBuffer) {\n    return { type: type, data: { base64: tru" +
+                    "e, data: msg.substr(1) } };\n  }\n\n  var data = base64encoder.decode(msg.substr(1)" +
+                    ");\n\n  if (binaryType === \'blob\' && Blob) {\n    data = new Blob([data]);\n  }\n\n  r" +
+                    "eturn { type: type, data: data };\n};\n\n/**\n * Encodes multiple messages (payload)" +
+                    ".\n *\n *     <length>:data\n *\n * Example:\n *\n *     11:hello world2:hi\n *\n * If a" +
+                    "ny contents are binary, they will be encoded as base64 strings. Base64\n * encode" +
+                    "d strings are marked with a b before the length specifier\n *\n * @param {Array} p" +
+                    "ackets\n * @api private\n */\n\nexports.encodePayload = function (packets, supportsB" +
+                    "inary, callback) {\n  if (typeof supportsBinary == \'function\') {\n    callback = s" +
+                    "upportsBinary;\n    supportsBinary = null;\n  }\n\n  if (supportsBinary) {\n    if (B" +
+                    "lob && !isAndroid) {\n      return exports.encodePayloadAsBlob(packets, callback)" +
+                    ";\n    }\n\n    return exports.encodePayloadAsArrayBuffer(packets, callback);\n  }\n\n" +
+                    "  if (!packets.length) {\n    return callback(\'0:\');\n  }\n\n  function setLengthHea" +
+                    "der(message) {\n    return message.length + \':\' + message;\n  }\n\n  function encode" +
+                    "One(packet, doneCallback) {\n    exports.encodePacket(packet, supportsBinary, tru" +
+                    "e, function(message) {\n      doneCallback(null, setLengthHeader(message));\n    }" +
+                    ");\n  }\n\n  map(packets, encodeOne, function(err, results) {\n    return callback(r" +
+                    "esults.join(\'\'));\n  });\n};\n\n/**\n * Async array map using after\n */\n\nfunction map" +
+                    "(ary, each, done) {\n  var result = new Array(ary.length);\n  var next = after(ary" +
+                    ".length, done);\n\n  var eachWithIndex = function(i, el, cb) {\n    each(el, functi" +
+                    "on(error, msg) {\n      result[i] = msg;\n      cb(error, result);\n    });\n  };\n\n " +
+                    " for (var i = 0; i < ary.length; i++) {\n    eachWithIndex(i, ary[i], next);\n  }\n" +
+                    "}\n\n/*\n * Decodes data when a payload is maybe expected. Possible binary contents" +
+                    " are\n * decoded from their base64 representation\n *\n * @param {String} data, cal" +
+                    "lback method\n * @api public\n */\n\nexports.decodePayload = function (data, binaryT" +
+                    "ype, callback) {\n  if (typeof data != \'string\') {\n    return exports.decodePaylo" +
+                    "adAsBinary(data, binaryType, callback);\n  }\n\n  if (typeof binaryType === \'functi" +
+                    "on\') {\n    callback = binaryType;\n    binaryType = null;\n  }\n\n  var packet;\n  if" +
+                    " (data == \'\') {\n    // parser error - ignoring payload\n    return callback(err, " +
+                    "0, 1);\n  }\n\n  var length = \'\'\n    , n, msg;\n\n  for (var i = 0, l = data.length; " +
+                    "i < l; i++) {\n    var chr = data.charAt(i);\n\n    if (\':\' != chr) {\n      length " +
+                    "+= chr;\n    } else {\n      if (\'\' == length || (length != (n = Number(length))))" +
+                    " {\n        // parser error - ignoring payload\n        return callback(err, 0, 1)" +
+                    ";\n      }\n\n      msg = data.substr(i + 1, n);\n\n      if (length != msg.length) {" +
+                    "\n        // parser error - ignoring payload\n        return callback(err, 0, 1);\n" +
+                    "      }\n\n      if (msg.length) {\n        packet = exports.decodePacket(msg, bina" +
+                    "ryType, true);\n\n        if (err.type == packet.type && err.data == packet.data) " +
+                    "{\n          // parser error in individual packet - ignoring payload\n          re" +
+                    "turn callback(err, 0, 1);\n        }\n\n        var ret = callback(packet, i + n, l" +
+                    ");\n        if (false === ret) return;\n      }\n\n      // advance cursor\n      i +" +
+                    "= n;\n      length = \'\';\n    }\n  }\n\n  if (length != \'\') {\n    // parser error - i" +
+                    "gnoring payload\n    return callback(err, 0, 1);\n  }\n\n};\n\n/**\n * Encodes multiple" +
+                    " messages (payload) as binary.\n *\n * <1 = binary, 0 = string><number from 0-9><n" +
+                    "umber from 0-9>[...]<number\n * 255><data>\n *\n * Example:\n * 1 3 255 1 2 3, if th" +
+                    "e binary contents are interpreted as 8 bit integers\n *\n * @param {Array} packets" +
+                    "\n * @return {ArrayBuffer} encoded payload\n * @api private\n */\n\nexports.encodePay" +
+                    "loadAsArrayBuffer = function(packets, callback) {\n  if (!packets.length) {\n    r" +
+                    "eturn callback(new ArrayBuffer(0));\n  }\n\n  function encodeOne(packet, doneCallba" +
+                    "ck) {\n    exports.encodePacket(packet, true, true, function(data) {\n      return" +
+                    " doneCallback(null, data);\n    });\n  }\n\n  map(packets, encodeOne, function(err, " +
+                    "encodedPackets) {\n    var totalLength = encodedPackets.reduce(function(acc, p) {" +
+                    "\n      var len;\n      if (typeof p === \'string\'){\n        len = p.length;\n      " +
+                    "} else {\n        len = p.byteLength;\n      }\n      return acc + len.toString().l" +
+                    "ength + len + 2; // string/binary identifier + separator = 2\n    }, 0);\n\n    var" +
+                    " resultArray = new Uint8Array(totalLength);\n\n    var bufferIndex = 0;\n    encode" +
+                    "dPackets.forEach(function(p) {\n      var isString = typeof p === \'string\';\n     " +
+                    " var ab = p;\n      if (isString) {\n        var view = new Uint8Array(p.length);\n" +
+                    "        for (var i = 0; i < p.length; i++) {\n          view[i] = p.charCodeAt(i)" +
+                    ";\n        }\n        ab = view.buffer;\n      }\n\n      if (isString) { // not true" +
+                    " binary\n        resultArray[bufferIndex++] = 0;\n      } else { // true binary\n  " +
+                    "      resultArray[bufferIndex++] = 1;\n      }\n\n      var lenStr = ab.byteLength." +
+                    "toString();\n      for (var i = 0; i < lenStr.length; i++) {\n        resultArray[" +
+                    "bufferIndex++] = parseInt(lenStr[i]);\n      }\n      resultArray[bufferIndex++] =" +
+                    " 255;\n\n      var view = new Uint8Array(ab);\n      for (var i = 0; i < view.lengt" +
+                    "h; i++) {\n        resultArray[bufferIndex++] = view[i];\n      }\n    });\n\n    ret" +
+                    "urn callback(resultArray.buffer);\n  });\n};\n\n/**\n * Encode as Blob\n */\n\nexports.e" +
+                    "ncodePayloadAsBlob = function(packets, callback) {\n  function encodeOne(packet, " +
+                    "doneCallback) {\n    exports.encodePacket(packet, true, true, function(encoded) {" +
+                    "\n      var binaryIdentifier = new Uint8Array(1);\n      binaryIdentifier[0] = 1;\n" +
+                    "      if (typeof encoded === \'string\') {\n        var view = new Uint8Array(encod" +
+                    "ed.length);\n        for (var i = 0; i < encoded.length; i++) {\n          view[i]" +
+                    " = encoded.charCodeAt(i);\n        }\n        encoded = view.buffer;\n        binar" +
+                    "yIdentifier[0] = 0;\n      }\n\n      var len = (encoded instanceof ArrayBuffer)\n  " +
+                    "      ? encoded.byteLength\n        : encoded.size;\n\n      var lenStr = len.toStr" +
+                    "ing();\n      var lengthAry = new Uint8Array(lenStr.length + 1);\n      for (var i" +
+                    " = 0; i < lenStr.length; i++) {\n        lengthAry[i] = parseInt(lenStr[i]);\n    " +
+                    "  }\n      lengthAry[lenStr.length] = 255;\n\n      if (Blob) {\n        var blob = " +
+                    "new Blob([binaryIdentifier.buffer, lengthAry.buffer, encoded]);\n        doneCall" +
+                    "back(null, blob);\n      }\n    });\n  }\n\n  map(packets, encodeOne, function(err, r" +
+                    "esults) {\n    return callback(new Blob(results));\n  });\n};\n\n/*\n * Decodes data w" +
+                    "hen a payload is maybe expected. Strings are decoded by\n * interpreting each byt" +
+                    "e as a key code for entries marked to start with 0. See\n * description of encode" +
+                    "PayloadAsBinary\n *\n * @param {ArrayBuffer} data, callback method\n * @api public\n" +
+                    " */\n\nexports.decodePayloadAsBinary = function (data, binaryType, callback) {\n  i" +
+                    "f (typeof binaryType === \'function\') {\n    callback = binaryType;\n    binaryType" +
+                    " = null;\n  }\n\n  var bufferTail = data;\n  var buffers = [];\n\n  var numberTooLong " +
+                    "= false;\n  while (bufferTail.byteLength > 0) {\n    var tailArray = new Uint8Arra" +
+                    "y(bufferTail);\n    var isString = tailArray[0] === 0;\n    var msgLength = \'\';\n\n " +
+                    "   for (var i = 1; ; i++) {\n      if (tailArray[i] == 255) break;\n\n      if (msg" +
+                    "Length.length > 310) {\n        numberTooLong = true;\n        break;\n      }\n\n   " +
+                    "   msgLength += tailArray[i];\n    }\n\n    if(numberTooLong) return callback(err, " +
+                    "0, 1);\n\n    bufferTail = sliceBuffer(bufferTail, 2 + msgLength.length);\n    msgL" +
+                    "ength = parseInt(msgLength);\n\n    var msg = sliceBuffer(bufferTail, 0, msgLength" +
+                    ");\n    if (isString) {\n      try {\n        msg = String.fromCharCode.apply(null," +
+                    " new Uint8Array(msg));\n      } catch (e) {\n        // iPhone Safari doesn\'t let " +
+                    "you apply to typed arrays\n        var typed = new Uint8Array(msg);\n        msg =" +
+                    " \'\';\n        for (var i = 0; i < typed.length; i++) {\n          msg += String.fr" +
+                    "omCharCode(typed[i]);\n        }\n      }\n    }\n\n    buffers.push(msg);\n    buffer" +
+                    "Tail = sliceBuffer(bufferTail, msgLength);\n  }\n\n  var total = buffers.length;\n  " +
+                    "buffers.forEach(function(buffer, i) {\n    callback(exports.decodePacket(buffer, " +
+                    "binaryType, true), i, total);\n  });\n};\n\n}).call(this,typeof self !== \"undefined\"" +
+                    " ? self : typeof window !== \"undefined\" ? window : {})\n},{\"./keys\":18,\"after\":19" +
+                    ",\"arraybuffer.slice\":20,\"base64-arraybuffer\":21,\"blob\":11,\"utf8\":22}],18:[functi" +
+                    "on(_dereq_,module,exports){\n\n/**\n * Gets the keys for an object.\n *\n * @return {" +
+                    "Array} keys\n * @api private\n */\n\nmodule.exports = Object.keys || function keys (" +
+                    "obj){\n  var arr = [];\n  var has = Object.prototype.hasOwnProperty;\n\n  for (var i" +
+                    " in obj) {\n    if (has.call(obj, i)) {\n      arr.push(i);\n    }\n  }\n  return arr" +
+                    ";\n};\n\n},{}],19:[function(_dereq_,module,exports){\nmodule.exports = after\n\nfuncti" +
+                    "on after(count, callback, err_cb) {\n    var bail = false\n    err_cb = err_cb || " +
+                    "noop\n    proxy.count = count\n\n    return (count === 0) ? callback() : proxy\n\n   " +
+                    " function proxy(err, result) {\n        if (proxy.count <= 0) {\n            throw" +
+                    " new Error(\'after called too many times\')\n        }\n        --proxy.count\n\n     " +
+                    "   // after first error, rest are passed to err_cb\n        if (err) {\n          " +
+                    "  bail = true\n            callback(err)\n            // future error callbacks wi" +
+                    "ll go to error handler\n            callback = err_cb\n        } else if (proxy.co" +
+                    "unt === 0 && !bail) {\n            callback(null, result)\n        }\n    }\n}\n\nfunc" +
+                    "tion noop() {}\n\n},{}],20:[function(_dereq_,module,exports){\n/**\n * An abstractio" +
+                    "n for slicing an arraybuffer even when\n * ArrayBuffer.prototype.slice is not sup" +
+                    "ported\n *\n * @api public\n */\n\nmodule.exports = function(arraybuffer, start, end)" +
+                    " {\n  var bytes = arraybuffer.byteLength;\n  start = start || 0;\n  end = end || by" +
+                    "tes;\n\n  if (arraybuffer.slice) { return arraybuffer.slice(start, end); }\n\n  if (" +
+                    "start < 0) { start += bytes; }\n  if (end < 0) { end += bytes; }\n  if (end > byte" +
+                    "s) { end = bytes; }\n\n  if (start >= bytes || start >= end || bytes === 0) {\n    " +
+                    "return new ArrayBuffer(0);\n  }\n\n  var abv = new Uint8Array(arraybuffer);\n  var r" +
+                    "esult = new Uint8Array(end - start);\n  for (var i = start, ii = 0; i < end; i++," +
+                    " ii++) {\n    result[ii] = abv[i];\n  }\n  return result.buffer;\n};\n\n},{}],21:[func" +
+                    "tion(_dereq_,module,exports){\n/*\n * base64-arraybuffer\n * https://github.com/nik" +
+                    "lasvh/base64-arraybuffer\n *\n * Copyright (c) 2012 Niklas von Hertzen\n * Licensed" +
+                    " under the MIT license.\n */\n(function(chars){\n  \"use strict\";\n\n  exports.encode " +
+                    "= function(arraybuffer) {\n    var bytes = new Uint8Array(arraybuffer),\n    i, le" +
+                    "n = bytes.length, base64 = \"\";\n\n    for (i = 0; i < len; i+=3) {\n      base64 +=" +
+                    " chars[bytes[i] >> 2];\n      base64 += chars[((bytes[i] & 3) << 4) | (bytes[i + " +
+                    "1] >> 4)];\n      base64 += chars[((bytes[i + 1] & 15) << 2) | (bytes[i + 2] >> 6" +
+                    ")];\n      base64 += chars[bytes[i + 2] & 63];\n    }\n\n    if ((len % 3) === 2) {\n" +
+                    "      base64 = base64.substring(0, base64.length - 1) + \"=\";\n    } else if (len " +
+                    "% 3 === 1) {\n      base64 = base64.substring(0, base64.length - 2) + \"==\";\n    }" +
+                    "\n\n    return base64;\n  };\n\n  exports.decode =  function(base64) {\n    var buffer" +
+                    "Length = base64.length * 0.75,\n    len = base64.length, i, p = 0,\n    encoded1, " +
+                    "encoded2, encoded3, encoded4;\n\n    if (base64[base64.length - 1] === \"=\") {\n    " +
+                    "  bufferLength--;\n      if (base64[base64.length - 2] === \"=\") {\n        bufferL" +
+                    "ength--;\n      }\n    }\n\n    var arraybuffer = new ArrayBuffer(bufferLength),\n   " +
+                    " bytes = new Uint8Array(arraybuffer);\n\n    for (i = 0; i < len; i+=4) {\n      en" +
+                    "coded1 = chars.indexOf(base64[i]);\n      encoded2 = chars.indexOf(base64[i+1]);\n" +
+                    "      encoded3 = chars.indexOf(base64[i+2]);\n      encoded4 = chars.indexOf(base" +
+                    "64[i+3]);\n\n      bytes[p++] = (encoded1 << 2) | (encoded2 >> 4);\n      bytes[p++" +
+                    "] = ((encoded2 & 15) << 4) | (encoded3 >> 2);\n      bytes[p++] = ((encoded3 & 3)" +
+                    " << 6) | (encoded4 & 63);\n    }\n\n    return arraybuffer;\n  };\n})(\"ABCDEFGHIJKLMN" +
+                    "OPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/\");\n\n},{}],22:[function(_dereq" +
+                    "_,module,exports){\n(function (global){\n/*! http://mths.be/utf8js v2.0.0 by @math" +
+                    "ias */\n;(function(root) {\n\n\t// Detect free variables `exports`\n\tvar freeExports " +
+                    "= typeof exports == \'object\' && exports;\n\n\t// Detect free variable `module`\n\tvar" +
+                    " freeModule = typeof module == \'object\' && module &&\n\t\tmodule.exports == freeExp" +
+                    "orts && module;\n\n\t// Detect free variable `global`, from Node.js or Browserified" +
+                    " code,\n\t// and use it as `root`\n\tvar freeGlobal = typeof global == \'object\' && g" +
+                    "lobal;\n\tif (freeGlobal.global === freeGlobal || freeGlobal.window === freeGlobal" +
+                    ") {\n\t\troot = freeGlobal;\n\t}\n\n\t/*------------------------------------------------" +
+                    "--------------------------*/\n\n\tvar stringFromCharCode = String.fromCharCode;\n\n\t/" +
+                    "/ Taken from http://mths.be/punycode\n\tfunction ucs2decode(string) {\n\t\tvar output" +
+                    " = [];\n\t\tvar counter = 0;\n\t\tvar length = string.length;\n\t\tvar value;\n\t\tvar extra" +
+                    ";\n\t\twhile (counter < length) {\n\t\t\tvalue = string.charCodeAt(counter++);\n\t\t\tif (v" +
+                    "alue >= 0xD800 && value <= 0xDBFF && counter < length) {\n\t\t\t\t// high surrogate, " +
+                    "and there is a next character\n\t\t\t\textra = string.charCodeAt(counter++);\n\t\t\t\tif (" +
+                    "(extra & 0xFC00) == 0xDC00) { // low surrogate\n\t\t\t\t\toutput.push(((value & 0x3FF)" +
+                    " << 10) + (extra & 0x3FF) + 0x10000);\n\t\t\t\t} else {\n\t\t\t\t\t// unmatched surrogate; " +
+                    "only append this code unit, in case the next\n\t\t\t\t\t// code unit is the high surro" +
+                    "gate of a surrogate pair\n\t\t\t\t\toutput.push(value);\n\t\t\t\t\tcounter--;\n\t\t\t\t}\n\t\t\t} els" +
+                    "e {\n\t\t\t\toutput.push(value);\n\t\t\t}\n\t\t}\n\t\treturn output;\n\t}\n\n\t// Taken from http://" +
+                    "mths.be/punycode\n\tfunction ucs2encode(array) {\n\t\tvar length = array.length;\n\t\tva" +
+                    "r index = -1;\n\t\tvar value;\n\t\tvar output = \'\';\n\t\twhile (++index < length) {\n\t\t\tva" +
+                    "lue = array[index];\n\t\t\tif (value > 0xFFFF) {\n\t\t\t\tvalue -= 0x10000;\n\t\t\t\toutput +=" +
+                    " stringFromCharCode(value >>> 10 & 0x3FF | 0xD800);\n\t\t\t\tvalue = 0xDC00 | value &" +
+                    " 0x3FF;\n\t\t\t}\n\t\t\toutput += stringFromCharCode(value);\n\t\t}\n\t\treturn output;\n\t}\n\n\t/" +
+                    "*--------------------------------------------------------------------------*/\n\n\t" +
+                    "function createByte(codePoint, shift) {\n\t\treturn stringFromCharCode(((codePoint " +
+                    ">> shift) & 0x3F) | 0x80);\n\t}\n\n\tfunction encodeCodePoint(codePoint) {\n\t\tif ((cod" +
+                    "ePoint & 0xFFFFFF80) == 0) { // 1-byte sequence\n\t\t\treturn stringFromCharCode(cod" +
+                    "ePoint);\n\t\t}\n\t\tvar symbol = \'\';\n\t\tif ((codePoint & 0xFFFFF800) == 0) { // 2-byte" +
+                    " sequence\n\t\t\tsymbol = stringFromCharCode(((codePoint >> 6) & 0x1F) | 0xC0);\n\t\t}\n" +
+                    "\t\telse if ((codePoint & 0xFFFF0000) == 0) { // 3-byte sequence\n\t\t\tsymbol = strin" +
+                    "gFromCharCode(((codePoint >> 12) & 0x0F) | 0xE0);\n\t\t\tsymbol += createByte(codePo" +
+                    "int, 6);\n\t\t}\n\t\telse if ((codePoint & 0xFFE00000) == 0) { // 4-byte sequence\n\t\t\ts" +
+                    "ymbol = stringFromCharCode(((codePoint >> 18) & 0x07) | 0xF0);\n\t\t\tsymbol += crea" +
+                    "teByte(codePoint, 12);\n\t\t\tsymbol += createByte(codePoint, 6);\n\t\t}\n\t\tsymbol += st" +
+                    "ringFromCharCode((codePoint & 0x3F) | 0x80);\n\t\treturn symbol;\n\t}\n\n\tfunction utf8" +
+                    "encode(string) {\n\t\tvar codePoints = ucs2decode(string);\n\n\t\t// console.log(JSON.s" +
+                    "tringify(codePoints.map(function(x) {\n\t\t// \treturn \'U+\' + x.toString(16).toUpper" +
+                    "Case();\n\t\t// })));\n\n\t\tvar length = codePoints.length;\n\t\tvar index = -1;\n\t\tvar co" +
+                    "dePoint;\n\t\tvar byteString = \'\';\n\t\twhile (++index < length) {\n\t\t\tcodePoint = code" +
+                    "Points[index];\n\t\t\tbyteString += encodeCodePoint(codePoint);\n\t\t}\n\t\treturn byteStr" +
+                    "ing;\n\t}\n\n\t/*--------------------------------------------------------------------" +
+                    "------*/\n\n\tfunction readContinuationByte() {\n\t\tif (byteIndex >= byteCount) {\n\t\t\t" +
+                    "throw Error(\'Invalid byte index\');\n\t\t}\n\n\t\tvar continuationByte = byteArray[byteI" +
+                    "ndex] & 0xFF;\n\t\tbyteIndex++;\n\n\t\tif ((continuationByte & 0xC0) == 0x80) {\n\t\t\tretu" +
+                    "rn continuationByte & 0x3F;\n\t\t}\n\n\t\t// If we end up here, it’s not a continuation" +
+                    " byte\n\t\tthrow Error(\'Invalid continuation byte\');\n\t}\n\n\tfunction decodeSymbol() {" +
+                    "\n\t\tvar byte1;\n\t\tvar byte2;\n\t\tvar byte3;\n\t\tvar byte4;\n\t\tvar codePoint;\n\n\t\tif (byt" +
+                    "eIndex > byteCount) {\n\t\t\tthrow Error(\'Invalid byte index\');\n\t\t}\n\n\t\tif (byteIndex" +
+                    " == byteCount) {\n\t\t\treturn false;\n\t\t}\n\n\t\t// Read first byte\n\t\tbyte1 = byteArray[" +
+                    "byteIndex] & 0xFF;\n\t\tbyteIndex++;\n\n\t\t// 1-byte sequence (no continuation bytes)\n" +
+                    "\t\tif ((byte1 & 0x80) == 0) {\n\t\t\treturn byte1;\n\t\t}\n\n\t\t// 2-byte sequence\n\t\tif ((b" +
+                    "yte1 & 0xE0) == 0xC0) {\n\t\t\tvar byte2 = readContinuationByte();\n\t\t\tcodePoint = ((" +
+                    "byte1 & 0x1F) << 6) | byte2;\n\t\t\tif (codePoint >= 0x80) {\n\t\t\t\treturn codePoint;\n\t" +
+                    "\t\t} else {\n\t\t\t\tthrow Error(\'Invalid continuation byte\');\n\t\t\t}\n\t\t}\n\n\t\t// 3-byte s" +
+                    "equence (may include unpaired surrogates)\n\t\tif ((byte1 & 0xF0) == 0xE0) {\n\t\t\tbyt" +
+                    "e2 = readContinuationByte();\n\t\t\tbyte3 = readContinuationByte();\n\t\t\tcodePoint = (" +
+                    "(byte1 & 0x0F) << 12) | (byte2 << 6) | byte3;\n\t\t\tif (codePoint >= 0x0800) {\n\t\t\t\t" +
+                    "return codePoint;\n\t\t\t} else {\n\t\t\t\tthrow Error(\'Invalid continuation byte\');\n\t\t\t}" +
+                    "\n\t\t}\n\n\t\t// 4-byte sequence\n\t\tif ((byte1 & 0xF8) == 0xF0) {\n\t\t\tbyte2 = readContin" +
+                    "uationByte();\n\t\t\tbyte3 = readContinuationByte();\n\t\t\tbyte4 = readContinuationByte" +
+                    "();\n\t\t\tcodePoint = ((byte1 & 0x0F) << 0x12) | (byte2 << 0x0C) |\n\t\t\t\t(byte3 << 0x" +
+                    "06) | byte4;\n\t\t\tif (codePoint >= 0x010000 && codePoint <= 0x10FFFF) {\n\t\t\t\treturn" +
+                    " codePoint;\n\t\t\t}\n\t\t}\n\n\t\tthrow Error(\'Invalid UTF-8 detected\');\n\t}\n\n\tvar byteArra" +
+                    "y;\n\tvar byteCount;\n\tvar byteIndex;\n\tfunction utf8decode(byteString) {\n\t\tbyteArra" +
+                    "y = ucs2decode(byteString);\n\t\tbyteCount = byteArray.length;\n\t\tbyteIndex = 0;\n\t\tv" +
+                    "ar codePoints = [];\n\t\tvar tmp;\n\t\twhile ((tmp = decodeSymbol()) !== false) {\n\t\t\tc" +
+                    "odePoints.push(tmp);\n\t\t}\n\t\treturn ucs2encode(codePoints);\n\t}\n\n\t/*---------------" +
+                    "-----------------------------------------------------------*/\n\n\tvar utf8 = {\n\t\t\'" +
+                    "version\': \'2.0.0\',\n\t\t\'encode\': utf8encode,\n\t\t\'decode\': utf8decode\n\t};\n\n\t// Some " +
+                    "AMD build optimizers, like r.js, check for specific condition patterns\n\t// like " +
+                    "the following:\n\tif (\n\t\ttypeof define == \'function\' &&\n\t\ttypeof define.amd == \'ob" +
+                    "ject\' &&\n\t\tdefine.amd\n\t) {\n\t\tdefine(function() {\n\t\t\treturn utf8;\n\t\t});\n\t}\telse i" +
+                    "f (freeExports && !freeExports.nodeType) {\n\t\tif (freeModule) { // in Node.js or " +
+                    "RingoJS v0.8.0+\n\t\t\tfreeModule.exports = utf8;\n\t\t} else { // in Narwhal or RingoJ" +
+                    "S v0.7.0-\n\t\t\tvar object = {};\n\t\t\tvar hasOwnProperty = object.hasOwnProperty;\n\t\t\t" +
+                    "for (var key in utf8) {\n\t\t\t\thasOwnProperty.call(utf8, key) && (freeExports[key] " +
+                    "= utf8[key]);\n\t\t\t}\n\t\t}\n\t} else { // in Rhino or a web browser\n\t\troot.utf8 = utf8" +
+                    ";\n\t}\n\n}(this));\n\n}).call(this,typeof self !== \"undefined\" ? self : typeof window" +
+                    " !== \"undefined\" ? window : {})\n},{}],23:[function(_dereq_,module,exports){\n\n/**" +
+                    "\n * Module dependencies.\n */\n\nvar global = _dereq_(\'global\');\n\n/**\n * Module exp" +
+                    "orts.\n *\n * Logic borrowed from Modernizr:\n *\n *   - https://github.com/Moderniz" +
+                    "r/Modernizr/blob/master/feature-detects/cors.js\n */\n\ntry {\n  module.exports = \'X" +
+                    "MLHttpRequest\' in global &&\n    \'withCredentials\' in new global.XMLHttpRequest()" +
+                    ";\n} catch (err) {\n  // if XMLHttp support is disabled in IE then it will throw\n " +
+                    " // when trying to create\n  module.exports = false;\n}\n\n},{\"global\":24}],24:[func" +
+                    "tion(_dereq_,module,exports){\n\n/**\n * Returns `this`. Execute this without a \"co" +
+                    "ntext\" (i.e. without it being\n * attached to an object of the left-hand side), a" +
+                    "nd `this` points to the\n * \"global\" scope of the current JS execution.\n */\n\nmodu" +
+                    "le.exports = (function () { return this; })();\n\n},{}],25:[function(_dereq_,modul" +
+                    "e,exports){\n\nvar indexOf = [].indexOf;\n\nmodule.exports = function(arr, obj){\n  i" +
+                    "f (indexOf) return arr.indexOf(obj);\n  for (var i = 0; i < arr.length; ++i) {\n  " +
+                    "  if (arr[i] === obj) return i;\n  }\n  return -1;\n};\n},{}],26:[function(_dereq_,m" +
+                    "odule,exports){\n(function (global){\n/**\n * JSON parse.\n *\n * @see Based on jQuer" +
+                    "y#parseJSON (MIT) and JSON2\n * @api private\n */\n\nvar rvalidchars = /^[\\],:{}\\s]*" +
+                    "$/;\nvar rvalidescape = /\\\\(?:[\"\\\\\\/bfnrt]|u[0-9a-fA-F]{4})/g;\nvar rvalidtokens =" +
+                    " /\"[^\"\\\\\\n\\r]*\"|true|false|null|-?\\d+(?:\\.\\d*)?(?:[eE][+\\-]?\\d+)?/g;\nvar rvalidb" +
+                    "races = /(?:^|:|,)(?:\\s*\\[)+/g;\nvar rtrimLeft = /^\\s+/;\nvar rtrimRight = /\\s+$/;" +
+                    "\n\nmodule.exports = function parsejson(data) {\n  if (\'string\' != typeof data || !" +
+                    "data) {\n    return null;\n  }\n\n  data = data.replace(rtrimLeft, \'\').replace(rtrim" +
+                    "Right, \'\');\n\n  // Attempt to parse using the native JSON parser first\n  if (glob" +
+                    "al.JSON && JSON.parse) {\n    return JSON.parse(data);\n  }\n\n  if (rvalidchars.tes" +
+                    "t(data.replace(rvalidescape, \'@\')\n      .replace(rvalidtokens, \']\')\n      .repla" +
+                    "ce(rvalidbraces, \'\'))) {\n    return (new Function(\'return \' + data))();\n  }\n};\n}" +
+                    ").call(this,typeof self !== \"undefined\" ? self : typeof window !== \"undefined\" ?" +
+                    " window : {})\n},{}],27:[function(_dereq_,module,exports){\n/**\n * Compiles a quer" +
+                    "ystring\n * Returns string representation of the object\n *\n * @param {Object}\n * " +
+                    "@api private\n */\n\nexports.encode = function (obj) {\n  var str = \'\';\n\n  for (var " +
+                    "i in obj) {\n    if (obj.hasOwnProperty(i)) {\n      if (str.length) str += \'&\';\n " +
+                    "     str += encodeURIComponent(i) + \'=\' + encodeURIComponent(obj[i]);\n    }\n  }\n" +
+                    "\n  return str;\n};\n\n/**\n * Parses a simple querystring into an object\n *\n * @para" +
+                    "m {String} qs\n * @api private\n */\n\nexports.decode = function(qs){\n  var qry = {}" +
+                    ";\n  var pairs = qs.split(\'&\');\n  for (var i = 0, l = pairs.length; i < l; i++) {" +
+                    "\n    var pair = pairs[i].split(\'=\');\n    qry[decodeURIComponent(pair[0])] = deco" +
+                    "deURIComponent(pair[1]);\n  }\n  return qry;\n};\n\n},{}],28:[function(_dereq_,module" +
+                    ",exports){\n/**\n * Parses an URI\n *\n * @author Steven Levithan <stevenlevithan.co" +
+                    "m> (MIT license)\n * @api private\n */\n\nvar re = /^(?:(?![^:@]+:[^:@\\/]*@)(http|ht" +
+                    "tps|ws|wss):\\/\\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?((?:[a-f0-9]{0,4}:){2,7}[a-f0-" +
+                    "9]{0,4}|[^:\\/?#]*)(?::(\\d*))?)(((\\/(?:[^?#](?![^?#\\/]*\\.[^?#\\/.]+(?:[?#]|$)))*\\/" +
+                    "?)?([^?#\\/]*))(?:\\?([^#]*))?(?:#(.*))?)/;\n\nvar parts = [\n    \'source\', \'protocol" +
+                    "\', \'authority\', \'userInfo\', \'user\', \'password\', \'host\', \'port\', \'relative\', \'pat" +
+                    "h\', \'directory\', \'file\', \'query\', \'anchor\'\n];\n\nmodule.exports = function parseur" +
+                    "i(str) {\n    var src = str,\n        b = str.indexOf(\'[\'),\n        e = str.indexO" +
+                    "f(\']\');\n\n    if (b != -1 && e != -1) {\n        str = str.substring(0, b) + str.s" +
+                    "ubstring(b, e).replace(/:/g, \';\') + str.substring(e, str.length);\n    }\n\n    var" +
+                    " m = re.exec(str || \'\'),\n        uri = {},\n        i = 14;\n\n    while (i--) {\n  " +
+                    "      uri[parts[i]] = m[i] || \'\';\n    }\n\n    if (b != -1 && e != -1) {\n        u" +
+                    "ri.source = src;\n        uri.host = uri.host.substring(1, uri.host.length - 1).r" +
+                    "eplace(/;/g, \':\');\n        uri.authority = uri.authority.replace(\'[\', \'\').replac" +
+                    "e(\']\', \'\').replace(/;/g, \':\');\n        uri.ipv6uri = true;\n    }\n\n    return uri" +
+                    ";\n};\n\n},{}],29:[function(_dereq_,module,exports){\n\n/**\n * Module dependencies.\n " +
+                    "*/\n\nvar global = (function() { return this; })();\n\n/**\n * WebSocket constructor." +
+                    "\n */\n\nvar WebSocket = global.WebSocket || global.MozWebSocket;\n\n/**\n * Module ex" +
+                    "ports.\n */\n\nmodule.exports = WebSocket ? ws : null;\n\n/**\n * WebSocket constructo" +
+                    "r.\n *\n * The third `opts` options object gets ignored in web browsers, since it\'" +
+                    "s\n * non-standard, and throws a TypeError if passed to the constructor.\n * See: " +
+                    "https://github.com/einaros/ws/issues/227\n *\n * @param {String} uri\n * @param {Ar" +
+                    "ray} protocols (optional)\n * @param {Object) opts (optional)\n * @api public\n */\n" +
+                    "\nfunction ws(uri, protocols, opts) {\n  var instance;\n  if (protocols) {\n    inst" +
+                    "ance = new WebSocket(uri, protocols);\n  } else {\n    instance = new WebSocket(ur" +
+                    "i);\n  }\n  return instance;\n}\n\nif (WebSocket) ws.prototype = WebSocket.prototype;" +
+                    "\n\n},{}]},{},[1])(1)\n});");
             this.Write(" ");
             
             #line 13 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
@@ -1750,7 +1751,7 @@ namespace Spike.Build.JavaScript
 
 	/* Hook socket 'open' event */
 	this.socket.on('open', function(){  
-		this._channel.transport = this.socket.transport.name;
+		this._channel.transport = this.transport;
 		if (this._channel.connect != null)
 			this._channel.connect();
 		this._channel.emit('connect');
@@ -1758,7 +1759,7 @@ namespace Spike.Build.JavaScript
 
 	/* Hook socket 'close' event */
 	this.socket.on('close', function(){  
-		this._channel.transport = ""disconnected"";
+		this._channel.transport = null;
 		if (this._channel.disconnect != null)
 			this._channel.disconnect();
 		this._channel.emit('disconnect');
@@ -1874,14 +1875,14 @@ namespace Spike.Build.JavaScript
             
             #line default
             #line hidden
-            this.Write("\r\n\t\tthis.send(0x");
+            this.Write("\r\n\t\tthis.send(\"");
             
             #line 70 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(send.Id.ToString("X")));
             
             #line default
             #line hidden
-            this.Write("u, writer);\r\n\t}\r\n\r\n");
+            this.Write("\", writer);\r\n\t}\r\n\r\n");
             
             #line 73 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
  } 
@@ -1902,14 +1903,14 @@ namespace Spike.Build.JavaScript
             
             #line default
             #line hidden
-            this.Write(" \t\r\n\t\t\tcase 0x");
+            this.Write(" \t\r\n\t\t\tcase \"");
             
             #line 81 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Id.ToString("X")));
             
             #line default
             #line hidden
-            this.Write("u: {\r\n\t\t\t\t");
+            this.Write("\": {\r\n\t\t\t\t");
             
             #line 82 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Compressed ? "reader.Decompress();" : ""));
@@ -1987,46 +1988,47 @@ namespace Spike.Build.JavaScript
             #line hidden
             this.Write("\r\n\t\t\tdefault: throw new Error(\"Received an unknown packet with \'\" + key + \"\' key." +
                     "\");\r\n\t\t}\r\n\t}\r\n\r\n\t/* Sends the data to the remote endpoint */\r\n\tthis.send = funct" +
-                    "ion(operationKey, writer) {\r\n\t\tif(typeof operationNumber === \'undefined\' )\r\n\t\t\tt" +
-                    "hrow new Error(\"Attempting to send without specifying the operation.\")\r\n\t\tif(typ" +
-                    "eof writer === \'undefined\' || writer != null)\r\n\t\t\tthrow new Error(\"Attempting to" +
-                    " send null buffer.\")\r\n\r\n\t\t// Initialize size variables\r\n\t\tvar sizeOfKey = 4;\r\n\t\t" +
-                    "var sizeOfLen = 4;\r\n\t\tvar sizeTotal = 8;\r\n\r\n\t\t// Writes the length of the packet" +
-                    ", the operation and the data\r\n\t\tvar length   = packet == null ? 0 : packet.buffe" +
-                    "r.data.length;\r\n\t\tvar compiled = new spike.PacketWriter();\r\n\r\n\t\t// Write the len" +
-                    "gth of the packet\r\n\t\tcompiled.writeUInt32(length + sizeOfKey);\r\n\r\n\t\t// Write the" +
-                    " key of the packet\r\n\t\tcompiled.writeKey(operationKey);\r\n\t\r\n\t\t// Write the body\r\n" +
-                    "\t\tif(length > 0){\r\n\t\t\tcompiled.buffer.writeBytes(packet.buffer.data);\r\n\t\t}\r\n\r\n\t\t" +
-                    "// Send the payload in base64\r\n\t\tthis.socket.send( compiled.buffer.toBase64() );" +
-                    "\r\n\t};\r\n\r\n\t/* Invoked when the socked receives incoming data */\r\n\tthis.socket.on(" +
-                    "\'message\', function(payload) {\r\n\t\t// Initialize size variables\r\n\t\tvar sizeOfKey " +
-                    "= 4;\r\n\t\tvar sizeOfLen = 4;\r\n\t\tvar sizeTotal = 8;\r\n\r\n\t\tvar data = new ByteArray([" +
-                    "]);\r\n\t\tvar socket = this._channel;\r\n\t\tif(socket._partialRecord)\r\n\t\t{\r\n\t\t\tsocket." +
-                    "buffer.readBytesTo(data, socket.buffer.getSize());\r\n\t\t\tsocket._partialRecord = f" +
-                    "alse;\r\n\t\t}\t\t\t\r\n\r\n\t\t// Read received data\r\n\t\tdata.writeBase64(payload);\r\n\r\n\t\t// W" +
-                    "hile we have data to read\r\n\t\twhile(data.position < data.getSize())\r\n\t\t{\r\n\t\t\tif(d" +
-                    "ata.getSize() - data.position < sizeOfLen)\r\n\t\t\t{\r\n\t\t\t\t// Read the partial packet" +
-                    " \r\n\t\t\t\tsocket.buffer = new ByteArray([]);\r\n\t\t\t\tdata.readBytesTo(socket.buffer, d" +
-                    "ata.getSize() - data.position);\r\n\t\t\t\tsocket._partialRecord = true;\r\n\t\t\t\tbreak;\r\n" +
-                    "\t\t\t} \r\n\t\t\t\r\n\t\t\tvar Length = data.readInt(32, false) + sizeOfLen;\r\n\t\t\tdata.positi" +
-                    "on -= sizeOfLen;\r\n\t\t\t\r\n\t\t    // If we have enough data to form a full packet.\r\n\t" +
-                    "\t    if(Length <= (data.getSize() - data.position))\r\n\t\t    {\r\n\t\t\t\t// Read the op" +
-                    "eration and read the actual message into a new buffer\r\n\t\t\t\tvar messageLength = d" +
-                    "ata.readInt(32, false); // UNUSED\r\n\t\t\t\tvar operation = \"\";\r\n\t\t\t\tfor (var i=0; i " +
-                    "< sizeOfKey; i++)\r\n\t\t\t\t{\r\n\t\t\t\t\tvar byte = data.readInt(8, false);\r\n\t\t\t\t\tvar sbyt" +
-                    "e = byte.toString(16);\r\n\t\t\t\t\tif(sbyte.length == 1)\r\n\t\t\t\t\t\tsbyte = \"0\" + sbyte;\r\n" +
-                    "\t\t\t\t\toperation += sbyte;\r\n\t\t\t\t}\r\n\t\t\t\toperation = operation.toUpperCase();\r\n\r\n\t\t\t" +
-                    "\t// New buffer for the packet\r\n\t\t\t\tvar packet = new ByteArray([]);\r\n\t\t\t\tdata.rea" +
-                    "dBytesTo(packet, Length - sizeTotal);\r\n\t\t\t\tpacket.position = 0;\r\n\t\t\r\n\t\t\t\t// Crea" +
-                    "te the reader and fire the event\r\n\t\t\t\tif(socket.channel != \'undefined\' && socket" +
-                    ".channel != null && socket.channel.onReceive != \'undefined\' && socket.channel.on" +
-                    "Receive != null)\r\n\t\t\t\t{\r\n\t\t\t\t\tvar reader = new spike.PacketReader(packet);\r\n\t\t\t\t" +
-                    "\tsocket._channel.onReceive(operation, reader);\r\n\t\t\t\t}\r\n\t\t    }\r\n\t\t    else \r\n\t\t " +
-                    "   {\r\n\t\t     \t// Read the partial packet\r\n\t\t\t\tsocket.buffer = new ByteArray([]);" +
-                    "\r\n\t\t\t\tdata.readBytesTo(socket.buffer, data.getSize() - data.position);\r\n\t\t\t\tsock" +
-                    "et._partialRecord = true;\r\n\t\t    }\r\n\t\t\r\n\t\t}\r\n\t});\r\n\r\n}\r\n\r\n\r\n/* Mix in \'Emitter\' " +
-                    "*/\r\nEmitter(spike.Channel.prototype);\r\n\r\n/* Backwards compatibility and alias*/\r" +
-                    "\nspike.ServerChannel = spike.Channel;\r\nspike.TcpChannel = spike.Channel;");
+                    "ion(operationKey, writer) {\r\n\t\tif(typeof operationKey === \'undefined\' )\r\n\t\t\tthro" +
+                    "w new Error(\"Attempting to send without specifying the operation.\")\r\n\t\tif(typeof" +
+                    " writer === \'undefined\')\r\n\t\t\tthrow new Error(\"Attempting to send an undefined bu" +
+                    "ffer.\")\r\n\r\n\t\t// Initialize size variables\r\n\t\tvar sizeOfKey = 4;\r\n\t\tvar sizeOfLen" +
+                    " = 4;\r\n\t\tvar sizeTotal = 8;\r\n\r\n\t\t// Writes the length of the packet, the operati" +
+                    "on and the data\r\n\t\tvar length   = writer == null ? 0 : writer.buffer.data.length" +
+                    ";\r\n\t\tvar compiled = new spike.PacketWriter();\r\n\r\n\t\t// Write the length of the pa" +
+                    "cket\r\n\t\tcompiled.writeUInt32(length + sizeOfKey);\r\n\r\n\t\t// Write the key of the p" +
+                    "acket\r\n\t\tcompiled.writeKey(operationKey);\r\n\t\r\n\t\t// Write the body\r\n\t\tif(length >" +
+                    " 0){\r\n\t\t\tcompiled.buffer.writeBytes(writer.buffer.data);\r\n\t\t}\r\n\r\n\t\t// Send the p" +
+                    "ayload in base64\r\n\t\tthis.socket.send( compiled.buffer.toBase64() );\r\n\t};\r\n\r\n\t/* " +
+                    "Invoked when the socked receives incoming data */\r\n\tthis.socket.on(\'message\', fu" +
+                    "nction(payload) {\r\n\t\t// Initialize size variables\r\n\t\tvar sizeOfKey = 4;\r\n\t\tvar s" +
+                    "izeOfLen = 4;\r\n\t\tvar sizeTotal = 8;\r\n\r\n\t\tvar data = new spike.ByteArray([]);\r\n\t\t" +
+                    "var socket = this._channel;\r\n\t\tif(socket._partialRecord)\r\n\t\t{\r\n\t\t\tsocket.buffer." +
+                    "readBytesTo(data, socket.buffer.getSize());\r\n\t\t\tsocket._partialRecord = false;\r\n" +
+                    "\t\t}\t\t\t\r\n\r\n\t\t// Read received data\r\n\t\tdata.writeBase64(payload);\r\n\r\n\t\t// While we" +
+                    " have data to read\r\n\t\twhile(data.position < data.getSize())\r\n\t\t{\r\n\t\t\tif(data.get" +
+                    "Size() - data.position < sizeOfLen)\r\n\t\t\t{\r\n\t\t\t\t// Read the partial packet \r\n\t\t\t\t" +
+                    "socket.buffer = new spike.ByteArray([]);\r\n\t\t\t\tdata.readBytesTo(socket.buffer, da" +
+                    "ta.getSize() - data.position);\r\n\t\t\t\tsocket._partialRecord = true;\r\n\t\t\t\tbreak;\r\n\t" +
+                    "\t\t} \r\n\t\t\t\r\n\t\t\tvar Length = data.readInt(32, false) + sizeOfLen;\r\n\t\t\tdata.positio" +
+                    "n -= sizeOfLen;\r\n\t\t\t\r\n\t\t    // If we have enough data to form a full packet.\r\n\t\t" +
+                    "    if(Length <= (data.getSize() - data.position))\r\n\t\t    {\r\n\t\t\t\t// Read the ope" +
+                    "ration and read the actual message into a new buffer\r\n\t\t\t\tvar messageLength = da" +
+                    "ta.readInt(32, false); // UNUSED\r\n\t\t\t\tvar operation = \"\";\r\n\t\t\t\tfor (var i=0; i <" +
+                    " sizeOfKey; i++)\r\n\t\t\t\t{\r\n\t\t\t\t\tvar byte = data.readInt(8, false);\r\n\t\t\t\t\tvar sbyte" +
+                    " = byte.toString(16);\r\n\t\t\t\t\tif(sbyte.length == 1)\r\n\t\t\t\t\t\tsbyte = \"0\" + sbyte;\r\n\t" +
+                    "\t\t\t\toperation += sbyte;\r\n\t\t\t\t}\r\n\t\t\t\toperation = operation.toUpperCase();\r\n\r\n\t\t\t\t" +
+                    "// New buffer for the packet\r\n\t\t\t\tvar packet = new spike.ByteArray([]);\r\n\t\t\t\tdat" +
+                    "a.readBytesTo(packet, Length - sizeTotal);\r\n\t\t\t\tpacket.position = 0;\r\n\t\t\r\n\t\t\t\t//" +
+                    " Create the reader and fire the event\r\n\t\t\t\tif(socket.channel != \'undefined\' && s" +
+                    "ocket.channel != null && socket.channel.onReceive != \'undefined\' && socket.chann" +
+                    "el.onReceive != null)\r\n\t\t\t\t{\r\n\t\t\t\t\tvar reader = new spike.PacketReader(packet);\r" +
+                    "\n\t\t\t\t\tsocket._channel.onReceive(operation, reader);\r\n\t\t\t\t}\r\n\t\t    }\r\n\t\t    else " +
+                    "\r\n\t\t    {\r\n\t\t     \t// Read the partial packet\r\n\t\t\t\tsocket.buffer = new spike.Byt" +
+                    "eArray([]);\r\n\t\t\t\tdata.readBytesTo(socket.buffer, data.getSize() - data.position)" +
+                    ";\r\n\t\t\t\tsocket._partialRecord = true;\r\n\t\t    }\r\n\t\t\r\n\t\t}\r\n\t});\r\n\r\n}\r\n\r\n\r\n/* Mix in" +
+                    " \'Emitter\' */\r\nspike.Emitter(spike.Channel.prototype);\r\n\r\n/* Backwards compatibi" +
+                    "lity and alias*/\r\nspike.ServerChannel = spike.Channel;\r\nspike.TcpChannel = spike" +
+                    ".Channel;");
             this.Write(" ");
             
             #line 14 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"

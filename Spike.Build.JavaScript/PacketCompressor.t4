@@ -246,4 +246,4 @@ spike.PacketCompressor = function()
 		return output;
 	}
 	
-}
+};

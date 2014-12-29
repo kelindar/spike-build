@@ -1,5 +1,5 @@
 ﻿spike.PacketWriter = function(bufferTowrite){
-	this.buffer = new ByteArray([]);
+	this.buffer = new spike.ByteArray([]);
 }
 
 /* Compresses the packet */

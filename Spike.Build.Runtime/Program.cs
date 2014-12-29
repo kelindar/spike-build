@@ -91,7 +91,7 @@ namespace Spike.Build
                         case "-v":
                         case "--verbose":
                             if (index < args.Length && args[index][0] != '-') // no "-v blabla" 
-                                ShowUsageAndExit("--verbose take no parameters");
+                                ShowUsageAndExit("--verbose shouldn't have any parameters");
 
                             Verbose = true;
                             break;
@@ -115,7 +115,7 @@ namespace Spike.Build
                         case "-i":
                         case "--input":
                             if (index >= args.Length || args[index][0] == '-')
-                                ShowUsageAndExit("You must define a input");
+                                ShowUsageAndExit("Input must be specified.");
 
                             do
                                 Sources.Add(args[index++]);
@@ -125,7 +125,7 @@ namespace Spike.Build
                         case "-o":
                         case "--output":
                             if (index >= args.Length || args[index][0] == '-')
-                                ShowUsageAndExit("You must define a output");
+                                ShowUsageAndExit("Output must be specified.");
 
                             var destination = args[index++];
                             if (Destination != null ||  
@@ -137,7 +137,7 @@ namespace Spike.Build
                         case "-f":
                         case "--format":
                             if (index >= args.Length || args[index][0] == '-')
-                                ShowUsageAndExit("You must define a format");
+                                ShowUsageAndExit("Format must be specified.");
 
                             var format = args[index++];
                             if (Format != null ||  
@@ -149,7 +149,7 @@ namespace Spike.Build
                         case "-n":
                         case "--namespace":
                             if (index >= args.Length || args[index][0] == '-')
-                                ShowUsageAndExit("You must define a namespace");
+                                ShowUsageAndExit("Namespace must be specified.");
 
                             var ns = args[index++];
                             if (Namespace != null ||  //already set by previex --platform
@@ -163,10 +163,10 @@ namespace Spike.Build
                 }
                 
                 if (Builder == null)
-                    ShowUsageAndExit("You must define a platform");
+                    ShowUsageAndExit("Platform must be specified.");
 
                 if (Sources.Count <= 0)
-                    ShowUsageAndExit("You must define a source");
+                    ShowUsageAndExit("Source must be specified.");
 
 
                 // Get Model

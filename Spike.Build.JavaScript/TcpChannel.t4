@@ -23,7 +23,7 @@
 
 	/* Hook socket 'open' event */
 	this.socket.on('open', function(){  
-		this._channel.transport = this.socket.transport.name;
+		this._channel.transport = this.transport;
 		if (this._channel.connect != null)
 			this._channel.connect();
 		this._channel.emit('connect');
@@ -31,7 +31,7 @@
 
 	/* Hook socket 'close' event */
 	this.socket.on('close', function(){  
-		this._channel.transport = "disconnected";
+		this._channel.transport = null;
 		if (this._channel.disconnect != null)
 			this._channel.disconnect();
 		this._channel.emit('disconnect');
@@ -67,7 +67,7 @@
 <#		} #>
 		
 		<#= send.Compressed ? "writer.compress();" : "" #>
-		this.send(0x<#= send.Id.ToString("X") #>u, writer);
+		this.send("<#= send.Id.ToString("X") #>", writer);
 	}
 
 <# } #>
@@ -78,7 +78,7 @@
 <#			foreach(var receive in Model.Receives){ #>
 			
 			// <#= receive.Name #> 	
-			case 0x<#= receive.Id.ToString("X") #>u: {
+			case "<#= receive.Id.ToString("X") #>": {
 				<#= receive.Compressed ? "reader.Decompress();" : "" #>
 				var packet = new Object();
 <#				foreach(var member in receive.Members){ #>
@@ -100,10 +100,10 @@
 
 	/* Sends the data to the remote endpoint */
 	this.send = function(operationKey, writer) {
-		if(typeof operationNumber === 'undefined' )
+		if(typeof operationKey === 'undefined' )
 			throw new Error("Attempting to send without specifying the operation.")
-		if(typeof writer === 'undefined' || writer != null)
-			throw new Error("Attempting to send null buffer.")
+		if(typeof writer === 'undefined')
+			throw new Error("Attempting to send an undefined buffer.")
 
 		// Initialize size variables
 		var sizeOfKey = 4;
@@ -111,7 +111,7 @@
 		var sizeTotal = 8;
 
 		// Writes the length of the packet, the operation and the data
-		var length   = packet == null ? 0 : packet.buffer.data.length;
+		var length   = writer == null ? 0 : writer.buffer.data.length;
 		var compiled = new spike.PacketWriter();
 
 		// Write the length of the packet
@@ -122,7 +122,7 @@
 	
 		// Write the body
 		if(length > 0){
-			compiled.buffer.writeBytes(packet.buffer.data);
+			compiled.buffer.writeBytes(writer.buffer.data);
 		}
 
 		// Send the payload in base64
@@ -136,7 +136,7 @@
 		var sizeOfLen = 4;
 		var sizeTotal = 8;
 
-		var data = new ByteArray([]);
+		var data = new spike.ByteArray([]);
 		var socket = this._channel;
 		if(socket._partialRecord)
 		{
@@ -153,7 +153,7 @@
 			if(data.getSize() - data.position < sizeOfLen)
 			{
 				// Read the partial packet 
-				socket.buffer = new ByteArray([]);
+				socket.buffer = new spike.ByteArray([]);
 				data.readBytesTo(socket.buffer, data.getSize() - data.position);
 				socket._partialRecord = true;
 				break;
@@ -179,7 +179,7 @@
 				operation = operation.toUpperCase();
 
 				// New buffer for the packet
-				var packet = new ByteArray([]);
+				var packet = new spike.ByteArray([]);
 				data.readBytesTo(packet, Length - sizeTotal);
 				packet.position = 0;
 		
@@ -193,7 +193,7 @@
 		    else 
 		    {
 		     	// Read the partial packet
-				socket.buffer = new ByteArray([]);
+				socket.buffer = new spike.ByteArray([]);
 				data.readBytesTo(socket.buffer, data.getSize() - data.position);
 				socket._partialRecord = true;
 		    }
@@ -205,7 +205,7 @@
 
 
 /* Mix in 'Emitter' */
-Emitter(spike.Channel.prototype);
+spike.Emitter(spike.Channel.prototype);
 
 /* Backwards compatibility and alias*/
 spike.ServerChannel = spike.Channel;
