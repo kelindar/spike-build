@@ -305,76 +305,145 @@ namespace Spike.Build.JavaScript
                     "PacketWriter.prototype.writeString = function(value){\r\n\tif(value == \'undefined\' " +
                     "|| value == null || value.length == 0){\r\n\t\tthis.writeInt32(0);\t\t\r\n\t}else{\r\n\t\tval" +
                     "ue = unescape(encodeURIComponent(value));\r\n\t\tthis.writeInt32(value.length);\r\n\t\tt" +
-                    "his.buffer.writeBytes(value);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writePacket" +
-                    " = function(value){\r\n\tvalue.write(this);\r\n}\r\n\r\nspike.PacketWriter.prototype.writ" +
-                    "eEntity = function(value){\r\n\tvalue.write(this);\r\n}\r\n\r\nspike.PacketWriter.prototy" +
-                    "pe.writeDynamic = function(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"num" +
-                    "ber\")\r\n\t{\r\n\t\tthis.writeByte(1);\r\n\t\tthis.writeString(\"Double\");\r\n\t\tthis.writeDoub" +
-                    "le(value);\r\n\t}\r\n\telse if(type == \"boolean\")\r\n\t{\r\n\t\tthis.writeByte(1);\r\n\t\tthis.wr" +
-                    "iteString(\"Boolean\");\r\n\t\tthis.writeBoolean(value);\r\n\t}\r\n\telse if(type == \"string" +
-                    "\")\r\n\t{\r\n\t\tthis.writeByte(1);\r\n\t\tthis.writeString(\"String\");\r\n\t\tthis.writeString(" +
-                    "value);\r\n\t}\r\n\telse if(type == \"object\" && value instanceof Date)\r\n\t{\r\n\t\tthis.wri" +
-                    "teByte(1);\r\n\t\tthis.writeString(\"DateTime\");\r\n\t\tthis.writeDateTime(value);\r\n\t}\r\n\t" +
-                    "else\r\n\t{\r\n\t\tthis.writeByte(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArray" +
-                    "OfByte = function(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" && v" +
-                    "alue instanceof ByteArray){\r\n\t\tthis.writeInt32(value.getSize());\r\n\t\tthis.buffer." +
-                    "writeBytes(value.data);\r\n\t}else{\r\n\t\tthis.writeInt32(value.length);\r\n\t\tthis.buffe" +
-                    "r.writeBytes(value);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfUInt16 =" +
-                    " function(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" && value ins" +
-                    "tanceof Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\tr" +
-                    "eturn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.writeUInt16(value[i]);\r\n\t\t" +
-                    "}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeAr" +
-                    "rayOfInt16 = function(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" " +
-                    "&& value instanceof Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(value.length" +
-                    " == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.writeInt16(val" +
-                    "ue[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.protot" +
-                    "ype.writeArrayOfInt32 = function(value){\r\n\tvar type = typeof(value);\r\n\tif(type =" +
-                    "= \"object\" && value instanceof Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(v" +
-                    "alue.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.wri" +
-                    "teInt32(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWr" +
-                    "iter.prototype.writeArrayOfUInt32 = function(value){\r\n\tvar type = typeof(value);" +
+                    "his.buffer.writeBytes(value);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeDynami" +
+                    "c = function(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"number\")\r\n\t{\r\n\t\tt" +
+                    "his.writeByte(1);\r\n\t\tthis.writeString(\"Double\");\r\n\t\tthis.writeDouble(value);\r\n\t}" +
+                    "\r\n\telse if(type == \"boolean\")\r\n\t{\r\n\t\tthis.writeByte(1);\r\n\t\tthis.writeString(\"Boo" +
+                    "lean\");\r\n\t\tthis.writeBoolean(value);\r\n\t}\r\n\telse if(type == \"string\")\r\n\t{\r\n\t\tthis" +
+                    ".writeByte(1);\r\n\t\tthis.writeString(\"String\");\r\n\t\tthis.writeString(value);\r\n\t}\r\n\t" +
+                    "else if(type == \"object\" && value instanceof Date)\r\n\t{\r\n\t\tthis.writeByte(1);\r\n\t\t" +
+                    "this.writeString(\"DateTime\");\r\n\t\tthis.writeDateTime(value);\r\n\t}\r\n\telse\r\n\t{\r\n\t\tth" +
+                    "is.writeByte(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfByte = funct" +
+                    "ion(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" && value instanceo" +
+                    "f ByteArray){\r\n\t\tthis.writeInt32(value.getSize());\r\n\t\tthis.buffer.writeBytes(val" +
+                    "ue.data);\r\n\t}else{\r\n\t\tthis.writeInt32(value.length);\r\n\t\tthis.buffer.writeBytes(v" +
+                    "alue);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfUInt16 = function(valu" +
+                    "e){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" && value instanceof Array)" +
+                    "{\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(" +
+                    "var i=0; i<value.length; ++i){\r\n\t\t\tthis.writeUInt16(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\t" +
+                    "this.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfInt16 = f" +
+                    "unction(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" && value insta" +
+                    "nceof Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\tret" +
+                    "urn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.writeInt16(value[i]);\r\n\t\t}\r\n" +
+                    "\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArray" +
+                    "OfInt32 = function(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" && " +
+                    "value instanceof Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(value.length ==" +
+                    " 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.writeInt32(value[" +
+                    "i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype" +
+                    ".writeArrayOfUInt32 = function(value){\r\n\tvar type = typeof(value);\r\n\tif(type == " +
+                    "\"object\" && value instanceof Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(val" +
+                    "ue.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.write" +
+                    "UInt32(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWri" +
+                    "ter.prototype.writeArrayOfInt64 = function(value){\r\n\tvar type = typeof(value);\r\n" +
+                    "\tif(type == \"object\" && value instanceof Array){\r\n\t\tthis.writeInt32(value.length" +
+                    ");\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t" +
+                    "\t\tthis.writeInt64(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspik" +
+                    "e.PacketWriter.prototype.writeArrayOfUInt64 = function(value){\r\n\tvar type = type" +
+                    "of(value);\r\n\tif(type == \"object\" && value instanceof Array){\r\n\t\tthis.writeInt32(" +
+                    "value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.leng" +
+                    "th; ++i){\r\n\t\t\tthis.writeUInt64(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n" +
+                    "\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfDouble = function(value){\r\n\tva" +
+                    "r type = typeof(value);\r\n\tif(type == \"object\" && value instanceof Array){\r\n\t\tthi" +
+                    "s.writeInt32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0;" +
+                    " i<value.length; ++i){\r\n\t\t\tthis.writeDouble(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.wri" +
+                    "teInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfSingle = function" +
+                    "(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" && value instanceof A" +
+                    "rray){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t" +
+                    "\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.writeSingle(value[i]);\r\n\t\t}\r\n\t}else" +
+                    "{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfDate" +
+                    "Time = function(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" && val" +
+                    "ue instanceof Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(value.length == 0)" +
+                    "\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.writeDateTime(value[" +
+                    "i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype" +
+                    ".writeArrayOfString = function(value){\r\n\tvar type = typeof(value);\r\n\tif(type == " +
+                    "\"object\" && value instanceof Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(val" +
+                    "ue.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.write" +
+                    "String(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWri" +
+                    "ter.prototype.writeArrayOfBoolean = function(value){\r\n\tvar type = typeof(value);" +
                     "\r\n\tif(type == \"object\" && value instanceof Array){\r\n\t\tthis.writeInt32(value.leng" +
                     "th);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r" +
-                    "\n\t\t\tthis.writeUInt32(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\ns" +
-                    "pike.PacketWriter.prototype.writeArrayOfInt64 = function(value){\r\n\tvar type = ty" +
-                    "peof(value);\r\n\tif(type == \"object\" && value instanceof Array){\r\n\t\tthis.writeInt3" +
-                    "2(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.le" +
-                    "ngth; ++i){\r\n\t\t\tthis.writeInt64(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r" +
-                    "\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfUInt64 = function(value){\r\n\tv" +
-                    "ar type = typeof(value);\r\n\tif(type == \"object\" && value instanceof Array){\r\n\t\tth" +
-                    "is.writeInt32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0" +
-                    "; i<value.length; ++i){\r\n\t\t\tthis.writeUInt64(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.wr" +
-                    "iteInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfDouble = functio" +
-                    "n(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" && value instanceof " +
-                    "Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n" +
-                    "\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.writeDouble(value[i]);\r\n\t\t}\r\n\t}els" +
-                    "e{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfSin" +
-                    "gle = function(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" && valu" +
-                    "e instanceof Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(value.length == 0)\r" +
-                    "\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.writeSingle(value[i])" +
-                    ";\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.wr" +
-                    "iteArrayOfDateTime = function(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"" +
-                    "object\" && value instanceof Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(valu" +
-                    "e.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.writeD" +
-                    "ateTime(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWr" +
-                    "iter.prototype.writeArrayOfString = function(value){\r\n\tvar type = typeof(value);" +
-                    "\r\n\tif(type == \"object\" && value instanceof Array){\r\n\t\tthis.writeInt32(value.leng" +
-                    "th);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r" +
-                    "\n\t\t\tthis.writeString(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\ns" +
-                    "pike.PacketWriter.prototype.writeArrayOfBoolean = function(value){\r\n\tvar type = " +
-                    "typeof(value);\r\n\tif(type == \"object\" && value instanceof Array){\r\n\t\tthis.writeIn" +
-                    "t32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value." +
-                    "length; ++i){\r\n\t\t\tthis.writeBoolean(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(" +
-                    "0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfDynamic = function(value)" +
-                    "{\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" && value instanceof Array){\r" +
-                    "\n\t\tthis.writeInt32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(va" +
-                    "r i=0; i<value.length; ++i){\r\n\t\t\tthis.writeDynamic(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tt" +
-                    "his.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArray = function(" +
-                    "value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" && value instanceof Ar" +
-                    "ray){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\t" +
-                    "for(var i=0; i<value.length; ++i){\r\n\t\t\tif(value[i].write != \'undefined\'){\r\n\t\t\t\tv" +
-                    "alue[i].write(this);\r\n\t\t\t}else{\r\n\t\t\t\tthrow \"Unable to write, the array contains " +
-                    "unknown elements\";\r\n\t\t\t}\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n");
+                    "\n\t\t\tthis.writeBoolean(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\n" +
+                    "spike.PacketWriter.prototype.writeArrayOfDynamic = function(value){\r\n\tvar type =" +
+                    " typeof(value);\r\n\tif(type == \"object\" && value instanceof Array){\r\n\t\tthis.writeI" +
+                    "nt32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value" +
+                    ".length; ++i){\r\n\t\t\tthis.writeDynamic(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32" +
+                    "(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArray = function(value){\r\n\tvar " +
+                    "type = typeof(value);\r\n\tif(type == \"object\" && value instanceof Array){\r\n\t\tthis." +
+                    "writeInt32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i" +
+                    "<value.length; ++i){\r\n\t\t\tif(value[i].write != \'undefined\'){\r\n\t\t\t\tvalue[i].write(" +
+                    "this);\r\n\t\t\t}else{\r\n\t\t\t\tthrow \"Unable to write, the array contains unknown elemen" +
+                    "ts\";\r\n\t\t\t}\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\n\r\n");
+            
+            #line 318 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
+ foreach(var customType in Model.CustomTypes) { 
+            
+            #line default
+            #line hidden
+            this.Write("spike.PacketWriter.prototype.write");
+            
+            #line 319 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
+            this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
+            
+            #line default
+            #line hidden
+            this.Write(" = function(value)\r\n{\r\n    ");
+            
+            #line 321 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
+ foreach(var member in customType.Members){ 
+            
+            #line default
+            #line hidden
+            this.Write("\t\tthis.write");
+            
+            #line 322 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
+            this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "ArrayOf" : string.Empty));
+            
+            #line default
+            #line hidden
+            
+            #line 322 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
+            this.Write(this.ToStringHelper.ToStringWithCulture(member.Type));
+            
+            #line default
+            #line hidden
+            this.Write("(value.");
+            
+            #line 322 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
+            this.Write(this.ToStringHelper.ToStringWithCulture(member.Name.CamelCase()));
+            
+            #line default
+            #line hidden
+            this.Write(");\r\n    ");
+            
+            #line 323 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
+ } 
+            
+            #line default
+            #line hidden
+            this.Write("}\r\n\r\nprotected void WriteArrayOf");
+            
+            #line 326 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
+            this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
+            
+            #line default
+            #line hidden
+            this.Write(" = function(value)\r\n{\r\n\tif(Object.prototype.toString.call( someVar ) !== \'[object" +
+                    " Array]\')\r\n\t\tthrow new Error(\"Attempted to write an invalid array.\");\r\n\r\n    thi" +
+                    "s.writeInt32(value.length);\r\n    for (var i = 0; i < value.length; ++i)\r\n       " +
+                    " this.write");
+            
+            #line 333 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
+            this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
+            
+            #line default
+            #line hidden
+            this.Write("(value[i]);\r\n}\r\n");
+            
+            #line 335 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
+ } 
+            
+            #line default
+            #line hidden
             this.Write(" ");
             
             #line 11 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
@@ -468,7 +537,76 @@ namespace Spike.Build.JavaScript
                     "eadString() );\r\n\t\t\t\r\n\treturn resultArray;\r\n}\r\n\r\nspike.PacketReader.prototype.rea" +
                     "dArrayOfDynamic = function(){\r\n\tvar length = this.readInt32();\r\n\tvar resultArray" +
                     " = new Array();\r\n\t\t\r\n\tfor(var i = 0; i < length; ++i)\r\n\t\tresultArray.push( this." +
-                    "readDynamic() );\r\n\t\t\t\r\n\treturn resultArray;\r\n}\r\n\r\n");
+                    "readDynamic() );\r\n\t\t\t\r\n\treturn resultArray;\r\n}\r\n\r\n\r\n");
+            
+            #line 250 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
+ foreach(var customType in Model.CustomTypes) { 
+            
+            #line default
+            #line hidden
+            this.Write("spike.PacketReader.prototype.read");
+            
+            #line 251 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
+            this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
+            
+            #line default
+            #line hidden
+            this.Write(" = function(){\r\n    var value = new Object();\r\n\t");
+            
+            #line 253 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
+ foreach(var member in customType.Members) { 
+            
+            #line default
+            #line hidden
+            this.Write("\tvalue.");
+            
+            #line 254 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
+            this.Write(this.ToStringHelper.ToStringWithCulture(member.Name.CamelCase()));
+            
+            #line default
+            #line hidden
+            this.Write(" = reader.read");
+            
+            #line 254 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
+            this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "ArrayOf" : string.Empty));
+            
+            #line default
+            #line hidden
+            
+            #line 254 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
+            this.Write(this.ToStringHelper.ToStringWithCulture(member.Type));
+            
+            #line default
+            #line hidden
+            this.Write("();\t");
+            
+            #line 254 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
+ } 
+            
+            #line default
+            #line hidden
+            this.Write("\treturn value;\r\n}\r\n\r\nspike.PacketReader.prototype.readArrayOf");
+            
+            #line 258 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
+            this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
+            
+            #line default
+            #line hidden
+            this.Write(" = function(){\r\n\tvar length = this.readInt32();\r\n    var value  = [];\r\n    for (v" +
+                    "ar i = 0; i < length; ++i)\r\n        value[i] = this.read");
+            
+            #line 262 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
+            this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
+            
+            #line default
+            #line hidden
+            this.Write("();\r\n    return value;\r\n}\r\n");
+            
+            #line 265 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
+ } 
+            
+            #line default
+            #line hidden
             this.Write(" ");
             
             #line 12 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
@@ -478,7 +616,7 @@ namespace Spike.Build.JavaScript
             #line hidden
             
             #line 13 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
- if(Target == null || Target == "Engine") { 
+ if(Target == null || Target == "TcpEngine") { 
             
             #line default
             #line hidden

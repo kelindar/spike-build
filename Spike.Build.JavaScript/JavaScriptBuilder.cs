@@ -136,19 +136,12 @@ namespace Spike.Build.JavaScript
                 // Build PacketWriter.js
                 this.BuildTarget("PacketWriter", output, template);
 
-                // Build Engine.js
-                this.BuildTarget("Engine", output, template);
+                // Build TcpEngine.js
+                this.BuildTarget("TcpEngine", output, template);
 
                 // Build TcpChannel.js
                 this.BuildTarget("TcpChannel", output, template);
 
-                //Make CustomType
-                /*template.Target = "ComplexType";
-                foreach (var customType in model.CustomTypes)
-                {
-                    // Build the type
-                    this.BuildType(customType, output, template);
-                }*/
             }
         }
     }

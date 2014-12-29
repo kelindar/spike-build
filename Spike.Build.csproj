@@ -275,7 +275,7 @@
       <LastGenOutput>JavaScriptTemplate.cs</LastGenOutput>
       <CustomToolNamespace>Spike.Build.JavaScript</CustomToolNamespace>
     </None>
-    <None Include="Spike.Build.JavaScript\Engine.t4">
+    <None Include="Spike.Build.JavaScript\TcpEngine.t4">
       <LastGenOutput>CLZF.cs</LastGenOutput>
     </None>
     <None Include="Spike.Build.JavaScript\PacketWriter.t4">

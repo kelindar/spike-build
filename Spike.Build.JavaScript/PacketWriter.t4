@@ -85,14 +85,6 @@ spike.PacketWriter.prototype.writeString = function(value){
 	}
 }
 
-spike.PacketWriter.prototype.writePacket = function(value){
-	value.write(this);
-}
-
-spike.PacketWriter.prototype.writeEntity = function(value){
-	value.write(this);
-}
-
 spike.PacketWriter.prototype.writeDynamic = function(value){
 	var type = typeof(value);
 	if(type == "number")
@@ -321,3 +313,23 @@ spike.PacketWriter.prototype.writeArray = function(value){
 		this.writeInt32(0);
 	}
 }
+
+
+<# foreach(var customType in Model.CustomTypes) { #>
+spike.PacketWriter.prototype.write<#= customType.Name #> = function(value)
+{
+    <# foreach(var member in customType.Members){ #>
+		this.write<#= member.IsList ? "ArrayOf" : string.Empty #><#= member.Type #>(value.<#= member.Name.CamelCase() #>);
+    <# } #>
+}
+
+protected void WriteArrayOf<#= customType.Name #> = function(value)
+{
+	if(Object.prototype.toString.call( someVar ) !== '[object Array]')
+		throw new Error("Attempted to write an invalid array.");
+
+    this.writeInt32(value.length);
+    for (var i = 0; i < value.length; ++i)
+        this.write<#= customType.Name #>(value[i]);
+}
+<# } #>

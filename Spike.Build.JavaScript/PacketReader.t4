@@ -246,3 +246,20 @@ spike.PacketReader.prototype.readArrayOfDynamic = function(){
 	return resultArray;
 }
 
+
+<# foreach(var customType in Model.CustomTypes) { #>
+spike.PacketReader.prototype.read<#= customType.Name #> = function(){
+    var value = new Object();
+	<# foreach(var member in customType.Members) { #>
+	value.<#= member.Name.CamelCase() #> = reader.read<#= member.IsList ? "ArrayOf" : string.Empty #><#= member.Type #>();	<# } #>
+	return value;
+}
+
+spike.PacketReader.prototype.readArrayOf<#= customType.Name #> = function(){
+	var length = this.readInt32();
+    var value  = [];
+    for (var i = 0; i < length; ++i)
+        value[i] = this.read<#= customType.Name #>();
+    return value;
+}
+<# } #>
