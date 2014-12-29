@@ -50,6 +50,13 @@ namespace Spike.Build
             return text;
         }
 
+        public static string WithoutInform(this string text)
+        {
+            if (text == null || text.Length == 0 || !text.EndsWith("Inform"))
+                return text;
+            return text.Substring(0, text.Length - 6);
+        }
+
         public static void CopyFromRessources(string source, string destination)
         {
             using (var sourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(source))

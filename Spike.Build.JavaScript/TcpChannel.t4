@@ -52,7 +52,7 @@
 	// Send Methods    
 <# foreach(var send in Model.Sends) { #>
 	/* Sends a <#= send.Name #> request to the remote server. */	
-	this.<#= send.Name #> = function(<#	
+	this.<#= send.Name.CamelCase() #> = function(<#	
 			var first = true;
 			foreach(var member in send.Members){
 				if(!first) Write(", ");
@@ -88,6 +88,7 @@
 				if (<#= receive.Name.CamelCase() #> != null)
 					<#= receive.Name.CamelCase() #>(packet, this);
 				emit('<#= receive.Name.CamelCase() #>', packet);
+				emit('<#= receive.Name.WithoutInform().CamelCase() #>', packet);
 
 			} break;
 

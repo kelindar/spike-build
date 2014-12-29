@@ -1815,7 +1815,7 @@ namespace Spike.Build.JavaScript
             this.Write(" request to the remote server. */\t\r\n\tthis.");
             
             #line 55 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
-            this.Write(this.ToStringHelper.ToStringWithCulture(send.Name));
+            this.Write(this.ToStringHelper.ToStringWithCulture(send.Name.CamelCase()));
             
             #line default
             #line hidden
@@ -1971,9 +1971,16 @@ namespace Spike.Build.JavaScript
             
             #line default
             #line hidden
+            this.Write("\', packet);\r\n\t\t\t\temit(\'");
+            
+            #line 91 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name.WithoutInform().CamelCase()));
+            
+            #line default
+            #line hidden
             this.Write("\', packet);\r\n\r\n\t\t\t} break;\r\n\r\n");
             
-            #line 94 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 95 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
 				} 
             
             #line default
