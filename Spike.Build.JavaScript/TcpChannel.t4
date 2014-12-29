@@ -1,0 +1,211 @@
+﻿spike.Channel = function(endPoint){
+
+	/* Server EndPoint url. */
+	this.endPoint = endPoint;
+
+	/* Receive buffer */
+	this.buffer = new spike.ByteArray([]);
+
+	/* Partial record flag */
+	this._partialRecord = false;
+
+	/* 'Socket' object to use for all communication*/
+	this.socket = eio.Socket(this.endPoint);
+	this.socket._channel = this;
+
+	/* Socket transport currently used */
+	this.transport = "";
+
+	/* Disconnects from the server. */
+	this.disconnect = function(){
+		this.socket.close();
+	};
+
+	/* Hook socket 'open' event */
+	this.socket.on('open', function(){  
+		this._channel.transport = this.socket.transport.name;
+		if (this._channel.connect != null)
+			this._channel.connect();
+		this._channel.emit('connect');
+	});
+
+	/* Hook socket 'close' event */
+	this.socket.on('close', function(){  
+		this._channel.transport = "disconnected";
+		if (this._channel.disconnect != null)
+			this._channel.disconnect();
+		this._channel.emit('disconnect');
+	});
+
+	/* Event: invoked when the socket is connected. */
+	this.connect = null;
+
+	/* Event: invoked when the socket is disconnected. */
+	this.disconnect = null;
+
+<# foreach(var receive in Model.Receives){ #>
+	/* Event: invoked when the <#= receive.Name #> inform is received from the server. */
+	this.<#= receive.Name.CamelCase() #> = null; 
+
+<# } #>
+		    
+	// Send Methods    
+<# foreach(var send in Model.Sends) { #>
+	/* Sends a <#= send.Name #> request to the remote server. */	
+	this.<#= send.Name #> = function(<#	
+			var first = true;
+			foreach(var member in send.Members){
+				if(!first) Write(", ");
+				Write(member.Name.CamelCase());
+				first = false;
+			}
+		#>){
+		
+		var writer = new spike.PacketWriter();
+<#		foreach(var member in send.Members) { #>
+		writer.write<#= member.IsList ? "ArrayOf" : string.Empty #><#= member.Type #>(<#= member.Name.CamelCase() #>);
+<#		} #>
+		
+		<#= send.Compressed ? "writer.compress();" : "" #>
+		this.send(0x<#= send.Id.ToString("X") #>u, writer);
+	}
+
+<# } #>
+
+	// Dispatcher
+	this.onReceive = function(key, reader){
+		switch (key){
+<#			foreach(var receive in Model.Receives){ #>
+			
+			// <#= receive.Name #> 	
+			case 0x<#= receive.Id.ToString("X") #>u: {
+				<#= receive.Compressed ? "reader.Decompress();" : "" #>
+				var packet = new Object();
+<#				foreach(var member in receive.Members){ #>
+				packet.<#= member.Name.CamelCase() #> = reader.read<#= member.IsList ? "ArrayOf" : string.Empty #><#= member.Type #>();
+<#				} #>
+
+				if (<#= receive.Name.CamelCase() #> != null)
+					<#= receive.Name.CamelCase() #>(packet, this);
+				emit('<#= receive.Name.CamelCase() #>', packet);
+
+			} break;
+
+<#				} #>
+
+			default: throw new Error("Received an unknown packet with '" + key + "' key.");
+		}
+	}
+
+	/* Sends the data to the remote endpoint */
+	this.send = function(operationKey, writer) {
+		if(typeof operationNumber === 'undefined' )
+			throw new Error("Attempting to send without specifying the operation.")
+		if(typeof writer === 'undefined' || writer != null)
+			throw new Error("Attempting to send null buffer.")
+
+		// Initialize size variables
+		var sizeOfKey = 4;
+		var sizeOfLen = 4;
+		var sizeTotal = 8;
+
+		// Writes the length of the packet, the operation and the data
+		var length   = packet == null ? 0 : packet.buffer.data.length;
+		var compiled = new spike.PacketWriter();
+
+		// Write the length of the packet
+		compiled.writeUInt32(length + sizeOfKey);
+
+		// Write the key of the packet
+		compiled.writeKey(operationKey);
+	
+		// Write the body
+		if(length > 0){
+			compiled.buffer.writeBytes(packet.buffer.data);
+		}
+
+		// Send the payload in base64
+		this.socket.send( compiled.buffer.toBase64() );
+	};
+
+	/* Invoked when the socked receives incoming data */
+	this.socket.on('message', function(payload) {
+		// Initialize size variables
+		var sizeOfKey = 4;
+		var sizeOfLen = 4;
+		var sizeTotal = 8;
+
+		var data = new ByteArray([]);
+		var socket = this._channel;
+		if(socket._partialRecord)
+		{
+			socket.buffer.readBytesTo(data, socket.buffer.getSize());
+			socket._partialRecord = false;
+		}			
+
+		// Read received data
+		data.writeBase64(payload);
+
+		// While we have data to read
+		while(data.position < data.getSize())
+		{
+			if(data.getSize() - data.position < sizeOfLen)
+			{
+				// Read the partial packet 
+				socket.buffer = new ByteArray([]);
+				data.readBytesTo(socket.buffer, data.getSize() - data.position);
+				socket._partialRecord = true;
+				break;
+			} 
+			
+			var Length = data.readInt(32, false) + sizeOfLen;
+			data.position -= sizeOfLen;
+			
+		    // If we have enough data to form a full packet.
+		    if(Length <= (data.getSize() - data.position))
+		    {
+				// Read the operation and read the actual message into a new buffer
+				var messageLength = data.readInt(32, false); // UNUSED
+				var operation = "";
+				for (var i=0; i < sizeOfKey; i++)
+				{
+					var byte = data.readInt(8, false);
+					var sbyte = byte.toString(16);
+					if(sbyte.length == 1)
+						sbyte = "0" + sbyte;
+					operation += sbyte;
+				}
+				operation = operation.toUpperCase();
+
+				// New buffer for the packet
+				var packet = new ByteArray([]);
+				data.readBytesTo(packet, Length - sizeTotal);
+				packet.position = 0;
+		
+				// Create the reader and fire the event
+				if(socket.channel != 'undefined' && socket.channel != null && socket.channel.onReceive != 'undefined' && socket.channel.onReceive != null)
+				{
+					var reader = new spike.PacketReader(packet);
+					socket._channel.onReceive(operation, reader);
+				}
+		    }
+		    else 
+		    {
+		     	// Read the partial packet
+				socket.buffer = new ByteArray([]);
+				data.readBytesTo(socket.buffer, data.getSize() - data.position);
+				socket._partialRecord = true;
+		    }
+		
+		}
+	});
+
+}
+
+
+/* Mix in 'Emitter' */
+Emitter(spike.Channel.prototype);
+
+/* Backwards compatibility and alias*/
+spike.ServerChannel = spike.Channel;
+spike.TcpChannel = spike.Channel;

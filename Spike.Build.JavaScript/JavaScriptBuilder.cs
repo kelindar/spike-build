@@ -139,11 +139,8 @@ namespace Spike.Build.JavaScript
                 // Build Engine.js
                 this.BuildTarget("Engine", output, template);
 
-                // Build ServerSocket.js
-                this.BuildTarget("ServerSocket", output, template);
-
-                // Build ServerChannel.js
-                this.BuildTarget("ServerChannel", output, template);
+                // Build TcpChannel.js
+                this.BuildTarget("TcpChannel", output, template);
 
                 //Make CustomType
                 /*template.Target = "ComplexType";

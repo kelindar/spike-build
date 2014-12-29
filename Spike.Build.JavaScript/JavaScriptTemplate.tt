@@ -11,8 +11,7 @@
 <# if(Target == null || Target == "PacketWriter") { #> <#@ include file="PacketWriter.t4"#> <# } #><##>
 <# if(Target == null || Target == "PacketReader") { #> <#@ include file="PacketReader.t4"#> <# } #><##>
 <# if(Target == null || Target == "Engine") { #> <#@ include file="Engine.t4"#> <# } #><##>
-<# if(Target == null || Target == "ServerSocket") { #> <#@ include file="ServerSocket.t4"#> <# } #><##>
-<# if(Target == null || Target == "ServerChannel") { #> <#@ include file="ServerChannel.t4"#> <# } #><##>
+<# if(Target == null || Target == "TcpChannel") { #> <#@ include file="TcpChannel.t4"#> <# } #><##>
 
 <#+ public void Clear(){
 	GenerationEnvironment.Clear();

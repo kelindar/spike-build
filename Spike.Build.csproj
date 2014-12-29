@@ -278,9 +278,6 @@
     <None Include="Spike.Build.JavaScript\Engine.t4">
       <LastGenOutput>CLZF.cs</LastGenOutput>
     </None>
-    <None Include="Spike.Build.JavaScript\ServerSocket.t4">
-      <LastGenOutput>CLZF.cs</LastGenOutput>
-    </None>
     <None Include="Spike.Build.JavaScript\PacketWriter.t4">
       <LastGenOutput>CLZF.cs</LastGenOutput>
     </None>
@@ -293,7 +290,7 @@
     <None Include="Spike.Build.JavaScript\PacketCompressor.t4">
       <LastGenOutput>CLZF.cs</LastGenOutput>
     </None>
-    <None Include="Spike.Build.JavaScript\ServerChannel.t4" />
+    <None Include="Spike.Build.JavaScript\TcpChannel.t4" />
     <None Include="Spike.Build.Java\CustomTypeTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>CustomTypeTemplate.cs</LastGenOutput>
