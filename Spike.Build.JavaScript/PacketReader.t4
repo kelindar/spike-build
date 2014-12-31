@@ -108,7 +108,7 @@ spike.PacketReader.prototype.readEntity = function(value){
 
 spike.PacketReader.prototype.readArrayOfByte = function(){
 	var len = this.readInt32();
-	return new ByteArray(this.buffer.readBytes(len));
+	return new spike.ByteArray(this.buffer.readBytes(len));
 }
 
 spike.PacketReader.prototype.readArrayOfEntity = function(className){

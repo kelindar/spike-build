@@ -59,7 +59,7 @@ spike.PacketCompressor = function()
 	{
 		this.HashTable.splice(0, this.HSIZE);
 		
-		var output = new ByteArray([]);
+		var output = new spike.ByteArray([]);
 		
 		var hslot;
 		var iidx = 0;
@@ -185,7 +185,7 @@ spike.PacketCompressor = function()
 	{
 		var iidx = 0;
 		var oidx = 0;
-		var output = new ByteArray([]);
+		var output = new spike.ByteArray([]);
 
 		do
 		{

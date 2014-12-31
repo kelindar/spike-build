@@ -79,16 +79,16 @@
 			
 			// <#= receive.Name #> 	
 			case "<#= receive.Id.ToString("X") #>": {
-				<#= receive.Compressed ? "reader.Decompress();" : "" #>
+				<#= receive.Compressed ? "reader.decompress();" : "" #>
 				var packet = new Object();
 <#				foreach(var member in receive.Members){ #>
 				packet.<#= member.Name.CamelCase() #> = reader.read<#= member.IsList ? "ArrayOf" : string.Empty #><#= member.Type #>();
 <#				} #>
 
-				if (<#= receive.Name.CamelCase() #> != null)
-					<#= receive.Name.CamelCase() #>(packet, this);
-				emit('<#= receive.Name.CamelCase() #>', packet);
-				emit('<#= receive.Name.WithoutInform().CamelCase() #>', packet);
+				if (this.<#= receive.Name.CamelCase() #> != null)
+					this.<#= receive.Name.CamelCase() #>(packet, this);
+				this.emit('<#= receive.Name.CamelCase() #>', packet);
+				this.emit('<#= receive.Name.WithoutInform().CamelCase() #>', packet);
 
 			} break;
 
@@ -126,22 +126,24 @@
 		}
 
 		// Send the payload in base64
-		this.socket.send( compiled.buffer.toBase64() );
+		this.socket.send(compiled.buffer.toBase64() );
+		//this.socket.send(compiled.buffer.data);
 	};
 
 	/* Invoked when the socked receives incoming data */
 	this.socket.on('message', function(payload) {
+
 		// Initialize size variables
 		var sizeOfKey = 4;
 		var sizeOfLen = 4;
 		var sizeTotal = 8;
 
 		var data = new spike.ByteArray([]);
-		var socket = this._channel;
-		if(socket._partialRecord)
+		var channel = this._channel;
+		if (channel._partialRecord)
 		{
-			socket.buffer.readBytesTo(data, socket.buffer.getSize());
-			socket._partialRecord = false;
+			channel.buffer.readBytesTo(data, socket.buffer.getSize());
+			channel._partialRecord = false;
 		}			
 
 		// Read received data
@@ -153,9 +155,9 @@
 			if(data.getSize() - data.position < sizeOfLen)
 			{
 				// Read the partial packet 
-				socket.buffer = new spike.ByteArray([]);
+				channel.buffer = new spike.ByteArray([]);
 				data.readBytesTo(socket.buffer, data.getSize() - data.position);
-				socket._partialRecord = true;
+				channel._partialRecord = true;
 				break;
 			} 
 			
@@ -184,18 +186,16 @@
 				packet.position = 0;
 		
 				// Create the reader and fire the event
-				if(socket.channel != 'undefined' && socket.channel != null && socket.channel.onReceive != 'undefined' && socket.channel.onReceive != null)
-				{
-					var reader = new spike.PacketReader(packet);
-					socket._channel.onReceive(operation, reader);
-				}
+				var reader = new spike.PacketReader(packet);
+				channel.onReceive(operation, reader);
+	
 		    }
 		    else 
 		    {
 		     	// Read the partial packet
-				socket.buffer = new spike.ByteArray([]);
+				channel.buffer = new spike.ByteArray([]);
 				data.readBytesTo(socket.buffer, data.getSize() - data.position);
-				socket._partialRecord = true;
+				channel._partialRecord = true;
 		    }
 		
 		}
