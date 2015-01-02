@@ -1,25 +1,48 @@
 ﻿if(typeof spike === 'undefined')
 	spike = new Object();
 
-spike.ByteArray = function(data){
-	// Set the data if provided
-	this.data = (typeof data === 'undefined')
-		? []
-		: data;
-
-	/* Current position in the buffer */
+// Whether we should or not use native binary support
+spike.binarySupport =  ((typeof Uint8Array !== 'undefined') && (typeof DataView !== 'undefined'));
+spike.ByteArray = function(bytes){
 	this.position = 0;
-
-	/* By default: use big endian */
 	this.bigEndian = true;
-
-	/* By default: allow exceptions */
 	this.allowExceptions = true;
+
+	if(spike.binarySupport)
+	{
+		this.data  = new ArrayBuffer(0);
+		this._size = this._maxSize = this.data.byteLength;
+		this.view  = new DataView(this.data);
+	}
+	else
+	{
+		this.data = [];
+	}
 };
 with({p: spike.ByteArray.prototype}){
 
+	/* Ensures the capacity for n bytes in this array, resizes if necessary */
+	p.ensureCapacity = function(length) {
+		if(this._maxSize > this.position + length)
+			return;
+
+		// Resize by 1024 and build a data view
+		var baseArrayBuffer = this.data;
+		var newByteSize = this._maxSize + Math.max(1024, length);
+		var resizedArrayBuffer = new ArrayBuffer(newByteSize),
+			len = baseArrayBuffer.byteLength,
+			resizeLen = (len > newByteSize)? newByteSize : len;
+
+			(new Uint8Array(resizedArrayBuffer, 0, resizeLen)).set(new Uint8Array(baseArrayBuffer, 0, resizeLen));
+
+		this.data = resizedArrayBuffer;
+		this.view = new DataView(this.data);
+		this._maxSize = newByteSize; 
+	};
+
+
 	/* Writes a floating-point value to the underlying buffer. */
-	p.writeFloat = function(number, precisionBits, exponentBits){
+	p.string_writeFloat = function(number, precisionBits, exponentBits){
 		var bias = Math.pow(2, exponentBits - 1) - 1, minExp = -bias + 1, maxExp = bias, minUnnormExp = minExp - precisionBits,
 		status = isNaN(n = parseFloat(number)) || n == -Infinity || n == +Infinity ? n : 0,
 		exp = 0, len = 2 * bias + 1 + precisionBits + 3, bin = new Array(len),
@@ -47,8 +70,31 @@ with({p: spike.ByteArray.prototype}){
 		this.data += (this.bigEndian ? r.reverse() : r).join('');
 	};
 
+	/* Writes a floating-point value to the underlying buffer. */
+	p.native_writeFloat = function(number, precisionBits, exponentBits){
+		var bits = precisionBits + exponentBits + 1;
+		this.ensureCapacity(bits / 8);
+		switch(bits)
+		{
+			case 32:
+				this.view.setFloat32(this.position, number, !this.bigEndian);
+				this.position += 4;
+				this._size += 4;
+				return;
+
+			case 64:
+				this.view.setFloat64(this.position, number, !this.bigEndian);
+				this.position += 8;
+				this._size += 8;
+				return;
+		}
+	};
+
+	/* Writes a floating-point value to the underlying buffer. */
+	p.writeFloat = spike.binarySupport ? p.native_writeFloat : p.string_writeFloat;
+
 	/* Writes a integral value to the underlying buffer. */
-	p.writeInt = function(number, bits, signed){
+	p.string_writeInt = function(number, bits, signed){
 	    var max = Math.pow(2, bits), r = [];
 	    var maxs = Math.pow(2, bits - 1);
 		(signed && (number >= maxs || number < -maxs)) && this.warn('writeInt::overflow') && (number = 0);
@@ -59,18 +105,90 @@ with({p: spike.ByteArray.prototype}){
 		this.data += (this.bigEndian ? r.reverse() : r).join('');
 	};
 
+	/* Writes a integral value to the underlying buffer. */
+	p.native_writeInt = function(number, bits, signed){
+		this.ensureCapacity(bits / 8);
+		if(signed)
+		{
+			switch(bits)
+			{
+				case 8:
+					this.view.setInt8(this.position, number);
+					this.position += 1;
+					this._size += 1;
+					return;
+
+				case 16:
+					this.view.setInt16(this.position, number, !this.bigEndian);
+					this.position += 2;
+					this._size += 2;
+					return;
+
+				case 32:
+					this.view.setInt32(this.position, number, !this.bigEndian);
+					this.position += 4;
+					this._size += 4;
+					return;
+
+				case 64:
+					throw new Error("Int64 is not supported in JavaScript.")
+			}
+		}
+		else
+		{
+			switch(bits)
+			{
+				case 8:
+					this.view.setUint8(this.position, number);
+					this.position += 1;
+					this._size += 1;
+					return;
+
+				case 16:
+					this.view.setUint16(this.position, number, !this.bigEndian);
+					this.position += 2;
+					this._size += 2;
+					return;
+
+				case 32:
+					this.view.setUint32(this.position, number, !this.bigEndian);
+					this.position += 4;
+					this._size += 4;
+					return;
+
+				case 64:
+					throw new Error("Int64 is not supported in JavaScript.")
+			}
+		}
+	};
+	
+	/* Writes a integral value to the underlying buffer. */
+	p.writeInt = spike.binarySupport ? p.native_writeInt : p.string_writeInt;
+
 	/* Writes an unsigned byte value to the underlying buffer. */
 	p.writeByte = function(number){
 		this.writeInt(number, 8, false);
 	};
 
 	/* Writes bytes to the underlying buffer. */
-	p.writeBytes = function(bytes){
+	p.string_writeBytes = function(bytes){
 		this.data += bytes;
 	};
 
+	/* Writes bytes to the underlying buffer. */
+	p.native_writeBytes = function(bytes){
+		this.ensureCapacity(bytes.length);
+		var v = new Uint8Array(this.data, 0, bytes.length);
+		v.set(bytes, this.position);
+		this.position += bytes.length;
+		this._size += bytes.length;
+	};
+
+	/* Writes bytes to the underlying buffer. */
+	p.writeBytes = spike.binarySupport ? p.native_writeBytes : p.string_writeBytes;
+
 	/* Reads a floating-point value from the underlying buffer. */
-	p.readFloat = function(precisionBits, exponentBits){
+	p.string_readFloat = function(precisionBits, exponentBits){
 		var blen = (precisionBits + exponentBits + 1) / 8;
 		var data = this.data.slice(this.position, this.position + blen);
 		this.position += blen;
@@ -88,8 +206,29 @@ with({p: spike.ByteArray.prototype}){
 			: Math.pow(2, exponent - bias) * (1 + significand) : 0);
 	};
 
+	/* Reads a floating-point value from the underlying buffer. */
+	p.native_readFloat = function(precisionBits, exponentBits){
+		var bits = (precisionBits + exponentBits + 1);
+		var value = 0;
+		switch(bits)
+		{
+			case 32:
+				value = this.view.getFloat32(this.position, !this.bigEndian);
+				this.position += 4;
+				return value;
+
+			case 64:
+				value = this.view.getFloat64(this.position, !this.bigEndian);
+				this.position += 8;
+				return value;
+		}
+	};
+
+	/* Reads a floating-point value from the underlying buffer. */
+	p.readFloat = spike.binarySupport ? p.native_readFloat : p.string_readFloat;
+
 	/* Reads an integral value from the underlying buffer. */
-	p.readInt = function(bits, signed){
+	p.string_readInt = function(bits, signed){
 		var blen = bits / 8;
 		var data = this.data.slice(this.position, this.position + blen);
 		this.position += blen;
@@ -97,36 +236,116 @@ with({p: spike.ByteArray.prototype}){
 		return signed && x >= max / 2 ? x - max : x;
 	};
 
+	/* Reads an integral value from the underlying buffer. */
+	p.native_readInt = function(bits, signed){
+		var value = 0;
+		if(signed)
+		{
+			switch(bits)
+			{
+				case 8:
+					value = this.view.getInt8(this.position);
+					this.position += 1;
+					return value < 0x80 ? value : value - 0x100;
+
+				case 16:
+					value = this.view.getInt16(this.position, !this.bigEndian);
+					this.position += 2;
+					return value;
+
+				case 32:
+					value = this.view.getInt32(this.position, !this.bigEndian);
+					this.position += 4;
+					return value;
+
+				case 64:
+					throw new Error("Int64 is not supported in JavaScript.")
+			}
+		}
+		else
+		{
+			switch(bits)
+			{
+				case 8:
+					value =  this.view.getUint8(this.position);
+					this.position += 1;
+					return value;
+
+				case 16:
+					value = this.view.getUint16(this.position, !this.bigEndian);
+					this.position += 2;
+					return value;
+
+				case 32:
+					value = this.view.getUint32(this.position, !this.bigEndian);
+					this.position += 4;
+					return value;
+
+				case 64:
+					throw new Error("Int64 is not supported in JavaScript.")
+			}
+		}
+	}
+
+	/* Reads an integral value from the underlying buffer. */
+	p.readInt = spike.binarySupport ? p.native_readInt : p.string_readInt;
+
 	/* Reads an unsigned byte value from the underlying buffer. */
 	p.readByte = function(){
 		return this.readInt(8, false);
 	};
 
 	/* Reads bytes from the underlying buffer. */
-	p.readBytes = function(count){
+	p.string_readBytes = function(count){
 		var r = this.data.slice(this.position, this.position + count);
 		this.position += count;
 		return r;
 	};
 
+	/* Reads bytes from the underlying buffer. */
+	p.native_readBytes = function(count){
+		var r = new Uint8Array(this.data, this.position, count);
+		this.position += count;
+		return r;
+	};
+
+	/* Reads bytes from the underlying buffer. */
+	p.readBytes = spike.binarySupport ? p.native_readBytes : p.string_readBytes;
+
 	/* Gets a byte value on a specified position */
-	p.getAt = function(index){
+	p.string_getAt = function(index){
 		return this.data.charCodeAt(index) & 0xff;
 	};
 
-	/* Appends the underlying buffer data to the specified buffer. */
-	p.readBytesTo = function(targetBuffer, count){
-		targetBuffer.data += this.data.slice(this.position, this.position + count);
-		this.position += count;
+	/* Gets a byte value on a specified position */
+	p.native_getAt = function(index){
+		return this.view.getUint8(index);
 	};
 
+	/* Reads bytes from the underlying buffer. */
+	p.getAt = spike.binarySupport ? p.native_getAt : p.string_getAt;
+
 	/* Appends the underlying buffer data to the specified buffer. */
-	p.getSize = function(){
+	p.readBytesTo = function(targetBuffer, count){
+		targetBuffer.writeBytes( this.readBytes(count) );
+	};
+
+
+	/* Appends the underlying buffer data to the specified buffer. */
+	p.string_getSize = function(){
 		return this.data.length;
 	};
 
+	/* Appends the underlying buffer data to the specified buffer. */
+	p.native_getSize = function(){
+		return this._size;
+	};
+
+	/* Appends the underlying buffer data to the specified buffer. */
+	p.getSize = spike.binarySupport ? p.native_getSize : p.string_getSize;
+
 	/* Gets the byte array data as base64 encoded string */
-	p.toBase64 = function(){
+	p.string_toBase64 = function(){
 		var cleanBuffer = new Array();
 		var result = "";
 
@@ -142,14 +361,47 @@ with({p: spike.ByteArray.prototype}){
 		}
 	};
 
+	/* Gets the byte array data as base64 encoded string */
+	p.native_toBase64 = function(){
+		//var array = (new Uint8Array(this.data)).subarray(0, this._size);
+		var array = new Uint8Array(this.data, 0, this._size);
+		var text  = String.fromCharCode.apply(null, array);
+
+		return (typeof(btoa) === 'function') 
+			? btoa(text) 
+			: this._btoa(text);
+	};
+
+	/* Gets the byte array data as base64 encoded string */
+	p.toBase64 = spike.binarySupport ? p.native_toBase64 : p.string_toBase64;
+
+	/* Gets the underlying buffer slice */
+	p.toBuffer = function(){
+		var p = this.position;
+		this.position = 0;
+		var b = this.readBytes(this.getSize());
+		this.position = p;
+		return b;
+	};
+
 	/* Writes base 64 encoded string to the buffer after decoding it */
-	p.writeBase64 = function(input){
+	p.string_writeBase64 = function(input){
 		if (typeof(atob) === 'function') {
 			this.writeBytes(atob(input));
 		} else {
 			this.writeBytes(this._atob(input));
 		}
 	};
+
+	/* Writes base 64 encoded string to the buffer after decoding it */
+	p.native_writeBase64 = function(input){
+		var array = new Uint8Array(atob(input).split("").map(function(c) { return c.charCodeAt(0); }));
+		this.writeBytes(array);
+	};
+
+	/* Writes base 64 encoded string to the buffer after decoding it */
+	p.writeBase64 = spike.binarySupport ? p.native_writeBase64 : p.string_writeBase64;
+
 
      /* btoa() for Internet Explorer */
      p._btoa = function(str) {

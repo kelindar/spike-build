@@ -67,7 +67,10 @@ spike.PacketReader.prototype.readDouble = function(){
 spike.PacketReader.prototype.readString = function(){
 	var length = this.readInt32();
 	if(length > 0){
-		return decodeURIComponent(escape(this.buffer.readBytes(length)));
+		var s = this.buffer.readBytes(length);
+		return spike.binarySupport
+			? decodeURIComponent(escape(String.fromCharCode.apply(null, s)))
+			: decodeURIComponent(escape(s));
 	}
 	else{
 		return '';
@@ -108,7 +111,10 @@ spike.PacketReader.prototype.readEntity = function(value){
 
 spike.PacketReader.prototype.readArrayOfByte = function(){
 	var len = this.readInt32();
-	return new spike.ByteArray(this.buffer.readBytes(len));
+	var arr = new spike.ByteArray();
+	arr.writeBytes(this.buffer.readBytes(len));
+	arr.position = 0;
+	return arr;
 }
 
 spike.PacketReader.prototype.readArrayOfEntity = function(className){

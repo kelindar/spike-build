@@ -124,7 +124,7 @@ spike.Channel.prototype.send = function(operationKey, writer) {
 	var sizeTotal = 8;
 
 	// Writes the length of the packet, the operation and the data
-	var length   = writer == null ? 0 : writer.buffer.data.length;
+	var length   = writer == null ? 0 : writer.buffer.getSize();
 	var compiled = new spike.PacketWriter();
 
 	// Write the length of the packet
@@ -139,8 +139,13 @@ spike.Channel.prototype.send = function(operationKey, writer) {
 	}
 
 	// Send the payload in base64
-	this.socket.send(compiled.buffer.toBase64() );
-	//this.socket.send(compiled.buffer.data);
+	/*var data = spike.binarySupport 
+		? compiled.buffer.toBuffer()
+		: compiled.buffer.toBase64();*/
+	var data = compiled.buffer.toBase64();
+	
+	//spike.debug('Sending buffer: %s (%s)', data, (typeof data).toString());
+	this.socket.send(data);
 };
 
 
@@ -228,9 +233,12 @@ spike.Channel.prototype.connect = function(fn){
 			channel._partialRecord = false;
 		}			
 
-		// Read received data
-		data.writeBase64(payload);
+		//spike.debug('Received buffer: %s', payload);
 
+		// Read received data and reset (SEEK)
+		data.writeBase64(payload);
+		data.position = 0;
+		
 		// While we have data to read
 		while(data.position < data.getSize())
 		{
@@ -243,11 +251,11 @@ spike.Channel.prototype.connect = function(fn){
 				break;
 			} 
 			
-			var Length = data.readInt(32, false) + sizeOfLen;
+			var length = data.readInt(32, false) + sizeOfLen;
 			data.position -= sizeOfLen;
 			
 		    // If we have enough data to form a full packet.
-		    if(Length <= (data.getSize() - data.position))
+		    if(length <= (data.getSize() - data.position))
 		    {
 				// Read the operation and read the actual message into a new buffer
 				var messageLength = data.readInt(32, false); // UNUSED
@@ -260,11 +268,12 @@ spike.Channel.prototype.connect = function(fn){
 						sbyte = "0" + sbyte;
 					operation += sbyte;
 				}
-				operation = operation.toUpperCase();
+				operation = operation.toUpperCase();-
+				spike.debug('Operation #%s received', operation);
 
 				// New buffer for the packet
 				var packet = new spike.ByteArray();
-				data.readBytesTo(packet, Length - sizeTotal);
+				data.readBytesTo(packet, length - sizeTotal);
 				packet.position = 0;
 		
 				// Create the reader and fire the event

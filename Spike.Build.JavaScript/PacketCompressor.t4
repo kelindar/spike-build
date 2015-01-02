@@ -183,8 +183,8 @@ spike.PacketCompressor = function()
 	/* Decompresses the data using LibLZF algorithm */
 	this.decompress = function(input, inputLength)
 	{
-		var iidx = 0;
-		var oidx = 0;
+		var iidx = 0 | 0;
+		var oidx = 0 | 0;
 		var output = new spike.ByteArray();
 
 		do
