@@ -1,0 +1,217 @@
+﻿/**
+ * Initialize backoff timer with `opts`.
+ *
+ * - `min` initial timeout in milliseconds [100]
+ * - `max` max timeout [10000]
+ * - `jitter` [0]
+ * - `factor` [2]
+ *
+ * @param {Object} opts
+ * @api public
+ */
+spike.Backoff = function(opts){
+  opts = opts || {};
+  this.ms = opts.min || 100;
+  this.max = opts.max || 10000;
+  this.factor = opts.factor || 2;
+  this.jitter = opts.jitter > 0 && opts.jitter <= 1 ? opts.jitter : 0;
+  this.attempts = 0;
+};
+
+/**
+ * Return the backoff duration.
+ *
+ * @return {Number}
+ * @api public
+ */
+spike.Backoff.prototype.duration = function(){
+  var ms = this.ms * Math.pow(this.factor, this.attempts++);
+  if (this.jitter) {
+    var rand =  Math.random();
+    var deviation = Math.floor(rand * this.jitter * ms);
+    ms = (Math.floor(rand * 10) & 1) == 0  ? ms - deviation : ms + deviation;
+  }
+  return Math.min(ms, this.max) | 0;
+};
+
+/**
+ * Reset the number of attempts.
+ *
+ * @api public
+ */
+spike.Backoff.prototype.reset = function(){
+  this.attempts = 0;
+};
+
+/**
+ * Set the minimum duration
+ *
+ * @api public
+ */
+spike.Backoff.prototype.setMin = function(min){
+  this.ms = min;
+};
+
+/**
+ * Set the maximum duration
+ *
+ * @api public
+ */
+spike.Backoff.prototype.setMax = function(max){
+  this.max = max;
+};
+
+/**
+ * Set the jitter
+ *
+ * @api public
+ */
+spike.Backoff.prototype.setJitter = function(jitter){
+  this.jitter = jitter;
+};
+
+
+/**
+* Called upon successful reconnect.
+*
+* @api private
+*/
+spike.Channel.prototype.onreconnect = function(){
+	var attempt = this.backoff.attempts;
+	this.reconnecting = false;
+	this.backoff.reset();
+	this.emit('reconnect', attempt);
+};
+
+/**
+* Sets the `reconnection` config.
+*
+* @param {Boolean} true/false if it should automatically reconnect
+* @return {Manager} self or value
+* @api public
+*/
+spike.Channel.prototype.reconnection = function(v){
+	if (!arguments.length) return this._reconnection;
+	this._reconnection = !!v;
+	return this;
+};
+
+/**
+* Sets the reconnection attempts config.
+*
+* @param {Number} max reconnection attempts before giving up
+* @return {Manager} self or value
+* @api public
+*/
+spike.Channel.prototype.reconnectionAttempts = function(v){
+	if (!arguments.length) return this._reconnectionAttempts;
+	this._reconnectionAttempts = v;
+	return this;
+};
+
+/**
+* Sets the delay between reconnections.
+*
+* @param {Number} delay
+* @return {Manager} self or value
+* @api public
+*/
+spike.Channel.prototype.reconnectionDelay = function(v){
+	if (!arguments.length) return this._reconnectionDelay;
+	this._reconnectionDelay = v;
+	this.backoff && this.backoff.setMin(v);
+	return this;
+};
+spike.Channel.prototype.randomizationFactor = function(v){
+	if (!arguments.length) return this._randomizationFactor;
+	this._randomizationFactor = v;
+	this.backoff && this.backoff.setJitter(v);
+	return this;
+};
+
+/**
+* Sets the maximum delay between reconnections.
+*
+* @param {Number} delay
+* @return {Manager} self or value
+* @api public
+*/
+spike.Channel.prototype.reconnectionDelayMax = function(v){
+	if (!arguments.length) return this._reconnectionDelayMax;
+	this._reconnectionDelayMax = v;
+	this.backoff && this.backoff.setMax(v);
+	return this;
+};
+
+/**
+* Sets the connection timeout. `false` to disable
+*
+* @return {Manager} self or value
+* @api public
+*/
+spike.Channel.prototype.timeout = function(v){
+	if (!arguments.length) return this._timeout;
+	this._timeout = v;
+	return this;
+};
+
+/**
+* Starts trying to reconnect if reconnection is enabled and we have not
+* started reconnecting yet
+*
+* @api private
+*/
+spike.Channel.prototype.maybeReconnectOnOpen = function() {
+	// Only try to reconnect if it's the first time we're connecting
+	if (!this.reconnecting && this._reconnection && this.backoff.attempts === 0) {
+		// keeps reconnection from firing twice for the same reconnection loop
+		this.reconnect();
+	}
+};
+
+/**
+ * Attempt a reconnection.
+ *
+ * @api private
+ */
+spike.Channel.prototype.reconnect = function(){
+  if (this.reconnecting || this.skipReconnect) return this;
+
+  var self = this;
+
+  if (this.backoff.attempts >= this._reconnectionAttempts) {
+    spike.debug('reconnect failed');
+    this.backoff.reset();
+    this.emit('reconnect_failed');
+    this.reconnecting = false;
+  } else {
+    var delay = this.backoff.duration();
+    spike.debug('will wait %dms before reconnect attempt', delay);
+
+    this.reconnecting = true;
+    var timer = setTimeout(function(){
+      if (self.skipReconnect)
+		return;
+
+      spike.debug('attempting reconnect');
+      self.emit('reconnect_attempt', self.backoff.attempts);
+      self.emit('reconnecting', self.backoff.attempts);
+
+      // check again for the case socket closed in above events
+      if (self.skipReconnect) return;
+
+      self.open(function(err){
+        if (err) {
+          spike.debug('reconnect attempt error, %s', err);
+          self.reconnecting = false;
+          self.reconnect();
+          self.emit('reconnect_error', err.data);
+        } else {
+          spike.debug('reconnect success');
+          self.onreconnect();
+        }
+      });
+    }, delay);
+
+  }
+};

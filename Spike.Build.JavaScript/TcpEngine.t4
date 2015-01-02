@@ -709,9 +709,6 @@ Socket.prototype.filterUpgrades = function (upgrades) {
 var parser = _dereq_('engine.io-parser');
 var Emitter = _dereq_('component-emitter');
 
-if(typeof spike === 'undefined')
-	spike = new Object();
-spike.Emitter = Emitter;
 
 /**
  * Module exports.
@@ -1162,6 +1159,12 @@ var Polling = _dereq_('./polling');
 var Emitter = _dereq_('component-emitter');
 var inherit = _dereq_('component-inherit');
 var debug = _dereq_('debug')('engine.io-client:polling-xhr');
+
+if(typeof spike === 'undefined')
+	spike = new Object();
+spike.Emitter = Emitter;
+spike.debug = _dereq_('debug')('spike');
+
 
 /**
  * Module exports.
