@@ -2,10 +2,11 @@
 	spike = new Object();
 
 spike.ByteArray = function(data){
-	
-	/* The buffer containing the byte data */
-	this.data = data;
-	
+	// Set the data if provided
+	this.data = (typeof data === 'undefined')
+		? []
+		: data;
+
 	/* Current position in the buffer */
 	this.position = 0;
 

@@ -15,7 +15,7 @@
 	// Main properties
 	this.opts = opts;
 	this.endPoint = uri;
-	this.buffer = new spike.ByteArray([]);
+	this.buffer = new spike.ByteArray();
 	this.readyState = 'closed';
 	this.socket = null;
 	this.transport = "";
@@ -220,7 +220,7 @@ spike.Channel.prototype.connect = function(fn){
 		var sizeOfLen = 4;
 		var sizeTotal = 8;
 
-		var data = new spike.ByteArray([]);
+		var data = new spike.ByteArray();
 		var channel = this._channel;
 		if (channel._partialRecord)
 		{
@@ -237,7 +237,7 @@ spike.Channel.prototype.connect = function(fn){
 			if(data.getSize() - data.position < sizeOfLen)
 			{
 				// Read the partial packet 
-				channel.buffer = new spike.ByteArray([]);
+				channel.buffer = new spike.ByteArray();
 				data.readBytesTo(socket.buffer, data.getSize() - data.position);
 				channel._partialRecord = true;
 				break;
@@ -263,7 +263,7 @@ spike.Channel.prototype.connect = function(fn){
 				operation = operation.toUpperCase();
 
 				// New buffer for the packet
-				var packet = new spike.ByteArray([]);
+				var packet = new spike.ByteArray();
 				data.readBytesTo(packet, Length - sizeTotal);
 				packet.position = 0;
 		
@@ -275,7 +275,7 @@ spike.Channel.prototype.connect = function(fn){
 		    else 
 		    {
 		     	// Read the partial packet
-				channel.buffer = new spike.ByteArray([]);
+				channel.buffer = new spike.ByteArray();
 				data.readBytesTo(socket.buffer, data.getSize() - data.position);
 				channel._partialRecord = true;
 		    }
