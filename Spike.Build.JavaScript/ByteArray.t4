@@ -3,7 +3,7 @@
 
 // Whether we should or not use native binary support
 spike.binarySupport =  ((typeof Uint8Array !== 'undefined') && (typeof DataView !== 'undefined'));
-spike.ByteArray = function(bytes){
+spike.ByteArray = function(){
 	this.position = 0;
 	this.bigEndian = true;
 	this.allowExceptions = true;

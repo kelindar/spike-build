@@ -39,221 +39,221 @@ namespace Spike.Build.JavaScript
             this.Write("if(typeof spike === \'undefined\')\r\n\tspike = new Object();\r\n\r\n// Whether we should " +
                     "or not use native binary support\r\nspike.binarySupport =  ((typeof Uint8Array !==" +
                     " \'undefined\') && (typeof DataView !== \'undefined\'));\r\nspike.ByteArray = function" +
-                    "(bytes){\r\n\tthis.position = 0;\r\n\tthis.bigEndian = true;\r\n\tthis.allowExceptions = " +
-                    "true;\r\n\r\n\tif(spike.binarySupport)\r\n\t{\r\n\t\tthis.data  = new ArrayBuffer(0);\r\n\t\tthi" +
-                    "s._size = this._maxSize = this.data.byteLength;\r\n\t\tthis.view  = new DataView(thi" +
-                    "s.data);\r\n\t}\r\n\telse\r\n\t{\r\n\t\tthis.data = [];\r\n\t}\r\n};\r\nwith({p: spike.ByteArray.pro" +
-                    "totype}){\r\n\r\n\t/* Ensures the capacity for n bytes in this array, resizes if nece" +
-                    "ssary */\r\n\tp.ensureCapacity = function(length) {\r\n\t\tif(this._maxSize > this.posi" +
-                    "tion + length)\r\n\t\t\treturn;\r\n\r\n\t\t// Resize by 1024 and build a data view\r\n\t\tvar b" +
-                    "aseArrayBuffer = this.data;\r\n\t\tvar newByteSize = this._maxSize + Math.max(1024, " +
-                    "length);\r\n\t\tvar resizedArrayBuffer = new ArrayBuffer(newByteSize),\r\n\t\t\tlen = bas" +
-                    "eArrayBuffer.byteLength,\r\n\t\t\tresizeLen = (len > newByteSize)? newByteSize : len;" +
-                    "\r\n\r\n\t\t\t(new Uint8Array(resizedArrayBuffer, 0, resizeLen)).set(new Uint8Array(bas" +
-                    "eArrayBuffer, 0, resizeLen));\r\n\r\n\t\tthis.data = resizedArrayBuffer;\r\n\t\tthis.view " +
-                    "= new DataView(this.data);\r\n\t\tthis._maxSize = newByteSize; \r\n\t};\r\n\r\n\r\n\t/* Writes" +
-                    " a floating-point value to the underlying buffer. */\r\n\tp.string_writeFloat = fun" +
-                    "ction(number, precisionBits, exponentBits){\r\n\t\tvar bias = Math.pow(2, exponentBi" +
-                    "ts - 1) - 1, minExp = -bias + 1, maxExp = bias, minUnnormExp = minExp - precisio" +
-                    "nBits,\r\n\t\tstatus = isNaN(n = parseFloat(number)) || n == -Infinity || n == +Infi" +
-                    "nity ? n : 0,\r\n\t\texp = 0, len = 2 * bias + 1 + precisionBits + 3, bin = new Arra" +
-                    "y(len),\r\n\t\tsignal = (n = status !== 0 ? 0 : n) < 0, n = Math.abs(n), intPart = M" +
-                    "ath.floor(n), floatPart = n - intPart,\r\n\t\ti, lastBit, rounded, j, result;\r\n\t\tfor" +
-                    "(i = len; i; bin[--i] = 0);\r\n\t\tfor(i = bias + 2; intPart && i; bin[--i] = intPar" +
-                    "t % 2, intPart = Math.floor(intPart / 2));\r\n\t\tfor(i = bias + 1; floatPart > 0 &&" +
-                    " i; (bin[++i] = ((floatPart *= 2) >= 1) - 0) && --floatPart);\r\n\t\tfor(i = -1; ++i" +
-                    " < len && !bin[i];);\r\n\t\tif(bin[(lastBit = precisionBits - 1 + (i = (exp = bias +" +
-                    " 1 - i) >= minExp && exp <= maxExp ? i + 1 : bias + 1 - (exp = minExp - 1))) + 1" +
-                    "]){\r\n\t\t\tif(!(rounded = bin[lastBit]))\r\n\t\t\t\tfor(j = lastBit + 2; !rounded && j < " +
-                    "len; rounded = bin[j++]);\r\n\t\t\tfor(j = lastBit + 1; rounded && --j >= 0; (bin[j] " +
-                    "= !bin[j] - 0) && (rounded = 0));\r\n\t\t}\r\n\t\tfor(i = i - 2 < 0 ? -1 : i - 3; ++i < " +
-                    "len && !bin[i];);\r\n\r\n\t\t(exp = bias + 1 - i) >= minExp && exp <= maxExp ? ++i : e" +
-                    "xp < minExp &&\r\n\t\t\t(exp != bias + 1 - len && exp < minUnnormExp && this.warn(\'en" +
-                    "codeFloat::float underflow\'), i = bias + 1 - (exp = minExp - 1));\r\n\t\t(intPart ||" +
-                    " status !== 0) && (this.warn(intPart ? \'encodeFloat::float overflow\' : \'encodeFl" +
-                    "oat::\' + status),\r\n\t\t\texp = maxExp + 1, i = bias + 2, status == -Infinity ? sign" +
-                    "al = 1 : isNaN(status) && (bin[i] = 1));\r\n\t\tfor(n = Math.abs(exp + bias), j = ex" +
-                    "ponentBits + 1, result = \'\'; --j; result = (n % 2) + result, n = n >>= 1);\r\n\t\tfo" +
-                    "r(n = 0, j = 0, i = (result = (signal ? \'1\' : \'0\') + result + bin.slice(i, i + p" +
-                    "recisionBits).join(\'\')).length, r = [];\r\n\t\t\ti; n += (1 << j) * result.charAt(--i" +
-                    "), j == 7 && (r[r.length] = String.fromCharCode(n), n = 0), j = (j + 1) % 8);\r\n\t" +
-                    "\tr[r.length] = n ? String.fromCharCode(n) : \'\';\r\n\t\tthis.data += (this.bigEndian " +
-                    "? r.reverse() : r).join(\'\');\r\n\t};\r\n\r\n\t/* Writes a floating-point value to the un" +
-                    "derlying buffer. */\r\n\tp.native_writeFloat = function(number, precisionBits, expo" +
-                    "nentBits){\r\n\t\tvar bits = precisionBits + exponentBits + 1;\r\n\t\tthis.ensureCapacit" +
-                    "y(bits / 8);\r\n\t\tswitch(bits)\r\n\t\t{\r\n\t\t\tcase 32:\r\n\t\t\t\tthis.view.setFloat32(this.po" +
-                    "sition, number, !this.bigEndian);\r\n\t\t\t\tthis.position += 4;\r\n\t\t\t\tthis._size += 4;" +
-                    "\r\n\t\t\t\treturn;\r\n\r\n\t\t\tcase 64:\r\n\t\t\t\tthis.view.setFloat64(this.position, number, !t" +
-                    "his.bigEndian);\r\n\t\t\t\tthis.position += 8;\r\n\t\t\t\tthis._size += 8;\r\n\t\t\t\treturn;\r\n\t\t}" +
-                    "\r\n\t};\r\n\r\n\t/* Writes a floating-point value to the underlying buffer. */\r\n\tp.writ" +
-                    "eFloat = spike.binarySupport ? p.native_writeFloat : p.string_writeFloat;\r\n\r\n\t/*" +
-                    " Writes a integral value to the underlying buffer. */\r\n\tp.string_writeInt = func" +
-                    "tion(number, bits, signed){\r\n\t    var max = Math.pow(2, bits), r = [];\r\n\t    var" +
-                    " maxs = Math.pow(2, bits - 1);\r\n\t\t(signed && (number >= maxs || number < -maxs))" +
-                    " && this.warn(\'writeInt::overflow\') && (number = 0);\r\n\t\t(!signed && (number >= m" +
-                    "ax || (number < -(max >> 1)))) && this.warn(\'writeUInt::overflow\') && (number = " +
-                    "0);\r\n\t\tnumber < 0 && (number += max);\r\n\t\tfor(; number; r[r.length] = String.from" +
-                    "CharCode(number % 256), number = Math.floor(number / 256));\r\n\t\tfor(bits = -(-bit" +
-                    "s >> 3) - r.length; bits--; r[r.length] = \'\\0\');\r\n\t\tthis.data += (this.bigEndian" +
-                    " ? r.reverse() : r).join(\'\');\r\n\t};\r\n\r\n\t/* Writes a integral value to the underly" +
-                    "ing buffer. */\r\n\tp.native_writeInt = function(number, bits, signed){\r\n\t\tthis.ens" +
-                    "ureCapacity(bits / 8);\r\n\t\tif(signed)\r\n\t\t{\r\n\t\t\tswitch(bits)\r\n\t\t\t{\r\n\t\t\t\tcase 8:\r\n\t" +
-                    "\t\t\t\tthis.view.setInt8(this.position, number);\r\n\t\t\t\t\tthis.position += 1;\r\n\t\t\t\t\tth" +
-                    "is._size += 1;\r\n\t\t\t\t\treturn;\r\n\r\n\t\t\t\tcase 16:\r\n\t\t\t\t\tthis.view.setInt16(this.posit" +
-                    "ion, number, !this.bigEndian);\r\n\t\t\t\t\tthis.position += 2;\r\n\t\t\t\t\tthis._size += 2;\r" +
-                    "\n\t\t\t\t\treturn;\r\n\r\n\t\t\t\tcase 32:\r\n\t\t\t\t\tthis.view.setInt32(this.position, number, !t" +
-                    "his.bigEndian);\r\n\t\t\t\t\tthis.position += 4;\r\n\t\t\t\t\tthis._size += 4;\r\n\t\t\t\t\treturn;\r\n" +
-                    "\r\n\t\t\t\tcase 64:\r\n\t\t\t\t\tthrow new Error(\"Int64 is not supported in JavaScript.\")\r\n\t" +
-                    "\t\t}\r\n\t\t}\r\n\t\telse\r\n\t\t{\r\n\t\t\tswitch(bits)\r\n\t\t\t{\r\n\t\t\t\tcase 8:\r\n\t\t\t\t\tthis.view.setUin" +
-                    "t8(this.position, number);\r\n\t\t\t\t\tthis.position += 1;\r\n\t\t\t\t\tthis._size += 1;\r\n\t\t\t" +
-                    "\t\treturn;\r\n\r\n\t\t\t\tcase 16:\r\n\t\t\t\t\tthis.view.setUint16(this.position, number, !this" +
-                    ".bigEndian);\r\n\t\t\t\t\tthis.position += 2;\r\n\t\t\t\t\tthis._size += 2;\r\n\t\t\t\t\treturn;\r\n\r\n\t" +
-                    "\t\t\tcase 32:\r\n\t\t\t\t\tthis.view.setUint32(this.position, number, !this.bigEndian);\r\n" +
-                    "\t\t\t\t\tthis.position += 4;\r\n\t\t\t\t\tthis._size += 4;\r\n\t\t\t\t\treturn;\r\n\r\n\t\t\t\tcase 64:\r\n\t" +
-                    "\t\t\t\tthrow new Error(\"Int64 is not supported in JavaScript.\")\r\n\t\t\t}\r\n\t\t}\r\n\t};\r\n\t\r" +
-                    "\n\t/* Writes a integral value to the underlying buffer. */\r\n\tp.writeInt = spike.b" +
-                    "inarySupport ? p.native_writeInt : p.string_writeInt;\r\n\r\n\t/* Writes an unsigned " +
-                    "byte value to the underlying buffer. */\r\n\tp.writeByte = function(number){\r\n\t\tthi" +
-                    "s.writeInt(number, 8, false);\r\n\t};\r\n\r\n\t/* Writes bytes to the underlying buffer." +
-                    " */\r\n\tp.string_writeBytes = function(bytes){\r\n\t\tthis.data += bytes;\r\n\t};\r\n\r\n\t/* " +
-                    "Writes bytes to the underlying buffer. */\r\n\tp.native_writeBytes = function(bytes" +
-                    "){\r\n\t\tthis.ensureCapacity(bytes.length);\r\n\t\tvar v = new Uint8Array(this.data, 0," +
-                    " bytes.length);\r\n\t\tv.set(bytes, this.position);\r\n\t\tthis.position += bytes.length" +
-                    ";\r\n\t\tthis._size += bytes.length;\r\n\t};\r\n\r\n\t/* Writes bytes to the underlying buff" +
-                    "er. */\r\n\tp.writeBytes = spike.binarySupport ? p.native_writeBytes : p.string_wri" +
-                    "teBytes;\r\n\r\n\t/* Reads a floating-point value from the underlying buffer. */\r\n\tp." +
-                    "string_readFloat = function(precisionBits, exponentBits){\r\n\t\tvar blen = (precisi" +
-                    "onBits + exponentBits + 1) / 8;\r\n\t\tvar data = this.data.slice(this.position, thi" +
-                    "s.position + blen);\r\n\t\tthis.position += blen;\r\n\t\tvar b = ((b = new this.Buffer(t" +
-                    "his.bigEndian, data)).checkBuffer(precisionBits + exponentBits + 1), b),\r\n\t\t\tbia" +
-                    "s = Math.pow(2, exponentBits - 1) - 1, signal = b.readBits(precisionBits + expon" +
-                    "entBits, 1),\r\n\t\t\texponent = b.readBits(precisionBits, exponentBits), significand" +
-                    " = 0,\r\n\t\t\tdivisor = 2, curByte = b.buffer.length + (-precisionBits >> 3) - 1,\r\n\t" +
-                    "\t\tbyteValue, startBit, mask;\r\n\t\tdo\r\n\t\t\tfor(byteValue = b.buffer[ ++curByte ], st" +
-                    "artBit = precisionBits % 8 || 8, mask = 1 << startBit;\r\n\t\t\t\tmask >>= 1; (byteVal" +
-                    "ue & mask) && (significand += 1 / divisor), divisor *= 2);\r\n\t\twhile(precisionBit" +
-                    "s -= startBit);\r\n\t\treturn exponent == (bias << 1) + 1 ? significand ? NaN : sign" +
-                    "al ? -Infinity : +Infinity\r\n\t\t\t: (1 + signal * -2) * (exponent || significand ? " +
-                    "!exponent ? Math.pow(2, -bias + 1) * significand\r\n\t\t\t: Math.pow(2, exponent - bi" +
-                    "as) * (1 + significand) : 0);\r\n\t};\r\n\r\n\t/* Reads a floating-point value from the " +
-                    "underlying buffer. */\r\n\tp.native_readFloat = function(precisionBits, exponentBit" +
-                    "s){\r\n\t\tvar bits = (precisionBits + exponentBits + 1);\r\n\t\tvar value = 0;\r\n\t\tswitc" +
-                    "h(bits)\r\n\t\t{\r\n\t\t\tcase 32:\r\n\t\t\t\tvalue = this.view.getFloat32(this.position, !this" +
-                    ".bigEndian);\r\n\t\t\t\tthis.position += 4;\r\n\t\t\t\treturn value;\r\n\r\n\t\t\tcase 64:\r\n\t\t\t\tval" +
-                    "ue = this.view.getFloat64(this.position, !this.bigEndian);\r\n\t\t\t\tthis.position +=" +
-                    " 8;\r\n\t\t\t\treturn value;\r\n\t\t}\r\n\t};\r\n\r\n\t/* Reads a floating-point value from the un" +
-                    "derlying buffer. */\r\n\tp.readFloat = spike.binarySupport ? p.native_readFloat : p" +
-                    ".string_readFloat;\r\n\r\n\t/* Reads an integral value from the underlying buffer. */" +
-                    "\r\n\tp.string_readInt = function(bits, signed){\r\n\t\tvar blen = bits / 8;\r\n\t\tvar dat" +
-                    "a = this.data.slice(this.position, this.position + blen);\r\n\t\tthis.position += bl" +
-                    "en;\r\n\t\tvar b = new this.Buffer(this.bigEndian, data), x = b.readBits(0, bits), m" +
-                    "ax = Math.pow(2, bits);\r\n\t\treturn signed && x >= max / 2 ? x - max : x;\r\n\t};\r\n\r\n" +
-                    "\t/* Reads an integral value from the underlying buffer. */\r\n\tp.native_readInt = " +
-                    "function(bits, signed){\r\n\t\tvar value = 0;\r\n\t\tif(signed)\r\n\t\t{\r\n\t\t\tswitch(bits)\r\n\t" +
-                    "\t\t{\r\n\t\t\t\tcase 8:\r\n\t\t\t\t\tvalue = this.view.getInt8(this.position);\r\n\t\t\t\t\tthis.posi" +
-                    "tion += 1;\r\n\t\t\t\t\treturn value < 0x80 ? value : value - 0x100;\r\n\r\n\t\t\t\tcase 16:\r\n\t" +
-                    "\t\t\t\tvalue = this.view.getInt16(this.position, !this.bigEndian);\r\n\t\t\t\t\tthis.posit" +
-                    "ion += 2;\r\n\t\t\t\t\treturn value;\r\n\r\n\t\t\t\tcase 32:\r\n\t\t\t\t\tvalue = this.view.getInt32(t" +
-                    "his.position, !this.bigEndian);\r\n\t\t\t\t\tthis.position += 4;\r\n\t\t\t\t\treturn value;\r\n\r" +
-                    "\n\t\t\t\tcase 64:\r\n\t\t\t\t\tthrow new Error(\"Int64 is not supported in JavaScript.\")\r\n\t\t" +
-                    "\t}\r\n\t\t}\r\n\t\telse\r\n\t\t{\r\n\t\t\tswitch(bits)\r\n\t\t\t{\r\n\t\t\t\tcase 8:\r\n\t\t\t\t\tvalue =  this.vie" +
-                    "w.getUint8(this.position);\r\n\t\t\t\t\tthis.position += 1;\r\n\t\t\t\t\treturn value;\r\n\r\n\t\t\t\t" +
-                    "case 16:\r\n\t\t\t\t\tvalue = this.view.getUint16(this.position, !this.bigEndian);\r\n\t\t\t" +
-                    "\t\tthis.position += 2;\r\n\t\t\t\t\treturn value;\r\n\r\n\t\t\t\tcase 32:\r\n\t\t\t\t\tvalue = this.vie" +
-                    "w.getUint32(this.position, !this.bigEndian);\r\n\t\t\t\t\tthis.position += 4;\r\n\t\t\t\t\tret" +
-                    "urn value;\r\n\r\n\t\t\t\tcase 64:\r\n\t\t\t\t\tthrow new Error(\"Int64 is not supported in Java" +
-                    "Script.\")\r\n\t\t\t}\r\n\t\t}\r\n\t}\r\n\r\n\t/* Reads an integral value from the underlying buff" +
-                    "er. */\r\n\tp.readInt = spike.binarySupport ? p.native_readInt : p.string_readInt;\r" +
-                    "\n\r\n\t/* Reads an unsigned byte value from the underlying buffer. */\r\n\tp.readByte " +
-                    "= function(){\r\n\t\treturn this.readInt(8, false);\r\n\t};\r\n\r\n\t/* Reads bytes from the" +
-                    " underlying buffer. */\r\n\tp.string_readBytes = function(count){\r\n\t\tvar r = this.d" +
-                    "ata.slice(this.position, this.position + count);\r\n\t\tthis.position += count;\r\n\t\tr" +
-                    "eturn r;\r\n\t};\r\n\r\n\t/* Reads bytes from the underlying buffer. */\r\n\tp.native_readB" +
-                    "ytes = function(count){\r\n\t\tvar r = new Uint8Array(this.data, this.position, coun" +
-                    "t);\r\n\t\tthis.position += count;\r\n\t\treturn r;\r\n\t};\r\n\r\n\t/* Reads bytes from the und" +
-                    "erlying buffer. */\r\n\tp.readBytes = spike.binarySupport ? p.native_readBytes : p." +
-                    "string_readBytes;\r\n\r\n\t/* Gets a byte value on a specified position */\r\n\tp.string" +
-                    "_getAt = function(index){\r\n\t\treturn this.data.charCodeAt(index) & 0xff;\r\n\t};\r\n\r\n" +
-                    "\t/* Gets a byte value on a specified position */\r\n\tp.native_getAt = function(ind" +
-                    "ex){\r\n\t\treturn this.view.getUint8(index);\r\n\t};\r\n\r\n\t/* Reads bytes from the under" +
-                    "lying buffer. */\r\n\tp.getAt = spike.binarySupport ? p.native_getAt : p.string_get" +
-                    "At;\r\n\r\n\t/* Appends the underlying buffer data to the specified buffer. */\r\n\tp.re" +
-                    "adBytesTo = function(targetBuffer, count){\r\n\t\ttargetBuffer.writeBytes( this.read" +
-                    "Bytes(count) );\r\n\t};\r\n\r\n\r\n\t/* Appends the underlying buffer data to the specifie" +
-                    "d buffer. */\r\n\tp.string_getSize = function(){\r\n\t\treturn this.data.length;\r\n\t};\r\n" +
-                    "\r\n\t/* Appends the underlying buffer data to the specified buffer. */\r\n\tp.native_" +
-                    "getSize = function(){\r\n\t\treturn this._size;\r\n\t};\r\n\r\n\t/* Appends the underlying b" +
-                    "uffer data to the specified buffer. */\r\n\tp.getSize = spike.binarySupport ? p.nat" +
-                    "ive_getSize : p.string_getSize;\r\n\r\n\t/* Gets the byte array data as base64 encode" +
-                    "d string */\r\n\tp.string_toBase64 = function(){\r\n\t\tvar cleanBuffer = new Array();\r" +
-                    "\n\t\tvar result = \"\";\r\n\r\n\t   \tfor(var i=0; i<this.getSize(); ++i)\r\n\t\t\tcleanBuffer." +
-                    "push(this.getAt(i));\r\n\t\tfor (var i = 0; i < cleanBuffer.length; i++)\r\n\t\t\tresult " +
-                    "+= String.fromCharCode(cleanBuffer[i]);\t\r\n\r\n\t\tif (typeof(btoa) === \'function\') {" +
-                    "\r\n\t\t\treturn btoa(result);\r\n\t\t} else {\r\n\t\t\treturn this._btoa(result);\r\n\t\t}\r\n\t};\r\n" +
-                    "\r\n\t/* Gets the byte array data as base64 encoded string */\r\n\tp.native_toBase64 =" +
-                    " function(){\r\n\t\t//var array = (new Uint8Array(this.data)).subarray(0, this._size" +
-                    ");\r\n\t\tvar array = new Uint8Array(this.data, 0, this._size);\r\n\t\tvar text  = Strin" +
-                    "g.fromCharCode.apply(null, array);\r\n\r\n\t\treturn (typeof(btoa) === \'function\') \r\n\t" +
-                    "\t\t? btoa(text) \r\n\t\t\t: this._btoa(text);\r\n\t};\r\n\r\n\t/* Gets the byte array data as " +
-                    "base64 encoded string */\r\n\tp.toBase64 = spike.binarySupport ? p.native_toBase64 " +
-                    ": p.string_toBase64;\r\n\r\n\t/* Gets the underlying buffer slice */\r\n\tp.toBuffer = f" +
-                    "unction(){\r\n\t\tvar p = this.position;\r\n\t\tthis.position = 0;\r\n\t\tvar b = this.readB" +
-                    "ytes(this.getSize());\r\n\t\tthis.position = p;\r\n\t\treturn b;\r\n\t};\r\n\r\n\t/* Writes base" +
-                    " 64 encoded string to the buffer after decoding it */\r\n\tp.string_writeBase64 = f" +
-                    "unction(input){\r\n\t\tif (typeof(atob) === \'function\') {\r\n\t\t\tthis.writeBytes(atob(i" +
-                    "nput));\r\n\t\t} else {\r\n\t\t\tthis.writeBytes(this._atob(input));\r\n\t\t}\r\n\t};\r\n\r\n\t/* Wri" +
-                    "tes base 64 encoded string to the buffer after decoding it */\r\n\tp.native_writeBa" +
-                    "se64 = function(input){\r\n\t\tvar array = new Uint8Array(atob(input).split(\"\").map(" +
-                    "function(c) { return c.charCodeAt(0); }));\r\n\t\tthis.writeBytes(array);\r\n\t};\r\n\r\n\t/" +
-                    "* Writes base 64 encoded string to the buffer after decoding it */\r\n\tp.writeBase" +
-                    "64 = spike.binarySupport ? p.native_writeBase64 : p.string_writeBase64;\r\n\r\n\r\n   " +
-                    "  /* btoa() for Internet Explorer */\r\n     p._btoa = function(str) {\r\n          " +
-                    "var chars = \'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=\';" +
-                    "\r\n          var encoded = [];\r\n          var c = 0;\r\n          while (c < str.le" +
-                    "ngth) {\r\n              var b0 = str.charCodeAt(c++);\r\n              var b1 = str" +
-                    ".charCodeAt(c++);\r\n              var b2 = str.charCodeAt(c++);\r\n              va" +
-                    "r buf = (b0 << 16) + ((b1 || 0) << 8) + (b2 || 0);\r\n              var i0 = (buf " +
-                    "& (63 << 18)) >> 18;\r\n              var i1 = (buf & (63 << 12)) >> 12;\r\n        " +
-                    "      var i2 = isNaN(b1) ? 64 : (buf & (63 << 6)) >> 6;\r\n              var i3 = " +
-                    "isNaN(b2) ? 64 : (buf & 63);\r\n              encoded[encoded.length] = chars.char" +
-                    "At(i0);\r\n              encoded[encoded.length] = chars.charAt(i1);\r\n            " +
-                    "  encoded[encoded.length] = chars.charAt(i2);\r\n              encoded[encoded.len" +
-                    "gth] = chars.charAt(i3);\r\n          }\r\n          return encoded.join(\'\');\r\n     " +
-                    " };\r\n\r\n\t/* atob() for Internet Explorer */\r\n\tp._atob = function(input) {\r\n\t    v" +
-                    "ar b64array = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=" +
-                    "\";\r\n\t    var output = \"\";\r\n\t    var hex = \"\";\r\n\t    var chr1, chr2, chr3 = \"\";\r\n" +
-                    "\t    var enc1, enc2, enc3, enc4 = \"\";\r\n\t    var i = 0;\r\n\t\r\n\t    input = input.re" +
-                    "place(/[^A-Za-z0-9\\+\\/\\=]/g, \"\");\r\n\t\r\n\t    do {\r\n\t        enc1 = b64array.indexO" +
-                    "f(input.charAt(i++));\r\n\t        enc2 = b64array.indexOf(input.charAt(i++));\r\n\t  " +
-                    "      enc3 = b64array.indexOf(input.charAt(i++));\r\n\t        enc4 = b64array.inde" +
-                    "xOf(input.charAt(i++));\r\n\t        \r\n\t        chr1 = (enc1 << 2) | (enc2 >> 4);\r\n" +
-                    "\t        chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);\r\n\t        chr3 = ((enc3 & 3) <" +
-                    "< 6) | enc4;\r\n\t        \r\n\t        output = output + String.fromCharCode(chr1);\r\n" +
-                    "\t        \r\n\t        if (enc3 != 64) {\r\n\t            output = output + String.fro" +
-                    "mCharCode(chr2);\r\n\t        }\r\n\t        if (enc4 != 64) {\r\n\t            output = " +
-                    "output + String.fromCharCode(chr3);\r\n\t        }\r\n\t    \r\n\t        chr1 = chr2 = c" +
-                    "hr3 = \"\";\r\n\t        enc1 = enc2 = enc3 = enc4 = \"\";\r\n\t    \r\n\t    } while (i < in" +
-                    "put.length);\r\n\r\n\t    return output;\r\n\t};\r\n\r\n\r\n\twith({p: (p.Buffer = function(big" +
-                    "Endian, buffer){\r\n\t\tthis.bigEndian = bigEndian || 0, this.buffer = [], this.setB" +
-                    "uffer(buffer);\r\n\t}).prototype}){\r\n\t\tp.readBits = function(start, length){\r\n\t\t\t//" +
-                    "shl fix: Henri Torgemane ~1996 (compressed by Jonas Raoni)\r\n\t\t\tfunction shl(a, b" +
-                    "){\r\n\t\t\t\tfor(++b; --b; a = ((a %= 0x7fffffff + 1) & 0x40000000) == 0x40000000 ? a" +
-                    " * 2 : (a - 0x40000000) * 2 + 0x7fffffff + 1);\r\n\t\t\t\treturn a;\r\n\t\t\t}\r\n\t\t\tif(start" +
-                    " < 0 || length <= 0)\r\n\t\t\t\treturn 0;\r\n\t\t\tthis.checkBuffer(start + length);\r\n\t\t\tfo" +
-                    "r(var offsetLeft, offsetRight = start % 8, curByte = this.buffer.length - (start" +
-                    " >> 3) - 1,\r\n\t\t\t\tlastByte = this.buffer.length + (-(start + length) >> 3), diff " +
-                    "= curByte - lastByte,\r\n\t\t\t\tsum = ((this.buffer[ curByte ] >> offsetRight) & ((1 " +
-                    "<< (diff ? 8 - offsetRight : length)) - 1))\r\n\t\t\t\t+ (diff && (offsetLeft = (start" +
-                    " + length) % 8) ? (this.buffer[ lastByte++ ] & ((1 << offsetLeft) - 1))\r\n\t\t\t\t<< " +
-                    "(diff-- << 3) - offsetRight : 0); diff; sum += shl(this.buffer[ lastByte++ ], (d" +
-                    "iff-- << 3) - offsetRight)\r\n\t\t\t);\r\n\t\t\treturn sum;\r\n\t\t};\r\n\t\tp.setBuffer = functio" +
-                    "n(data){\r\n\t\t\tif(data){\r\n\t\t\t\tfor(var l, i = l = data.length, b = this.buffer = ne" +
-                    "w Array(l); i; b[l - i] = data.charCodeAt(--i));\r\n\t\t\t\tthis.bigEndian && b.revers" +
-                    "e();\r\n\t\t\t}\r\n\t\t};\r\n\t\tp.hasNeededBits = function(neededBits){\r\n\t\t\treturn this.buff" +
-                    "er.length >= -(-neededBits >> 3);\r\n\t\t};\r\n\t\tp.checkBuffer = function(neededBits){" +
-                    "\r\n\t\t\tif(!this.hasNeededBits(neededBits))\r\n\t\t\t\tthrow new Error(\'checkBuffer::miss" +
-                    "ing bytes\');\r\n\t\t};\r\n\t}\r\n\tp.warn = function(msg){\r\n\t\tif(this.allowExceptions)\r\n\t\t" +
-                    "\tthrow new Error(msg);\r\n\t\treturn 1;\r\n\t};\r\n\r\n}");
+                    "(){\r\n\tthis.position = 0;\r\n\tthis.bigEndian = true;\r\n\tthis.allowExceptions = true;" +
+                    "\r\n\r\n\tif(spike.binarySupport)\r\n\t{\r\n\t\tthis.data  = new ArrayBuffer(0);\r\n\t\tthis._si" +
+                    "ze = this._maxSize = this.data.byteLength;\r\n\t\tthis.view  = new DataView(this.dat" +
+                    "a);\r\n\t}\r\n\telse\r\n\t{\r\n\t\tthis.data = [];\r\n\t}\r\n};\r\nwith({p: spike.ByteArray.prototyp" +
+                    "e}){\r\n\r\n\t/* Ensures the capacity for n bytes in this array, resizes if necessary" +
+                    " */\r\n\tp.ensureCapacity = function(length) {\r\n\t\tif(this._maxSize > this.position " +
+                    "+ length)\r\n\t\t\treturn;\r\n\r\n\t\t// Resize by 1024 and build a data view\r\n\t\tvar baseAr" +
+                    "rayBuffer = this.data;\r\n\t\tvar newByteSize = this._maxSize + Math.max(1024, lengt" +
+                    "h);\r\n\t\tvar resizedArrayBuffer = new ArrayBuffer(newByteSize),\r\n\t\t\tlen = baseArra" +
+                    "yBuffer.byteLength,\r\n\t\t\tresizeLen = (len > newByteSize)? newByteSize : len;\r\n\r\n\t" +
+                    "\t\t(new Uint8Array(resizedArrayBuffer, 0, resizeLen)).set(new Uint8Array(baseArra" +
+                    "yBuffer, 0, resizeLen));\r\n\r\n\t\tthis.data = resizedArrayBuffer;\r\n\t\tthis.view = new" +
+                    " DataView(this.data);\r\n\t\tthis._maxSize = newByteSize; \r\n\t};\r\n\r\n\r\n\t/* Writes a fl" +
+                    "oating-point value to the underlying buffer. */\r\n\tp.string_writeFloat = function" +
+                    "(number, precisionBits, exponentBits){\r\n\t\tvar bias = Math.pow(2, exponentBits - " +
+                    "1) - 1, minExp = -bias + 1, maxExp = bias, minUnnormExp = minExp - precisionBits" +
+                    ",\r\n\t\tstatus = isNaN(n = parseFloat(number)) || n == -Infinity || n == +Infinity " +
+                    "? n : 0,\r\n\t\texp = 0, len = 2 * bias + 1 + precisionBits + 3, bin = new Array(len" +
+                    "),\r\n\t\tsignal = (n = status !== 0 ? 0 : n) < 0, n = Math.abs(n), intPart = Math.f" +
+                    "loor(n), floatPart = n - intPart,\r\n\t\ti, lastBit, rounded, j, result;\r\n\t\tfor(i = " +
+                    "len; i; bin[--i] = 0);\r\n\t\tfor(i = bias + 2; intPart && i; bin[--i] = intPart % 2" +
+                    ", intPart = Math.floor(intPart / 2));\r\n\t\tfor(i = bias + 1; floatPart > 0 && i; (" +
+                    "bin[++i] = ((floatPart *= 2) >= 1) - 0) && --floatPart);\r\n\t\tfor(i = -1; ++i < le" +
+                    "n && !bin[i];);\r\n\t\tif(bin[(lastBit = precisionBits - 1 + (i = (exp = bias + 1 - " +
+                    "i) >= minExp && exp <= maxExp ? i + 1 : bias + 1 - (exp = minExp - 1))) + 1]){\r\n" +
+                    "\t\t\tif(!(rounded = bin[lastBit]))\r\n\t\t\t\tfor(j = lastBit + 2; !rounded && j < len; " +
+                    "rounded = bin[j++]);\r\n\t\t\tfor(j = lastBit + 1; rounded && --j >= 0; (bin[j] = !bi" +
+                    "n[j] - 0) && (rounded = 0));\r\n\t\t}\r\n\t\tfor(i = i - 2 < 0 ? -1 : i - 3; ++i < len &" +
+                    "& !bin[i];);\r\n\r\n\t\t(exp = bias + 1 - i) >= minExp && exp <= maxExp ? ++i : exp < " +
+                    "minExp &&\r\n\t\t\t(exp != bias + 1 - len && exp < minUnnormExp && this.warn(\'encodeF" +
+                    "loat::float underflow\'), i = bias + 1 - (exp = minExp - 1));\r\n\t\t(intPart || stat" +
+                    "us !== 0) && (this.warn(intPart ? \'encodeFloat::float overflow\' : \'encodeFloat::" +
+                    "\' + status),\r\n\t\t\texp = maxExp + 1, i = bias + 2, status == -Infinity ? signal = " +
+                    "1 : isNaN(status) && (bin[i] = 1));\r\n\t\tfor(n = Math.abs(exp + bias), j = exponen" +
+                    "tBits + 1, result = \'\'; --j; result = (n % 2) + result, n = n >>= 1);\r\n\t\tfor(n =" +
+                    " 0, j = 0, i = (result = (signal ? \'1\' : \'0\') + result + bin.slice(i, i + precis" +
+                    "ionBits).join(\'\')).length, r = [];\r\n\t\t\ti; n += (1 << j) * result.charAt(--i), j " +
+                    "== 7 && (r[r.length] = String.fromCharCode(n), n = 0), j = (j + 1) % 8);\r\n\t\tr[r." +
+                    "length] = n ? String.fromCharCode(n) : \'\';\r\n\t\tthis.data += (this.bigEndian ? r.r" +
+                    "everse() : r).join(\'\');\r\n\t};\r\n\r\n\t/* Writes a floating-point value to the underly" +
+                    "ing buffer. */\r\n\tp.native_writeFloat = function(number, precisionBits, exponentB" +
+                    "its){\r\n\t\tvar bits = precisionBits + exponentBits + 1;\r\n\t\tthis.ensureCapacity(bit" +
+                    "s / 8);\r\n\t\tswitch(bits)\r\n\t\t{\r\n\t\t\tcase 32:\r\n\t\t\t\tthis.view.setFloat32(this.positio" +
+                    "n, number, !this.bigEndian);\r\n\t\t\t\tthis.position += 4;\r\n\t\t\t\tthis._size += 4;\r\n\t\t\t" +
+                    "\treturn;\r\n\r\n\t\t\tcase 64:\r\n\t\t\t\tthis.view.setFloat64(this.position, number, !this.b" +
+                    "igEndian);\r\n\t\t\t\tthis.position += 8;\r\n\t\t\t\tthis._size += 8;\r\n\t\t\t\treturn;\r\n\t\t}\r\n\t};" +
+                    "\r\n\r\n\t/* Writes a floating-point value to the underlying buffer. */\r\n\tp.writeFloa" +
+                    "t = spike.binarySupport ? p.native_writeFloat : p.string_writeFloat;\r\n\r\n\t/* Writ" +
+                    "es a integral value to the underlying buffer. */\r\n\tp.string_writeInt = function(" +
+                    "number, bits, signed){\r\n\t    var max = Math.pow(2, bits), r = [];\r\n\t    var maxs" +
+                    " = Math.pow(2, bits - 1);\r\n\t\t(signed && (number >= maxs || number < -maxs)) && t" +
+                    "his.warn(\'writeInt::overflow\') && (number = 0);\r\n\t\t(!signed && (number >= max ||" +
+                    " (number < -(max >> 1)))) && this.warn(\'writeUInt::overflow\') && (number = 0);\r\n" +
+                    "\t\tnumber < 0 && (number += max);\r\n\t\tfor(; number; r[r.length] = String.fromCharC" +
+                    "ode(number % 256), number = Math.floor(number / 256));\r\n\t\tfor(bits = -(-bits >> " +
+                    "3) - r.length; bits--; r[r.length] = \'\\0\');\r\n\t\tthis.data += (this.bigEndian ? r." +
+                    "reverse() : r).join(\'\');\r\n\t};\r\n\r\n\t/* Writes a integral value to the underlying b" +
+                    "uffer. */\r\n\tp.native_writeInt = function(number, bits, signed){\r\n\t\tthis.ensureCa" +
+                    "pacity(bits / 8);\r\n\t\tif(signed)\r\n\t\t{\r\n\t\t\tswitch(bits)\r\n\t\t\t{\r\n\t\t\t\tcase 8:\r\n\t\t\t\t\tt" +
+                    "his.view.setInt8(this.position, number);\r\n\t\t\t\t\tthis.position += 1;\r\n\t\t\t\t\tthis._s" +
+                    "ize += 1;\r\n\t\t\t\t\treturn;\r\n\r\n\t\t\t\tcase 16:\r\n\t\t\t\t\tthis.view.setInt16(this.position, " +
+                    "number, !this.bigEndian);\r\n\t\t\t\t\tthis.position += 2;\r\n\t\t\t\t\tthis._size += 2;\r\n\t\t\t\t" +
+                    "\treturn;\r\n\r\n\t\t\t\tcase 32:\r\n\t\t\t\t\tthis.view.setInt32(this.position, number, !this.b" +
+                    "igEndian);\r\n\t\t\t\t\tthis.position += 4;\r\n\t\t\t\t\tthis._size += 4;\r\n\t\t\t\t\treturn;\r\n\r\n\t\t\t" +
+                    "\tcase 64:\r\n\t\t\t\t\tthrow new Error(\"Int64 is not supported in JavaScript.\")\r\n\t\t\t}\r\n" +
+                    "\t\t}\r\n\t\telse\r\n\t\t{\r\n\t\t\tswitch(bits)\r\n\t\t\t{\r\n\t\t\t\tcase 8:\r\n\t\t\t\t\tthis.view.setUint8(th" +
+                    "is.position, number);\r\n\t\t\t\t\tthis.position += 1;\r\n\t\t\t\t\tthis._size += 1;\r\n\t\t\t\t\tret" +
+                    "urn;\r\n\r\n\t\t\t\tcase 16:\r\n\t\t\t\t\tthis.view.setUint16(this.position, number, !this.bigE" +
+                    "ndian);\r\n\t\t\t\t\tthis.position += 2;\r\n\t\t\t\t\tthis._size += 2;\r\n\t\t\t\t\treturn;\r\n\r\n\t\t\t\tca" +
+                    "se 32:\r\n\t\t\t\t\tthis.view.setUint32(this.position, number, !this.bigEndian);\r\n\t\t\t\t\t" +
+                    "this.position += 4;\r\n\t\t\t\t\tthis._size += 4;\r\n\t\t\t\t\treturn;\r\n\r\n\t\t\t\tcase 64:\r\n\t\t\t\t\tt" +
+                    "hrow new Error(\"Int64 is not supported in JavaScript.\")\r\n\t\t\t}\r\n\t\t}\r\n\t};\r\n\t\r\n\t/* " +
+                    "Writes a integral value to the underlying buffer. */\r\n\tp.writeInt = spike.binary" +
+                    "Support ? p.native_writeInt : p.string_writeInt;\r\n\r\n\t/* Writes an unsigned byte " +
+                    "value to the underlying buffer. */\r\n\tp.writeByte = function(number){\r\n\t\tthis.wri" +
+                    "teInt(number, 8, false);\r\n\t};\r\n\r\n\t/* Writes bytes to the underlying buffer. */\r\n" +
+                    "\tp.string_writeBytes = function(bytes){\r\n\t\tthis.data += bytes;\r\n\t};\r\n\r\n\t/* Write" +
+                    "s bytes to the underlying buffer. */\r\n\tp.native_writeBytes = function(bytes){\r\n\t" +
+                    "\tthis.ensureCapacity(bytes.length);\r\n\t\tvar v = new Uint8Array(this.data, 0, byte" +
+                    "s.length);\r\n\t\tv.set(bytes, this.position);\r\n\t\tthis.position += bytes.length;\r\n\t\t" +
+                    "this._size += bytes.length;\r\n\t};\r\n\r\n\t/* Writes bytes to the underlying buffer. *" +
+                    "/\r\n\tp.writeBytes = spike.binarySupport ? p.native_writeBytes : p.string_writeByt" +
+                    "es;\r\n\r\n\t/* Reads a floating-point value from the underlying buffer. */\r\n\tp.strin" +
+                    "g_readFloat = function(precisionBits, exponentBits){\r\n\t\tvar blen = (precisionBit" +
+                    "s + exponentBits + 1) / 8;\r\n\t\tvar data = this.data.slice(this.position, this.pos" +
+                    "ition + blen);\r\n\t\tthis.position += blen;\r\n\t\tvar b = ((b = new this.Buffer(this.b" +
+                    "igEndian, data)).checkBuffer(precisionBits + exponentBits + 1), b),\r\n\t\t\tbias = M" +
+                    "ath.pow(2, exponentBits - 1) - 1, signal = b.readBits(precisionBits + exponentBi" +
+                    "ts, 1),\r\n\t\t\texponent = b.readBits(precisionBits, exponentBits), significand = 0," +
+                    "\r\n\t\t\tdivisor = 2, curByte = b.buffer.length + (-precisionBits >> 3) - 1,\r\n\t\t\tbyt" +
+                    "eValue, startBit, mask;\r\n\t\tdo\r\n\t\t\tfor(byteValue = b.buffer[ ++curByte ], startBi" +
+                    "t = precisionBits % 8 || 8, mask = 1 << startBit;\r\n\t\t\t\tmask >>= 1; (byteValue & " +
+                    "mask) && (significand += 1 / divisor), divisor *= 2);\r\n\t\twhile(precisionBits -= " +
+                    "startBit);\r\n\t\treturn exponent == (bias << 1) + 1 ? significand ? NaN : signal ? " +
+                    "-Infinity : +Infinity\r\n\t\t\t: (1 + signal * -2) * (exponent || significand ? !expo" +
+                    "nent ? Math.pow(2, -bias + 1) * significand\r\n\t\t\t: Math.pow(2, exponent - bias) *" +
+                    " (1 + significand) : 0);\r\n\t};\r\n\r\n\t/* Reads a floating-point value from the under" +
+                    "lying buffer. */\r\n\tp.native_readFloat = function(precisionBits, exponentBits){\r\n" +
+                    "\t\tvar bits = (precisionBits + exponentBits + 1);\r\n\t\tvar value = 0;\r\n\t\tswitch(bit" +
+                    "s)\r\n\t\t{\r\n\t\t\tcase 32:\r\n\t\t\t\tvalue = this.view.getFloat32(this.position, !this.bigE" +
+                    "ndian);\r\n\t\t\t\tthis.position += 4;\r\n\t\t\t\treturn value;\r\n\r\n\t\t\tcase 64:\r\n\t\t\t\tvalue = " +
+                    "this.view.getFloat64(this.position, !this.bigEndian);\r\n\t\t\t\tthis.position += 8;\r\n" +
+                    "\t\t\t\treturn value;\r\n\t\t}\r\n\t};\r\n\r\n\t/* Reads a floating-point value from the underly" +
+                    "ing buffer. */\r\n\tp.readFloat = spike.binarySupport ? p.native_readFloat : p.stri" +
+                    "ng_readFloat;\r\n\r\n\t/* Reads an integral value from the underlying buffer. */\r\n\tp." +
+                    "string_readInt = function(bits, signed){\r\n\t\tvar blen = bits / 8;\r\n\t\tvar data = t" +
+                    "his.data.slice(this.position, this.position + blen);\r\n\t\tthis.position += blen;\r\n" +
+                    "\t\tvar b = new this.Buffer(this.bigEndian, data), x = b.readBits(0, bits), max = " +
+                    "Math.pow(2, bits);\r\n\t\treturn signed && x >= max / 2 ? x - max : x;\r\n\t};\r\n\r\n\t/* R" +
+                    "eads an integral value from the underlying buffer. */\r\n\tp.native_readInt = funct" +
+                    "ion(bits, signed){\r\n\t\tvar value = 0;\r\n\t\tif(signed)\r\n\t\t{\r\n\t\t\tswitch(bits)\r\n\t\t\t{\r\n" +
+                    "\t\t\t\tcase 8:\r\n\t\t\t\t\tvalue = this.view.getInt8(this.position);\r\n\t\t\t\t\tthis.position " +
+                    "+= 1;\r\n\t\t\t\t\treturn value < 0x80 ? value : value - 0x100;\r\n\r\n\t\t\t\tcase 16:\r\n\t\t\t\t\tv" +
+                    "alue = this.view.getInt16(this.position, !this.bigEndian);\r\n\t\t\t\t\tthis.position +" +
+                    "= 2;\r\n\t\t\t\t\treturn value;\r\n\r\n\t\t\t\tcase 32:\r\n\t\t\t\t\tvalue = this.view.getInt32(this.p" +
+                    "osition, !this.bigEndian);\r\n\t\t\t\t\tthis.position += 4;\r\n\t\t\t\t\treturn value;\r\n\r\n\t\t\t\t" +
+                    "case 64:\r\n\t\t\t\t\tthrow new Error(\"Int64 is not supported in JavaScript.\")\r\n\t\t\t}\r\n\t" +
+                    "\t}\r\n\t\telse\r\n\t\t{\r\n\t\t\tswitch(bits)\r\n\t\t\t{\r\n\t\t\t\tcase 8:\r\n\t\t\t\t\tvalue =  this.view.get" +
+                    "Uint8(this.position);\r\n\t\t\t\t\tthis.position += 1;\r\n\t\t\t\t\treturn value;\r\n\r\n\t\t\t\tcase " +
+                    "16:\r\n\t\t\t\t\tvalue = this.view.getUint16(this.position, !this.bigEndian);\r\n\t\t\t\t\tthi" +
+                    "s.position += 2;\r\n\t\t\t\t\treturn value;\r\n\r\n\t\t\t\tcase 32:\r\n\t\t\t\t\tvalue = this.view.get" +
+                    "Uint32(this.position, !this.bigEndian);\r\n\t\t\t\t\tthis.position += 4;\r\n\t\t\t\t\treturn v" +
+                    "alue;\r\n\r\n\t\t\t\tcase 64:\r\n\t\t\t\t\tthrow new Error(\"Int64 is not supported in JavaScrip" +
+                    "t.\")\r\n\t\t\t}\r\n\t\t}\r\n\t}\r\n\r\n\t/* Reads an integral value from the underlying buffer. *" +
+                    "/\r\n\tp.readInt = spike.binarySupport ? p.native_readInt : p.string_readInt;\r\n\r\n\t/" +
+                    "* Reads an unsigned byte value from the underlying buffer. */\r\n\tp.readByte = fun" +
+                    "ction(){\r\n\t\treturn this.readInt(8, false);\r\n\t};\r\n\r\n\t/* Reads bytes from the unde" +
+                    "rlying buffer. */\r\n\tp.string_readBytes = function(count){\r\n\t\tvar r = this.data.s" +
+                    "lice(this.position, this.position + count);\r\n\t\tthis.position += count;\r\n\t\treturn" +
+                    " r;\r\n\t};\r\n\r\n\t/* Reads bytes from the underlying buffer. */\r\n\tp.native_readBytes " +
+                    "= function(count){\r\n\t\tvar r = new Uint8Array(this.data, this.position, count);\r\n" +
+                    "\t\tthis.position += count;\r\n\t\treturn r;\r\n\t};\r\n\r\n\t/* Reads bytes from the underlyi" +
+                    "ng buffer. */\r\n\tp.readBytes = spike.binarySupport ? p.native_readBytes : p.strin" +
+                    "g_readBytes;\r\n\r\n\t/* Gets a byte value on a specified position */\r\n\tp.string_getA" +
+                    "t = function(index){\r\n\t\treturn this.data.charCodeAt(index) & 0xff;\r\n\t};\r\n\r\n\t/* G" +
+                    "ets a byte value on a specified position */\r\n\tp.native_getAt = function(index){\r" +
+                    "\n\t\treturn this.view.getUint8(index);\r\n\t};\r\n\r\n\t/* Reads bytes from the underlying" +
+                    " buffer. */\r\n\tp.getAt = spike.binarySupport ? p.native_getAt : p.string_getAt;\r\n" +
+                    "\r\n\t/* Appends the underlying buffer data to the specified buffer. */\r\n\tp.readByt" +
+                    "esTo = function(targetBuffer, count){\r\n\t\ttargetBuffer.writeBytes( this.readBytes" +
+                    "(count) );\r\n\t};\r\n\r\n\r\n\t/* Appends the underlying buffer data to the specified buf" +
+                    "fer. */\r\n\tp.string_getSize = function(){\r\n\t\treturn this.data.length;\r\n\t};\r\n\r\n\t/*" +
+                    " Appends the underlying buffer data to the specified buffer. */\r\n\tp.native_getSi" +
+                    "ze = function(){\r\n\t\treturn this._size;\r\n\t};\r\n\r\n\t/* Appends the underlying buffer" +
+                    " data to the specified buffer. */\r\n\tp.getSize = spike.binarySupport ? p.native_g" +
+                    "etSize : p.string_getSize;\r\n\r\n\t/* Gets the byte array data as base64 encoded str" +
+                    "ing */\r\n\tp.string_toBase64 = function(){\r\n\t\tvar cleanBuffer = new Array();\r\n\t\tva" +
+                    "r result = \"\";\r\n\r\n\t   \tfor(var i=0; i<this.getSize(); ++i)\r\n\t\t\tcleanBuffer.push(" +
+                    "this.getAt(i));\r\n\t\tfor (var i = 0; i < cleanBuffer.length; i++)\r\n\t\t\tresult += St" +
+                    "ring.fromCharCode(cleanBuffer[i]);\t\r\n\r\n\t\tif (typeof(btoa) === \'function\') {\r\n\t\t\t" +
+                    "return btoa(result);\r\n\t\t} else {\r\n\t\t\treturn this._btoa(result);\r\n\t\t}\r\n\t};\r\n\r\n\t/*" +
+                    " Gets the byte array data as base64 encoded string */\r\n\tp.native_toBase64 = func" +
+                    "tion(){\r\n\t\t//var array = (new Uint8Array(this.data)).subarray(0, this._size);\r\n\t" +
+                    "\tvar array = new Uint8Array(this.data, 0, this._size);\r\n\t\tvar text  = String.fro" +
+                    "mCharCode.apply(null, array);\r\n\r\n\t\treturn (typeof(btoa) === \'function\') \r\n\t\t\t? b" +
+                    "toa(text) \r\n\t\t\t: this._btoa(text);\r\n\t};\r\n\r\n\t/* Gets the byte array data as base6" +
+                    "4 encoded string */\r\n\tp.toBase64 = spike.binarySupport ? p.native_toBase64 : p.s" +
+                    "tring_toBase64;\r\n\r\n\t/* Gets the underlying buffer slice */\r\n\tp.toBuffer = functi" +
+                    "on(){\r\n\t\tvar p = this.position;\r\n\t\tthis.position = 0;\r\n\t\tvar b = this.readBytes(" +
+                    "this.getSize());\r\n\t\tthis.position = p;\r\n\t\treturn b;\r\n\t};\r\n\r\n\t/* Writes base 64 e" +
+                    "ncoded string to the buffer after decoding it */\r\n\tp.string_writeBase64 = functi" +
+                    "on(input){\r\n\t\tif (typeof(atob) === \'function\') {\r\n\t\t\tthis.writeBytes(atob(input)" +
+                    ");\r\n\t\t} else {\r\n\t\t\tthis.writeBytes(this._atob(input));\r\n\t\t}\r\n\t};\r\n\r\n\t/* Writes b" +
+                    "ase 64 encoded string to the buffer after decoding it */\r\n\tp.native_writeBase64 " +
+                    "= function(input){\r\n\t\tvar array = new Uint8Array(atob(input).split(\"\").map(funct" +
+                    "ion(c) { return c.charCodeAt(0); }));\r\n\t\tthis.writeBytes(array);\r\n\t};\r\n\r\n\t/* Wri" +
+                    "tes base 64 encoded string to the buffer after decoding it */\r\n\tp.writeBase64 = " +
+                    "spike.binarySupport ? p.native_writeBase64 : p.string_writeBase64;\r\n\r\n\r\n     /* " +
+                    "btoa() for Internet Explorer */\r\n     p._btoa = function(str) {\r\n          var c" +
+                    "hars = \'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=\';\r\n   " +
+                    "       var encoded = [];\r\n          var c = 0;\r\n          while (c < str.length)" +
+                    " {\r\n              var b0 = str.charCodeAt(c++);\r\n              var b1 = str.char" +
+                    "CodeAt(c++);\r\n              var b2 = str.charCodeAt(c++);\r\n              var buf" +
+                    " = (b0 << 16) + ((b1 || 0) << 8) + (b2 || 0);\r\n              var i0 = (buf & (63" +
+                    " << 18)) >> 18;\r\n              var i1 = (buf & (63 << 12)) >> 12;\r\n             " +
+                    " var i2 = isNaN(b1) ? 64 : (buf & (63 << 6)) >> 6;\r\n              var i3 = isNaN" +
+                    "(b2) ? 64 : (buf & 63);\r\n              encoded[encoded.length] = chars.charAt(i0" +
+                    ");\r\n              encoded[encoded.length] = chars.charAt(i1);\r\n              enc" +
+                    "oded[encoded.length] = chars.charAt(i2);\r\n              encoded[encoded.length] " +
+                    "= chars.charAt(i3);\r\n          }\r\n          return encoded.join(\'\');\r\n      };\r\n" +
+                    "\r\n\t/* atob() for Internet Explorer */\r\n\tp._atob = function(input) {\r\n\t    var b6" +
+                    "4array = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=\";\r\n\t" +
+                    "    var output = \"\";\r\n\t    var hex = \"\";\r\n\t    var chr1, chr2, chr3 = \"\";\r\n\t    " +
+                    "var enc1, enc2, enc3, enc4 = \"\";\r\n\t    var i = 0;\r\n\t\r\n\t    input = input.replace" +
+                    "(/[^A-Za-z0-9\\+\\/\\=]/g, \"\");\r\n\t\r\n\t    do {\r\n\t        enc1 = b64array.indexOf(inp" +
+                    "ut.charAt(i++));\r\n\t        enc2 = b64array.indexOf(input.charAt(i++));\r\n\t       " +
+                    " enc3 = b64array.indexOf(input.charAt(i++));\r\n\t        enc4 = b64array.indexOf(i" +
+                    "nput.charAt(i++));\r\n\t        \r\n\t        chr1 = (enc1 << 2) | (enc2 >> 4);\r\n\t    " +
+                    "    chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);\r\n\t        chr3 = ((enc3 & 3) << 6) " +
+                    "| enc4;\r\n\t        \r\n\t        output = output + String.fromCharCode(chr1);\r\n\t    " +
+                    "    \r\n\t        if (enc3 != 64) {\r\n\t            output = output + String.fromChar" +
+                    "Code(chr2);\r\n\t        }\r\n\t        if (enc4 != 64) {\r\n\t            output = outpu" +
+                    "t + String.fromCharCode(chr3);\r\n\t        }\r\n\t    \r\n\t        chr1 = chr2 = chr3 =" +
+                    " \"\";\r\n\t        enc1 = enc2 = enc3 = enc4 = \"\";\r\n\t    \r\n\t    } while (i < input.l" +
+                    "ength);\r\n\r\n\t    return output;\r\n\t};\r\n\r\n\r\n\twith({p: (p.Buffer = function(bigEndia" +
+                    "n, buffer){\r\n\t\tthis.bigEndian = bigEndian || 0, this.buffer = [], this.setBuffer" +
+                    "(buffer);\r\n\t}).prototype}){\r\n\t\tp.readBits = function(start, length){\r\n\t\t\t//shl f" +
+                    "ix: Henri Torgemane ~1996 (compressed by Jonas Raoni)\r\n\t\t\tfunction shl(a, b){\r\n\t" +
+                    "\t\t\tfor(++b; --b; a = ((a %= 0x7fffffff + 1) & 0x40000000) == 0x40000000 ? a * 2 " +
+                    ": (a - 0x40000000) * 2 + 0x7fffffff + 1);\r\n\t\t\t\treturn a;\r\n\t\t\t}\r\n\t\t\tif(start < 0 " +
+                    "|| length <= 0)\r\n\t\t\t\treturn 0;\r\n\t\t\tthis.checkBuffer(start + length);\r\n\t\t\tfor(var" +
+                    " offsetLeft, offsetRight = start % 8, curByte = this.buffer.length - (start >> 3" +
+                    ") - 1,\r\n\t\t\t\tlastByte = this.buffer.length + (-(start + length) >> 3), diff = cur" +
+                    "Byte - lastByte,\r\n\t\t\t\tsum = ((this.buffer[ curByte ] >> offsetRight) & ((1 << (d" +
+                    "iff ? 8 - offsetRight : length)) - 1))\r\n\t\t\t\t+ (diff && (offsetLeft = (start + le" +
+                    "ngth) % 8) ? (this.buffer[ lastByte++ ] & ((1 << offsetLeft) - 1))\r\n\t\t\t\t<< (diff" +
+                    "-- << 3) - offsetRight : 0); diff; sum += shl(this.buffer[ lastByte++ ], (diff--" +
+                    " << 3) - offsetRight)\r\n\t\t\t);\r\n\t\t\treturn sum;\r\n\t\t};\r\n\t\tp.setBuffer = function(dat" +
+                    "a){\r\n\t\t\tif(data){\r\n\t\t\t\tfor(var l, i = l = data.length, b = this.buffer = new Arr" +
+                    "ay(l); i; b[l - i] = data.charCodeAt(--i));\r\n\t\t\t\tthis.bigEndian && b.reverse();\r" +
+                    "\n\t\t\t}\r\n\t\t};\r\n\t\tp.hasNeededBits = function(neededBits){\r\n\t\t\treturn this.buffer.le" +
+                    "ngth >= -(-neededBits >> 3);\r\n\t\t};\r\n\t\tp.checkBuffer = function(neededBits){\r\n\t\t\t" +
+                    "if(!this.hasNeededBits(neededBits))\r\n\t\t\t\tthrow new Error(\'checkBuffer::missing b" +
+                    "ytes\');\r\n\t\t};\r\n\t}\r\n\tp.warn = function(msg){\r\n\t\tif(this.allowExceptions)\r\n\t\t\tthro" +
+                    "w new Error(msg);\r\n\t\treturn 1;\r\n\t};\r\n\r\n}");
             
             #line 9 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
  } 
@@ -2145,69 +2145,70 @@ namespace Spike.Build.JavaScript
                     "piled = new spike.PacketWriter();\r\n\r\n\t// Write the length of the packet\r\n\tcompil" +
                     "ed.writeUInt32(length + sizeOfKey);\r\n\r\n\t// Write the key of the packet\r\n\tcompile" +
                     "d.writeKey(operationKey);\r\n\t\r\n\t// Write the body\r\n\tif(length > 0){\r\n\t\tcompiled.b" +
-                    "uffer.writeBytes(writer.buffer.data);\r\n\t}\r\n\r\n\t// Send the payload in base64\r\n\t/*" +
-                    "var data = spike.binarySupport \r\n\t\t? compiled.buffer.toBuffer()\r\n\t\t: compiled.bu" +
-                    "ffer.toBase64();*/\r\n\tvar data = compiled.buffer.toBase64();\r\n\t\r\n\t//spike.debug(\'" +
-                    "Sending buffer: %s (%s)\', data, (typeof data).toString());\r\n\tthis.socket.send(da" +
-                    "ta);\r\n};\r\n\r\n\r\n/**\r\n* Sets the current transport `socket`.\r\n*\r\n* @param {Function" +
-                    "} optional, callback\r\n* @return {Channel} self\r\n* @api public\r\n*/\r\nspike.Channel" +
-                    ".prototype.open =\r\nspike.Channel.prototype.connect = function(fn){\r\n\tif (~this.r" +
-                    "eadyState.indexOf(\'open\')) return this;\r\n\t\r\n\t// Create a new socket and try to c" +
-                    "onnect\r\n\tthis.socket = eio.Socket(this.endPoint);\r\n\tthis.socket._channel = this;" +
-                    "\r\n\r\n\t// Set the \'opening\' state\r\n\tvar self = this;\r\n\tvar socket = this.socket;\r\n" +
-                    "\tthis.readyState = \'opening\';\r\n\tthis.skipReconnect = false;\r\n\r\n\t// Hook socket \'" +
-                    "open\' event \r\n\tthis.socket.on(\'open\', function(){\r\n\t\tspike.debug(\'socket opened\'" +
-                    ");\r\n\t\tthis._channel.onopen();\r\n\t\tfn && fn();\r\n\t});\r\n\r\n\t// Hook the error on conn" +
-                    "ection\r\n\tthis.socket.on(\'error\', function(data){\r\n\t\tspike.debug(\'socket error: %" +
-                    "s\', data);\r\n\t\tself.readyState = \'closed\';\r\n\t\tself.emit(\'connect_error\', data);\r\n" +
-                    "\t\tif (fn) {\r\n\t\t\tvar err = new Error(\'Connection error\');\r\n\t\t\terr.data = data;\r\n\t" +
-                    "\t\tfn(err);\r\n\t\t} else {\r\n\t\t\t// Only do this if there is no fn to handle the error" +
-                    "\r\n\t\t\tself.maybeReconnectOnOpen();\r\n\t\t}\r\n\t});\r\n\r\n\t// emit `connect_timeout`\r\n\tif " +
-                    "(false !== this._timeout) {\r\n\t\tvar timeout = this._timeout;\r\n\t\tspike.debug(\'conn" +
-                    "ect attempt will timeout after %d\', timeout);\r\n\r\n\t\t// set timer\r\n\t\tvar timer = s" +
-                    "etTimeout(function(){\r\n\t\t\tif(self.readyState == \'open\') return;\r\n\r\n\t\t\tspike.debu" +
-                    "g(\'connect attempt timed out after %d\', timeout);\r\n\t\t\tsocket.close();\r\n\t\t\tsocket" +
-                    ".emit(\'error\', \'timeout\');\r\n\t\t\tself.emit(\'connect_timeout\', timeout);\r\n\t\t}, time" +
-                    "out);\r\n\t}\r\n\r\n\t// Hook socket \'close\' event \r\n\tthis.socket.on(\'close\', function(r" +
-                    "eason){\r\n\t\tself.transport = null;\r\n\t\tif (self.onDisconnect != null)\r\n\t\t\tself.onD" +
-                    "isconnect();\r\n\t\tself.emit(\'disconnect\');\r\n\t\tself.onclose(reason);\r\n\t});\r\n\r\n\t// I" +
-                    "nvoked when the socked receives incoming data \r\n\tthis.socket.on(\'message\', funct" +
-                    "ion(payload) {\r\n\r\n\t\t// Initialize size variables\r\n\t\tvar sizeOfKey = 4;\r\n\t\tvar si" +
-                    "zeOfLen = 4;\r\n\t\tvar sizeTotal = 8;\r\n\r\n\t\tvar data = new spike.ByteArray();\r\n\t\tvar" +
-                    " channel = this._channel;\r\n\t\tif (channel._partialRecord)\r\n\t\t{\r\n\t\t\tchannel.buffer" +
-                    ".readBytesTo(data, socket.buffer.getSize());\r\n\t\t\tchannel._partialRecord = false;" +
-                    "\r\n\t\t}\t\t\t\r\n\r\n\t\t//spike.debug(\'Received buffer: %s\', payload);\r\n\r\n\t\t// Read receiv" +
-                    "ed data and reset (SEEK)\r\n\t\tdata.writeBase64(payload);\r\n\t\tdata.position = 0;\r\n\t\t" +
-                    "\r\n\t\t// While we have data to read\r\n\t\twhile(data.position < data.getSize())\r\n\t\t{\r" +
-                    "\n\t\t\tif(data.getSize() - data.position < sizeOfLen)\r\n\t\t\t{\r\n\t\t\t\t// Read the partia" +
-                    "l packet \r\n\t\t\t\tchannel.buffer = new spike.ByteArray();\r\n\t\t\t\tdata.readBytesTo(soc" +
-                    "ket.buffer, data.getSize() - data.position);\r\n\t\t\t\tchannel._partialRecord = true;" +
-                    "\r\n\t\t\t\tbreak;\r\n\t\t\t} \r\n\t\t\t\r\n\t\t\tvar length = data.readInt(32, false) + sizeOfLen;\r\n" +
-                    "\t\t\tdata.position -= sizeOfLen;\r\n\t\t\t\r\n\t\t    // If we have enough data to form a f" +
-                    "ull packet.\r\n\t\t    if(length <= (data.getSize() - data.position))\r\n\t\t    {\r\n\t\t\t\t" +
-                    "// Read the operation and read the actual message into a new buffer\r\n\t\t\t\tvar mes" +
-                    "sageLength = data.readInt(32, false); // UNUSED\r\n\t\t\t\tvar operation = \"\";\r\n\t\t\t\tfo" +
-                    "r (var i=0; i < sizeOfKey; i++)\r\n\t\t\t\t{\r\n\t\t\t\t\tvar byte = data.readInt(8, false);\r" +
-                    "\n\t\t\t\t\tvar sbyte = byte.toString(16);\r\n\t\t\t\t\tif(sbyte.length == 1)\r\n\t\t\t\t\t\tsbyte = " +
-                    "\"0\" + sbyte;\r\n\t\t\t\t\toperation += sbyte;\r\n\t\t\t\t}\r\n\t\t\t\toperation = operation.toUpper" +
-                    "Case();-\r\n\t\t\t\tspike.debug(\'Operation #%s received\', operation);\r\n\r\n\t\t\t\t// New bu" +
-                    "ffer for the packet\r\n\t\t\t\tvar packet = new spike.ByteArray();\r\n\t\t\t\tdata.readBytes" +
-                    "To(packet, length - sizeTotal);\r\n\t\t\t\tpacket.position = 0;\r\n\t\t\r\n\t\t\t\t// Create the" +
-                    " reader and fire the event\r\n\t\t\t\tvar reader = new spike.PacketReader(packet);\r\n\t\t" +
-                    "\t\tchannel.onReceive(operation, reader);\r\n\t\r\n\t\t    }\r\n\t\t    else \r\n\t\t    {\r\n\t\t   " +
-                    "  \t// Read the partial packet\r\n\t\t\t\tchannel.buffer = new spike.ByteArray();\r\n\t\t\t\t" +
-                    "data.readBytesTo(socket.buffer, data.getSize() - data.position);\r\n\t\t\t\tchannel._p" +
-                    "artialRecord = true;\r\n\t\t    }\r\n\t\t\r\n\t\t}\r\n\t});\r\n\r\n\treturn this;\r\n};\r\n\r\n\r\n/**\r\n* Cl" +
-                    "ose the current socket.\r\n*\r\n* @api public\r\n*/\r\nspike.Channel.prototype.close = \r" +
-                    "\nspike.Channel.prototype.disconnect = function(){\r\n\tthis.skipReconnect = true;\r\n" +
-                    "\tthis.readyState = \'closed\';\r\n\tthis.socket && this.socket.close();\r\n};\r\n\r\n/**\r\n*" +
-                    " Called upon transport open.\r\n*\r\n* @api private\r\n*/\r\nspike.Channel.prototype.ono" +
-                    "pen = function(){\r\n\tthis.readyState = \'open\';\r\n\r\n\tif (this.onConnect != null)\r\n\t" +
-                    "\tthis.onConnect();\r\n\t\r\n\tthis.emit(\'connect\');\r\n\tthis.emit(\'open\');\r\n};\r\n\r\n/**\r\n*" +
-                    " Called upon engine close.\r\n*\r\n* @api private\r\n*/\r\nspike.Channel.prototype.onclo" +
-                    "se = function(reason){\r\n\tspike.debug(\'socket closed: %s\', reason);\r\n\tthis.backof" +
-                    "f.reset();\r\n\tthis.readyState = \'closed\';\r\n\tthis.emit(\'close\', reason);\r\n\tif (thi" +
-                    "s._reconnection && !this.skipReconnect) {\r\n\t\tthis.reconnect();\r\n\t}\r\n};\r\n\r\n");
+                    "uffer.writeBytes(writer.buffer.data);\r\n\t}\r\n\r\n\t// Send the payload in base64\r\n\tva" +
+                    "r data = spike.binarySupport \r\n\t\t? compiled.buffer.toBuffer()\r\n\t\t: compiled.buff" +
+                    "er.toBase64();\r\n\t\r\n\t//spike.debug(\'Sending buffer: %s (%s)\', data, (typeof data)" +
+                    ".toString());\r\n\tthis.socket.send(data);\r\n};\r\n\r\n\r\n/**\r\n* Sets the current transpo" +
+                    "rt `socket`.\r\n*\r\n* @param {Function} optional, callback\r\n* @return {Channel} sel" +
+                    "f\r\n* @api public\r\n*/\r\nspike.Channel.prototype.open =\r\nspike.Channel.prototype.co" +
+                    "nnect = function(fn){\r\n\tif (~this.readyState.indexOf(\'open\')) return this;\r\n\t\r\n\t" +
+                    "// Create a new socket and try to connect\r\n\tthis.socket = eio.Socket(this.endPoi" +
+                    "nt);\r\n\tthis.socket._channel = this;\r\n\r\n\t// Set the \'opening\' state\r\n\tvar self = " +
+                    "this;\r\n\tvar socket = this.socket;\r\n\tthis.readyState = \'opening\';\r\n\tthis.skipReco" +
+                    "nnect = false;\r\n\r\n\t// Hook socket \'open\' event \r\n\tthis.socket.on(\'open\', functio" +
+                    "n(){\r\n\t\tspike.debug(\'socket opened\');\r\n\t\tthis._channel.onopen();\r\n\t\tfn && fn();\r" +
+                    "\n\t});\r\n\r\n\t// Hook the error on connection\r\n\tthis.socket.on(\'error\', function(dat" +
+                    "a){\r\n\t\tspike.debug(\'socket error: %s\', data);\r\n\t\tself.readyState = \'closed\';\r\n\t\t" +
+                    "self.emit(\'connect_error\', data);\r\n\t\tif (fn) {\r\n\t\t\tvar err = new Error(\'Connecti" +
+                    "on error\');\r\n\t\t\terr.data = data;\r\n\t\t\tfn(err);\r\n\t\t} else {\r\n\t\t\t// Only do this if" +
+                    " there is no fn to handle the error\r\n\t\t\tself.maybeReconnectOnOpen();\r\n\t\t}\r\n\t});\r" +
+                    "\n\r\n\t// emit `connect_timeout`\r\n\tif (false !== this._timeout) {\r\n\t\tvar timeout = " +
+                    "this._timeout;\r\n\t\tspike.debug(\'connect attempt will timeout after %d\', timeout);" +
+                    "\r\n\r\n\t\t// set timer\r\n\t\tvar timer = setTimeout(function(){\r\n\t\t\tif(self.readyState " +
+                    "== \'open\') return;\r\n\r\n\t\t\tspike.debug(\'connect attempt timed out after %d\', timeo" +
+                    "ut);\r\n\t\t\tsocket.close();\r\n\t\t\tsocket.emit(\'error\', \'timeout\');\r\n\t\t\tself.emit(\'con" +
+                    "nect_timeout\', timeout);\r\n\t\t}, timeout);\r\n\t}\r\n\r\n\t// Hook socket \'close\' event \r\n" +
+                    "\tthis.socket.on(\'close\', function(reason){\r\n\t\tself.transport = null;\r\n\t\tif (self" +
+                    ".onDisconnect != null)\r\n\t\t\tself.onDisconnect();\r\n\t\tself.emit(\'disconnect\');\r\n\t\ts" +
+                    "elf.onclose(reason);\r\n\t});\r\n\r\n\t// Invoked when the socked receives incoming data" +
+                    " \r\n\tthis.socket.on(\'message\', function(payload) {\r\n\r\n\t\t// Initialize size variab" +
+                    "les\r\n\t\tvar sizeOfKey = 4;\r\n\t\tvar sizeOfLen = 4;\r\n\t\tvar sizeTotal = 8;\r\n\r\n\t\tvar d" +
+                    "ata = new spike.ByteArray();\r\n\t\tvar channel = this._channel;\r\n\t\tif (channel._par" +
+                    "tialRecord)\r\n\t\t{\r\n\t\t\tchannel.buffer.readBytesTo(data, socket.buffer.getSize());\r" +
+                    "\n\t\t\tchannel._partialRecord = false;\r\n\t\t}\t\t\t\r\n\r\n\t\tspike.debug(\'Received buffer: %" +
+                    "s\', payload);\r\n\r\n\t\t// Read received data and reset (SEEK)\r\n\t\tif ((typeof payload" +
+                    ") == \'string\') data.writeBase64(payload);\r\n\t\telse data.writeBytes(new Uint8Array" +
+                    "(payload));\r\n\t\tdata.position = 0;\r\n\t\t\r\n\t\t// While we have data to read\r\n\t\twhile(" +
+                    "data.position < data.getSize())\r\n\t\t{\r\n\t\t\tif(data.getSize() - data.position < siz" +
+                    "eOfLen)\r\n\t\t\t{\r\n\t\t\t\t// Read the partial packet \r\n\t\t\t\tchannel.buffer = new spike.B" +
+                    "yteArray();\r\n\t\t\t\tdata.readBytesTo(socket.buffer, data.getSize() - data.position)" +
+                    ";\r\n\t\t\t\tchannel._partialRecord = true;\r\n\t\t\t\tbreak;\r\n\t\t\t} \r\n\t\t\t\r\n\t\t\tvar length = d" +
+                    "ata.readInt(32, false) + sizeOfLen;\r\n\t\t\tdata.position -= sizeOfLen;\r\n\t\t\t\r\n\t\t    " +
+                    "// If we have enough data to form a full packet.\r\n\t\t    if(length <= (data.getSi" +
+                    "ze() - data.position))\r\n\t\t    {\r\n\t\t\t\t// Read the operation and read the actual m" +
+                    "essage into a new buffer\r\n\t\t\t\tvar messageLength = data.readInt(32, false); // UN" +
+                    "USED\r\n\t\t\t\tvar operation = \"\";\r\n\t\t\t\tfor (var i=0; i < sizeOfKey; i++)\r\n\t\t\t\t{\r\n\t\t\t" +
+                    "\t\tvar byte = data.readInt(8, false);\r\n\t\t\t\t\tvar sbyte = byte.toString(16);\r\n\t\t\t\t\t" +
+                    "if(sbyte.length == 1)\r\n\t\t\t\t\t\tsbyte = \"0\" + sbyte;\r\n\t\t\t\t\toperation += sbyte;\r\n\t\t\t" +
+                    "\t}\r\n\t\t\t\toperation = operation.toUpperCase();\r\n\t\t\t\tspike.debug(\'Operation #%s rec" +
+                    "eived\', operation);\r\n\r\n\t\t\t\t// New buffer for the packet\r\n\t\t\t\tvar packet = new sp" +
+                    "ike.ByteArray();\r\n\t\t\t\tdata.readBytesTo(packet, length - sizeTotal);\r\n\t\t\t\tpacket." +
+                    "position = 0;\r\n\t\t\r\n\t\t\t\t// Create the reader and fire the event\r\n\t\t\t\tvar reader =" +
+                    " new spike.PacketReader(packet);\r\n\t\t\t\tchannel.onReceive(operation, reader);\r\n\t\r\n" +
+                    "\t\t    }\r\n\t\t    else \r\n\t\t    {\r\n\t\t     \t// Read the partial packet\r\n\t\t\t\tchannel.b" +
+                    "uffer = new spike.ByteArray();\r\n\t\t\t\tdata.readBytesTo(socket.buffer, data.getSize" +
+                    "() - data.position);\r\n\t\t\t\tchannel._partialRecord = true;\r\n\t\t    }\r\n\t\t\r\n\t\t}\r\n\t});" +
+                    "\r\n\r\n\treturn this;\r\n};\r\n\r\n\r\n/**\r\n* Close the current socket.\r\n*\r\n* @api public\r\n*" +
+                    "/\r\nspike.Channel.prototype.close = \r\nspike.Channel.prototype.disconnect = functi" +
+                    "on(){\r\n\tthis.skipReconnect = true;\r\n\tthis.readyState = \'closed\';\r\n\tthis.socket &" +
+                    "& this.socket.close();\r\n};\r\n\r\n/**\r\n* Called upon transport open.\r\n*\r\n* @api priv" +
+                    "ate\r\n*/\r\nspike.Channel.prototype.onopen = function(){\r\n\tthis.readyState = \'open\'" +
+                    ";\r\n\r\n\tif (this.onConnect != null)\r\n\t\tthis.onConnect();\r\n\t\r\n\tthis.emit(\'connect\')" +
+                    ";\r\n\tthis.emit(\'open\');\r\n};\r\n\r\n/**\r\n* Called upon engine close.\r\n*\r\n* @api privat" +
+                    "e\r\n*/\r\nspike.Channel.prototype.onclose = function(reason){\r\n\tspike.debug(\'socket" +
+                    " closed: %s\', reason);\r\n\tthis.backoff.reset();\r\n\tthis.readyState = \'closed\';\r\n\tt" +
+                    "his.emit(\'close\', reason);\r\n\tif (this._reconnection && !this.skipReconnect) {\r\n\t" +
+                    "\tthis.reconnect();\r\n\t}\r\n};\r\n\r\n");
             this.Write("/**\r\n * Initialize backoff timer with `opts`.\r\n *\r\n * - `min` initial timeout in " +
                     "milliseconds [100]\r\n * - `max` max timeout [10000]\r\n * - `jitter` [0]\r\n * - `fac" +
                     "tor` [2]\r\n *\r\n * @param {Object} opts\r\n * @api public\r\n */\r\nspike.Backoff = func" +

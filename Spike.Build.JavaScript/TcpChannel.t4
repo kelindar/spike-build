@@ -139,10 +139,9 @@ spike.Channel.prototype.send = function(operationKey, writer) {
 	}
 
 	// Send the payload in base64
-	/*var data = spike.binarySupport 
+	var data = spike.binarySupport 
 		? compiled.buffer.toBuffer()
-		: compiled.buffer.toBase64();*/
-	var data = compiled.buffer.toBase64();
+		: compiled.buffer.toBase64();
 	
 	//spike.debug('Sending buffer: %s (%s)', data, (typeof data).toString());
 	this.socket.send(data);
@@ -233,10 +232,11 @@ spike.Channel.prototype.connect = function(fn){
 			channel._partialRecord = false;
 		}			
 
-		//spike.debug('Received buffer: %s', payload);
+		spike.debug('Received buffer: %s', payload);
 
 		// Read received data and reset (SEEK)
-		data.writeBase64(payload);
+		if ((typeof payload) == 'string') data.writeBase64(payload);
+		else data.writeBytes(new Uint8Array(payload));
 		data.position = 0;
 		
 		// While we have data to read
@@ -268,7 +268,7 @@ spike.Channel.prototype.connect = function(fn){
 						sbyte = "0" + sbyte;
 					operation += sbyte;
 				}
-				operation = operation.toUpperCase();-
+				operation = operation.toUpperCase();
 				spike.debug('Operation #%s received', operation);
 
 				// New buffer for the packet
