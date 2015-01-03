@@ -138,41 +138,57 @@ spike.PacketWriter.prototype.writeDynamicType = function(value){
 
 		this.writeString("Double");
 		this.writeDouble(value);
+		return;
 	}
 	else if(type == "boolean")
 	{
 		this.writeByte(1);
 		this.writeString("Boolean");
 		this.writeBoolean(value);
+		return;
 	}
 	else if(type == "string")
 	{
-		this.writeByte(1);
-		if(value.indexOf('+64x' == 0) && value.length == 20)
+		if (value.length == 20)
 		{
-			this.writeString("UInt64");
-			this.writeUInt64(value);
-		}
-		else if(value.indexOf('-64x' == 0) && value.length == 20)
-		{
-			this.writeString("Int64");
-			this.writeInt64(value);
+			if (value.substring(0, 4) == '+64x')
+			{
+				this.writeByte(1);
+				this.writeString("UInt64");
+				this.writeUInt64(value);
+				return;
+			}
+			else if(value.substring(0, 4) == '-64x')
+			{
+				this.writeByte(1);
+				this.writeString("Int64");
+				this.writeInt64(value);
+				return;
+			}
+
 		}
 		else
 		{
+			this.writeByte(1);
 			this.writeString("String");
 			this.writeString(value);
+			return;
 		}
+
+		this.writeByte(0);
+		return;
 	}
 	else if(type == "object" && value instanceof Date)
 	{
 		this.writeByte(1);
 		this.writeString("DateTime");
 		this.writeDateTime(value);
+		return;
 	}
 	else
 	{
 		this.writeByte(0);
+		return;
 	}
 }
 

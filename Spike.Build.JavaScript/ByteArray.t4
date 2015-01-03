@@ -2,7 +2,7 @@
 	spike = new Object();
 
 // Whether we should or not use native binary support
-spike.binarySupport =  ((typeof Uint8Array !== 'undefined') && (typeof DataView !== 'undefined'));
+spike.binarySupport = ((typeof Uint8Array !== 'undefined') && (typeof DataView !== 'undefined'));
 spike.ByteArray = function(){
 	this.position = 0;
 	this.bigEndian = true;
@@ -197,10 +197,11 @@ with({p: spike.ByteArray.prototype}){
 	
 	/* Writes a series of hex bytes and presents it as a 0x.. formatted string */
 	p.write64 = function(hex){
-		if(hex.indexOf('-64x') != 0 && hex.indexOf('+64x') != 0)
-			throw new Error('UInt64 or Int16 must start with +64x or -64x');
 		if(hex.length != 20)
 			throw new Error('UInt64 or Int16 must be a string of exactly 20 bytes');
+		var type = hex.substring(0, 4);
+		if(type != '-64x' && type != '+64x')
+			throw new Error('UInt64 or Int16 must start with +64x or -64x');
 		
 		hex = hex.slice(4);
 		for (var i = 0; i < 16; i+=2){

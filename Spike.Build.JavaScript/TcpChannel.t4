@@ -230,15 +230,23 @@ spike.Channel.prototype.connect = function(fn){
 		var channel = this._channel;
 		if (channel._partialRecord)
 		{
-			channel.buffer.readBytesTo(data, socket.buffer.getSize());
+			channel.buffer.readBytesTo(data, channel.buffer.getSize());
 			channel._partialRecord = false;
 		}			
 
 		spike.debug('Received buffer: %s', payload);
 
 		// Read received data and reset (SEEK)
-		if ((typeof payload) == 'string') data.writeBase64(payload);
-		else data.writeBytes(new Uint8Array(payload));
+		if ((typeof payload) == 'string') {
+			data.writeBase64(payload);
+		} else if(spike.binarySupport) {
+			data.writeBytes(new Uint8Array(payload));
+		} else {
+			var buff = new Uint8Array(payload);
+			for(var i=0; i<buff.byteLength; ++i)
+				data.writeByte(buff[i]);
+		}
+		
 		data.position = 0;
 		
 		// While we have data to read
@@ -248,7 +256,7 @@ spike.Channel.prototype.connect = function(fn){
 			{
 				// Read the partial packet 
 				channel.buffer = new spike.ByteArray();
-				data.readBytesTo(socket.buffer, data.getSize() - data.position);
+				data.readBytesTo(channel.buffer, data.getSize() - data.position);
 				channel._partialRecord = true;
 				break;
 			} 
@@ -287,7 +295,7 @@ spike.Channel.prototype.connect = function(fn){
 		    {
 		     	// Read the partial packet
 				channel.buffer = new spike.ByteArray();
-				data.readBytesTo(socket.buffer, data.getSize() - data.position);
+				data.readBytesTo(channel.buffer, data.getSize() - data.position);
 				channel._partialRecord = true;
 		    }
 		
