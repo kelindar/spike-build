@@ -80,12 +80,21 @@ spike.PacketWriter.prototype.writeString = function(value){
 		this.writeInt32(0);		
 	}else{
 		value = unescape(encodeURIComponent(value));
+
+		if(spike.binarySupport){
+			var buf = new ArrayBuffer(value.length);
+			var u8  = new Uint8Array(buf);
+			for (var i=0, len=value.length; i<len; ++i)
+				u8[i] = value.charCodeAt(i);
+			value = u8;
+		}
+
 		this.writeInt32(value.length);
 		this.buffer.writeBytes(value);
 	}
 }
 
-spike.PacketWriter.prototype.writeDynamic = function(value){
+spike.PacketWriter.prototype.writeDynamicType = function(value){
 	var type = typeof(value);
 	if(type == "number")
 	{
@@ -282,14 +291,14 @@ spike.PacketWriter.prototype.writeArrayOfBoolean = function(value){
 	}
 }
 
-spike.PacketWriter.prototype.writeArrayOfDynamic = function(value){
+spike.PacketWriter.prototype.writeArrayOfDynamicType = function(value){
 	var type = typeof(value);
 	if(type == "object" && value instanceof Array){
 		this.writeInt32(value.length);
 		if(value.length == 0)
 			return;
 		for(var i=0; i<value.length; ++i){
-			this.writeDynamic(value[i]);
+			this.writeDynamicType(value[i]);
 		}
 	}else{
 		this.writeInt32(0);
@@ -323,9 +332,9 @@ spike.PacketWriter.prototype.write<#= customType.Name #> = function(value)
     <# } #>
 }
 
-protected void WriteArrayOf<#= customType.Name #> = function(value)
+spike.PacketWriter.prototype.writeArrayOf<#= customType.Name #> = function(value)
 {
-	if(Object.prototype.toString.call( someVar ) !== '[object Array]')
+	if(Object.prototype.toString.call(value) !== '[object Array]')
 		throw new Error("Attempted to write an invalid array.");
 
     this.writeInt32(value.length);

@@ -95,6 +95,11 @@ with({p: spike.ByteArray.prototype}){
 
 	/* Writes a integral value to the underlying buffer. */
 	p.string_writeInt = function(number, bits, signed){
+		if(bits == 64){
+			this.writeHexBytes(number);
+			return;
+		};
+
 	    var max = Math.pow(2, bits), r = [];
 	    var maxs = Math.pow(2, bits - 1);
 		(signed && (number >= maxs || number < -maxs)) && this.warn('writeInt::overflow') && (number = 0);
@@ -131,7 +136,8 @@ with({p: spike.ByteArray.prototype}){
 					return;
 
 				case 64:
-					throw new Error("Int64 is not supported in JavaScript.")
+					this.writeHexBytes(number);
+					return;
 			}
 		}
 		else
@@ -157,7 +163,8 @@ with({p: spike.ByteArray.prototype}){
 					return;
 
 				case 64:
-					throw new Error("Int64 is not supported in JavaScript.")
+					this.writeHexBytes(number);
+					return;
 			}
 		}
 	};
@@ -178,14 +185,27 @@ with({p: spike.ByteArray.prototype}){
 	/* Writes bytes to the underlying buffer. */
 	p.native_writeBytes = function(bytes){
 		this.ensureCapacity(bytes.length);
-		var v = new Uint8Array(this.data, 0, bytes.length);
-		v.set(bytes, this.position);
+		var v = new Uint8Array(this.data, this.position, bytes.length);
+		v.set(bytes, 0);
 		this.position += bytes.length;
 		this._size += bytes.length;
 	};
 
 	/* Writes bytes to the underlying buffer. */
 	p.writeBytes = spike.binarySupport ? p.native_writeBytes : p.string_writeBytes;
+
+	
+	/* Writes a series of hex bytes and presents it as a 0x.. formatted string */
+	p.writeHexBytes = function(hex){
+		if(this.indexOf('0x') != 0)
+			throw new Error('Hexadecimal number must start with 0x');
+		hex = hex.slice(2);
+		for (var i = 0, len = hex.length; i < len; i+=2){
+			var v = parseInt(hex[i] + hex[i + 1]);
+			this.writeByte(v);
+		}
+	};
+
 
 	/* Reads a floating-point value from the underlying buffer. */
 	p.string_readFloat = function(precisionBits, exponentBits){
@@ -229,6 +249,7 @@ with({p: spike.ByteArray.prototype}){
 
 	/* Reads an integral value from the underlying buffer. */
 	p.string_readInt = function(bits, signed){
+		if(bits == 64) return this.readHexBytes(8);
 		var blen = bits / 8;
 		var data = this.data.slice(this.position, this.position + blen);
 		this.position += blen;
@@ -259,7 +280,9 @@ with({p: spike.ByteArray.prototype}){
 					return value;
 
 				case 64:
-					throw new Error("Int64 is not supported in JavaScript.")
+					value = this.readHexBytes(8);
+					//console.log('Int64 is not supported in JavaScript, decoded ' + value + ' as a string.');
+					return value;
 			}
 		}
 		else
@@ -282,7 +305,9 @@ with({p: spike.ByteArray.prototype}){
 					return value;
 
 				case 64:
-					throw new Error("Int64 is not supported in JavaScript.")
+					value = this.readHexBytes(8);
+					//console.log('UInt64 is not supported in JavaScript, decoded ' + value + ' as a string.');
+					return value;
 			}
 		}
 	}
@@ -311,6 +336,21 @@ with({p: spike.ByteArray.prototype}){
 
 	/* Reads bytes from the underlying buffer. */
 	p.readBytes = spike.binarySupport ? p.native_readBytes : p.string_readBytes;
+
+	/* Private padding of a string for HEX encoding */
+	p._pad2 = function(str) {
+		return (str.length < 2) ? "0" + str : str;
+	};
+
+	/* Reads a series of hex bytes and presents it as a 0x.. formatted string */
+	p.readHexBytes = function(count){
+		var b16 = '';
+		for(var i = 0; i < count; ++i){
+			b16 += this._pad2(this.getAt(this.position).toString(16));
+			this.position++;
+		}
+		return '0x' + b16;
+	};
 
 	/* Gets a byte value on a specified position */
 	p.string_getAt = function(index){

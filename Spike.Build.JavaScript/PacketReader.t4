@@ -77,7 +77,7 @@ spike.PacketReader.prototype.readString = function(){
 	}
 }
 
-spike.PacketReader.prototype.readDynamic = function(){
+spike.PacketReader.prototype.readDynamicType = function(){
 if(this.readByte()  == 1){
 	var type = this.readString();
 	switch (type){
@@ -242,12 +242,12 @@ spike.PacketReader.prototype.readArrayOfString = function(){
 	return resultArray;
 }
 
-spike.PacketReader.prototype.readArrayOfDynamic = function(){
+spike.PacketReader.prototype.readArrayOfDynamicType = function(){
 	var length = this.readInt32();
 	var resultArray = new Array();
 		
 	for(var i = 0; i < length; ++i)
-		resultArray.push( this.readDynamic() );
+		resultArray.push( this.readDynamicType() );
 			
 	return resultArray;
 }
@@ -257,7 +257,8 @@ spike.PacketReader.prototype.readArrayOfDynamic = function(){
 spike.PacketReader.prototype.read<#= customType.Name #> = function(){
     var value = new Object();
 	<# foreach(var member in customType.Members) { #>
-	value.<#= member.Name.CamelCase() #> = reader.read<#= member.IsList ? "ArrayOf" : string.Empty #><#= member.Type #>();	<# } #>
+	value.<#= member.Name.CamelCase() #> = this.read<#= member.IsList ? "ArrayOf" : string.Empty #><#= member.Type #>();	
+	<# } #>
 	return value;
 }
 

@@ -135,7 +135,9 @@ spike.Channel.prototype.send = function(operationKey, writer) {
 	
 	// Write the body
 	if(length > 0){
-		compiled.buffer.writeBytes(writer.buffer.data);
+		// Write the body to our compiled buffer
+		writer.buffer.position = 0;
+		compiled.buffer.writeBytes(writer.buffer.readBytes(length));
 	}
 
 	// Send the payload in base64
