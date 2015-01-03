@@ -99,6 +99,43 @@ spike.PacketWriter.prototype.writeDynamicType = function(value){
 	if(type == "number")
 	{
 		this.writeByte(1);
+
+		var isInt = ((value | 0) == value) || (((+value).toFixed(20)).replace(/^-?\d*\.?|0+$/g, '').length == 0);
+		if (isInt)
+		{
+			if(value > 0x7FFFFFFF)
+			{
+				this.writeString("UInt32");
+				this.writeUInt32(value);
+				return;
+			}
+			else if(-255 <= value && value <= +255)
+			{
+				this.writeString("Byte");
+				this.writeByte(value | 0);
+				return;
+			}
+			else if (-32768 <= value && value <= +32768)
+			{
+				this.writeString("Int16");
+				this.writeInt16(value | 0);
+				return;
+			}
+			else if (-2147483648 <= value && value <= +2147483648)
+			{
+				this.writeString("Int32");
+				this.writeInt32(value | 0);
+				return;
+			}
+		}
+
+		if(-3.40282347E+38 <= value && value <= 3.40282347E+38)
+		{
+			this.writeString("Single");
+			this.writeSingle(value);
+			return;
+		}
+
 		this.writeString("Double");
 		this.writeDouble(value);
 	}
@@ -111,8 +148,21 @@ spike.PacketWriter.prototype.writeDynamicType = function(value){
 	else if(type == "string")
 	{
 		this.writeByte(1);
-		this.writeString("String");
-		this.writeString(value);
+		if(value.indexOf('+64x' == 0) && value.length == 20)
+		{
+			this.writeString("UInt64");
+			this.writeUInt64(value);
+		}
+		else if(value.indexOf('-64x' == 0) && value.length == 20)
+		{
+			this.writeString("Int64");
+			this.writeInt64(value);
+		}
+		else
+		{
+			this.writeString("String");
+			this.writeString(value);
+		}
 	}
 	else if(type == "object" && value instanceof Date)
 	{
