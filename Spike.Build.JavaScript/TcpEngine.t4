@@ -400,7 +400,7 @@ Socket.prototype.onOpen = function () {
 
 Socket.prototype.onPacket = function (packet) {
   if ('opening' == this.readyState || 'open' == this.readyState) {
-    debug('socket receive: type "%s", data "%s"', packet.type, packet.data);
+    //debug('socket receive: type "%s", data "%s"', packet.type, packet.data);
 
     this.emit('packet', packet);
 
@@ -535,7 +535,7 @@ Socket.prototype.onDrain = function() {
 Socket.prototype.flush = function () {
   if ('closed' != this.readyState && this.transport.writable &&
     !this.upgrading && this.writeBuffer.length) {
-    debug('flushing %d packets in socket', this.writeBuffer.length);
+    //debug('flushing %d packets in socket', this.writeBuffer.length);
     this.transport.send(this.writeBuffer);
     // keep track of current length of writeBuffer
     // splice writeBuffer and callbackBuffer on `drain`

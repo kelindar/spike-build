@@ -234,7 +234,7 @@ spike.Channel.prototype.connect = function(fn){
 			channel._partialRecord = false;
 		}			
 
-		spike.debug('Received buffer: %s', payload);
+		//spike.debug('Received buffer: %s', payload);
 
 		// Read received data and reset (SEEK)
 		if ((typeof payload) == 'string') {
@@ -279,7 +279,7 @@ spike.Channel.prototype.connect = function(fn){
 					operation += sbyte;
 				}
 				operation = operation.toUpperCase();
-				spike.debug('Operation #%s received', operation);
+				//spike.debug('Operation #%s received', operation);
 
 				// New buffer for the packet
 				var packet = new spike.ByteArray();
