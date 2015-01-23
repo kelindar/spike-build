@@ -18,7 +18,7 @@ namespace Spike.Build.JavaScript
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
+    #line 1 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "12.0.0.0")]
     public partial class JavaScriptTemplate : JavaScriptTemplateBase
     {
@@ -30,7 +30,7 @@ namespace Spike.Build.JavaScript
         {
             this.Write("\r\n\r\n");
             
-            #line 9 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
+            #line 9 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
  if(Target == null || Target == "ByteArray") { 
             
             #line default
@@ -91,194 +91,194 @@ namespace Spike.Build.JavaScript
                     "umber, bits, signed){\r\n\t\tif(bits == 64){\r\n\t\t\tthis.write64(number);\r\n\t\t\treturn;\r\n" +
                     "\t\t};\r\n\r\n\t    var max = Math.pow(2, bits), r = [];\r\n\t    var maxs = Math.pow(2, b" +
                     "its - 1);\r\n\t\t(signed && (number >= maxs || number < -maxs)) && this.warn(\'writeI" +
-                    "nt::overflow\') && (number = 0);\r\n\t\t(!signed && (number >= max || (number < -(max" +
-                    " >> 1)))) && this.warn(\'writeUInt::overflow\') && (number = 0);\r\n\t\tnumber < 0 && " +
-                    "(number += max);\r\n\t\tfor(; number; r[r.length] = String.fromCharCode(number % 256" +
-                    "), number = Math.floor(number / 256));\r\n\t\tfor(bits = -(-bits >> 3) - r.length; b" +
-                    "its--; r[r.length] = \'\\0\');\r\n\t\tthis.data += (this.bigEndian ? r.reverse() : r).j" +
-                    "oin(\'\');\r\n\t};\r\n\r\n\t/* Writes a integral value to the underlying buffer. */\r\n\tp.na" +
-                    "tive_writeInt = function(number, bits, signed){\r\n\t\tthis.ensureCapacity(bits / 8)" +
-                    ";\r\n\t\tif(signed)\r\n\t\t{\r\n\t\t\tswitch(bits)\r\n\t\t\t{\r\n\t\t\t\tcase 8:\r\n\t\t\t\t\tthis.view.setInt8" +
-                    "(this.position, number);\r\n\t\t\t\t\tthis.position += 1;\r\n\t\t\t\t\tthis._size += 1;\r\n\t\t\t\t\t" +
-                    "return;\r\n\r\n\t\t\t\tcase 16:\r\n\t\t\t\t\tthis.view.setInt16(this.position, number, !this.bi" +
-                    "gEndian);\r\n\t\t\t\t\tthis.position += 2;\r\n\t\t\t\t\tthis._size += 2;\r\n\t\t\t\t\treturn;\r\n\r\n\t\t\t\t" +
-                    "case 32:\r\n\t\t\t\t\tthis.view.setInt32(this.position, number, !this.bigEndian);\r\n\t\t\t\t" +
-                    "\tthis.position += 4;\r\n\t\t\t\t\tthis._size += 4;\r\n\t\t\t\t\treturn;\r\n\r\n\t\t\t\tcase 64:\r\n\t\t\t\t\t" +
-                    "this.write64(number);\r\n\t\t\t\t\treturn;\r\n\t\t\t}\r\n\t\t}\r\n\t\telse\r\n\t\t{\r\n\t\t\tswitch(bits)\r\n\t\t" +
-                    "\t{\r\n\t\t\t\tcase 8:\r\n\t\t\t\t\tthis.view.setUint8(this.position, number);\r\n\t\t\t\t\tthis.posi" +
+                    "nt::overflow with value\' + number) && (number = 0);\r\n\t\t(!signed && (number >= ma" +
+                    "x || (number < -(max >> 1)))) && this.warn(\'writeUInt::overflow with value\' + nu" +
+                    "mber) && (number = 0);\r\n\t\tnumber < 0 && (number += max);\r\n\t\tfor(; number; r[r.le" +
+                    "ngth] = String.fromCharCode(number % 256), number = Math.floor(number / 256));\r\n" +
+                    "\t\tfor(bits = -(-bits >> 3) - r.length; bits--; r[r.length] = \'\\0\');\r\n\t\tthis.data" +
+                    " += (this.bigEndian ? r.reverse() : r).join(\'\');\r\n\t};\r\n\r\n\t/* Writes a integral v" +
+                    "alue to the underlying buffer. */\r\n\tp.native_writeInt = function(number, bits, s" +
+                    "igned){\r\n\t\tthis.ensureCapacity(bits / 8);\r\n\t\tif(signed)\r\n\t\t{\r\n\t\t\tswitch(bits)\r\n\t" +
+                    "\t\t{\r\n\t\t\t\tcase 8:\r\n\t\t\t\t\tthis.view.setInt8(this.position, number);\r\n\t\t\t\t\tthis.posi" +
                     "tion += 1;\r\n\t\t\t\t\tthis._size += 1;\r\n\t\t\t\t\treturn;\r\n\r\n\t\t\t\tcase 16:\r\n\t\t\t\t\tthis.view." +
-                    "setUint16(this.position, number, !this.bigEndian);\r\n\t\t\t\t\tthis.position += 2;\r\n\t\t" +
-                    "\t\t\tthis._size += 2;\r\n\t\t\t\t\treturn;\r\n\r\n\t\t\t\tcase 32:\r\n\t\t\t\t\tthis.view.setUint32(this" +
-                    ".position, number, !this.bigEndian);\r\n\t\t\t\t\tthis.position += 4;\r\n\t\t\t\t\tthis._size " +
-                    "+= 4;\r\n\t\t\t\t\treturn;\r\n\r\n\t\t\t\tcase 64:\r\n\t\t\t\t\tthis.write64(number);\r\n\t\t\t\t\treturn;\r\n\t" +
-                    "\t\t}\r\n\t\t}\r\n\t};\r\n\t\r\n\t/* Writes a integral value to the underlying buffer. */\r\n\tp.w" +
-                    "riteInt = spike.binarySupport ? p.native_writeInt : p.string_writeInt;\r\n\r\n\t/* Wr" +
-                    "ites an unsigned byte value to the underlying buffer. */\r\n\tp.writeByte = functio" +
-                    "n(number){\r\n\t\tthis.writeInt(number, 8, false);\r\n\t};\r\n\r\n\t/* Writes bytes to the u" +
-                    "nderlying buffer. */\r\n\tp.string_writeBytes = function(bytes){\r\n\t\tthis.data += by" +
-                    "tes;\r\n\t};\r\n\r\n\t/* Writes bytes to the underlying buffer. */\r\n\tp.native_writeBytes" +
-                    " = function(bytes){\r\n\t\tthis.ensureCapacity(bytes.length);\r\n\t\tvar v = new Uint8Ar" +
-                    "ray(this.data, this.position, bytes.length);\r\n\t\tv.set(bytes, 0);\r\n\t\tthis.positio" +
-                    "n += bytes.length;\r\n\t\tthis._size += bytes.length;\r\n\t};\r\n\r\n\t/* Writes bytes to th" +
-                    "e underlying buffer. */\r\n\tp.writeBytes = spike.binarySupport ? p.native_writeByt" +
-                    "es : p.string_writeBytes;\r\n\r\n\t\r\n\t/* Writes a series of hex bytes and presents it" +
-                    " as a 0x.. formatted string */\r\n\tp.write64 = function(hex){\r\n\t\tif(hex.length != " +
-                    "20)\r\n\t\t\tthrow new Error(\'UInt64 or Int16 must be a string of exactly 20 bytes\');" +
-                    "\r\n\t\tvar type = hex.substring(0, 4);\r\n\t\tif(type != \'-64x\' && type != \'+64x\')\r\n\t\t\t" +
-                    "throw new Error(\'UInt64 or Int16 must start with +64x or -64x\');\r\n\t\t\r\n\t\thex = he" +
-                    "x.slice(4);\r\n\t\tfor (var i = 0; i < 16; i+=2){\r\n\t\t\tvar v = parseInt(\'\' + hex[i] +" +
-                    " hex[i + 1], 16);\r\n\t\t\tthis.writeByte(v);\r\n\t\t}\r\n\t};\r\n\r\n\r\n\t/* Reads a floating-poi" +
-                    "nt value from the underlying buffer. */\r\n\tp.string_readFloat = function(precisio" +
-                    "nBits, exponentBits){\r\n\t\tvar blen = (precisionBits + exponentBits + 1) / 8;\r\n\t\tv" +
-                    "ar data = this.data.slice(this.position, this.position + blen);\r\n\t\tthis.position" +
-                    " += blen;\r\n\t\tvar b = ((b = new this.Buffer(this.bigEndian, data)).checkBuffer(pr" +
-                    "ecisionBits + exponentBits + 1), b),\r\n\t\t\tbias = Math.pow(2, exponentBits - 1) - " +
-                    "1, signal = b.readBits(precisionBits + exponentBits, 1),\r\n\t\t\texponent = b.readBi" +
-                    "ts(precisionBits, exponentBits), significand = 0,\r\n\t\t\tdivisor = 2, curByte = b.b" +
-                    "uffer.length + (-precisionBits >> 3) - 1,\r\n\t\t\tbyteValue, startBit, mask;\r\n\t\tdo\r\n" +
-                    "\t\t\tfor(byteValue = b.buffer[ ++curByte ], startBit = precisionBits % 8 || 8, mas" +
-                    "k = 1 << startBit;\r\n\t\t\t\tmask >>= 1; (byteValue & mask) && (significand += 1 / di" +
-                    "visor), divisor *= 2);\r\n\t\twhile(precisionBits -= startBit);\r\n\t\treturn exponent =" +
-                    "= (bias << 1) + 1 ? significand ? NaN : signal ? -Infinity : +Infinity\r\n\t\t\t: (1 " +
-                    "+ signal * -2) * (exponent || significand ? !exponent ? Math.pow(2, -bias + 1) *" +
-                    " significand\r\n\t\t\t: Math.pow(2, exponent - bias) * (1 + significand) : 0);\r\n\t};\r\n" +
-                    "\r\n\t/* Reads a floating-point value from the underlying buffer. */\r\n\tp.native_rea" +
-                    "dFloat = function(precisionBits, exponentBits){\r\n\t\tvar bits = (precisionBits + e" +
-                    "xponentBits + 1);\r\n\t\tvar value = 0;\r\n\t\tswitch(bits)\r\n\t\t{\r\n\t\t\tcase 32:\r\n\t\t\t\tvalue" +
-                    " = this.view.getFloat32(this.position, !this.bigEndian);\r\n\t\t\t\tthis.position += 4" +
-                    ";\r\n\t\t\t\treturn value;\r\n\r\n\t\t\tcase 64:\r\n\t\t\t\tvalue = this.view.getFloat64(this.posit" +
-                    "ion, !this.bigEndian);\r\n\t\t\t\tthis.position += 8;\r\n\t\t\t\treturn value;\r\n\t\t}\r\n\t};\r\n\r\n" +
-                    "\t/* Reads a floating-point value from the underlying buffer. */\r\n\tp.readFloat = " +
-                    "spike.binarySupport ? p.native_readFloat : p.string_readFloat;\r\n\r\n\t/* Reads an i" +
-                    "ntegral value from the underlying buffer. */\r\n\tp.string_readInt = function(bits," +
-                    " signed){\r\n\t\tif(bits == 64) return this.read64(signed);\r\n\t\tvar blen = bits / 8;\r" +
-                    "\n\t\tvar data = this.data.slice(this.position, this.position + blen);\r\n\t\tthis.posi" +
-                    "tion += blen;\r\n\t\tvar b = new this.Buffer(this.bigEndian, data), x = b.readBits(0" +
-                    ", bits), max = Math.pow(2, bits);\r\n\t\treturn signed && x >= max / 2 ? x - max : x" +
-                    ";\r\n\t};\r\n\r\n\t/* Reads an integral value from the underlying buffer. */\r\n\tp.native_" +
-                    "readInt = function(bits, signed){\r\n\t\tvar value = 0;\r\n\t\tif(signed)\r\n\t\t{\r\n\t\t\tswitc" +
-                    "h(bits)\r\n\t\t\t{\r\n\t\t\t\tcase 8:\r\n\t\t\t\t\tvalue = this.view.getInt8(this.position);\r\n\t\t\t\t" +
-                    "\tthis.position += 1;\r\n\t\t\t\t\treturn value < 0x80 ? value : value - 0x100;\r\n\r\n\t\t\t\tc" +
-                    "ase 16:\r\n\t\t\t\t\tvalue = this.view.getInt16(this.position, !this.bigEndian);\r\n\t\t\t\t\t" +
-                    "this.position += 2;\r\n\t\t\t\t\treturn value;\r\n\r\n\t\t\t\tcase 32:\r\n\t\t\t\t\tvalue = this.view." +
-                    "getInt32(this.position, !this.bigEndian);\r\n\t\t\t\t\tthis.position += 4;\r\n\t\t\t\t\treturn" +
-                    " value;\r\n\r\n\t\t\t\tcase 64:\r\n\t\t\t\t\tvalue = this.read64(signed);\r\n\t\t\t\t\t//console.log(\'" +
-                    "Int64 is not supported in JavaScript, decoded \' + value + \' as a string.\');\r\n\t\t\t" +
-                    "\t\treturn value;\r\n\t\t\t}\r\n\t\t}\r\n\t\telse\r\n\t\t{\r\n\t\t\tswitch(bits)\r\n\t\t\t{\r\n\t\t\t\tcase 8:\r\n\t\t\t" +
-                    "\t\tvalue =  this.view.getUint8(this.position);\r\n\t\t\t\t\tthis.position += 1;\r\n\t\t\t\t\tre" +
-                    "turn value;\r\n\r\n\t\t\t\tcase 16:\r\n\t\t\t\t\tvalue = this.view.getUint16(this.position, !th" +
-                    "is.bigEndian);\r\n\t\t\t\t\tthis.position += 2;\r\n\t\t\t\t\treturn value;\r\n\r\n\t\t\t\tcase 32:\r\n\t\t" +
-                    "\t\t\tvalue = this.view.getUint32(this.position, !this.bigEndian);\r\n\t\t\t\t\tthis.posit" +
-                    "ion += 4;\r\n\t\t\t\t\treturn value;\r\n\r\n\t\t\t\tcase 64:\r\n\t\t\t\t\tvalue = this.read64(signed);" +
-                    "\r\n\t\t\t\t\t//console.log(\'UInt64 is not supported in JavaScript, decoded \' + value +" +
-                    " \' as a string.\');\r\n\t\t\t\t\treturn value;\r\n\t\t\t}\r\n\t\t}\r\n\t}\r\n\r\n\t/* Reads an integral v" +
-                    "alue from the underlying buffer. */\r\n\tp.readInt = spike.binarySupport ? p.native" +
-                    "_readInt : p.string_readInt;\r\n\r\n\t/* Reads an unsigned byte value from the underl" +
-                    "ying buffer. */\r\n\tp.readByte = function(){\r\n\t\treturn this.readInt(8, false);\r\n\t}" +
-                    ";\r\n\r\n\t/* Reads bytes from the underlying buffer. */\r\n\tp.string_readBytes = funct" +
-                    "ion(count){\r\n\t\tvar r = this.data.slice(this.position, this.position + count);\r\n\t" +
-                    "\tthis.position += count;\r\n\t\treturn r;\r\n\t};\r\n\r\n\t/* Reads bytes from the underlyin" +
-                    "g buffer. */\r\n\tp.native_readBytes = function(count){\r\n\t\tvar r = new Uint8Array(t" +
-                    "his.data, this.position, count);\r\n\t\tthis.position += count;\r\n\t\treturn r;\r\n\t};\r\n\r" +
-                    "\n\t/* Reads bytes from the underlying buffer. */\r\n\tp.readBytes = spike.binarySupp" +
-                    "ort ? p.native_readBytes : p.string_readBytes;\r\n\r\n\t/* Private padding of a strin" +
-                    "g for HEX encoding */\r\n\tp._padN = function(str, width) {\r\n\t  return str.length >" +
-                    "= width ? str : new Array(width - str.length + 1).join(\'0\') + str;\r\n\t};\r\n\r\n\t/* P" +
-                    "rivate padding of a string for HEX encoding */\r\n\tp._pad2 = function(str) {\r\n\t\tre" +
-                    "turn (str.length < 2) ? \"0\" + str : str;\r\n\t};\r\n\r\n\t/* Reads a series of hex bytes" +
-                    " and presents it as a 0x.. formatted string */\r\n\tp.read64 = function(signed){\r\n\t" +
-                    "\tvar b16 = \'\';\r\n\t\tfor(var i = 0; i < 8; ++i){\r\n\t\t\tb16 += this._pad2(this.getAt(t" +
-                    "his.position).toString(16));\r\n\t\t\tthis.position++;\r\n\t\t}\r\n\t\treturn (signed ? \'-64x" +
-                    "\' : \'+64x\') + b16;\r\n\t};\r\n\r\n\t/* Gets a byte value on a specified position */\r\n\tp." +
-                    "string_getAt = function(index){\r\n\t\treturn this.data.charCodeAt(index) & 0xff;\r\n\t" +
-                    "};\r\n\r\n\t/* Gets a byte value on a specified position */\r\n\tp.native_getAt = functi" +
-                    "on(index){\r\n\t\treturn this.view.getUint8(index);\r\n\t};\r\n\r\n\t/* Reads bytes from the" +
-                    " underlying buffer. */\r\n\tp.getAt = spike.binarySupport ? p.native_getAt : p.stri" +
-                    "ng_getAt;\r\n\r\n\t/* Appends the underlying buffer data to the specified buffer. */\r" +
-                    "\n\tp.readBytesTo = function(targetBuffer, count){\r\n\t\ttargetBuffer.writeBytes( thi" +
-                    "s.readBytes(count) );\r\n\t};\r\n\r\n\r\n\t/* Appends the underlying buffer data to the sp" +
-                    "ecified buffer. */\r\n\tp.string_getSize = function(){\r\n\t\treturn this.data.length;\r" +
-                    "\n\t};\r\n\r\n\t/* Appends the underlying buffer data to the specified buffer. */\r\n\tp.n" +
-                    "ative_getSize = function(){\r\n\t\treturn this._size;\r\n\t};\r\n\r\n\t/* Appends the underl" +
-                    "ying buffer data to the specified buffer. */\r\n\tp.getSize = spike.binarySupport ?" +
-                    " p.native_getSize : p.string_getSize;\r\n\r\n\t/* Gets the byte array data as base64 " +
-                    "encoded string */\r\n\tp.string_toBase64 = function(){\r\n\t\tvar cleanBuffer = new Arr" +
-                    "ay();\r\n\t\tvar result = \"\";\r\n\r\n\t   \tfor(var i=0; i<this.getSize(); ++i)\r\n\t\t\tcleanB" +
-                    "uffer.push(this.getAt(i));\r\n\t\tfor (var i = 0; i < cleanBuffer.length; i++)\r\n\t\t\tr" +
-                    "esult += String.fromCharCode(cleanBuffer[i]);\t\r\n\r\n\t\tif (typeof(btoa) === \'functi" +
-                    "on\') {\r\n\t\t\treturn btoa(result);\r\n\t\t} else {\r\n\t\t\treturn this._btoa(result);\r\n\t\t}\r" +
-                    "\n\t};\r\n\r\n\t/* Gets the byte array data as base64 encoded string */\r\n\tp.native_toBa" +
-                    "se64 = function(){\r\n\t\t//var array = (new Uint8Array(this.data)).subarray(0, this" +
-                    "._size);\r\n\t\tvar array = new Uint8Array(this.data, 0, this._size);\r\n\t\tvar text  =" +
-                    " String.fromCharCode.apply(null, array);\r\n\r\n\t\treturn (typeof(btoa) === \'function" +
-                    "\') \r\n\t\t\t? btoa(text) \r\n\t\t\t: this._btoa(text);\r\n\t};\r\n\r\n\t/* Gets the byte array da" +
-                    "ta as base64 encoded string */\r\n\tp.toBase64 = spike.binarySupport ? p.native_toB" +
-                    "ase64 : p.string_toBase64;\r\n\r\n\t/* Gets the underlying buffer slice */\r\n\tp.toBuff" +
-                    "er = function(){\r\n\t\tvar p = this.position;\r\n\t\tthis.position = 0;\r\n\t\tvar b = this" +
-                    ".readBytes(this.getSize());\r\n\t\tthis.position = p;\r\n\t\treturn b;\r\n\t};\r\n\r\n\t/* Write" +
-                    "s base 64 encoded string to the buffer after decoding it */\r\n\tp.string_writeBase" +
-                    "64 = function(input){\r\n\t\tif (typeof(atob) === \'function\') {\r\n\t\t\tthis.writeBytes(" +
-                    "atob(input));\r\n\t\t} else {\r\n\t\t\tthis.writeBytes(this._atob(input));\r\n\t\t}\r\n\t};\r\n\r\n\t" +
-                    "/* Writes base 64 encoded string to the buffer after decoding it */\r\n\tp.native_w" +
-                    "riteBase64 = function(input){\r\n\t\tvar array = new Uint8Array(atob(input).split(\"\"" +
-                    ").map(function(c) { return c.charCodeAt(0); }));\r\n\t\tthis.writeBytes(array);\r\n\t};" +
-                    "\r\n\r\n\t/* Writes base 64 encoded string to the buffer after decoding it */\r\n\tp.wri" +
-                    "teBase64 = spike.binarySupport ? p.native_writeBase64 : p.string_writeBase64;\r\n\r" +
-                    "\n\r\n     /* btoa() for Internet Explorer */\r\n     p._btoa = function(str) {\r\n    " +
-                    "      var chars = \'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz012345678" +
-                    "9+/=\';\r\n          var encoded = [];\r\n          var c = 0;\r\n          while (c < " +
-                    "str.length) {\r\n              var b0 = str.charCodeAt(c++);\r\n              var b1" +
-                    " = str.charCodeAt(c++);\r\n              var b2 = str.charCodeAt(c++);\r\n          " +
-                    "    var buf = (b0 << 16) + ((b1 || 0) << 8) + (b2 || 0);\r\n              var i0 =" +
-                    " (buf & (63 << 18)) >> 18;\r\n              var i1 = (buf & (63 << 12)) >> 12;\r\n  " +
-                    "            var i2 = isNaN(b1) ? 64 : (buf & (63 << 6)) >> 6;\r\n              var" +
-                    " i3 = isNaN(b2) ? 64 : (buf & 63);\r\n              encoded[encoded.length] = char" +
-                    "s.charAt(i0);\r\n              encoded[encoded.length] = chars.charAt(i1);\r\n      " +
-                    "        encoded[encoded.length] = chars.charAt(i2);\r\n              encoded[encod" +
-                    "ed.length] = chars.charAt(i3);\r\n          }\r\n          return encoded.join(\'\');\r" +
-                    "\n      };\r\n\r\n\t/* atob() for Internet Explorer */\r\n\tp._atob = function(input) {\r\n" +
-                    "\t    var b64array = \"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456" +
-                    "789+/=\";\r\n\t    var output = \"\";\r\n\t    var hex = \"\";\r\n\t    var chr1, chr2, chr3 =" +
-                    " \"\";\r\n\t    var enc1, enc2, enc3, enc4 = \"\";\r\n\t    var i = 0;\r\n\t\r\n\t    input = in" +
-                    "put.replace(/[^A-Za-z0-9\\+\\/\\=]/g, \"\");\r\n\t\r\n\t    do {\r\n\t        enc1 = b64array." +
-                    "indexOf(input.charAt(i++));\r\n\t        enc2 = b64array.indexOf(input.charAt(i++))" +
-                    ";\r\n\t        enc3 = b64array.indexOf(input.charAt(i++));\r\n\t        enc4 = b64arra" +
-                    "y.indexOf(input.charAt(i++));\r\n\t        \r\n\t        chr1 = (enc1 << 2) | (enc2 >>" +
-                    " 4);\r\n\t        chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);\r\n\t        chr3 = ((enc3 " +
-                    "& 3) << 6) | enc4;\r\n\t        \r\n\t        output = output + String.fromCharCode(ch" +
-                    "r1);\r\n\t        \r\n\t        if (enc3 != 64) {\r\n\t            output = output + Stri" +
-                    "ng.fromCharCode(chr2);\r\n\t        }\r\n\t        if (enc4 != 64) {\r\n\t            out" +
-                    "put = output + String.fromCharCode(chr3);\r\n\t        }\r\n\t    \r\n\t        chr1 = ch" +
-                    "r2 = chr3 = \"\";\r\n\t        enc1 = enc2 = enc3 = enc4 = \"\";\r\n\t    \r\n\t    } while (" +
-                    "i < input.length);\r\n\r\n\t    return output;\r\n\t};\r\n\r\n\r\n\twith({p: (p.Buffer = functi" +
-                    "on(bigEndian, buffer){\r\n\t\tthis.bigEndian = bigEndian || 0, this.buffer = [], thi" +
-                    "s.setBuffer(buffer);\r\n\t}).prototype}){\r\n\t\tp.readBits = function(start, length){\r" +
-                    "\n\t\t\t//shl fix: Henri Torgemane ~1996 (compressed by Jonas Raoni)\r\n\t\t\tfunction sh" +
-                    "l(a, b){\r\n\t\t\t\tfor(++b; --b; a = ((a %= 0x7fffffff + 1) & 0x40000000) == 0x400000" +
-                    "00 ? a * 2 : (a - 0x40000000) * 2 + 0x7fffffff + 1);\r\n\t\t\t\treturn a;\r\n\t\t\t}\r\n\t\t\tif" +
-                    "(start < 0 || length <= 0)\r\n\t\t\t\treturn 0;\r\n\t\t\tthis.checkBuffer(start + length);\r" +
-                    "\n\t\t\tfor(var offsetLeft, offsetRight = start % 8, curByte = this.buffer.length - " +
-                    "(start >> 3) - 1,\r\n\t\t\t\tlastByte = this.buffer.length + (-(start + length) >> 3)," +
-                    " diff = curByte - lastByte,\r\n\t\t\t\tsum = ((this.buffer[ curByte ] >> offsetRight) " +
-                    "& ((1 << (diff ? 8 - offsetRight : length)) - 1))\r\n\t\t\t\t+ (diff && (offsetLeft = " +
-                    "(start + length) % 8) ? (this.buffer[ lastByte++ ] & ((1 << offsetLeft) - 1))\r\n\t" +
-                    "\t\t\t<< (diff-- << 3) - offsetRight : 0); diff; sum += shl(this.buffer[ lastByte++" +
-                    " ], (diff-- << 3) - offsetRight)\r\n\t\t\t);\r\n\t\t\treturn sum;\r\n\t\t};\r\n\t\tp.setBuffer = f" +
-                    "unction(data){\r\n\t\t\tif(data){\r\n\t\t\t\tfor(var l, i = l = data.length, b = this.buffe" +
-                    "r = new Array(l); i; b[l - i] = data.charCodeAt(--i));\r\n\t\t\t\tthis.bigEndian && b." +
-                    "reverse();\r\n\t\t\t}\r\n\t\t};\r\n\t\tp.hasNeededBits = function(neededBits){\r\n\t\t\treturn thi" +
-                    "s.buffer.length >= -(-neededBits >> 3);\r\n\t\t};\r\n\t\tp.checkBuffer = function(needed" +
-                    "Bits){\r\n\t\t\tif(!this.hasNeededBits(neededBits))\r\n\t\t\t\tthrow new Error(\'checkBuffer" +
-                    "::missing bytes\');\r\n\t\t};\r\n\t}\r\n\tp.warn = function(msg){\r\n\t\tif(this.allowException" +
-                    "s)\r\n\t\t\tthrow new Error(msg);\r\n\t\treturn 1;\r\n\t};\r\n\r\n}");
+                    "setInt16(this.position, number, !this.bigEndian);\r\n\t\t\t\t\tthis.position += 2;\r\n\t\t\t" +
+                    "\t\tthis._size += 2;\r\n\t\t\t\t\treturn;\r\n\r\n\t\t\t\tcase 32:\r\n\t\t\t\t\tthis.view.setInt32(this.p" +
+                    "osition, number, !this.bigEndian);\r\n\t\t\t\t\tthis.position += 4;\r\n\t\t\t\t\tthis._size +=" +
+                    " 4;\r\n\t\t\t\t\treturn;\r\n\r\n\t\t\t\tcase 64:\r\n\t\t\t\t\tthis.write64(number);\r\n\t\t\t\t\treturn;\r\n\t\t\t" +
+                    "}\r\n\t\t}\r\n\t\telse\r\n\t\t{\r\n\t\t\tswitch(bits)\r\n\t\t\t{\r\n\t\t\t\tcase 8:\r\n\t\t\t\t\tthis.view.setUint8" +
+                    "(this.position, number);\r\n\t\t\t\t\tthis.position += 1;\r\n\t\t\t\t\tthis._size += 1;\r\n\t\t\t\t\t" +
+                    "return;\r\n\r\n\t\t\t\tcase 16:\r\n\t\t\t\t\tthis.view.setUint16(this.position, number, !this.b" +
+                    "igEndian);\r\n\t\t\t\t\tthis.position += 2;\r\n\t\t\t\t\tthis._size += 2;\r\n\t\t\t\t\treturn;\r\n\r\n\t\t\t" +
+                    "\tcase 32:\r\n\t\t\t\t\tthis.view.setUint32(this.position, number, !this.bigEndian);\r\n\t\t" +
+                    "\t\t\tthis.position += 4;\r\n\t\t\t\t\tthis._size += 4;\r\n\t\t\t\t\treturn;\r\n\r\n\t\t\t\tcase 64:\r\n\t\t\t" +
+                    "\t\tthis.write64(number);\r\n\t\t\t\t\treturn;\r\n\t\t\t}\r\n\t\t}\r\n\t};\r\n\t\r\n\t/* Writes a integral " +
+                    "value to the underlying buffer. */\r\n\tp.writeInt = spike.binarySupport ? p.native" +
+                    "_writeInt : p.string_writeInt;\r\n\r\n\t/* Writes an unsigned byte value to the under" +
+                    "lying buffer. */\r\n\tp.writeByte = function(number){\r\n\t\tthis.writeInt(number, 8, f" +
+                    "alse);\r\n\t};\r\n\r\n\t/* Writes bytes to the underlying buffer. */\r\n\tp.string_writeByt" +
+                    "es = function(bytes){\r\n\t\tthis.data += bytes;\r\n\t};\r\n\r\n\t/* Writes bytes to the und" +
+                    "erlying buffer. */\r\n\tp.native_writeBytes = function(bytes){\r\n\t\tthis.ensureCapaci" +
+                    "ty(bytes.length);\r\n\t\tvar v = new Uint8Array(this.data, this.position, bytes.leng" +
+                    "th);\r\n\t\tv.set(bytes, 0);\r\n\t\tthis.position += bytes.length;\r\n\t\tthis._size += byte" +
+                    "s.length;\r\n\t};\r\n\r\n\t/* Writes bytes to the underlying buffer. */\r\n\tp.writeBytes =" +
+                    " spike.binarySupport ? p.native_writeBytes : p.string_writeBytes;\r\n\r\n\t\r\n\t/* Writ" +
+                    "es a series of hex bytes and presents it as a 0x.. formatted string */\r\n\tp.write" +
+                    "64 = function(hex){\r\n\t\tif(hex.length != 20)\r\n\t\t\tthrow new Error(\'UInt64 or Int16" +
+                    " must be a string of exactly 20 bytes\');\r\n\t\tvar type = hex.substring(0, 4);\r\n\t\ti" +
+                    "f(type != \'-64x\' && type != \'+64x\')\r\n\t\t\tthrow new Error(\'UInt64 or Int16 must st" +
+                    "art with +64x or -64x\');\r\n\t\t\r\n\t\thex = hex.slice(4);\r\n\t\tfor (var i = 0; i < 16; i" +
+                    "+=2){\r\n\t\t\tvar v = parseInt(\'\' + hex[i] + hex[i + 1], 16);\r\n\t\t\tthis.writeByte(v);" +
+                    "\r\n\t\t}\r\n\t};\r\n\r\n\r\n\t/* Reads a floating-point value from the underlying buffer. */\r" +
+                    "\n\tp.string_readFloat = function(precisionBits, exponentBits){\r\n\t\tvar blen = (pre" +
+                    "cisionBits + exponentBits + 1) / 8;\r\n\t\tvar data = this.data.slice(this.position," +
+                    " this.position + blen);\r\n\t\tthis.position += blen;\r\n\t\tvar b = ((b = new this.Buff" +
+                    "er(this.bigEndian, data)).checkBuffer(precisionBits + exponentBits + 1), b),\r\n\t\t" +
+                    "\tbias = Math.pow(2, exponentBits - 1) - 1, signal = b.readBits(precisionBits + e" +
+                    "xponentBits, 1),\r\n\t\t\texponent = b.readBits(precisionBits, exponentBits), signifi" +
+                    "cand = 0,\r\n\t\t\tdivisor = 2, curByte = b.buffer.length + (-precisionBits >> 3) - 1" +
+                    ",\r\n\t\t\tbyteValue, startBit, mask;\r\n\t\tdo\r\n\t\t\tfor(byteValue = b.buffer[ ++curByte ]" +
+                    ", startBit = precisionBits % 8 || 8, mask = 1 << startBit;\r\n\t\t\t\tmask >>= 1; (byt" +
+                    "eValue & mask) && (significand += 1 / divisor), divisor *= 2);\r\n\t\twhile(precisio" +
+                    "nBits -= startBit);\r\n\t\treturn exponent == (bias << 1) + 1 ? significand ? NaN : " +
+                    "signal ? -Infinity : +Infinity\r\n\t\t\t: (1 + signal * -2) * (exponent || significan" +
+                    "d ? !exponent ? Math.pow(2, -bias + 1) * significand\r\n\t\t\t: Math.pow(2, exponent " +
+                    "- bias) * (1 + significand) : 0);\r\n\t};\r\n\r\n\t/* Reads a floating-point value from " +
+                    "the underlying buffer. */\r\n\tp.native_readFloat = function(precisionBits, exponen" +
+                    "tBits){\r\n\t\tvar bits = (precisionBits + exponentBits + 1);\r\n\t\tvar value = 0;\r\n\t\ts" +
+                    "witch(bits)\r\n\t\t{\r\n\t\t\tcase 32:\r\n\t\t\t\tvalue = this.view.getFloat32(this.position, !" +
+                    "this.bigEndian);\r\n\t\t\t\tthis.position += 4;\r\n\t\t\t\treturn value;\r\n\r\n\t\t\tcase 64:\r\n\t\t\t" +
+                    "\tvalue = this.view.getFloat64(this.position, !this.bigEndian);\r\n\t\t\t\tthis.positio" +
+                    "n += 8;\r\n\t\t\t\treturn value;\r\n\t\t}\r\n\t};\r\n\r\n\t/* Reads a floating-point value from th" +
+                    "e underlying buffer. */\r\n\tp.readFloat = spike.binarySupport ? p.native_readFloat" +
+                    " : p.string_readFloat;\r\n\r\n\t/* Reads an integral value from the underlying buffer" +
+                    ". */\r\n\tp.string_readInt = function(bits, signed){\r\n\t\tif(bits == 64) return this." +
+                    "read64(signed);\r\n\t\tvar blen = bits / 8;\r\n\t\tvar data = this.data.slice(this.posit" +
+                    "ion, this.position + blen);\r\n\t\tthis.position += blen;\r\n\t\tvar b = new this.Buffer" +
+                    "(this.bigEndian, data), x = b.readBits(0, bits), max = Math.pow(2, bits);\r\n\t\tret" +
+                    "urn signed && x >= max / 2 ? x - max : x;\r\n\t};\r\n\r\n\t/* Reads an integral value fr" +
+                    "om the underlying buffer. */\r\n\tp.native_readInt = function(bits, signed){\r\n\t\tvar" +
+                    " value = 0;\r\n\t\tif(signed)\r\n\t\t{\r\n\t\t\tswitch(bits)\r\n\t\t\t{\r\n\t\t\t\tcase 8:\r\n\t\t\t\t\tvalue =" +
+                    " this.view.getInt8(this.position);\r\n\t\t\t\t\tthis.position += 1;\r\n\t\t\t\t\treturn value " +
+                    "< 0x80 ? value : value - 0x100;\r\n\r\n\t\t\t\tcase 16:\r\n\t\t\t\t\tvalue = this.view.getInt16" +
+                    "(this.position, !this.bigEndian);\r\n\t\t\t\t\tthis.position += 2;\r\n\t\t\t\t\treturn value;\r" +
+                    "\n\r\n\t\t\t\tcase 32:\r\n\t\t\t\t\tvalue = this.view.getInt32(this.position, !this.bigEndian)" +
+                    ";\r\n\t\t\t\t\tthis.position += 4;\r\n\t\t\t\t\treturn value;\r\n\r\n\t\t\t\tcase 64:\r\n\t\t\t\t\tvalue = th" +
+                    "is.read64(signed);\r\n\t\t\t\t\t//console.log(\'Int64 is not supported in JavaScript, de" +
+                    "coded \' + value + \' as a string.\');\r\n\t\t\t\t\treturn value;\r\n\t\t\t}\r\n\t\t}\r\n\t\telse\r\n\t\t{\r" +
+                    "\n\t\t\tswitch(bits)\r\n\t\t\t{\r\n\t\t\t\tcase 8:\r\n\t\t\t\t\tvalue =  this.view.getUint8(this.posit" +
+                    "ion);\r\n\t\t\t\t\tthis.position += 1;\r\n\t\t\t\t\treturn value;\r\n\r\n\t\t\t\tcase 16:\r\n\t\t\t\t\tvalue " +
+                    "= this.view.getUint16(this.position, !this.bigEndian);\r\n\t\t\t\t\tthis.position += 2;" +
+                    "\r\n\t\t\t\t\treturn value;\r\n\r\n\t\t\t\tcase 32:\r\n\t\t\t\t\tvalue = this.view.getUint32(this.posi" +
+                    "tion, !this.bigEndian);\r\n\t\t\t\t\tthis.position += 4;\r\n\t\t\t\t\treturn value;\r\n\r\n\t\t\t\tcas" +
+                    "e 64:\r\n\t\t\t\t\tvalue = this.read64(signed);\r\n\t\t\t\t\t//console.log(\'UInt64 is not supp" +
+                    "orted in JavaScript, decoded \' + value + \' as a string.\');\r\n\t\t\t\t\treturn value;\r\n" +
+                    "\t\t\t}\r\n\t\t}\r\n\t}\r\n\r\n\t/* Reads an integral value from the underlying buffer. */\r\n\tp." +
+                    "readInt = spike.binarySupport ? p.native_readInt : p.string_readInt;\r\n\r\n\t/* Read" +
+                    "s an unsigned byte value from the underlying buffer. */\r\n\tp.readByte = function(" +
+                    "){\r\n\t\treturn this.readInt(8, false);\r\n\t};\r\n\r\n\t/* Reads bytes from the underlying" +
+                    " buffer. */\r\n\tp.string_readBytes = function(count){\r\n\t\tvar r = this.data.slice(t" +
+                    "his.position, this.position + count);\r\n\t\tthis.position += count;\r\n\t\treturn r;\r\n\t" +
+                    "};\r\n\r\n\t/* Reads bytes from the underlying buffer. */\r\n\tp.native_readBytes = func" +
+                    "tion(count){\r\n\t\tvar r = new Uint8Array(this.data, this.position, count);\r\n\t\tthis" +
+                    ".position += count;\r\n\t\treturn r;\r\n\t};\r\n\r\n\t/* Reads bytes from the underlying buf" +
+                    "fer. */\r\n\tp.readBytes = spike.binarySupport ? p.native_readBytes : p.string_read" +
+                    "Bytes;\r\n\r\n\t/* Private padding of a string for HEX encoding */\r\n\tp._padN = functi" +
+                    "on(str, width) {\r\n\t  return str.length >= width ? str : new Array(width - str.le" +
+                    "ngth + 1).join(\'0\') + str;\r\n\t};\r\n\r\n\t/* Private padding of a string for HEX encod" +
+                    "ing */\r\n\tp._pad2 = function(str) {\r\n\t\treturn (str.length < 2) ? \"0\" + str : str;" +
+                    "\r\n\t};\r\n\r\n\t/* Reads a series of hex bytes and presents it as a 0x.. formatted str" +
+                    "ing */\r\n\tp.read64 = function(signed){\r\n\t\tvar b16 = \'\';\r\n\t\tfor(var i = 0; i < 8; " +
+                    "++i){\r\n\t\t\tb16 += this._pad2(this.getAt(this.position).toString(16));\r\n\t\t\tthis.po" +
+                    "sition++;\r\n\t\t}\r\n\t\treturn (signed ? \'-64x\' : \'+64x\') + b16;\r\n\t};\r\n\r\n\t/* Gets a by" +
+                    "te value on a specified position */\r\n\tp.string_getAt = function(index){\r\n\t\tretur" +
+                    "n this.data.charCodeAt(index) & 0xff;\r\n\t};\r\n\r\n\t/* Gets a byte value on a specifi" +
+                    "ed position */\r\n\tp.native_getAt = function(index){\r\n\t\treturn this.view.getUint8(" +
+                    "index);\r\n\t};\r\n\r\n\t/* Reads bytes from the underlying buffer. */\r\n\tp.getAt = spike" +
+                    ".binarySupport ? p.native_getAt : p.string_getAt;\r\n\r\n\t/* Appends the underlying " +
+                    "buffer data to the specified buffer. */\r\n\tp.readBytesTo = function(targetBuffer," +
+                    " count){\r\n\t\ttargetBuffer.writeBytes( this.readBytes(count) );\r\n\t};\r\n\r\n\r\n\t/* Appe" +
+                    "nds the underlying buffer data to the specified buffer. */\r\n\tp.string_getSize = " +
+                    "function(){\r\n\t\treturn this.data.length;\r\n\t};\r\n\r\n\t/* Appends the underlying buffe" +
+                    "r data to the specified buffer. */\r\n\tp.native_getSize = function(){\r\n\t\treturn th" +
+                    "is._size;\r\n\t};\r\n\r\n\t/* Appends the underlying buffer data to the specified buffer" +
+                    ". */\r\n\tp.getSize = spike.binarySupport ? p.native_getSize : p.string_getSize;\r\n\r" +
+                    "\n\t/* Gets the byte array data as base64 encoded string */\r\n\tp.string_toBase64 = " +
+                    "function(){\r\n\t\tvar cleanBuffer = new Array();\r\n\t\tvar result = \"\";\r\n\r\n\t   \tfor(va" +
+                    "r i=0; i<this.getSize(); ++i)\r\n\t\t\tcleanBuffer.push(this.getAt(i));\r\n\t\tfor (var i" +
+                    " = 0; i < cleanBuffer.length; i++)\r\n\t\t\tresult += String.fromCharCode(cleanBuffer" +
+                    "[i]);\t\r\n\r\n\t\tif (typeof(btoa) === \'function\') {\r\n\t\t\treturn btoa(result);\r\n\t\t} els" +
+                    "e {\r\n\t\t\treturn this._btoa(result);\r\n\t\t}\r\n\t};\r\n\r\n\t/* Gets the byte array data as " +
+                    "base64 encoded string */\r\n\tp.native_toBase64 = function(){\r\n\t\t//var array = (new" +
+                    " Uint8Array(this.data)).subarray(0, this._size);\r\n\t\tvar array = new Uint8Array(t" +
+                    "his.data, 0, this._size);\r\n\t\tvar text  = String.fromCharCode.apply(null, array);" +
+                    "\r\n\r\n\t\treturn (typeof(btoa) === \'function\') \r\n\t\t\t? btoa(text) \r\n\t\t\t: this._btoa(t" +
+                    "ext);\r\n\t};\r\n\r\n\t/* Gets the byte array data as base64 encoded string */\r\n\tp.toBas" +
+                    "e64 = spike.binarySupport ? p.native_toBase64 : p.string_toBase64;\r\n\r\n\t/* Gets t" +
+                    "he underlying buffer slice */\r\n\tp.toBuffer = function(){\r\n\t\tvar p = this.positio" +
+                    "n;\r\n\t\tthis.position = 0;\r\n\t\tvar b = this.readBytes(this.getSize());\r\n\t\tthis.posi" +
+                    "tion = p;\r\n\t\treturn b;\r\n\t};\r\n\r\n\t/* Writes base 64 encoded string to the buffer a" +
+                    "fter decoding it */\r\n\tp.string_writeBase64 = function(input){\r\n\t\tif (typeof(atob" +
+                    ") === \'function\') {\r\n\t\t\tthis.writeBytes(atob(input));\r\n\t\t} else {\r\n\t\t\tthis.write" +
+                    "Bytes(this._atob(input));\r\n\t\t}\r\n\t};\r\n\r\n\t/* Writes base 64 encoded string to the " +
+                    "buffer after decoding it */\r\n\tp.native_writeBase64 = function(input){\r\n\t\tvar arr" +
+                    "ay = new Uint8Array(atob(input).split(\"\").map(function(c) { return c.charCodeAt(" +
+                    "0); }));\r\n\t\tthis.writeBytes(array);\r\n\t};\r\n\r\n\t/* Writes base 64 encoded string to" +
+                    " the buffer after decoding it */\r\n\tp.writeBase64 = spike.binarySupport ? p.nativ" +
+                    "e_writeBase64 : p.string_writeBase64;\r\n\r\n\r\n     /* btoa() for Internet Explorer " +
+                    "*/\r\n     p._btoa = function(str) {\r\n          var chars = \'ABCDEFGHIJKLMNOPQRSTU" +
+                    "VWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=\';\r\n          var encoded = [];\r\n   " +
+                    "       var c = 0;\r\n          while (c < str.length) {\r\n              var b0 = st" +
+                    "r.charCodeAt(c++);\r\n              var b1 = str.charCodeAt(c++);\r\n              v" +
+                    "ar b2 = str.charCodeAt(c++);\r\n              var buf = (b0 << 16) + ((b1 || 0) <<" +
+                    " 8) + (b2 || 0);\r\n              var i0 = (buf & (63 << 18)) >> 18;\r\n            " +
+                    "  var i1 = (buf & (63 << 12)) >> 12;\r\n              var i2 = isNaN(b1) ? 64 : (b" +
+                    "uf & (63 << 6)) >> 6;\r\n              var i3 = isNaN(b2) ? 64 : (buf & 63);\r\n    " +
+                    "          encoded[encoded.length] = chars.charAt(i0);\r\n              encoded[enc" +
+                    "oded.length] = chars.charAt(i1);\r\n              encoded[encoded.length] = chars." +
+                    "charAt(i2);\r\n              encoded[encoded.length] = chars.charAt(i3);\r\n        " +
+                    "  }\r\n          return encoded.join(\'\');\r\n      };\r\n\r\n\t/* atob() for Internet Exp" +
+                    "lorer */\r\n\tp._atob = function(input) {\r\n\t    var b64array = \"ABCDEFGHIJKLMNOPQRS" +
+                    "TUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=\";\r\n\t    var output = \"\";\r\n\t    va" +
+                    "r hex = \"\";\r\n\t    var chr1, chr2, chr3 = \"\";\r\n\t    var enc1, enc2, enc3, enc4 = " +
+                    "\"\";\r\n\t    var i = 0;\r\n\t\r\n\t    input = input.replace(/[^A-Za-z0-9\\+\\/\\=]/g, \"\");\r" +
+                    "\n\t\r\n\t    do {\r\n\t        enc1 = b64array.indexOf(input.charAt(i++));\r\n\t        en" +
+                    "c2 = b64array.indexOf(input.charAt(i++));\r\n\t        enc3 = b64array.indexOf(inpu" +
+                    "t.charAt(i++));\r\n\t        enc4 = b64array.indexOf(input.charAt(i++));\r\n\t        " +
+                    "\r\n\t        chr1 = (enc1 << 2) | (enc2 >> 4);\r\n\t        chr2 = ((enc2 & 15) << 4)" +
+                    " | (enc3 >> 2);\r\n\t        chr3 = ((enc3 & 3) << 6) | enc4;\r\n\t        \r\n\t        " +
+                    "output = output + String.fromCharCode(chr1);\r\n\t        \r\n\t        if (enc3 != 64" +
+                    ") {\r\n\t            output = output + String.fromCharCode(chr2);\r\n\t        }\r\n\t   " +
+                    "     if (enc4 != 64) {\r\n\t            output = output + String.fromCharCode(chr3)" +
+                    ";\r\n\t        }\r\n\t    \r\n\t        chr1 = chr2 = chr3 = \"\";\r\n\t        enc1 = enc2 = " +
+                    "enc3 = enc4 = \"\";\r\n\t    \r\n\t    } while (i < input.length);\r\n\r\n\t    return output" +
+                    ";\r\n\t};\r\n\r\n\r\n\twith({p: (p.Buffer = function(bigEndian, buffer){\r\n\t\tthis.bigEndian" +
+                    " = bigEndian || 0, this.buffer = [], this.setBuffer(buffer);\r\n\t}).prototype}){\r\n" +
+                    "\t\tp.readBits = function(start, length){\r\n\t\t\tfunction shl(a, b){\r\n\t\t\t\tfor(++b; --" +
+                    "b; a = ((a %= 0x7fffffff + 1) & 0x40000000) == 0x40000000 ? a * 2 : (a - 0x40000" +
+                    "000) * 2 + 0x7fffffff + 1);\r\n\t\t\t\treturn a;\r\n\t\t\t}\r\n\t\t\tif(start < 0 || length <= 0" +
+                    ")\r\n\t\t\t\treturn 0;\r\n\t\t\tthis.checkBuffer(start + length);\r\n\t\t\tfor(var offsetLeft, o" +
+                    "ffsetRight = start % 8, curByte = this.buffer.length - (start >> 3) - 1,\r\n\t\t\t\tla" +
+                    "stByte = this.buffer.length + (-(start + length) >> 3), diff = curByte - lastByt" +
+                    "e,\r\n\t\t\t\tsum = ((this.buffer[ curByte ] >> offsetRight) & ((1 << (diff ? 8 - offs" +
+                    "etRight : length)) - 1))\r\n\t\t\t\t+ (diff && (offsetLeft = (start + length) % 8) ? (" +
+                    "this.buffer[ lastByte++ ] & ((1 << offsetLeft) - 1))\r\n\t\t\t\t<< (diff-- << 3) - off" +
+                    "setRight : 0); diff; sum += shl(this.buffer[ lastByte++ ], (diff-- << 3) - offse" +
+                    "tRight)\r\n\t\t\t);\r\n\t\t\treturn sum;\r\n\t\t};\r\n\t\tp.setBuffer = function(data){\r\n\t\t\tif(dat" +
+                    "a){\r\n\t\t\t\tfor(var l, i = l = data.length, b = this.buffer = new Array(l); i; b[l " +
+                    "- i] = data.charCodeAt(--i));\r\n\t\t\t\tthis.bigEndian && b.reverse();\r\n\t\t\t}\r\n\t\t};\r\n\t" +
+                    "\tp.hasNeededBits = function(neededBits){\r\n\t\t\treturn this.buffer.length >= -(-nee" +
+                    "dedBits >> 3);\r\n\t\t};\r\n\t\tp.checkBuffer = function(neededBits){\r\n\t\t\tif(!this.hasNe" +
+                    "ededBits(neededBits))\r\n\t\t\t\tthrow new Error(\'checkBuffer::missing bytes\');\r\n\t\t};\r" +
+                    "\n\t}\r\n\tp.warn = function(msg){\r\n\t\tif(this.allowExceptions)\r\n\t\t\tthrow new Error(ms" +
+                    "g);\r\n\t\treturn 1;\r\n\t};\r\n\r\n}");
             
-            #line 9 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
+            #line 9 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
  } 
             
             #line default
             #line hidden
             
-            #line 10 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
+            #line 10 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
  if(Target == null || Target == "PacketCompressor") { 
             
             #line default
@@ -371,13 +371,13 @@ namespace Spike.Build.JavaScript
                     " != 0);\r\n\t\t\t}\r\n\t\t}\r\n\t\twhile (iidx < inputLength);\r\n\t\t\r\n\t\toutput.length = oidx;\r\n" +
                     "\t\treturn output;\r\n\t}\r\n\t\r\n};");
             
-            #line 10 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
+            #line 10 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
  } 
             
             #line default
             #line hidden
             
-            #line 11 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
+            #line 11 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
  if(Target == null || Target == "PacketWriter") { 
             
             #line default
@@ -418,137 +418,137 @@ namespace Spike.Build.JavaScript
                     "(value);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeDynamicType = function(valu" +
                     "e){\r\n\tvar type = typeof(value);\r\n\tif(type == \"number\")\r\n\t{\r\n\t\tthis.writeByte(1);" +
                     "\r\n\r\n\t\tvar isInt = ((value | 0) == value) || (((+value).toFixed(20)).replace(/^-?" +
-                    "\\d*\\.?|0+$/g, \'\').length == 0);\r\n\t\tif (isInt)\r\n\t\t{\r\n\t\t\tif(value > 0x7FFFFFFF)\r\n\t" +
-                    "\t\t{\r\n\t\t\t\tthis.writeString(\"UInt32\");\r\n\t\t\t\tthis.writeUInt32(value);\r\n\t\t\t\treturn;\r" +
-                    "\n\t\t\t}\r\n\t\t\telse if(-255 <= value && value <= +255)\r\n\t\t\t{\r\n\t\t\t\tthis.writeString(\"B" +
-                    "yte\");\r\n\t\t\t\tthis.writeByte(value | 0);\r\n\t\t\t\treturn;\r\n\t\t\t}\r\n\t\t\telse if (-32768 <=" +
-                    " value && value <= +32768)\r\n\t\t\t{\r\n\t\t\t\tthis.writeString(\"Int16\");\r\n\t\t\t\tthis.write" +
-                    "Int16(value | 0);\r\n\t\t\t\treturn;\r\n\t\t\t}\r\n\t\t\telse if (-2147483648 <= value && value " +
-                    "<= +2147483648)\r\n\t\t\t{\r\n\t\t\t\tthis.writeString(\"Int32\");\r\n\t\t\t\tthis.writeInt32(value" +
-                    " | 0);\r\n\t\t\t\treturn;\r\n\t\t\t}\r\n\t\t}\r\n\r\n\t\tif(-3.40282347E+38 <= value && value <= 3.40" +
-                    "282347E+38)\r\n\t\t{\r\n\t\t\tthis.writeString(\"Single\");\r\n\t\t\tthis.writeSingle(value);\r\n\t" +
-                    "\t\treturn;\r\n\t\t}\r\n\r\n\t\tthis.writeString(\"Double\");\r\n\t\tthis.writeDouble(value);\r\n\t\tr" +
-                    "eturn;\r\n\t}\r\n\telse if(type == \"boolean\")\r\n\t{\r\n\t\tthis.writeByte(1);\r\n\t\tthis.writeS" +
-                    "tring(\"Boolean\");\r\n\t\tthis.writeBoolean(value);\r\n\t\treturn;\r\n\t}\r\n\telse if(type == " +
-                    "\"string\")\r\n\t{\r\n\t\tif (value.length == 20)\r\n\t\t{\r\n\t\t\tif (value.substring(0, 4) == \'" +
-                    "+64x\')\r\n\t\t\t{\r\n\t\t\t\tthis.writeByte(1);\r\n\t\t\t\tthis.writeString(\"UInt64\");\r\n\t\t\t\tthis." +
-                    "writeUInt64(value);\r\n\t\t\t\treturn;\r\n\t\t\t}\r\n\t\t\telse if(value.substring(0, 4) == \'-64" +
-                    "x\')\r\n\t\t\t{\r\n\t\t\t\tthis.writeByte(1);\r\n\t\t\t\tthis.writeString(\"Int64\");\r\n\t\t\t\tthis.writ" +
-                    "eInt64(value);\r\n\t\t\t\treturn;\r\n\t\t\t}\r\n\r\n\t\t}\r\n\t\telse\r\n\t\t{\r\n\t\t\tthis.writeByte(1);\r\n\t\t" +
-                    "\tthis.writeString(\"String\");\r\n\t\t\tthis.writeString(value);\r\n\t\t\treturn;\r\n\t\t}\r\n\r\n\t\t" +
-                    "this.writeByte(0);\r\n\t\treturn;\r\n\t}\r\n\telse if(type == \"object\" && value instanceof" +
-                    " Date)\r\n\t{\r\n\t\tthis.writeByte(1);\r\n\t\tthis.writeString(\"DateTime\");\r\n\t\tthis.writeD" +
-                    "ateTime(value);\r\n\t\treturn;\r\n\t}\r\n\telse\r\n\t{\r\n\t\tthis.writeByte(0);\r\n\t\treturn;\r\n\t}\r\n" +
-                    "}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfByte = function(value){\r\n\tvar type" +
-                    " = typeof(value);\r\n\tif(type == \"object\" && value instanceof ByteArray){\r\n\t\tthis." +
-                    "writeInt32(value.getSize());\r\n\t\tthis.buffer.writeBytes(value.data);\r\n\t}else{\r\n\t\t" +
-                    "this.writeInt32(value.length);\r\n\t\tthis.buffer.writeBytes(value);\r\n\t}\r\n}\r\n\r\nspike" +
-                    ".PacketWriter.prototype.writeArrayOfUInt16 = function(value){\r\n\tvar type = typeo" +
-                    "f(value);\r\n\tif(type == \"object\" && value instanceof Array){\r\n\t\tthis.writeInt32(v" +
-                    "alue.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.lengt" +
-                    "h; ++i){\r\n\t\t\tthis.writeUInt16(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t" +
-                    "}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfInt16 = function(value){\r\n\tvar " +
-                    "type = typeof(value);\r\n\tif(type == \"object\" && value instanceof Array){\r\n\t\tthis." +
-                    "writeInt32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i" +
-                    "<value.length; ++i){\r\n\t\t\tthis.writeInt16(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeI" +
-                    "nt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfInt32 = function(val" +
+                    "\\d*\\.?|0+$/g, \'\').length == 0);\r\n\t\tif (isInt)\r\n\t\t{\r\n\t\t\tif(value > 0x7FFFFFFF && " +
+                    "value <= 0xFFFFFFFF)\r\n\t\t\t{\r\n\t\t\t\tthis.writeString(\"UInt32\");\r\n\t\t\t\tthis.writeUInt3" +
+                    "2(value);\r\n\t\t\t\treturn;\r\n\t\t\t}\r\n\t\t\telse if(-255 <= value && value <= +255)\r\n\t\t\t{\r\n" +
+                    "\t\t\t\tthis.writeString(\"Byte\");\r\n\t\t\t\tthis.writeByte(value | 0);\r\n\t\t\t\treturn;\r\n\t\t\t}" +
+                    "\r\n\t\t\telse if (-32768 <= value && value <= +32768)\r\n\t\t\t{\r\n\t\t\t\tthis.writeString(\"I" +
+                    "nt16\");\r\n\t\t\t\tthis.writeInt16(value | 0);\r\n\t\t\t\treturn;\r\n\t\t\t}\r\n\t\t\telse if (-214748" +
+                    "3648 <= value && value <= +2147483648)\r\n\t\t\t{\r\n\t\t\t\tthis.writeString(\"Int32\");\r\n\t\t" +
+                    "\t\tthis.writeInt32(value | 0);\r\n\t\t\t\treturn;\r\n\t\t\t}\r\n\t\t}\r\n\r\n\t\tif(-3.40282347E+38 <=" +
+                    " value && value <= 3.40282347E+38)\r\n\t\t{\r\n\t\t\tthis.writeString(\"Single\");\r\n\t\t\tthis" +
+                    ".writeSingle(value);\r\n\t\t\treturn;\r\n\t\t}\r\n\r\n\t\tthis.writeString(\"Double\");\r\n\t\tthis.w" +
+                    "riteDouble(value);\r\n\t\treturn;\r\n\t}\r\n\telse if(type == \"boolean\")\r\n\t{\r\n\t\tthis.write" +
+                    "Byte(1);\r\n\t\tthis.writeString(\"Boolean\");\r\n\t\tthis.writeBoolean(value);\r\n\t\treturn;" +
+                    "\r\n\t}\r\n\telse if(type == \"string\")\r\n\t{\r\n\t\tif (value.length == 20)\r\n\t\t{\r\n\t\t\tif (val" +
+                    "ue.substring(0, 4) == \'+64x\')\r\n\t\t\t{\r\n\t\t\t\tthis.writeByte(1);\r\n\t\t\t\tthis.writeStrin" +
+                    "g(\"UInt64\");\r\n\t\t\t\tthis.writeUInt64(value);\r\n\t\t\t\treturn;\r\n\t\t\t}\r\n\t\t\telse if(value." +
+                    "substring(0, 4) == \'-64x\')\r\n\t\t\t{\r\n\t\t\t\tthis.writeByte(1);\r\n\t\t\t\tthis.writeString(\"" +
+                    "Int64\");\r\n\t\t\t\tthis.writeInt64(value);\r\n\t\t\t\treturn;\r\n\t\t\t}\r\n\r\n\t\t}\r\n\t\telse\r\n\t\t{\r\n\t\t" +
+                    "\tthis.writeByte(1);\r\n\t\t\tthis.writeString(\"String\");\r\n\t\t\tthis.writeString(value);" +
+                    "\r\n\t\t\treturn;\r\n\t\t}\r\n\r\n\t\tthis.writeByte(0);\r\n\t\treturn;\r\n\t}\r\n\telse if(type == \"obje" +
+                    "ct\" && value instanceof Date)\r\n\t{\r\n\t\tthis.writeByte(1);\r\n\t\tthis.writeString(\"Dat" +
+                    "eTime\");\r\n\t\tthis.writeDateTime(value);\r\n\t\treturn;\r\n\t}\r\n\telse\r\n\t{\r\n\t\tthis.writeBy" +
+                    "te(0);\r\n\t\treturn;\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfByte = func" +
+                    "tion(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" && value instance" +
+                    "of ByteArray){\r\n\t\tthis.writeInt32(value.getSize());\r\n\t\tthis.buffer.writeBytes(va" +
+                    "lue.data);\r\n\t}else{\r\n\t\tthis.writeInt32(value.length);\r\n\t\tthis.buffer.writeBytes(" +
+                    "value);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfUInt16 = function(val" +
                     "ue){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" && value instanceof Array" +
                     "){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor" +
-                    "(var i=0; i<value.length; ++i){\r\n\t\t\tthis.writeInt32(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\t" +
-                    "this.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfUInt32 = " +
+                    "(var i=0; i<value.length; ++i){\r\n\t\t\tthis.writeUInt16(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t" +
+                    "\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfInt16 = " +
                     "function(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" && value inst" +
                     "anceof Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\tre" +
-                    "turn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.writeUInt32(value[i]);\r\n\t\t}" +
-                    "\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArr" +
-                    "ayOfInt64 = function(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" &" +
-                    "& value instanceof Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(value.length " +
-                    "== 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.writeInt64(valu" +
-                    "e[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototy" +
-                    "pe.writeArrayOfUInt64 = function(value){\r\n\tvar type = typeof(value);\r\n\tif(type =" +
-                    "= \"object\" && value instanceof Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(v" +
-                    "alue.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.wri" +
-                    "teUInt64(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketW" +
-                    "riter.prototype.writeArrayOfDouble = function(value){\r\n\tvar type = typeof(value)" +
+                    "turn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.writeInt16(value[i]);\r\n\t\t}\r" +
+                    "\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArra" +
+                    "yOfInt32 = function(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" &&" +
+                    " value instanceof Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(value.length =" +
+                    "= 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.writeInt32(value" +
+                    "[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototyp" +
+                    "e.writeArrayOfUInt32 = function(value){\r\n\tvar type = typeof(value);\r\n\tif(type ==" +
+                    " \"object\" && value instanceof Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(va" +
+                    "lue.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.writ" +
+                    "eUInt32(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWr" +
+                    "iter.prototype.writeArrayOfInt64 = function(value){\r\n\tvar type = typeof(value);\r" +
+                    "\n\tif(type == \"object\" && value instanceof Array){\r\n\t\tthis.writeInt32(value.lengt" +
+                    "h);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n" +
+                    "\t\t\tthis.writeInt64(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspi" +
+                    "ke.PacketWriter.prototype.writeArrayOfUInt64 = function(value){\r\n\tvar type = typ" +
+                    "eof(value);\r\n\tif(type == \"object\" && value instanceof Array){\r\n\t\tthis.writeInt32" +
+                    "(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.len" +
+                    "gth; ++i){\r\n\t\t\tthis.writeUInt64(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r" +
+                    "\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfDouble = function(value){\r\n\tv" +
+                    "ar type = typeof(value);\r\n\tif(type == \"object\" && value instanceof Array){\r\n\t\tth" +
+                    "is.writeInt32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0" +
+                    "; i<value.length; ++i){\r\n\t\t\tthis.writeDouble(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.wr" +
+                    "iteInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfSingle = functio" +
+                    "n(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" && value instanceof " +
+                    "Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n" +
+                    "\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.writeSingle(value[i]);\r\n\t\t}\r\n\t}els" +
+                    "e{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfDat" +
+                    "eTime = function(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" && va" +
+                    "lue instanceof Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(value.length == 0" +
+                    ")\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.writeDateTime(value" +
+                    "[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototyp" +
+                    "e.writeArrayOfString = function(value){\r\n\tvar type = typeof(value);\r\n\tif(type ==" +
+                    " \"object\" && value instanceof Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(va" +
+                    "lue.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.writ" +
+                    "eString(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWr" +
+                    "iter.prototype.writeArrayOfBoolean = function(value){\r\n\tvar type = typeof(value)" +
                     ";\r\n\tif(type == \"object\" && value instanceof Array){\r\n\t\tthis.writeInt32(value.len" +
                     "gth);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++i){" +
-                    "\r\n\t\t\tthis.writeDouble(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\n" +
-                    "spike.PacketWriter.prototype.writeArrayOfSingle = function(value){\r\n\tvar type = " +
-                    "typeof(value);\r\n\tif(type == \"object\" && value instanceof Array){\r\n\t\tthis.writeIn" +
-                    "t32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value." +
-                    "length; ++i){\r\n\t\t\tthis.writeSingle(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0" +
-                    ");\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfDateTime = function(value)" +
-                    "{\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" && value instanceof Array){\r" +
-                    "\n\t\tthis.writeInt32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(va" +
-                    "r i=0; i<value.length; ++i){\r\n\t\t\tthis.writeDateTime(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\t" +
-                    "this.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArrayOfString = " +
-                    "function(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" && value inst" +
-                    "anceof Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\tre" +
-                    "turn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.writeString(value[i]);\r\n\t\t}" +
-                    "\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArr" +
-                    "ayOfBoolean = function(value){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\"" +
-                    " && value instanceof Array){\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(value.lengt" +
-                    "h == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t\tthis.writeBoolean(" +
-                    "value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.pro" +
-                    "totype.writeArrayOfDynamicType = function(value){\r\n\tvar type = typeof(value);\r\n\t" +
-                    "if(type == \"object\" && value instanceof Array){\r\n\t\tthis.writeInt32(value.length)" +
-                    ";\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length; ++i){\r\n\t\t" +
-                    "\tthis.writeDynamicType(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r" +
-                    "\nspike.PacketWriter.prototype.writeArray = function(value){\r\n\tvar type = typeof(" +
-                    "value);\r\n\tif(type == \"object\" && value instanceof Array){\r\n\t\tthis.writeInt32(val" +
-                    "ue.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<value.length;" +
-                    " ++i){\r\n\t\t\tif(value[i].write != \'undefined\'){\r\n\t\t\t\tvalue[i].write(this);\r\n\t\t\t}el" +
-                    "se{\r\n\t\t\t\tthrow \"Unable to write, the array contains unknown elements\";\r\n\t\t\t}\r\n\t\t" +
-                    "}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\n\r\n");
+                    "\r\n\t\t\tthis.writeBoolean(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r" +
+                    "\nspike.PacketWriter.prototype.writeArrayOfDynamicType = function(value){\r\n\tvar t" +
+                    "ype = typeof(value);\r\n\tif(type == \"object\" && value instanceof Array){\r\n\t\tthis.w" +
+                    "riteInt32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(var i=0; i<" +
+                    "value.length; ++i){\r\n\t\t\tthis.writeDynamicType(value[i]);\r\n\t\t}\r\n\t}else{\r\n\t\tthis.w" +
+                    "riteInt32(0);\r\n\t}\r\n}\r\n\r\nspike.PacketWriter.prototype.writeArray = function(value" +
+                    "){\r\n\tvar type = typeof(value);\r\n\tif(type == \"object\" && value instanceof Array){" +
+                    "\r\n\t\tthis.writeInt32(value.length);\r\n\t\tif(value.length == 0)\r\n\t\t\treturn;\r\n\t\tfor(v" +
+                    "ar i=0; i<value.length; ++i){\r\n\t\t\tif(value[i].write != \'undefined\'){\r\n\t\t\t\tvalue[" +
+                    "i].write(this);\r\n\t\t\t}else{\r\n\t\t\t\tthrow \"Unable to write, the array contains unkno" +
+                    "wn elements\";\r\n\t\t\t}\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\n\r\n");
             
-            #line 393 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
+            #line 393 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
  foreach(var customType in Model.CustomTypes) { 
             
             #line default
             #line hidden
             this.Write("spike.PacketWriter.prototype.write");
             
-            #line 394 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
+            #line 394 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
             #line hidden
             this.Write(" = function(value)\r\n{\r\n    ");
             
-            #line 396 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
+            #line 396 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
  foreach(var member in customType.Members){ 
             
             #line default
             #line hidden
             this.Write("\t\tthis.write");
             
-            #line 397 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
+            #line 397 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "ArrayOf" : string.Empty));
             
             #line default
             #line hidden
             
-            #line 397 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
+            #line 397 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Type));
             
             #line default
             #line hidden
             this.Write("(value.");
             
-            #line 397 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
+            #line 397 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name.CamelCase()));
             
             #line default
             #line hidden
             this.Write(");\r\n    ");
             
-            #line 398 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
+            #line 398 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
  } 
             
             #line default
             #line hidden
             this.Write("}\r\n\r\nspike.PacketWriter.prototype.writeArrayOf");
             
-            #line 401 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
+            #line 401 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
@@ -558,27 +558,27 @@ namespace Spike.Build.JavaScript
                     "iteInt32(value.length);\r\n    for (var i = 0; i < value.length; ++i)\r\n        thi" +
                     "s.write");
             
-            #line 408 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
+            #line 408 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
             #line hidden
             this.Write("(value[i]);\r\n}\r\n");
             
-            #line 410 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
+            #line 410 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
  } 
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 11 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
+            #line 11 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
  } 
             
             #line default
             #line hidden
             
-            #line 12 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
+            #line 12 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
  if(Target == null || Target == "PacketReader") { 
             
             #line default
@@ -667,55 +667,55 @@ namespace Spike.Build.JavaScript
                     ");\r\n\tvar resultArray = new Array();\r\n\t\t\r\n\tfor(var i = 0; i < length; ++i)\r\n\t\tres" +
                     "ultArray.push( this.readDynamicType() );\r\n\t\t\t\r\n\treturn resultArray;\r\n}\r\n\r\n\r\n");
             
-            #line 256 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
+            #line 256 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
  foreach(var customType in Model.CustomTypes) { 
             
             #line default
             #line hidden
             this.Write("spike.PacketReader.prototype.read");
             
-            #line 257 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
+            #line 257 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
             #line hidden
             this.Write(" = function(){\r\n    var value = new Object();\r\n\t");
             
-            #line 259 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
+            #line 259 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
  foreach(var member in customType.Members) { 
             
             #line default
             #line hidden
             this.Write("\tvalue.");
             
-            #line 260 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
+            #line 260 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name.CamelCase()));
             
             #line default
             #line hidden
             this.Write(" = this.read");
             
-            #line 260 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
+            #line 260 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "ArrayOf" : string.Empty));
             
             #line default
             #line hidden
             
-            #line 260 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
+            #line 260 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Type));
             
             #line default
             #line hidden
             this.Write("();\t\r\n\t");
             
-            #line 261 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
+            #line 261 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
  } 
             
             #line default
             #line hidden
             this.Write("\treturn value;\r\n}\r\n\r\nspike.PacketReader.prototype.readArrayOf");
             
-            #line 265 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
+            #line 265 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
@@ -723,27 +723,27 @@ namespace Spike.Build.JavaScript
             this.Write(" = function(){\r\n\tvar length = this.readInt32();\r\n    var value  = [];\r\n    for (v" +
                     "ar i = 0; i < length; ++i)\r\n        value[i] = this.read");
             
-            #line 269 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
+            #line 269 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
             #line hidden
             this.Write("();\r\n    return value;\r\n}\r\n");
             
-            #line 272 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
+            #line 272 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
  } 
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 12 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
+            #line 12 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
  } 
             
             #line default
             #line hidden
             
-            #line 13 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
+            #line 13 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
  if(Target == null || Target == "TcpEngine") { 
             
             #line default
@@ -1891,13 +1891,13 @@ namespace Spike.Build.JavaScript
                     ";\r\n\r\n},{}]},{},[1])(1)\r\n});");
             this.Write(" ");
             
-            #line 13 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
+            #line 13 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
  } 
             
             #line default
             #line hidden
             
-            #line 14 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
+            #line 14 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
  if(Target == null || Target == "TcpChannel") { 
             
             #line default
@@ -1953,28 +1953,28 @@ namespace Spike.Build.JavaScript
 	this.onDisconnect = null;
 ");
             
-            #line 49 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 49 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
  foreach(var receive in Model.Receives){ 
             
             #line default
             #line hidden
             this.Write("\t// Event: occurs when the ");
             
-            #line 50 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 50 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name));
             
             #line default
             #line hidden
             this.Write(" inform is received from the server. \r\n\tthis.");
             
-            #line 51 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 51 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name.CamelCase()));
             
             #line default
             #line hidden
             this.Write(" = null; \r\n\r\n");
             
-            #line 53 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 53 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
  } 
             
             #line default
@@ -1982,28 +1982,28 @@ namespace Spike.Build.JavaScript
             this.Write("\t\r\n\t// Attempt to auto-connect if specified (default behavior)\r\n\tif (this.autoCon" +
                     "nect) this.open();\r\n};\r\n\t\t    \r\n\t// Send Methods    \r\n");
             
-            #line 60 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 60 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
  foreach(var send in Model.Sends) { 
             
             #line default
             #line hidden
             this.Write("\t/* Sends a ");
             
-            #line 61 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 61 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(send.Name));
             
             #line default
             #line hidden
             this.Write(" request to the remote server. */\t\r\nspike.Channel.prototype.");
             
-            #line 62 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 62 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(send.Name.CamelCase()));
             
             #line default
             #line hidden
             this.Write(" = function(");
             
-            #line 62 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 62 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
 	
 		var first = true;
 		foreach(var member in send.Members){
@@ -2017,55 +2017,55 @@ namespace Spike.Build.JavaScript
             #line hidden
             this.Write("){\r\n\t\t\r\n\tvar writer = new spike.PacketWriter();\r\n");
             
-            #line 72 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 72 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
 		foreach(var member in send.Members) { 
             
             #line default
             #line hidden
             this.Write("\twriter.write");
             
-            #line 73 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 73 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "ArrayOf" : string.Empty));
             
             #line default
             #line hidden
             
-            #line 73 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 73 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Type));
             
             #line default
             #line hidden
             this.Write("(");
             
-            #line 73 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 73 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name.CamelCase()));
             
             #line default
             #line hidden
             this.Write(");\r\n");
             
-            #line 74 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 74 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
 		} 
             
             #line default
             #line hidden
             this.Write("\t\t\r\n\t");
             
-            #line 76 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 76 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(send.Compressed ? "writer.compress();" : ""));
             
             #line default
             #line hidden
             this.Write("\r\n\tthis.send(\"");
             
-            #line 77 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 77 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(send.Id.ToString("X")));
             
             #line default
             #line hidden
             this.Write("\", writer);\r\n};\r\n\r\n");
             
-            #line 80 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 80 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
  } 
             
             #line default
@@ -2073,97 +2073,97 @@ namespace Spike.Build.JavaScript
             this.Write("\r\n// Dispatcher\r\nspike.Channel.prototype.onReceive = function(key, reader){\r\n\tswi" +
                     "tch (key){\r\n");
             
-            #line 85 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 85 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
 			foreach(var receive in Model.Receives){ 
             
             #line default
             #line hidden
             this.Write("\t\t\t\r\n\t\t// ");
             
-            #line 87 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 87 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name));
             
             #line default
             #line hidden
             this.Write(" \t\r\n\t\tcase \"");
             
-            #line 88 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 88 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Id.ToString("X")));
             
             #line default
             #line hidden
             this.Write("\": {\r\n\t\t\t");
             
-            #line 89 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 89 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Compressed ? "reader.decompress();" : ""));
             
             #line default
             #line hidden
             this.Write("\r\n\t\t\tvar packet = new Object();\r\n");
             
-            #line 91 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 91 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
 				foreach(var member in receive.Members){ 
             
             #line default
             #line hidden
             this.Write("\t\t\tpacket.");
             
-            #line 92 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 92 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name.CamelCase()));
             
             #line default
             #line hidden
             this.Write(" = reader.read");
             
-            #line 92 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 92 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "ArrayOf" : string.Empty));
             
             #line default
             #line hidden
             
-            #line 92 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 92 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Type));
             
             #line default
             #line hidden
             this.Write("();\r\n");
             
-            #line 93 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 93 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
 				} 
             
             #line default
             #line hidden
             this.Write("\r\n\t\t\tif (this.");
             
-            #line 95 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 95 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name.CamelCase()));
             
             #line default
             #line hidden
             this.Write(" != null)\r\n\t\t\t\tthis.");
             
-            #line 96 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 96 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name.CamelCase()));
             
             #line default
             #line hidden
             this.Write("(packet, this);\r\n\t\t\tthis.emit(\'");
             
-            #line 97 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 97 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name.CamelCase()));
             
             #line default
             #line hidden
             this.Write("\', packet);\r\n\t\t\tthis.emit(\'");
             
-            #line 98 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 98 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name.WithoutInform().CamelCase()));
             
             #line default
             #line hidden
             this.Write("\', packet);\r\n\r\n\t\t} break;\r\n\r\n");
             
-            #line 102 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 102 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
 				} 
             
             #line default
@@ -2251,75 +2251,75 @@ namespace Spike.Build.JavaScript
             this.Write("/**\r\n * Initialize backoff timer with `opts`.\r\n *\r\n * - `min` initial timeout in " +
                     "milliseconds [100]\r\n * - `max` max timeout [10000]\r\n * - `jitter` [0]\r\n * - `fac" +
                     "tor` [2]\r\n *\r\n * @param {Object} opts\r\n * @api public\r\n */\r\nspike.Backoff = func" +
-                    "tion(opts){\r\n  opts = opts || {};\r\n  this.ms = opts.min || 100;\r\n  this.max = op" +
-                    "ts.max || 10000;\r\n  this.factor = opts.factor || 2;\r\n  this.jitter = opts.jitter" +
-                    " > 0 && opts.jitter <= 1 ? opts.jitter : 0;\r\n  this.attempts = 0;\r\n};\r\n\r\n/**\r\n *" +
-                    " Return the backoff duration.\r\n *\r\n * @return {Number}\r\n * @api public\r\n */\r\nspi" +
-                    "ke.Backoff.prototype.duration = function(){\r\n  var ms = this.ms * Math.pow(this." +
-                    "factor, this.attempts++);\r\n  if (this.jitter) {\r\n    var rand =  Math.random();\r" +
-                    "\n    var deviation = Math.floor(rand * this.jitter * ms);\r\n    ms = (Math.floor(" +
-                    "rand * 10) & 1) == 0  ? ms - deviation : ms + deviation;\r\n  }\r\n  return Math.min" +
-                    "(ms, this.max) | 0;\r\n};\r\n\r\n/**\r\n * Reset the number of attempts.\r\n *\r\n * @api pu" +
-                    "blic\r\n */\r\nspike.Backoff.prototype.reset = function(){\r\n  this.attempts = 0;\r\n};" +
-                    "\r\n\r\n/**\r\n * Set the minimum duration\r\n *\r\n * @api public\r\n */\r\nspike.Backoff.pro" +
-                    "totype.setMin = function(min){\r\n  this.ms = min;\r\n};\r\n\r\n/**\r\n * Set the maximum " +
-                    "duration\r\n *\r\n * @api public\r\n */\r\nspike.Backoff.prototype.setMax = function(max" +
-                    "){\r\n  this.max = max;\r\n};\r\n\r\n/**\r\n * Set the jitter\r\n *\r\n * @api public\r\n */\r\nsp" +
-                    "ike.Backoff.prototype.setJitter = function(jitter){\r\n  this.jitter = jitter;\r\n};" +
-                    "\r\n\r\n\r\n/**\r\n* Called upon successful reconnect.\r\n*\r\n* @api private\r\n*/\r\nspike.Cha" +
-                    "nnel.prototype.onreconnect = function(){\r\n\tvar attempt = this.backoff.attempts;\r" +
-                    "\n\tthis.reconnecting = false;\r\n\tthis.backoff.reset();\r\n\tthis.emit(\'reconnect\', at" +
-                    "tempt);\r\n};\r\n\r\n/**\r\n* Sets the `reconnection` config.\r\n*\r\n* @param {Boolean} tru" +
-                    "e/false if it should automatically reconnect\r\n* @return {Manager} self or value\r" +
-                    "\n* @api public\r\n*/\r\nspike.Channel.prototype.reconnection = function(v){\r\n\tif (!a" +
-                    "rguments.length) return this._reconnection;\r\n\tthis._reconnection = !!v;\r\n\treturn" +
-                    " this;\r\n};\r\n\r\n/**\r\n* Sets the reconnection attempts config.\r\n*\r\n* @param {Number" +
-                    "} max reconnection attempts before giving up\r\n* @return {Manager} self or value\r" +
-                    "\n* @api public\r\n*/\r\nspike.Channel.prototype.reconnectionAttempts = function(v){\r" +
-                    "\n\tif (!arguments.length) return this._reconnectionAttempts;\r\n\tthis._reconnection" +
-                    "Attempts = v;\r\n\treturn this;\r\n};\r\n\r\n/**\r\n* Sets the delay between reconnections." +
-                    "\r\n*\r\n* @param {Number} delay\r\n* @return {Manager} self or value\r\n* @api public\r\n" +
-                    "*/\r\nspike.Channel.prototype.reconnectionDelay = function(v){\r\n\tif (!arguments.le" +
-                    "ngth) return this._reconnectionDelay;\r\n\tthis._reconnectionDelay = v;\r\n\tthis.back" +
-                    "off && this.backoff.setMin(v);\r\n\treturn this;\r\n};\r\nspike.Channel.prototype.rando" +
-                    "mizationFactor = function(v){\r\n\tif (!arguments.length) return this._randomizatio" +
-                    "nFactor;\r\n\tthis._randomizationFactor = v;\r\n\tthis.backoff && this.backoff.setJitt" +
-                    "er(v);\r\n\treturn this;\r\n};\r\n\r\n/**\r\n* Sets the maximum delay between reconnections" +
+                    "tion(opts){\r\n  opts = opts || {};\r\n  this.ms = opts.min || 1000;\r\n  this.max = o" +
+                    "pts.max || 10000;\r\n  this.factor = opts.factor || 2;\r\n  this.jitter = opts.jitte" +
+                    "r > 0 && opts.jitter <= 1 ? opts.jitter : 0;\r\n  this.attempts = 0;\r\n};\r\n\r\n/**\r\n " +
+                    "* Return the backoff duration.\r\n *\r\n * @return {Number}\r\n * @api public\r\n */\r\nsp" +
+                    "ike.Backoff.prototype.duration = function(){\r\n  var ms = this.ms * Math.pow(this" +
+                    ".factor, this.attempts++);\r\n  if (this.jitter) {\r\n    var rand =  Math.random();" +
+                    "\r\n    var deviation = Math.floor(rand * this.jitter * ms);\r\n    ms = (Math.floor" +
+                    "(rand * 10) & 1) == 0  ? ms - deviation : ms + deviation;\r\n  }\r\n  return Math.mi" +
+                    "n(ms, this.max) | 0;\r\n};\r\n\r\n/**\r\n * Reset the number of attempts.\r\n *\r\n * @api p" +
+                    "ublic\r\n */\r\nspike.Backoff.prototype.reset = function(){\r\n  this.attempts = 0;\r\n}" +
+                    ";\r\n\r\n/**\r\n * Set the minimum duration\r\n *\r\n * @api public\r\n */\r\nspike.Backoff.pr" +
+                    "ototype.setMin = function(min){\r\n  this.ms = min;\r\n};\r\n\r\n/**\r\n * Set the maximum" +
+                    " duration\r\n *\r\n * @api public\r\n */\r\nspike.Backoff.prototype.setMax = function(ma" +
+                    "x){\r\n  this.max = max;\r\n};\r\n\r\n/**\r\n * Set the jitter\r\n *\r\n * @api public\r\n */\r\ns" +
+                    "pike.Backoff.prototype.setJitter = function(jitter){\r\n  this.jitter = jitter;\r\n}" +
+                    ";\r\n\r\n\r\n/**\r\n* Called upon successful reconnect.\r\n*\r\n* @api private\r\n*/\r\nspike.Ch" +
+                    "annel.prototype.onreconnect = function(){\r\n\tvar attempt = this.backoff.attempts;" +
+                    "\r\n\tthis.reconnecting = false;\r\n\tthis.backoff.reset();\r\n\tthis.emit(\'reconnect\', a" +
+                    "ttempt);\r\n};\r\n\r\n/**\r\n* Sets the `reconnection` config.\r\n*\r\n* @param {Boolean} tr" +
+                    "ue/false if it should automatically reconnect\r\n* @return {Manager} self or value" +
+                    "\r\n* @api public\r\n*/\r\nspike.Channel.prototype.reconnection = function(v){\r\n\tif (!" +
+                    "arguments.length) return this._reconnection;\r\n\tthis._reconnection = !!v;\r\n\tretur" +
+                    "n this;\r\n};\r\n\r\n/**\r\n* Sets the reconnection attempts config.\r\n*\r\n* @param {Numbe" +
+                    "r} max reconnection attempts before giving up\r\n* @return {Manager} self or value" +
+                    "\r\n* @api public\r\n*/\r\nspike.Channel.prototype.reconnectionAttempts = function(v){" +
+                    "\r\n\tif (!arguments.length) return this._reconnectionAttempts;\r\n\tthis._reconnectio" +
+                    "nAttempts = v;\r\n\treturn this;\r\n};\r\n\r\n/**\r\n* Sets the delay between reconnections" +
                     ".\r\n*\r\n* @param {Number} delay\r\n* @return {Manager} self or value\r\n* @api public\r" +
-                    "\n*/\r\nspike.Channel.prototype.reconnectionDelayMax = function(v){\r\n\tif (!argument" +
-                    "s.length) return this._reconnectionDelayMax;\r\n\tthis._reconnectionDelayMax = v;\r\n" +
-                    "\tthis.backoff && this.backoff.setMax(v);\r\n\treturn this;\r\n};\r\n\r\n/**\r\n* Sets the c" +
-                    "onnection timeout. `false` to disable\r\n*\r\n* @return {Manager} self or value\r\n* @" +
-                    "api public\r\n*/\r\nspike.Channel.prototype.timeout = function(v){\r\n\tif (!arguments." +
-                    "length) return this._timeout;\r\n\tthis._timeout = v;\r\n\treturn this;\r\n};\r\n\r\n/**\r\n* " +
-                    "Starts trying to reconnect if reconnection is enabled and we have not\r\n* started" +
-                    " reconnecting yet\r\n*\r\n* @api private\r\n*/\r\nspike.Channel.prototype.maybeReconnect" +
-                    "OnOpen = function() {\r\n\t// Only try to reconnect if it\'s the first time we\'re co" +
-                    "nnecting\r\n\tif (!this.reconnecting && this._reconnection && this.backoff.attempts" +
-                    " === 0) {\r\n\t\t// keeps reconnection from firing twice for the same reconnection l" +
-                    "oop\r\n\t\tthis.reconnect();\r\n\t}\r\n};\r\n\r\n/**\r\n * Attempt a reconnection.\r\n *\r\n * @api" +
-                    " private\r\n */\r\nspike.Channel.prototype.reconnect = function(){\r\n  if (this.recon" +
-                    "necting || this.skipReconnect) return this;\r\n\r\n  var self = this;\r\n\r\n  if (this." +
-                    "backoff.attempts >= this._reconnectionAttempts) {\r\n    spike.debug(\'reconnect fa" +
-                    "iled\');\r\n    this.backoff.reset();\r\n    this.emit(\'reconnect_failed\');\r\n    this" +
-                    ".reconnecting = false;\r\n  } else {\r\n    var delay = this.backoff.duration();\r\n  " +
-                    "  spike.debug(\'will wait %dms before reconnect attempt\', delay);\r\n\r\n    this.rec" +
-                    "onnecting = true;\r\n    var timer = setTimeout(function(){\r\n      if (self.skipRe" +
-                    "connect)\r\n\t\treturn;\r\n\r\n      spike.debug(\'attempting reconnect\');\r\n      self.em" +
-                    "it(\'reconnect_attempt\', self.backoff.attempts);\r\n      self.emit(\'reconnecting\'," +
-                    " self.backoff.attempts);\r\n\r\n      // check again for the case socket closed in a" +
-                    "bove events\r\n      if (self.skipReconnect) return;\r\n\r\n      self.open(function(e" +
-                    "rr){\r\n        if (err) {\r\n          spike.debug(\'reconnect attempt error, %s\', e" +
-                    "rr);\r\n          self.reconnecting = false;\r\n          self.reconnect();\r\n       " +
-                    "   self.emit(\'reconnect_error\', err.data);\r\n        } else {\r\n          spike.de" +
-                    "bug(\'reconnect success\');\r\n          self.onreconnect();\r\n        }\r\n      });\r\n" +
-                    "    }, delay);\r\n\r\n  }\r\n};\r\n");
+                    "\n*/\r\nspike.Channel.prototype.reconnectionDelay = function(v){\r\n\tif (!arguments.l" +
+                    "ength) return this._reconnectionDelay;\r\n\tthis._reconnectionDelay = v;\r\n\tthis.bac" +
+                    "koff && this.backoff.setMin(v);\r\n\treturn this;\r\n};\r\nspike.Channel.prototype.rand" +
+                    "omizationFactor = function(v){\r\n\tif (!arguments.length) return this._randomizati" +
+                    "onFactor;\r\n\tthis._randomizationFactor = v;\r\n\tthis.backoff && this.backoff.setJit" +
+                    "ter(v);\r\n\treturn this;\r\n};\r\n\r\n/**\r\n* Sets the maximum delay between reconnection" +
+                    "s.\r\n*\r\n* @param {Number} delay\r\n* @return {Manager} self or value\r\n* @api public" +
+                    "\r\n*/\r\nspike.Channel.prototype.reconnectionDelayMax = function(v){\r\n\tif (!argumen" +
+                    "ts.length) return this._reconnectionDelayMax;\r\n\tthis._reconnectionDelayMax = v;\r" +
+                    "\n\tthis.backoff && this.backoff.setMax(v);\r\n\treturn this;\r\n};\r\n\r\n/**\r\n* Sets the " +
+                    "connection timeout. `false` to disable\r\n*\r\n* @return {Manager} self or value\r\n* " +
+                    "@api public\r\n*/\r\nspike.Channel.prototype.timeout = function(v){\r\n\tif (!arguments" +
+                    ".length) return this._timeout;\r\n\tthis._timeout = v;\r\n\treturn this;\r\n};\r\n\r\n/**\r\n*" +
+                    " Starts trying to reconnect if reconnection is enabled and we have not\r\n* starte" +
+                    "d reconnecting yet\r\n*\r\n* @api private\r\n*/\r\nspike.Channel.prototype.maybeReconnec" +
+                    "tOnOpen = function() {\r\n\t// Only try to reconnect if it\'s the first time we\'re c" +
+                    "onnecting\r\n\tif (!this.reconnecting && this._reconnection && this.backoff.attempt" +
+                    "s === 0) {\r\n\t\t// keeps reconnection from firing twice for the same reconnection " +
+                    "loop\r\n\t\tthis.reconnect();\r\n\t}\r\n};\r\n\r\n/**\r\n * Attempt a reconnection.\r\n *\r\n * @ap" +
+                    "i private\r\n */\r\nspike.Channel.prototype.reconnect = function(){\r\n  if (this.reco" +
+                    "nnecting || this.skipReconnect) return this;\r\n\r\n  var self = this;\r\n\r\n  if (this" +
+                    ".backoff.attempts >= this._reconnectionAttempts) {\r\n    spike.debug(\'reconnect f" +
+                    "ailed\');\r\n    this.backoff.reset();\r\n    this.emit(\'reconnect_failed\');\r\n    thi" +
+                    "s.reconnecting = false;\r\n  } else {\r\n    var delay = this.backoff.duration();\r\n " +
+                    "   spike.debug(\'will wait %dms before reconnect attempt\', delay);\r\n\r\n    this.re" +
+                    "connecting = true;\r\n    var timer = setTimeout(function(){\r\n      if (self.skipR" +
+                    "econnect)\r\n\t\treturn;\r\n\r\n      spike.debug(\'attempting reconnect\');\r\n      self.e" +
+                    "mit(\'reconnect_attempt\', self.backoff.attempts);\r\n      self.emit(\'reconnecting\'" +
+                    ", self.backoff.attempts);\r\n\r\n      // check again for the case socket closed in " +
+                    "above events\r\n      if (self.skipReconnect) return;\r\n\r\n      self.open(function(" +
+                    "err){\r\n        if (err) {\r\n          spike.debug(\'reconnect attempt error, %s\', " +
+                    "err);\r\n          self.reconnecting = false;\r\n          self.reconnect();\r\n      " +
+                    "    self.emit(\'reconnect_error\', err.data);\r\n        } else {\r\n          spike.d" +
+                    "ebug(\'reconnect success\');\r\n          self.onreconnect();\r\n        }\r\n      });\r" +
+                    "\n    }, delay);\r\n\r\n  }\r\n};\r\n");
             this.Write("\r\n\r\n/* Mix in \'Emitter\' */\r\nspike.Emitter(spike.Channel.prototype);\r\n\r\n/* Backwar" +
                     "ds compatibility and alias*/\r\nspike.ServerChannel = spike.Channel;\r\nspike.TcpCha" +
                     "nnel = spike.Channel;");
             this.Write(" ");
             
-            #line 14 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
+            #line 14 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
  } 
             
             #line default
@@ -2328,7 +2328,7 @@ namespace Spike.Build.JavaScript
             return this.GenerationEnvironment.ToString();
         }
         
-        #line 16 "C:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
+        #line 16 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
  public void Clear(){
 	GenerationEnvironment.Clear();
 } 

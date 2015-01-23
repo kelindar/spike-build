@@ -102,8 +102,8 @@ with({p: spike.ByteArray.prototype}){
 
 	    var max = Math.pow(2, bits), r = [];
 	    var maxs = Math.pow(2, bits - 1);
-		(signed && (number >= maxs || number < -maxs)) && this.warn('writeInt::overflow') && (number = 0);
-		(!signed && (number >= max || (number < -(max >> 1)))) && this.warn('writeUInt::overflow') && (number = 0);
+		(signed && (number >= maxs || number < -maxs)) && this.warn('writeInt::overflow with value' + number) && (number = 0);
+		(!signed && (number >= max || (number < -(max >> 1)))) && this.warn('writeUInt::overflow with value' + number) && (number = 0);
 		number < 0 && (number += max);
 		for(; number; r[r.length] = String.fromCharCode(number % 256), number = Math.floor(number / 256));
 		for(bits = -(-bits >> 3) - r.length; bits--; r[r.length] = '\0');
@@ -517,7 +517,6 @@ with({p: spike.ByteArray.prototype}){
 		this.bigEndian = bigEndian || 0, this.buffer = [], this.setBuffer(buffer);
 	}).prototype}){
 		p.readBits = function(start, length){
-			//shl fix: Henri Torgemane ~1996 (compressed by Jonas Raoni)
 			function shl(a, b){
 				for(++b; --b; a = ((a %= 0x7fffffff + 1) & 0x40000000) == 0x40000000 ? a * 2 : (a - 0x40000000) * 2 + 0x7fffffff + 1);
 				return a;

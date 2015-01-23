@@ -103,7 +103,7 @@ spike.PacketWriter.prototype.writeDynamicType = function(value){
 		var isInt = ((value | 0) == value) || (((+value).toFixed(20)).replace(/^-?\d*\.?|0+$/g, '').length == 0);
 		if (isInt)
 		{
-			if(value > 0x7FFFFFFF)
+			if(value > 0x7FFFFFFF && value <= 0xFFFFFFFF)
 			{
 				this.writeString("UInt32");
 				this.writeUInt32(value);
