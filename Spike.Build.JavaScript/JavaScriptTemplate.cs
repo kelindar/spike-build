@@ -18,7 +18,7 @@ namespace Spike.Build.JavaScript
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
+    #line 1 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "12.0.0.0")]
     public partial class JavaScriptTemplate : JavaScriptTemplateBase
     {
@@ -30,7 +30,7 @@ namespace Spike.Build.JavaScript
         {
             this.Write("\r\n\r\n");
             
-            #line 9 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
+            #line 9 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
  if(Target == null || Target == "ByteArray") { 
             
             #line default
@@ -272,13 +272,13 @@ namespace Spike.Build.JavaScript
                     "\n\t}\r\n\tp.warn = function(msg){\r\n\t\tif(this.allowExceptions)\r\n\t\t\tthrow new Error(ms" +
                     "g);\r\n\t\treturn 1;\r\n\t};\r\n\r\n}");
             
-            #line 9 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
+            #line 9 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
  } 
             
             #line default
             #line hidden
             
-            #line 10 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
+            #line 10 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
  if(Target == null || Target == "PacketCompressor") { 
             
             #line default
@@ -371,13 +371,13 @@ namespace Spike.Build.JavaScript
                     " != 0);\r\n\t\t\t}\r\n\t\t}\r\n\t\twhile (iidx < inputLength);\r\n\t\t\r\n\t\toutput.length = oidx;\r\n" +
                     "\t\treturn output;\r\n\t}\r\n\t\r\n};");
             
-            #line 10 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
+            #line 10 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
  } 
             
             #line default
             #line hidden
             
-            #line 11 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
+            #line 11 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
  if(Target == null || Target == "PacketWriter") { 
             
             #line default
@@ -500,55 +500,55 @@ namespace Spike.Build.JavaScript
                     "i].write(this);\r\n\t\t\t}else{\r\n\t\t\t\tthrow \"Unable to write, the array contains unkno" +
                     "wn elements\";\r\n\t\t\t}\r\n\t\t}\r\n\t}else{\r\n\t\tthis.writeInt32(0);\r\n\t}\r\n}\r\n\r\n\r\n");
             
-            #line 393 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
+            #line 393 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
  foreach(var customType in Model.CustomTypes) { 
             
             #line default
             #line hidden
             this.Write("spike.PacketWriter.prototype.write");
             
-            #line 394 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
+            #line 394 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
             #line hidden
             this.Write(" = function(value)\r\n{\r\n    ");
             
-            #line 396 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
+            #line 396 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
  foreach(var member in customType.Members){ 
             
             #line default
             #line hidden
             this.Write("\t\tthis.write");
             
-            #line 397 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
+            #line 397 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "ArrayOf" : string.Empty));
             
             #line default
             #line hidden
             
-            #line 397 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
+            #line 397 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Type));
             
             #line default
             #line hidden
             this.Write("(value.");
             
-            #line 397 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
+            #line 397 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name.CamelCase()));
             
             #line default
             #line hidden
             this.Write(");\r\n    ");
             
-            #line 398 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
+            #line 398 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
  } 
             
             #line default
             #line hidden
             this.Write("}\r\n\r\nspike.PacketWriter.prototype.writeArrayOf");
             
-            #line 401 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
+            #line 401 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
@@ -558,27 +558,27 @@ namespace Spike.Build.JavaScript
                     "iteInt32(value.length);\r\n    for (var i = 0; i < value.length; ++i)\r\n        thi" +
                     "s.write");
             
-            #line 408 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
+            #line 408 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
             #line hidden
             this.Write("(value[i]);\r\n}\r\n");
             
-            #line 410 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
+            #line 410 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketWriter.t4"
  } 
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 11 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
+            #line 11 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
  } 
             
             #line default
             #line hidden
             
-            #line 12 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
+            #line 12 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
  if(Target == null || Target == "PacketReader") { 
             
             #line default
@@ -667,55 +667,55 @@ namespace Spike.Build.JavaScript
                     ");\r\n\tvar resultArray = new Array();\r\n\t\t\r\n\tfor(var i = 0; i < length; ++i)\r\n\t\tres" +
                     "ultArray.push( this.readDynamicType() );\r\n\t\t\t\r\n\treturn resultArray;\r\n}\r\n\r\n\r\n");
             
-            #line 256 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
+            #line 256 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
  foreach(var customType in Model.CustomTypes) { 
             
             #line default
             #line hidden
             this.Write("spike.PacketReader.prototype.read");
             
-            #line 257 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
+            #line 257 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
             #line hidden
             this.Write(" = function(){\r\n    var value = new Object();\r\n\t");
             
-            #line 259 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
+            #line 259 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
  foreach(var member in customType.Members) { 
             
             #line default
             #line hidden
             this.Write("\tvalue.");
             
-            #line 260 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
+            #line 260 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name.CamelCase()));
             
             #line default
             #line hidden
             this.Write(" = this.read");
             
-            #line 260 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
+            #line 260 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "ArrayOf" : string.Empty));
             
             #line default
             #line hidden
             
-            #line 260 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
+            #line 260 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Type));
             
             #line default
             #line hidden
             this.Write("();\t\r\n\t");
             
-            #line 261 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
+            #line 261 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
  } 
             
             #line default
             #line hidden
             this.Write("\treturn value;\r\n}\r\n\r\nspike.PacketReader.prototype.readArrayOf");
             
-            #line 265 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
+            #line 265 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
@@ -723,27 +723,27 @@ namespace Spike.Build.JavaScript
             this.Write(" = function(){\r\n\tvar length = this.readInt32();\r\n    var value  = [];\r\n    for (v" +
                     "ar i = 0; i < length; ++i)\r\n        value[i] = this.read");
             
-            #line 269 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
+            #line 269 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
             #line hidden
             this.Write("();\r\n    return value;\r\n}\r\n");
             
-            #line 272 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
+            #line 272 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\PacketReader.t4"
  } 
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 12 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
+            #line 12 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
  } 
             
             #line default
             #line hidden
             
-            #line 13 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
+            #line 13 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
  if(Target == null || Target == "TcpEngine") { 
             
             #line default
@@ -1891,90 +1891,61 @@ namespace Spike.Build.JavaScript
                     ";\r\n\r\n},{}]},{},[1])(1)\r\n});");
             this.Write(" ");
             
-            #line 13 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
+            #line 13 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
  } 
             
             #line default
             #line hidden
             
-            #line 14 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
+            #line 14 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
  if(Target == null || Target == "TcpChannel") { 
             
             #line default
             #line hidden
             this.Write(" ");
-            this.Write(@"spike.Channel = function(uri, opts){
-	if (!(this instanceof spike.Channel)) 
-		return new spike.Channel(uri, opts);
-
-	if (uri && ('object' == typeof uri)) {
-		opts = uri;
-		uri = undefined;
-	}
-	opts = opts || {};
-
-	// Make sure we have a correct path
-	opts.path = '/engine.io';
-	var self = this;
-
-	// Main properties
-	this.opts = opts;
-	this.endPoint = uri;
-	this.buffer = new spike.ByteArray();
-	this.readyState = 'closed';
-	this.socket = null;
-	this.transport = """";
-	this.autoConnect = opts.autoConnect !== false;
-	this._partialRecord = false;
-
-	// Reconnection options
-	this.reconnection(opts.reconnection !== false);
-	this.reconnectionAttempts(opts.reconnectionAttempts || Infinity);
-	this.reconnectionDelay(opts.reconnectionDelay || 1000);
-	this.reconnectionDelayMax(opts.reconnectionDelayMax || 5000);
-	this.randomizationFactor(opts.randomizationFactor || 0.5);
-	this.timeout(null == opts.timeout ? 20000 : opts.timeout);
-	this.backoff = new spike.Backoff({
-		min: this.reconnectionDelay(),
-		max: this.reconnectionDelayMax(),
-		jitter: this.randomizationFactor()
-	});
-
-	// We need to close every time the window is unloading
-	window.addEventListener(""beforeunload"", function( event ) {
-		console.log(""beforeunload"");
-		self.disconnect();
-	});
-
-	// Event: occurs when the client is connected to the server.
-	this.onConnect = null;
-
-	// Event: occurs when the client is disconnected from the server.
-	this.onDisconnect = null;
-");
+            this.Write("spike.Channel = function(uri, opts){\r\n\tif (!(this instanceof spike.Channel)) \r\n\t\t" +
+                    "return new spike.Channel(uri, opts);\r\n\r\n\tif (uri && (\'object\' == typeof uri)) {\r" +
+                    "\n\t\topts = uri;\r\n\t\turi = undefined;\r\n\t}\r\n\topts = opts || {};\r\n\r\n\t// Make sure we " +
+                    "have a correct path\r\n\topts.path = \'/engine.io\';\r\n\tvar self = this;\r\n\r\n\t// Main p" +
+                    "roperties\r\n\tthis.opts = opts;\r\n\tthis.subs = [];\r\n\tthis.endPoint = uri;\r\n\tthis.bu" +
+                    "ffer = new spike.ByteArray();\r\n\tthis.readyState = \'closed\';\r\n\tthis.socket = null" +
+                    ";\r\n\tthis.transport = \"\";\r\n\tthis.autoConnect = opts.autoConnect !== false;\r\n\tthis" +
+                    "._partialRecord = false;\r\n\r\n\t// Reconnection options\r\n\tthis.reconnection(opts.re" +
+                    "connection !== false);\r\n\tthis.reconnectionAttempts(opts.reconnectionAttempts || " +
+                    "Infinity);\r\n\tthis.reconnectionDelay(opts.reconnectionDelay || 1000);\r\n\tthis.reco" +
+                    "nnectionDelayMax(opts.reconnectionDelayMax || 10000);\r\n\tthis.randomizationFactor" +
+                    "(opts.randomizationFactor || 0.5);\r\n\tthis.timeout(null == opts.timeout ? 20000 :" +
+                    " opts.timeout);\r\n\tthis.backoff = new spike.Backoff({\r\n\t\tmin: this.reconnectionDe" +
+                    "lay(),\r\n\t\tmax: this.reconnectionDelayMax(),\r\n\t\tjitter: this.randomizationFactor(" +
+                    ")\r\n\t});\r\n\r\n\t// We need to close every time the window is unloading\r\n\twindow.addE" +
+                    "ventListener(\"beforeunload\", function( event ) {\r\n\t\ttry {\r\n\t\t\tself.disconnect();" +
+                    "\r\n\t\t\tself.socket.transport.ws.onclose = function () {};\r\n\t\t\tself.socket.transpor" +
+                    "t.ws.close();\r\n\t\t} catch(err) {}\r\n\t});\r\n\r\n\t// Event: occurs when the client is c" +
+                    "onnected to the server.\r\n\tthis.onConnect = null;\r\n\r\n\t// Event: occurs when the c" +
+                    "lient is disconnected from the server.\r\n\tthis.onDisconnect = null;\r\n");
             
-            #line 49 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 53 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
  foreach(var receive in Model.Receives){ 
             
             #line default
             #line hidden
             this.Write("\t// Event: occurs when the ");
             
-            #line 50 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 54 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name));
             
             #line default
             #line hidden
             this.Write(" inform is received from the server. \r\n\tthis.");
             
-            #line 51 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 55 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name.CamelCase()));
             
             #line default
             #line hidden
             this.Write(" = null; \r\n\r\n");
             
-            #line 53 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 57 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
  } 
             
             #line default
@@ -1982,28 +1953,28 @@ namespace Spike.Build.JavaScript
             this.Write("\t\r\n\t// Attempt to auto-connect if specified (default behavior)\r\n\tif (this.autoCon" +
                     "nect) this.open();\r\n};\r\n\t\t    \r\n\t// Send Methods    \r\n");
             
-            #line 60 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 64 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
  foreach(var send in Model.Sends) { 
             
             #line default
             #line hidden
             this.Write("\t/* Sends a ");
             
-            #line 61 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 65 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(send.Name));
             
             #line default
             #line hidden
             this.Write(" request to the remote server. */\t\r\nspike.Channel.prototype.");
             
-            #line 62 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 66 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(send.Name.CamelCase()));
             
             #line default
             #line hidden
             this.Write(" = function(");
             
-            #line 62 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 66 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
 	
 		var first = true;
 		foreach(var member in send.Members){
@@ -2017,55 +1988,55 @@ namespace Spike.Build.JavaScript
             #line hidden
             this.Write("){\r\n\t\t\r\n\tvar writer = new spike.PacketWriter();\r\n");
             
-            #line 72 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 76 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
 		foreach(var member in send.Members) { 
             
             #line default
             #line hidden
             this.Write("\twriter.write");
             
-            #line 73 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 77 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "ArrayOf" : string.Empty));
             
             #line default
             #line hidden
             
-            #line 73 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 77 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Type));
             
             #line default
             #line hidden
             this.Write("(");
             
-            #line 73 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 77 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name.CamelCase()));
             
             #line default
             #line hidden
             this.Write(");\r\n");
             
-            #line 74 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 78 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
 		} 
             
             #line default
             #line hidden
             this.Write("\t\t\r\n\t");
             
-            #line 76 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 80 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(send.Compressed ? "writer.compress();" : ""));
             
             #line default
             #line hidden
             this.Write("\r\n\tthis.send(\"");
             
-            #line 77 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 81 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(send.Id.ToString("X")));
             
             #line default
             #line hidden
             this.Write("\", writer);\r\n};\r\n\r\n");
             
-            #line 80 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 84 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
  } 
             
             #line default
@@ -2073,97 +2044,97 @@ namespace Spike.Build.JavaScript
             this.Write("\r\n// Dispatcher\r\nspike.Channel.prototype.onReceive = function(key, reader){\r\n\tswi" +
                     "tch (key){\r\n");
             
-            #line 85 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 89 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
 			foreach(var receive in Model.Receives){ 
             
             #line default
             #line hidden
             this.Write("\t\t\t\r\n\t\t// ");
             
-            #line 87 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 91 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name));
             
             #line default
             #line hidden
             this.Write(" \t\r\n\t\tcase \"");
             
-            #line 88 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 92 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Id.ToString("X")));
             
             #line default
             #line hidden
             this.Write("\": {\r\n\t\t\t");
             
-            #line 89 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 93 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Compressed ? "reader.decompress();" : ""));
             
             #line default
             #line hidden
             this.Write("\r\n\t\t\tvar packet = new Object();\r\n");
             
-            #line 91 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 95 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
 				foreach(var member in receive.Members){ 
             
             #line default
             #line hidden
             this.Write("\t\t\tpacket.");
             
-            #line 92 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 96 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name.CamelCase()));
             
             #line default
             #line hidden
             this.Write(" = reader.read");
             
-            #line 92 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 96 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "ArrayOf" : string.Empty));
             
             #line default
             #line hidden
             
-            #line 92 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 96 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Type));
             
             #line default
             #line hidden
             this.Write("();\r\n");
             
-            #line 93 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 97 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
 				} 
             
             #line default
             #line hidden
             this.Write("\r\n\t\t\tif (this.");
             
-            #line 95 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 99 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name.CamelCase()));
             
             #line default
             #line hidden
             this.Write(" != null)\r\n\t\t\t\tthis.");
             
-            #line 96 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 100 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name.CamelCase()));
             
             #line default
             #line hidden
             this.Write("(packet, this);\r\n\t\t\tthis.emit(\'");
             
-            #line 97 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 101 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name.CamelCase()));
             
             #line default
             #line hidden
             this.Write("\', packet);\r\n\t\t\tthis.emit(\'");
             
-            #line 98 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 102 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name.WithoutInform().CamelCase()));
             
             #line default
             #line hidden
             this.Write("\', packet);\r\n\r\n\t\t} break;\r\n\r\n");
             
-            #line 102 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
+            #line 106 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\TcpChannel.t4"
 				} 
             
             #line default
@@ -2192,62 +2163,72 @@ namespace Spike.Build.JavaScript
                     "s;\r\n\t\r\n\t// Create a new socket and try to connect\r\n\tthis.socket = eio.Socket(thi" +
                     "s.endPoint);\r\n\tthis.socket._channel = this;\r\n\r\n\t// Set the \'opening\' state\r\n\tvar" +
                     " self = this;\r\n\tvar socket = this.socket;\r\n\tthis.readyState = \'opening\';\r\n\tthis." +
-                    "skipReconnect = false;\r\n\r\n\t// Hook socket \'open\' event \r\n\tthis.socket.on(\'open\'," +
-                    " function(){\r\n\t\tspike.debug(\'socket opened\');\r\n\t\tthis._channel.onopen();\r\n\t\tfn &" +
-                    "& fn();\r\n\t});\r\n\r\n\t// Hook the error on connection\r\n\tthis.socket.on(\'error\', func" +
-                    "tion(data){\r\n\t\tspike.debug(\'socket error: %s\', data);\r\n\t\tself.readyState = \'clos" +
-                    "ed\';\r\n\t\tself.emit(\'connect_error\', data);\r\n\t\tif (fn) {\r\n\t\t\tvar err = new Error(\'" +
-                    "Connection error\');\r\n\t\t\terr.data = data;\r\n\t\t\tfn(err);\r\n\t\t} else {\r\n\t\t\t// Only do" +
-                    " this if there is no fn to handle the error\r\n\t\t\tself.maybeReconnectOnOpen();\r\n\t\t" +
-                    "}\r\n\t});\r\n\r\n\t// emit `connect_timeout`\r\n\tif (false !== this._timeout) {\r\n\t\tvar ti" +
-                    "meout = this._timeout;\r\n\t\tspike.debug(\'connect attempt will timeout after %d\', t" +
-                    "imeout);\r\n\r\n\t\t// set timer\r\n\t\tvar timer = setTimeout(function(){\r\n\t\t\tif(self.rea" +
-                    "dyState == \'open\') return;\r\n\r\n\t\t\tspike.debug(\'connect attempt timed out after %d" +
-                    "\', timeout);\r\n\t\t\tsocket.close();\r\n\t\t\tsocket.emit(\'error\', \'timeout\');\r\n\t\t\tself.e" +
-                    "mit(\'connect_timeout\', timeout);\r\n\t\t}, timeout);\r\n\t}\r\n\r\n\t// Hook socket \'close\' " +
-                    "event \r\n\tthis.socket.on(\'close\', function(reason){\r\n\t\tself.transport = null;\r\n\t\t" +
-                    "if (self.onDisconnect != null)\r\n\t\t\tself.onDisconnect();\r\n\t\tself.emit(\'disconnect" +
-                    "\');\r\n\t\tself.onclose(reason);\r\n\t});\r\n\r\n\t// Invoked when the socked receives incom" +
-                    "ing data \r\n\tthis.socket.on(\'message\', function(payload) {\r\n\r\n\t\t// Initialize siz" +
-                    "e variables\r\n\t\tvar sizeOfKey = 4;\r\n\t\tvar sizeOfLen = 4;\r\n\t\tvar sizeTotal = 8;\r\n\r" +
-                    "\n\t\tvar data = new spike.ByteArray();\r\n\t\tvar channel = this._channel;\r\n\t\tif (chan" +
-                    "nel._partialRecord)\r\n\t\t{\r\n\t\t\tchannel.buffer.readBytesTo(data, channel.buffer.get" +
-                    "Size());\r\n\t\t\tchannel._partialRecord = false;\r\n\t\t}\t\t\t\r\n\r\n\t\t//spike.debug(\'Receive" +
-                    "d buffer: %s\', payload);\r\n\r\n\t\t// Read received data and reset (SEEK)\r\n\t\tif ((typ" +
-                    "eof payload) == \'string\') {\r\n\t\t\tdata.writeBase64(payload);\r\n\t\t} else if(spike.bi" +
-                    "narySupport) {\r\n\t\t\tdata.writeBytes(new Uint8Array(payload));\r\n\t\t} else {\r\n\t\t\tvar" +
-                    " buff = new Uint8Array(payload);\r\n\t\t\tfor(var i=0; i<buff.byteLength; ++i)\r\n\t\t\t\td" +
-                    "ata.writeByte(buff[i]);\r\n\t\t}\r\n\t\t\r\n\t\tdata.position = 0;\r\n\t\t\r\n\t\t// While we have d" +
-                    "ata to read\r\n\t\twhile(data.position < data.getSize())\r\n\t\t{\r\n\t\t\tif(data.getSize() " +
-                    "- data.position < sizeOfLen)\r\n\t\t\t{\r\n\t\t\t\t// Read the partial packet \r\n\t\t\t\tchannel" +
-                    ".buffer = new spike.ByteArray();\r\n\t\t\t\tdata.readBytesTo(channel.buffer, data.getS" +
-                    "ize() - data.position);\r\n\t\t\t\tchannel._partialRecord = true;\r\n\t\t\t\tbreak;\r\n\t\t\t} \r\n" +
-                    "\t\t\t\r\n\t\t\tvar length = data.readInt(32, false) + sizeOfLen;\r\n\t\t\tdata.position -= s" +
-                    "izeOfLen;\r\n\t\t\t\r\n\t\t    // If we have enough data to form a full packet.\r\n\t\t    if" +
-                    "(length <= (data.getSize() - data.position))\r\n\t\t    {\r\n\t\t\t\t// Read the operation" +
-                    " and read the actual message into a new buffer\r\n\t\t\t\tvar messageLength = data.rea" +
-                    "dInt(32, false); // UNUSED\r\n\t\t\t\tvar operation = \"\";\r\n\t\t\t\tfor (var i=0; i < sizeO" +
-                    "fKey; i++)\r\n\t\t\t\t{\r\n\t\t\t\t\tvar byte = data.readInt(8, false);\r\n\t\t\t\t\tvar sbyte = byt" +
-                    "e.toString(16);\r\n\t\t\t\t\tif(sbyte.length == 1)\r\n\t\t\t\t\t\tsbyte = \"0\" + sbyte;\r\n\t\t\t\t\top" +
-                    "eration += sbyte;\r\n\t\t\t\t}\r\n\t\t\t\toperation = operation.toUpperCase();\r\n\t\t\t\t//spike." +
-                    "debug(\'Operation #%s received\', operation);\r\n\r\n\t\t\t\t// New buffer for the packet\r" +
-                    "\n\t\t\t\tvar packet = new spike.ByteArray();\r\n\t\t\t\tdata.readBytesTo(packet, length - " +
-                    "sizeTotal);\r\n\t\t\t\tpacket.position = 0;\r\n\t\t\r\n\t\t\t\t// Create the reader and fire the" +
-                    " event\r\n\t\t\t\tvar reader = new spike.PacketReader(packet);\r\n\t\t\t\tchannel.onReceive(" +
-                    "operation, reader);\r\n\t\r\n\t\t    }\r\n\t\t    else \r\n\t\t    {\r\n\t\t     \t// Read the parti" +
-                    "al packet\r\n\t\t\t\tchannel.buffer = new spike.ByteArray();\r\n\t\t\t\tdata.readBytesTo(cha" +
-                    "nnel.buffer, data.getSize() - data.position);\r\n\t\t\t\tchannel._partialRecord = true" +
-                    ";\r\n\t\t    }\r\n\t\t\r\n\t\t}\r\n\t});\r\n\r\n\treturn this;\r\n};\r\n\r\n\r\n/**\r\n* Close the current soc" +
-                    "ket.\r\n*\r\n* @api public\r\n*/\r\nspike.Channel.prototype.close = \r\nspike.Channel.prot" +
-                    "otype.disconnect = function(){\r\n\tthis.skipReconnect = true;\r\n\tthis.readyState = " +
-                    "\'closed\';\r\n\tthis.socket && this.socket.close();\r\n};\r\n\r\n/**\r\n* Called upon transp" +
-                    "ort open.\r\n*\r\n* @api private\r\n*/\r\nspike.Channel.prototype.onopen = function(){\r\n" +
-                    "\tthis.readyState = \'open\';\r\n\r\n\tif (this.onConnect != null)\r\n\t\tthis.onConnect();\r" +
-                    "\n\t\r\n\tthis.emit(\'connect\');\r\n\tthis.emit(\'open\');\r\n};\r\n\r\n/**\r\n* Called upon engine" +
-                    " close.\r\n*\r\n* @api private\r\n*/\r\nspike.Channel.prototype.onclose = function(reaso" +
-                    "n){\r\n\tspike.debug(\'socket closed: %s\', reason);\r\n\tthis.backoff.reset();\r\n\tthis.r" +
-                    "eadyState = \'closed\';\r\n\tthis.emit(\'close\', reason);\r\n\tif (this._reconnection && " +
-                    "!this.skipReconnect) {\r\n\t\tthis.reconnect();\r\n\t}\r\n};\r\n\r\n");
+                    "skipReconnect = false;\r\n\r\n\t// Hook socket \'open\' event \r\n\tvar openSub = this.soc" +
+                    "ket.on(\'open\', function(){\r\n\t\tspike.debug(\'socket opened\');\r\n\t\tthis._channel.ono" +
+                    "pen();\r\n\t\tfn && fn();\r\n\t});\r\n\r\n\t// Hook the error on connection\r\n\tvar errorSub =" +
+                    " this.socket.on(\'error\', function(data){\r\n\t\tspike.debug(\'socket error: %s\', data" +
+                    ");\r\n\t\tself.cleanup();\r\n\t\tself.readyState = \'closed\';\r\n\t\tself.emit(\'connect_error" +
+                    "\', data);\r\n\t\tif (fn) {\r\n\t\t\tvar err = new Error(\'Connection error\');\r\n\t\t\terr.data" +
+                    " = data;\r\n\t\t\tfn(err);\r\n\t\t} else {\r\n\t\t\t// Only do this if there is no fn to handl" +
+                    "e the error\r\n\t\t\tself.maybeReconnectOnOpen();\r\n\t\t}\r\n\t});\r\n\r\n\t// emit `connect_tim" +
+                    "eout`\r\n\tif (false !== this._timeout) {\r\n\t\tvar timeout = this._timeout;\r\n\t\tspike." +
+                    "debug(\'connect attempt will timeout after %d\', timeout);\r\n\r\n\t\t// set timer\r\n\t\tva" +
+                    "r timer = setTimeout(function(){\r\n\t\t\tif(self.readyState == \'open\') return;\r\n\r\n\t\t" +
+                    "\tspike.debug(\'connect attempt timed out after %d\', timeout);\r\n\t\t\tsocket.close();" +
+                    "\r\n\t\t\tsocket.emit(\'error\', \'timeout\');\r\n\t\t\tself.emit(\'connect_timeout\', timeout);" +
+                    "\r\n\t\t}, timeout);\r\n\r\n\t\tthis.subs.push({\r\n\t    \tdestroy: function(){ clearTimeout(" +
+                    "timer); }\r\n\t    });\r\n\t}\r\n\r\n\t// Hook socket \'close\' event \r\n\tthis.socket.on(\'clos" +
+                    "e\', function(reason){\r\n\t\tspike.debug(\'socket closed: \' + reason);\r\n\t\tself.transp" +
+                    "ort = null;\r\n\t\tif (self.onDisconnect != null)\r\n\t\t\tself.onDisconnect();\r\n\t\tself.e" +
+                    "mit(\'disconnect\');\r\n\t\tself.onclose(reason);\r\n\t});\r\n\r\n\t// Invoked when the socked" +
+                    " receives incoming data \r\n\tthis.socket.on(\'message\', function(payload) {\r\n\r\n\t\t//" +
+                    " Initialize size variables\r\n\t\tvar sizeOfKey = 4;\r\n\t\tvar sizeOfLen = 4;\r\n\t\tvar si" +
+                    "zeTotal = 8;\r\n\r\n\t\tvar data = new spike.ByteArray();\r\n\t\tvar channel = this._chann" +
+                    "el;\r\n\t\tif (channel._partialRecord)\r\n\t\t{\r\n\t\t\tchannel.buffer.readBytesTo(data, cha" +
+                    "nnel.buffer.getSize());\r\n\t\t\tchannel._partialRecord = false;\r\n\t\t}\t\t\t\r\n\r\n\t\t//spike" +
+                    ".debug(\'Received buffer: %s\', payload);\r\n\r\n\t\t// Read received data and reset (SE" +
+                    "EK)\r\n\t\tif ((typeof payload) == \'string\') {\r\n\t\t\tdata.writeBase64(payload);\r\n\t\t} e" +
+                    "lse if(spike.binarySupport) {\r\n\t\t\tdata.writeBytes(new Uint8Array(payload));\r\n\t\t}" +
+                    " else {\r\n\t\t\tvar buff = new Uint8Array(payload);\r\n\t\t\tfor(var i=0; i<buff.byteLeng" +
+                    "th; ++i)\r\n\t\t\t\tdata.writeByte(buff[i]);\r\n\t\t}\r\n\t\t\r\n\t\tdata.position = 0;\r\n\t\t\r\n\t\t// " +
+                    "While we have data to read\r\n\t\twhile(data.position < data.getSize())\r\n\t\t{\r\n\t\t\tif(" +
+                    "data.getSize() - data.position < sizeOfLen)\r\n\t\t\t{\r\n\t\t\t\t// Read the partial packe" +
+                    "t \r\n\t\t\t\tchannel.buffer = new spike.ByteArray();\r\n\t\t\t\tdata.readBytesTo(channel.bu" +
+                    "ffer, data.getSize() - data.position);\r\n\t\t\t\tchannel._partialRecord = true;\r\n\t\t\t\t" +
+                    "break;\r\n\t\t\t} \r\n\t\t\t\r\n\t\t\tvar length = data.readInt(32, false) + sizeOfLen;\r\n\t\t\tdat" +
+                    "a.position -= sizeOfLen;\r\n\t\t\t\r\n\t\t    // If we have enough data to form a full pa" +
+                    "cket.\r\n\t\t    if(length <= (data.getSize() - data.position))\r\n\t\t    {\r\n\t\t\t\t// Rea" +
+                    "d the operation and read the actual message into a new buffer\r\n\t\t\t\tvar messageLe" +
+                    "ngth = data.readInt(32, false); // UNUSED\r\n\t\t\t\tvar operation = \"\";\r\n\t\t\t\tfor (var" +
+                    " i=0; i < sizeOfKey; i++)\r\n\t\t\t\t{\r\n\t\t\t\t\tvar byte = data.readInt(8, false);\r\n\t\t\t\t\t" +
+                    "var sbyte = byte.toString(16);\r\n\t\t\t\t\tif(sbyte.length == 1)\r\n\t\t\t\t\t\tsbyte = \"0\" + " +
+                    "sbyte;\r\n\t\t\t\t\toperation += sbyte;\r\n\t\t\t\t}\r\n\t\t\t\toperation = operation.toUpperCase()" +
+                    ";\r\n\t\t\t\t//spike.debug(\'Operation #%s received\', operation);\r\n\r\n\t\t\t\t// New buffer " +
+                    "for the packet\r\n\t\t\t\tvar packet = new spike.ByteArray();\r\n\t\t\t\tdata.readBytesTo(pa" +
+                    "cket, length - sizeTotal);\r\n\t\t\t\tpacket.position = 0;\r\n\t\t\r\n\t\t\t\t// Create the read" +
+                    "er and fire the event\r\n\t\t\t\tvar reader = new spike.PacketReader(packet);\r\n\t\t\t\tcha" +
+                    "nnel.onReceive(operation, reader);\r\n\t\r\n\t\t    }\r\n\t\t    else \r\n\t\t    {\r\n\t\t     \t//" +
+                    " Read the partial packet\r\n\t\t\t\tchannel.buffer = new spike.ByteArray();\r\n\t\t\t\tdata." +
+                    "readBytesTo(channel.buffer, data.getSize() - data.position);\r\n\t\t\t\tchannel._parti" +
+                    "alRecord = true;\r\n\t\t    }\r\n\t\t\r\n\t\t}\r\n\t});\r\n\r\n\r\n\tthis.subs.push(openSub);\r\n\tthis.s" +
+                    "ubs.push(errorSub);\r\n\r\n\treturn this;\r\n};\r\n\r\n\r\n/**\r\n* Close the current socket.\r\n" +
+                    "*\r\n* @api public\r\n*/\r\nspike.Channel.prototype.close = \r\nspike.Channel.prototype." +
+                    "disconnect = function(){\r\n\tthis.skipReconnect = true;\r\n\tthis.readyState = \'close" +
+                    "d\';\r\n\tthis.socket && this.socket.close();\r\n};\r\n\r\n/**\r\n* Called upon transport op" +
+                    "en.\r\n*\r\n* @api private\r\n*/\r\nspike.Channel.prototype.onopen = function(){\r\n\t// cl" +
+                    "ear old subs and mark as open\r\n\tthis.cleanup();\r\n\tthis.readyState = \'open\';\r\n\r\n\t" +
+                    "// Invoke connection events\r\n\tif (this.onConnect != null)\r\n\t\tthis.onConnect();\r\n" +
+                    "\tthis.emit(\'connect\');\r\n\tthis.emit(\'open\');\r\n\r\n\t  // add new subs\r\n\tvar socket =" +
+                    " this.socket;\r\n\t//this.subs.push(socket.on(\'data\', bind(this, \'ondata\')));\r\n\t//t" +
+                    "his.subs.push(socket.on(\'error\', bind(this, \'onerror\')));\r\n\t//this.subs.push(soc" +
+                    "ket.on(\'close\', bind(this, \'onclose\')));\r\n};\r\n\r\n/**\r\n* Clean up transport subscr" +
+                    "iptions.\r\n*\r\n* @api private\r\n*/\r\nspike.Channel.prototype.cleanup = function(){\r\n" +
+                    "  var sub;\r\n  while (sub = this.subs.shift()){\r\n  \tif (typeof sub.destroy !== \'u" +
+                    "ndefined\')\r\n  \t\tsub.destroy();\r\n  }\r\n};\r\n\r\n/**\r\n* Called upon engine close.\r\n*\r\n" +
+                    "* @api private\r\n*/\r\nspike.Channel.prototype.onclose = function(reason){\r\n\tspike." +
+                    "debug(\'socket closed: %s\', reason);\r\n\tthis.cleanup();\r\n\tthis.backoff.reset();\r\n\t" +
+                    "this.readyState = \'closed\';\r\n\tthis.emit(\'close\', reason);\r\n\tif (this._reconnecti" +
+                    "on && !this.skipReconnect) {\r\n\t\tthis.reconnect();\r\n\t}\r\n};\r\n\r\n");
             this.Write("/**\r\n * Initialize backoff timer with `opts`.\r\n *\r\n * - `min` initial timeout in " +
                     "milliseconds [100]\r\n * - `max` max timeout [10000]\r\n * - `jitter` [0]\r\n * - `fac" +
                     "tor` [2]\r\n *\r\n * @param {Object} opts\r\n * @api public\r\n */\r\nspike.Backoff = func" +
@@ -2268,58 +2249,59 @@ namespace Spike.Build.JavaScript
                     "pike.Backoff.prototype.setJitter = function(jitter){\r\n  this.jitter = jitter;\r\n}" +
                     ";\r\n\r\n\r\n/**\r\n* Called upon successful reconnect.\r\n*\r\n* @api private\r\n*/\r\nspike.Ch" +
                     "annel.prototype.onreconnect = function(){\r\n\tvar attempt = this.backoff.attempts;" +
-                    "\r\n\tthis.reconnecting = false;\r\n\tthis.backoff.reset();\r\n\tthis.emit(\'reconnect\', a" +
-                    "ttempt);\r\n};\r\n\r\n/**\r\n* Sets the `reconnection` config.\r\n*\r\n* @param {Boolean} tr" +
-                    "ue/false if it should automatically reconnect\r\n* @return {Manager} self or value" +
-                    "\r\n* @api public\r\n*/\r\nspike.Channel.prototype.reconnection = function(v){\r\n\tif (!" +
-                    "arguments.length) return this._reconnection;\r\n\tthis._reconnection = !!v;\r\n\tretur" +
-                    "n this;\r\n};\r\n\r\n/**\r\n* Sets the reconnection attempts config.\r\n*\r\n* @param {Numbe" +
-                    "r} max reconnection attempts before giving up\r\n* @return {Manager} self or value" +
-                    "\r\n* @api public\r\n*/\r\nspike.Channel.prototype.reconnectionAttempts = function(v){" +
-                    "\r\n\tif (!arguments.length) return this._reconnectionAttempts;\r\n\tthis._reconnectio" +
-                    "nAttempts = v;\r\n\treturn this;\r\n};\r\n\r\n/**\r\n* Sets the delay between reconnections" +
-                    ".\r\n*\r\n* @param {Number} delay\r\n* @return {Manager} self or value\r\n* @api public\r" +
-                    "\n*/\r\nspike.Channel.prototype.reconnectionDelay = function(v){\r\n\tif (!arguments.l" +
-                    "ength) return this._reconnectionDelay;\r\n\tthis._reconnectionDelay = v;\r\n\tthis.bac" +
-                    "koff && this.backoff.setMin(v);\r\n\treturn this;\r\n};\r\nspike.Channel.prototype.rand" +
-                    "omizationFactor = function(v){\r\n\tif (!arguments.length) return this._randomizati" +
-                    "onFactor;\r\n\tthis._randomizationFactor = v;\r\n\tthis.backoff && this.backoff.setJit" +
-                    "ter(v);\r\n\treturn this;\r\n};\r\n\r\n/**\r\n* Sets the maximum delay between reconnection" +
-                    "s.\r\n*\r\n* @param {Number} delay\r\n* @return {Manager} self or value\r\n* @api public" +
-                    "\r\n*/\r\nspike.Channel.prototype.reconnectionDelayMax = function(v){\r\n\tif (!argumen" +
-                    "ts.length) return this._reconnectionDelayMax;\r\n\tthis._reconnectionDelayMax = v;\r" +
-                    "\n\tthis.backoff && this.backoff.setMax(v);\r\n\treturn this;\r\n};\r\n\r\n/**\r\n* Sets the " +
-                    "connection timeout. `false` to disable\r\n*\r\n* @return {Manager} self or value\r\n* " +
-                    "@api public\r\n*/\r\nspike.Channel.prototype.timeout = function(v){\r\n\tif (!arguments" +
-                    ".length) return this._timeout;\r\n\tthis._timeout = v;\r\n\treturn this;\r\n};\r\n\r\n/**\r\n*" +
-                    " Starts trying to reconnect if reconnection is enabled and we have not\r\n* starte" +
-                    "d reconnecting yet\r\n*\r\n* @api private\r\n*/\r\nspike.Channel.prototype.maybeReconnec" +
-                    "tOnOpen = function() {\r\n\t// Only try to reconnect if it\'s the first time we\'re c" +
-                    "onnecting\r\n\tif (!this.reconnecting && this._reconnection && this.backoff.attempt" +
-                    "s === 0) {\r\n\t\t// keeps reconnection from firing twice for the same reconnection " +
-                    "loop\r\n\t\tthis.reconnect();\r\n\t}\r\n};\r\n\r\n/**\r\n * Attempt a reconnection.\r\n *\r\n * @ap" +
-                    "i private\r\n */\r\nspike.Channel.prototype.reconnect = function(){\r\n  if (this.reco" +
-                    "nnecting || this.skipReconnect) return this;\r\n\r\n  var self = this;\r\n\r\n  if (this" +
-                    ".backoff.attempts >= this._reconnectionAttempts) {\r\n    spike.debug(\'reconnect f" +
-                    "ailed\');\r\n    this.backoff.reset();\r\n    this.emit(\'reconnect_failed\');\r\n    thi" +
-                    "s.reconnecting = false;\r\n  } else {\r\n    var delay = this.backoff.duration();\r\n " +
-                    "   spike.debug(\'will wait %dms before reconnect attempt\', delay);\r\n\r\n    this.re" +
-                    "connecting = true;\r\n    var timer = setTimeout(function(){\r\n      if (self.skipR" +
-                    "econnect)\r\n\t\treturn;\r\n\r\n      spike.debug(\'attempting reconnect\');\r\n      self.e" +
-                    "mit(\'reconnect_attempt\', self.backoff.attempts);\r\n      self.emit(\'reconnecting\'" +
-                    ", self.backoff.attempts);\r\n\r\n      // check again for the case socket closed in " +
-                    "above events\r\n      if (self.skipReconnect) return;\r\n\r\n      self.open(function(" +
-                    "err){\r\n        if (err) {\r\n          spike.debug(\'reconnect attempt error, %s\', " +
-                    "err);\r\n          self.reconnecting = false;\r\n          self.reconnect();\r\n      " +
-                    "    self.emit(\'reconnect_error\', err.data);\r\n        } else {\r\n          spike.d" +
-                    "ebug(\'reconnect success\');\r\n          self.onreconnect();\r\n        }\r\n      });\r" +
-                    "\n    }, delay);\r\n\r\n  }\r\n};\r\n");
+                    "\r\n\tthis.reconnecting = false;\r\n\t//this.backoff.reset();\r\n\tthis.emit(\'reconnect\'," +
+                    " attempt);\r\n};\r\n\r\n/**\r\n* Sets the `reconnection` config.\r\n*\r\n* @param {Boolean} " +
+                    "true/false if it should automatically reconnect\r\n* @return {Manager} self or val" +
+                    "ue\r\n* @api public\r\n*/\r\nspike.Channel.prototype.reconnection = function(v){\r\n\tif " +
+                    "(!arguments.length) return this._reconnection;\r\n\tthis._reconnection = !!v;\r\n\tret" +
+                    "urn this;\r\n};\r\n\r\n/**\r\n* Sets the reconnection attempts config.\r\n*\r\n* @param {Num" +
+                    "ber} max reconnection attempts before giving up\r\n* @return {Manager} self or val" +
+                    "ue\r\n* @api public\r\n*/\r\nspike.Channel.prototype.reconnectionAttempts = function(v" +
+                    "){\r\n\tif (!arguments.length) return this._reconnectionAttempts;\r\n\tthis._reconnect" +
+                    "ionAttempts = v;\r\n\treturn this;\r\n};\r\n\r\n/**\r\n* Sets the delay between reconnectio" +
+                    "ns.\r\n*\r\n* @param {Number} delay\r\n* @return {Manager} self or value\r\n* @api publi" +
+                    "c\r\n*/\r\nspike.Channel.prototype.reconnectionDelay = function(v){\r\n\tif (!arguments" +
+                    ".length) return this._reconnectionDelay;\r\n\tthis._reconnectionDelay = v;\r\n\tthis.b" +
+                    "ackoff && this.backoff.setMin(v);\r\n\treturn this;\r\n};\r\nspike.Channel.prototype.ra" +
+                    "ndomizationFactor = function(v){\r\n\tif (!arguments.length) return this._randomiza" +
+                    "tionFactor;\r\n\tthis._randomizationFactor = v;\r\n\tthis.backoff && this.backoff.setJ" +
+                    "itter(v);\r\n\treturn this;\r\n};\r\n\r\n/**\r\n* Sets the maximum delay between reconnecti" +
+                    "ons.\r\n*\r\n* @param {Number} delay\r\n* @return {Manager} self or value\r\n* @api publ" +
+                    "ic\r\n*/\r\nspike.Channel.prototype.reconnectionDelayMax = function(v){\r\n\tif (!argum" +
+                    "ents.length) return this._reconnectionDelayMax;\r\n\tthis._reconnectionDelayMax = v" +
+                    ";\r\n\tthis.backoff && this.backoff.setMax(v);\r\n\treturn this;\r\n};\r\n\r\n/**\r\n* Sets th" +
+                    "e connection timeout. `false` to disable\r\n*\r\n* @return {Manager} self or value\r\n" +
+                    "* @api public\r\n*/\r\nspike.Channel.prototype.timeout = function(v){\r\n\tif (!argumen" +
+                    "ts.length) return this._timeout;\r\n\tthis._timeout = v;\r\n\treturn this;\r\n};\r\n\r\n/**\r" +
+                    "\n* Starts trying to reconnect if reconnection is enabled and we have not\r\n* star" +
+                    "ted reconnecting yet\r\n*\r\n* @api private\r\n*/\r\nspike.Channel.prototype.maybeReconn" +
+                    "ectOnOpen = function() {\r\n\t// Only try to reconnect if it\'s the first time we\'re" +
+                    " connecting\r\n\tif (!this.reconnecting && this._reconnection && this.backoff.attem" +
+                    "pts === 0) {\r\n\t\t// keeps reconnection from firing twice for the same reconnectio" +
+                    "n loop\r\n\t\tthis.reconnect();\r\n\t}\r\n};\r\n\r\n/**\r\n * Attempt a reconnection.\r\n *\r\n * @" +
+                    "api private\r\n */\r\nspike.Channel.prototype.reconnect = function(){\r\n  if (this.re" +
+                    "connecting || this.skipReconnect) return this;\r\n\r\n  var self = this;\r\n\r\n  if (th" +
+                    "is.backoff.attempts >= this._reconnectionAttempts) {\r\n    spike.debug(\'reconnect" +
+                    " failed\');\r\n    this.backoff.reset();\r\n    this.emit(\'reconnect_failed\');\r\n    t" +
+                    "his.reconnecting = false;\r\n  } else {\r\n    var delay = this.backoff.duration();\r" +
+                    "\n    spike.debug(\'will wait %dms before reconnect attempt\', delay);\r\n\r\n    this." +
+                    "reconnecting = true;\r\n    var timer = setTimeout(function(){\r\n      if (self.ski" +
+                    "pReconnect)\r\n\t\t    return;\r\n\r\n      spike.debug(\'attempting reconnect\');\r\n      " +
+                    "self.emit(\'reconnect_attempt\', self.backoff.attempts);\r\n      self.emit(\'reconne" +
+                    "cting\', self.backoff.attempts);\r\n\r\n      // check again for the case socket clos" +
+                    "ed in above events\r\n      if (self.skipReconnect) return;\r\n\r\n      self.open(fun" +
+                    "ction(err){\r\n        if (err) {\r\n          spike.debug(\'reconnect attempt error," +
+                    " %s\', err);\r\n          self.reconnecting = false;\r\n          self.reconnect();\r\n" +
+                    "          self.emit(\'reconnect_error\', err.data);\r\n        } else {\r\n          s" +
+                    "pike.debug(\'reconnect success\');\r\n          self.onreconnect();\r\n        }\r\n    " +
+                    "  });\r\n    }, delay);\r\n\r\n    this.subs.push({\r\n      destroy: function(){ clearT" +
+                    "imeout(timer); }\r\n    });\r\n  }\r\n};\r\n");
             this.Write("\r\n\r\n/* Mix in \'Emitter\' */\r\nspike.Emitter(spike.Channel.prototype);\r\n\r\n/* Backwar" +
                     "ds compatibility and alias*/\r\nspike.ServerChannel = spike.Channel;\r\nspike.TcpCha" +
                     "nnel = spike.Channel;");
             this.Write(" ");
             
-            #line 14 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
+            #line 14 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
  } 
             
             #line default
@@ -2328,7 +2310,7 @@ namespace Spike.Build.JavaScript
             return this.GenerationEnvironment.ToString();
         }
         
-        #line 16 "D:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
+        #line 16 "d:\Workspace\Spike.Build\Spike.Build.JavaScript\JavaScriptTemplate.tt"
  public void Clear(){
 	GenerationEnvironment.Clear();
 } 

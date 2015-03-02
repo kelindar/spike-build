@@ -79,7 +79,7 @@ spike.Backoff.prototype.setJitter = function(jitter){
 spike.Channel.prototype.onreconnect = function(){
 	var attempt = this.backoff.attempts;
 	this.reconnecting = false;
-	this.backoff.reset();
+	//this.backoff.reset();
 	this.emit('reconnect', attempt);
 };
 
@@ -191,7 +191,7 @@ spike.Channel.prototype.reconnect = function(){
     this.reconnecting = true;
     var timer = setTimeout(function(){
       if (self.skipReconnect)
-		return;
+		    return;
 
       spike.debug('attempting reconnect');
       self.emit('reconnect_attempt', self.backoff.attempts);
@@ -213,5 +213,8 @@ spike.Channel.prototype.reconnect = function(){
       });
     }, delay);
 
+    this.subs.push({
+      destroy: function(){ clearTimeout(timer); }
+    });
   }
 };

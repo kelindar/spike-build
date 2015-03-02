@@ -14,6 +14,7 @@
 
 	// Main properties
 	this.opts = opts;
+	this.subs = [];
 	this.endPoint = uri;
 	this.buffer = new spike.ByteArray();
 	this.readyState = 'closed';
@@ -26,7 +27,7 @@
 	this.reconnection(opts.reconnection !== false);
 	this.reconnectionAttempts(opts.reconnectionAttempts || Infinity);
 	this.reconnectionDelay(opts.reconnectionDelay || 1000);
-	this.reconnectionDelayMax(opts.reconnectionDelayMax || 5000);
+	this.reconnectionDelayMax(opts.reconnectionDelayMax || 10000);
 	this.randomizationFactor(opts.randomizationFactor || 0.5);
 	this.timeout(null == opts.timeout ? 20000 : opts.timeout);
 	this.backoff = new spike.Backoff({
@@ -37,8 +38,11 @@
 
 	// We need to close every time the window is unloading
 	window.addEventListener("beforeunload", function( event ) {
-		console.log("beforeunload");
-		self.disconnect();
+		try {
+			self.disconnect();
+			self.socket.transport.ws.onclose = function () {};
+			self.socket.transport.ws.close();
+		} catch(err) {}
 	});
 
 	// Event: occurs when the client is connected to the server.
@@ -172,15 +176,16 @@ spike.Channel.prototype.connect = function(fn){
 	this.skipReconnect = false;
 
 	// Hook socket 'open' event 
-	this.socket.on('open', function(){
+	var openSub = this.socket.on('open', function(){
 		spike.debug('socket opened');
 		this._channel.onopen();
 		fn && fn();
 	});
 
 	// Hook the error on connection
-	this.socket.on('error', function(data){
+	var errorSub = this.socket.on('error', function(data){
 		spike.debug('socket error: %s', data);
+		self.cleanup();
 		self.readyState = 'closed';
 		self.emit('connect_error', data);
 		if (fn) {
@@ -207,10 +212,15 @@ spike.Channel.prototype.connect = function(fn){
 			socket.emit('error', 'timeout');
 			self.emit('connect_timeout', timeout);
 		}, timeout);
+
+		this.subs.push({
+	    	destroy: function(){ clearTimeout(timer); }
+	    });
 	}
 
 	// Hook socket 'close' event 
 	this.socket.on('close', function(reason){
+		spike.debug('socket closed: ' + reason);
 		self.transport = null;
 		if (self.onDisconnect != null)
 			self.onDisconnect();
@@ -302,6 +312,10 @@ spike.Channel.prototype.connect = function(fn){
 		}
 	});
 
+
+	this.subs.push(openSub);
+	this.subs.push(errorSub);
+
 	return this;
 };
 
@@ -324,13 +338,34 @@ spike.Channel.prototype.disconnect = function(){
 * @api private
 */
 spike.Channel.prototype.onopen = function(){
+	// clear old subs and mark as open
+	this.cleanup();
 	this.readyState = 'open';
 
+	// Invoke connection events
 	if (this.onConnect != null)
 		this.onConnect();
-	
 	this.emit('connect');
 	this.emit('open');
+
+	  // add new subs
+	var socket = this.socket;
+	//this.subs.push(socket.on('data', bind(this, 'ondata')));
+	//this.subs.push(socket.on('error', bind(this, 'onerror')));
+	//this.subs.push(socket.on('close', bind(this, 'onclose')));
+};
+
+/**
+* Clean up transport subscriptions.
+*
+* @api private
+*/
+spike.Channel.prototype.cleanup = function(){
+  var sub;
+  while (sub = this.subs.shift()){
+  	if (typeof sub.destroy !== 'undefined')
+  		sub.destroy();
+  }
 };
 
 /**
@@ -340,6 +375,7 @@ spike.Channel.prototype.onopen = function(){
 */
 spike.Channel.prototype.onclose = function(reason){
 	spike.debug('socket closed: %s', reason);
+	this.cleanup();
 	this.backoff.reset();
 	this.readyState = 'closed';
 	this.emit('close', reason);
