@@ -347,12 +347,6 @@ spike.Channel.prototype.onopen = function(){
 		this.onConnect();
 	this.emit('connect');
 	this.emit('open');
-
-	  // add new subs
-	var socket = this.socket;
-	//this.subs.push(socket.on('data', bind(this, 'ondata')));
-	//this.subs.push(socket.on('error', bind(this, 'onerror')));
-	//this.subs.push(socket.on('close', bind(this, 'onclose')));
 };
 
 /**

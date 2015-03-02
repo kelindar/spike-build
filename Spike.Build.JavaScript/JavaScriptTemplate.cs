@@ -2218,17 +2218,14 @@ namespace Spike.Build.JavaScript
                     "en.\r\n*\r\n* @api private\r\n*/\r\nspike.Channel.prototype.onopen = function(){\r\n\t// cl" +
                     "ear old subs and mark as open\r\n\tthis.cleanup();\r\n\tthis.readyState = \'open\';\r\n\r\n\t" +
                     "// Invoke connection events\r\n\tif (this.onConnect != null)\r\n\t\tthis.onConnect();\r\n" +
-                    "\tthis.emit(\'connect\');\r\n\tthis.emit(\'open\');\r\n\r\n\t  // add new subs\r\n\tvar socket =" +
-                    " this.socket;\r\n\t//this.subs.push(socket.on(\'data\', bind(this, \'ondata\')));\r\n\t//t" +
-                    "his.subs.push(socket.on(\'error\', bind(this, \'onerror\')));\r\n\t//this.subs.push(soc" +
-                    "ket.on(\'close\', bind(this, \'onclose\')));\r\n};\r\n\r\n/**\r\n* Clean up transport subscr" +
-                    "iptions.\r\n*\r\n* @api private\r\n*/\r\nspike.Channel.prototype.cleanup = function(){\r\n" +
-                    "  var sub;\r\n  while (sub = this.subs.shift()){\r\n  \tif (typeof sub.destroy !== \'u" +
-                    "ndefined\')\r\n  \t\tsub.destroy();\r\n  }\r\n};\r\n\r\n/**\r\n* Called upon engine close.\r\n*\r\n" +
-                    "* @api private\r\n*/\r\nspike.Channel.prototype.onclose = function(reason){\r\n\tspike." +
-                    "debug(\'socket closed: %s\', reason);\r\n\tthis.cleanup();\r\n\tthis.backoff.reset();\r\n\t" +
-                    "this.readyState = \'closed\';\r\n\tthis.emit(\'close\', reason);\r\n\tif (this._reconnecti" +
-                    "on && !this.skipReconnect) {\r\n\t\tthis.reconnect();\r\n\t}\r\n};\r\n\r\n");
+                    "\tthis.emit(\'connect\');\r\n\tthis.emit(\'open\');\r\n};\r\n\r\n/**\r\n* Clean up transport sub" +
+                    "scriptions.\r\n*\r\n* @api private\r\n*/\r\nspike.Channel.prototype.cleanup = function()" +
+                    "{\r\n  var sub;\r\n  while (sub = this.subs.shift()){\r\n  \tif (typeof sub.destroy !==" +
+                    " \'undefined\')\r\n  \t\tsub.destroy();\r\n  }\r\n};\r\n\r\n/**\r\n* Called upon engine close.\r\n" +
+                    "*\r\n* @api private\r\n*/\r\nspike.Channel.prototype.onclose = function(reason){\r\n\tspi" +
+                    "ke.debug(\'socket closed: %s\', reason);\r\n\tthis.cleanup();\r\n\tthis.backoff.reset();" +
+                    "\r\n\tthis.readyState = \'closed\';\r\n\tthis.emit(\'close\', reason);\r\n\tif (this._reconne" +
+                    "ction && !this.skipReconnect) {\r\n\t\tthis.reconnect();\r\n\t}\r\n};\r\n\r\n");
             this.Write("/**\r\n * Initialize backoff timer with `opts`.\r\n *\r\n * - `min` initial timeout in " +
                     "milliseconds [100]\r\n * - `max` max timeout [10000]\r\n * - `jitter` [0]\r\n * - `fac" +
                     "tor` [2]\r\n *\r\n * @param {Object} opts\r\n * @api public\r\n */\r\nspike.Backoff = func" +
