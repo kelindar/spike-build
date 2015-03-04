@@ -3,7 +3,7 @@ Spike.Build
 
 Spike.Build is a command line interface tool that allows automated code generation for [Spike Engine](http://www.spike-engine.com) cross-platform client sdks.
 * Build status: [![Build status](https://ci.appveyor.com/api/projects/status/pj2081d7m07mu54d?svg=true)](https://ci.appveyor.com/project/Kelindar/spike-build)
-* Current Binaries: [spike-build.zip](http://pub.misakai.com/bin/spike-build.zip)
+* Current Binaries: [spike-build.zip](https://s3.amazonaws.com/app.misakai.com/public/bin/spike-build.zip)
 * Website [http://www.spike-engine](http://www.spike-engine.com)
 
 Currently supported platforms:
