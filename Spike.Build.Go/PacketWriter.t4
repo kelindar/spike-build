@@ -2,6 +2,7 @@
 	"encoding/binary"
 	"bytes"
 	"time"
+	"errors"
 ) 
 
 
@@ -107,30 +108,23 @@ func (this *PacketWriter) writeDateTime(value time.Time) error {
 	this.writeInt16(int16(value.Nanosecond() / 1000000))
 	return nil
 }
-
-// Writes a value to the underlying buffer.
-/*func (this *PacketWriter) writeDynamic(value interface{}) error {
-	v := reflect.ValueOf(value)
-	size := -1
- 	switch v.Kind() {
- 	case reflect.Ptr:
- 		v = v.Elem()
- 		size = dataSize(v)
- 	case reflect.Slice:
- 		size = dataSize(v)
- 	}
- 	if size < 0 {
-   		return errors.New("spike.writeDynamic: invalid type " + reflect.TypeOf(data).String())
-   	}
-   	//reflect.TypeOf(data).String()
-}*/
-
-
-// ------------------ Arrays ------------------------
-
 <# var types = new string[]{
 	"Boolean", "Byte", "SByte", "Int16", "Int32", "Int64", "UInt16", "UInt32", "UInt64", "Single", "Double", "DateTime", "String"
 }; #>
+
+// Writes a value to the underlying buffer.
+func (this *PacketWriter) writeDynamicType(value interface{}) error {
+<# foreach(var type in types){ #>
+	if v, ok := value.(<#=GoBuilder.GetNativeType(type)#>); ok {
+		this.writeBoolean(true)
+		this.writeString("<#=type#>")
+		this.write<#=type#>(v)
+		return nil
+	}
+
+<# } #>
+   	return errors.New("spike.writeDynamicType: incompatible type")
+}
 
 <# foreach(var type in types){ #>
 // Writes a value to the underlying buffer.
@@ -146,3 +140,15 @@ func (this *PacketWriter) writeListOf<#=type#>(value []<#=GoBuilder.GetNativeTyp
 }
 
 <# } #>
+
+// Writes a value to the underlying buffer.
+func (this *PacketWriter) writeListOfDynamicType(value []interface{}) error {
+	this.writeInt32(int32(len(value)))
+	for _, v := range value{
+		err := this.writeDynamicType(v)
+		if (err != nil){
+			return err
+		}
+	}
+	return nil
+}
