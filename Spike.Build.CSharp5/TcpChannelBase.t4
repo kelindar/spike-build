@@ -204,7 +204,7 @@
         {
             while (true)
             {
-                // First we need to read the siez
+                // First we need to read the size
                 this.Reader.Offset = 0;
                 this.Reader.Length = await Task.Run(() => Fill(sizeof(int)));
                 if (!this.Reader.CheckAvailable(sizeof(int)))

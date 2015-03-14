@@ -43,6 +43,11 @@ namespace Spike.Build
 	    }
 
         /// <summary>
+        /// A static list of all types.
+        /// </summary>
+        public readonly static string[] Types = new string[]{ "Boolean", "Byte", "SByte", "Int16", "Int32", "Int64", "UInt16", "UInt32", "UInt64", "Single", "Double", "DateTime", "String" }; 
+
+        /// <summary>
         /// Gets the list of complex types in the model.
         /// </summary>
         public List<CustomType> CustomTypes 

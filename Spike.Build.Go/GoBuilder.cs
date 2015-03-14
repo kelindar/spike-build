@@ -100,7 +100,6 @@ namespace Spike.Build.Go
         /// <param name="format">The format to apply.</param>
         public override void Build(Model model, string output, string format)
         {
-
             if (string.IsNullOrEmpty(output))
                 output = @"Go";
 
@@ -117,18 +116,11 @@ namespace Spike.Build.Go
             // Build packet_compressor.go
             this.BuildTarget("PacketCompressor", output, template, ConventionType.Underscore);
 
-
-            // Build PacketCompressor.js
-            //this.BuildTarget("PacketCompressor", output, template);
-
-            // Build PacketReader.js
-            //this.BuildTarget("PacketReader", output, template);
+            // Build packet_reader.go
+            this.BuildTarget("PacketReader", output, template, ConventionType.Underscore);
 
             // Build packet_writer.go
             this.BuildTarget("PacketWriter", output, template, ConventionType.Underscore);
-
-            // Build TcpEngine.js
-            //this.BuildTarget("TcpEngine", output, template);
 
             // Build tcp_channel.go
             this.BuildTarget("TcpChannel", output, template, ConventionType.Underscore);

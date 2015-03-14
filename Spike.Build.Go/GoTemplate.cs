@@ -227,106 +227,97 @@ namespace Spike.Build.Go
                     "t {\r\n\tbuffer *bytes.Buffer\r\n}\r\n\r\n// Constructs a new writer\r\nfunc NewPacketWrite" +
                     "r() *PacketWriter {\r\n\twriter := new(PacketWriter)\r\n\twriter.buffer = new(bytes.Bu" +
                     "ffer)\r\n\treturn writer\r\n}\r\n\r\n// Compresses the packet body\r\nfunc (this *PacketWri" +
-                    "ter) Compress(){\r\n\tthis.buffer = NewBuffer(Compress(this.buffer.Bytes()))\r\n}\r\n\r\n" +
-                    "\r\n// ------------------ Types ------------------------\r\n\r\n// Writes a value to t" +
-                    "he underlying buffer.\r\nfunc (this *PacketWriter) writeBoolean(value bool) error " +
-                    "{\r\n\tvar b byte;\r\n\tif(value){\r\n\t\tb = 1\r\n\t}\r\n\treturn binary.Write(this.buffer, bin" +
-                    "ary.BigEndian, b)\r\n}\r\n\r\n// Writes a value to the underlying buffer.\r\nfunc (this " +
-                    "*PacketWriter) writeByte(value byte) error {\r\n\treturn binary.Write(this.buffer, " +
-                    "binary.BigEndian, value)\r\n}\r\n\r\n// Writes a value to the underlying buffer.\r\nfunc" +
-                    " (this *PacketWriter) writeSByte(value int8) error {\r\n\treturn binary.Write(this." +
-                    "buffer, binary.BigEndian, value)\r\n}\r\n\r\n// Writes a value to the underlying buffe" +
-                    "r.\r\nfunc (this *PacketWriter) writeInt8(value int8) error {\r\n\treturn binary.Writ" +
-                    "e(this.buffer, binary.BigEndian, value)\r\n}\r\n\r\n// Writes a value to the underlyin" +
-                    "g buffer.\r\nfunc (this *PacketWriter) writeInt16(value int16) error {\r\n\treturn bi" +
-                    "nary.Write(this.buffer, binary.BigEndian, value)\r\n}\r\n\r\n// Writes a value to the " +
-                    "underlying buffer.\r\nfunc (this *PacketWriter) writeInt32(value int32) error {\r\n\t" +
-                    "return binary.Write(this.buffer, binary.BigEndian, value)\r\n}\r\n\r\n// Writes a valu" +
-                    "e to the underlying buffer.\r\nfunc (this *PacketWriter) writeInt64(value int64) e" +
-                    "rror {\r\n\treturn binary.Write(this.buffer, binary.BigEndian, value)\r\n}\r\n\r\n// Writ" +
-                    "es a value to the underlying buffer.\r\nfunc (this *PacketWriter) writeUInt8(value" +
-                    " uint8) error {\r\n\treturn binary.Write(this.buffer, binary.BigEndian, value)\r\n}\r\n" +
-                    "\r\n// Writes a value to the underlying buffer.\r\nfunc (this *PacketWriter) writeUI" +
-                    "nt16(value uint16) error {\r\n\treturn binary.Write(this.buffer, binary.BigEndian, " +
-                    "value)\r\n}\r\n\r\n// Writes a value to the underlying buffer.\r\nfunc (this *PacketWrit" +
-                    "er) writeUInt32(value uint32) error {\r\n\treturn binary.Write(this.buffer, binary." +
-                    "BigEndian, value)\r\n}\r\n\r\n// Writes a value to the underlying buffer.\r\nfunc (this " +
-                    "*PacketWriter) writeUInt64(value uint64) error {\r\n\treturn binary.Write(this.buff" +
-                    "er, binary.BigEndian, value)\r\n}\r\n\r\n// Writes a value to the underlying buffer.\r\n" +
-                    "func (this *PacketWriter) writeSingle(value float32) error {\r\n\treturn binary.Wri" +
-                    "te(this.buffer, binary.BigEndian, value)\r\n}\r\n\r\n// Writes a value to the underlyi" +
-                    "ng buffer.\r\nfunc (this *PacketWriter) writeDouble(value float64) error {\r\n\tretur" +
-                    "n binary.Write(this.buffer, binary.BigEndian, value)\r\n}\r\n\r\n// Writes a value to " +
-                    "the underlying buffer.\r\nfunc (this *PacketWriter) writeString(value string) erro" +
-                    "r {\r\n\tthis.writeInt32(int32(len(value)))\r\n\tthis.buffer.WriteString(value)\r\n\tretu" +
-                    "rn nil\r\n}\r\n\r\n// Writes a value to the underlying buffer.\r\nfunc (this *PacketWrit" +
-                    "er) writeDateTime(value time.Time) error {\r\n\tthis.writeInt16(int16(value.Year())" +
-                    ")\r\n\tthis.writeInt16(int16(value.Month()))\r\n\tthis.writeInt16(int16(value.Day()))\r" +
-                    "\n\tthis.writeInt16(int16(value.Hour()))\r\n\tthis.writeInt16(int16(value.Minute()))\r" +
-                    "\n\tthis.writeInt16(int16(value.Second()))\r\n\tthis.writeInt16(int16(value.Nanosecon" +
-                    "d() / 1000000))\r\n\treturn nil\r\n}\r\n");
+                    "ter) Compress(){\r\n\tthis.buffer = bytes.NewBuffer(Compress(this.buffer.Bytes()))\r" +
+                    "\n}\r\n\r\n\r\n// ------------------ Types ------------------------\r\n\r\n// Writes a valu" +
+                    "e to the underlying buffer.\r\nfunc (this *PacketWriter) writeBoolean(value bool) " +
+                    "error {\r\n\tvar b byte;\r\n\tif(value){\r\n\t\tb = 1\r\n\t}\r\n\treturn binary.Write(this.buffe" +
+                    "r, binary.BigEndian, b)\r\n}\r\n\r\n// Writes a value to the underlying buffer.\r\nfunc " +
+                    "(this *PacketWriter) writeByte(value byte) error {\r\n\treturn binary.Write(this.bu" +
+                    "ffer, binary.BigEndian, value)\r\n}\r\n\r\n// Writes a value to the underlying buffer." +
+                    "\r\nfunc (this *PacketWriter) writeSByte(value int8) error {\r\n\treturn binary.Write" +
+                    "(this.buffer, binary.BigEndian, value)\r\n}\r\n\r\n// Writes a value to the underlying" +
+                    " buffer.\r\nfunc (this *PacketWriter) writeInt8(value int8) error {\r\n\treturn binar" +
+                    "y.Write(this.buffer, binary.BigEndian, value)\r\n}\r\n\r\n// Writes a value to the und" +
+                    "erlying buffer.\r\nfunc (this *PacketWriter) writeInt16(value int16) error {\r\n\tret" +
+                    "urn binary.Write(this.buffer, binary.BigEndian, value)\r\n}\r\n\r\n// Writes a value t" +
+                    "o the underlying buffer.\r\nfunc (this *PacketWriter) writeInt32(value int32) erro" +
+                    "r {\r\n\treturn binary.Write(this.buffer, binary.BigEndian, value)\r\n}\r\n\r\n// Writes " +
+                    "a value to the underlying buffer.\r\nfunc (this *PacketWriter) writeInt64(value in" +
+                    "t64) error {\r\n\treturn binary.Write(this.buffer, binary.BigEndian, value)\r\n}\r\n\r\n/" +
+                    "/ Writes a value to the underlying buffer.\r\nfunc (this *PacketWriter) writeUInt8" +
+                    "(value uint8) error {\r\n\treturn binary.Write(this.buffer, binary.BigEndian, value" +
+                    ")\r\n}\r\n\r\n// Writes a value to the underlying buffer.\r\nfunc (this *PacketWriter) w" +
+                    "riteUInt16(value uint16) error {\r\n\treturn binary.Write(this.buffer, binary.BigEn" +
+                    "dian, value)\r\n}\r\n\r\n// Writes a value to the underlying buffer.\r\nfunc (this *Pack" +
+                    "etWriter) writeUInt32(value uint32) error {\r\n\treturn binary.Write(this.buffer, b" +
+                    "inary.BigEndian, value)\r\n}\r\n\r\n// Writes a value to the underlying buffer.\r\nfunc " +
+                    "(this *PacketWriter) writeUInt64(value uint64) error {\r\n\treturn binary.Write(thi" +
+                    "s.buffer, binary.BigEndian, value)\r\n}\r\n\r\n// Writes a value to the underlying buf" +
+                    "fer.\r\nfunc (this *PacketWriter) writeSingle(value float32) error {\r\n\treturn bina" +
+                    "ry.Write(this.buffer, binary.BigEndian, value)\r\n}\r\n\r\n// Writes a value to the un" +
+                    "derlying buffer.\r\nfunc (this *PacketWriter) writeDouble(value float64) error {\r\n" +
+                    "\treturn binary.Write(this.buffer, binary.BigEndian, value)\r\n}\r\n\r\n// Writes a val" +
+                    "ue to the underlying buffer.\r\nfunc (this *PacketWriter) writeString(value string" +
+                    ") error {\r\n\tthis.writeInt32(int32(len(value)))\r\n\tthis.buffer.WriteString(value)\r" +
+                    "\n\treturn nil\r\n}\r\n\r\n// Writes a value to the underlying buffer.\r\nfunc (this *Pack" +
+                    "etWriter) writeDateTime(value time.Time) error {\r\n\tthis.writeInt16(int16(value.Y" +
+                    "ear()))\r\n\tthis.writeInt16(int16(value.Month()))\r\n\tthis.writeInt16(int16(value.Da" +
+                    "y()))\r\n\tthis.writeInt16(int16(value.Hour()))\r\n\tthis.writeInt16(int16(value.Minut" +
+                    "e()))\r\n\tthis.writeInt16(int16(value.Second()))\r\n\tthis.writeInt16(int16(value.Nan" +
+                    "osecond() / 1000000))\r\n\treturn nil\r\n}\r\n\r\n\r\n// Writes a value to the underlying b" +
+                    "uffer.\r\nfunc (this *PacketWriter) writeDynamicType(value interface{}) error {\r\n");
             
-            #line 116 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketWriter.t4"
- var types = new string[]{
-	"Boolean", "Byte", "SByte", "Int16", "Int32", "Int64", "UInt16", "UInt32", "UInt64", "Single", "Double", "DateTime", "String"
-}; 
-            
-            #line default
-            #line hidden
-            this.Write("\r\n// Writes a value to the underlying buffer.\r\nfunc (this *PacketWriter) writeDyn" +
-                    "amicType(value interface{}) error {\r\n");
-            
-            #line 122 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketWriter.t4"
- foreach(var type in types){ 
+            #line 120 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketWriter.t4"
+ foreach(var type in Model.Types){ 
             
             #line default
             #line hidden
             this.Write("\tif v, ok := value.(");
             
-            #line 123 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketWriter.t4"
+            #line 121 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketWriter.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(GoBuilder.GetNativeType(type)));
             
             #line default
             #line hidden
             this.Write("); ok {\r\n\t\tthis.writeBoolean(true)\r\n\t\tthis.writeString(\"");
             
-            #line 125 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketWriter.t4"
+            #line 123 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketWriter.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(type));
             
             #line default
             #line hidden
             this.Write("\")\r\n\t\tthis.write");
             
-            #line 126 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketWriter.t4"
+            #line 124 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketWriter.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(type));
             
             #line default
             #line hidden
             this.Write("(v)\r\n\t\treturn nil\r\n\t}\r\n\r\n");
             
-            #line 130 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketWriter.t4"
+            #line 128 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketWriter.t4"
  } 
             
             #line default
             #line hidden
             this.Write("   \treturn errors.New(\"spike.writeDynamicType: incompatible type\")\r\n}\r\n\r\n");
             
-            #line 134 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketWriter.t4"
- foreach(var type in types){ 
+            #line 132 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketWriter.t4"
+ foreach(var type in Model.Types){ 
             
             #line default
             #line hidden
             this.Write("// Writes a value to the underlying buffer.\r\nfunc (this *PacketWriter) writeListO" +
                     "f");
             
-            #line 136 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketWriter.t4"
+            #line 134 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketWriter.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(type));
             
             #line default
             #line hidden
             this.Write("(value []");
             
-            #line 136 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketWriter.t4"
+            #line 134 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketWriter.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(GoBuilder.GetNativeType(type)));
             
             #line default
@@ -334,14 +325,14 @@ namespace Spike.Build.Go
             this.Write(") error {\r\n\tthis.writeInt32(int32(len(value)))\r\n\tfor _, v := range value{\r\n\t\terr " +
                     ":= this.write");
             
-            #line 139 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketWriter.t4"
+            #line 137 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketWriter.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(type));
             
             #line default
             #line hidden
             this.Write("(v)\r\n\t\tif (err != nil){\r\n\t\t\treturn err\r\n\t\t}\r\n\t}\r\n\treturn nil\r\n}\r\n\r\n");
             
-            #line 147 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketWriter.t4"
+            #line 145 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketWriter.t4"
  } 
             
             #line default
@@ -365,9 +356,107 @@ func (this *PacketWriter) writeListOfDynamicType(value []interface{}) error {
             
             #line default
             #line hidden
+            
+            #line 12 "D:\Workspace\Spike.Build\Spike.Build.Go\GoTemplate.tt"
+ if(Target == null || Target == "PacketReader") { 
+            
+            #line default
+            #line hidden
+            this.Write(" ");
+            this.Write("import (\r\n\t\"encoding/binary\"\r\n\t\"bytes\"\r\n\t\"time\"\r\n) \r\n\r\n\r\n// Represents a packet r" +
+                    "eader that can be used to deserialize packets.\r\ntype PacketReader struct {\r\n\tbuf" +
+                    "fer *bytes.Buffer\r\n}\r\n\r\n// Constructs a new reader on the buffer slice\r\nfunc New" +
+                    "PacketReader(buf []byte) *PacketWriter {\r\n\treader := new(PacketWriter)\r\n\treader." +
+                    "buffer = bytes.NewBuffer(buf)\r\n\treturn reader\r\n}\r\n\r\n// Decompresses the packet b" +
+                    "ody\r\nfunc (this *PacketReader) Decompress(){\r\n\tthis.buffer = bytes.NewBuffer(Dec" +
+                    "ompress(this.buffer.Bytes()))\r\n}\r\n\r\n// ------------------ Types ----------------" +
+                    "--------\r\n\r\n\r\n// Reads a value from the underlying buffer.\r\nfunc (this *PacketRe" +
+                    "ader) readBoolean() (value bool, err error) {\r\n\terr = binary.Read(this.buffer, b" +
+                    "inary.BigEndian, &value)\r\n\treturn\r\n}\r\n\r\n// Reads a value from the underlying buf" +
+                    "fer.\r\nfunc (this *PacketReader) readByte() (value byte, err error) {\r\n\terr = bin" +
+                    "ary.Read(this.buffer, binary.BigEndian, &value)\r\n\treturn\r\n}\r\n\r\n// Reads a value " +
+                    "from the underlying buffer.\r\nfunc (this *PacketReader) readSByte() (value int8, " +
+                    "err error) {\r\n\terr = binary.Read(this.buffer, binary.BigEndian, &value)\r\n\treturn" +
+                    "\r\n}\r\n\r\n// Reads a value from the underlying buffer.\r\nfunc (this *PacketReader) r" +
+                    "eadInt16() (value int16, err error) {\r\n\terr = binary.Read(this.buffer, binary.Bi" +
+                    "gEndian, &value)\r\n\treturn\r\n}\r\n\r\n// Reads a value from the underlying buffer.\r\nfu" +
+                    "nc (this *PacketReader) readInt32() (value int32, err error) {\r\n\terr = binary.Re" +
+                    "ad(this.buffer, binary.BigEndian, &value)\r\n\treturn\r\n}\r\n\r\n// Reads a value from t" +
+                    "he underlying buffer.\r\nfunc (this *PacketReader) readInt64() (value int64, err e" +
+                    "rror) {\r\n\terr = binary.Read(this.buffer, binary.BigEndian, &value)\r\n\treturn\r\n}\r\n" +
+                    "\r\n// Reads a value from the underlying buffer.\r\nfunc (this *PacketReader) readUI" +
+                    "nt16() (value uint16, err error) {\r\n\terr = binary.Read(this.buffer, binary.BigEn" +
+                    "dian, &value)\r\n\treturn\r\n}\r\n\r\n// Reads a value from the underlying buffer.\r\nfunc " +
+                    "(this *PacketReader) readUInt32() (value uint32, err error) {\r\n\terr = binary.Rea" +
+                    "d(this.buffer, binary.BigEndian, &value)\r\n\treturn\r\n}\r\n\r\n// Reads a value from th" +
+                    "e underlying buffer.\r\nfunc (this *PacketReader) readUInt64() (value uint64, err " +
+                    "error) {\r\n\terr = binary.Read(this.buffer, binary.BigEndian, &value)\r\n\treturn\r\n}\r" +
+                    "\n\r\n// Reads a value from the underlying buffer.\r\nfunc (this *PacketReader) readS" +
+                    "ingle() (value float32, err error) {\r\n\terr = binary.Read(this.buffer, binary.Big" +
+                    "Endian, &value)\r\n\treturn\r\n}\r\n\r\n// Reads a value from the underlying buffer.\r\nfun" +
+                    "c (this *PacketReader) readDouble() (value float64, err error) {\r\n\terr = binary." +
+                    "Read(this.buffer, binary.BigEndian, &value)\r\n\treturn\r\n}\r\n\r\n// Reads a value from" +
+                    " the underlying buffer.\r\nfunc (this *PacketReader) readDateTime() (value time.Ti" +
+                    "me, err error) {\r\n\tY, _ := this.readInt16()\r\n\tM, _ := this.readInt16()\r\n\td, _ :=" +
+                    " this.readInt16()\r\n\th, _ := this.readInt16()\r\n\tm, _ := this.readInt16()\r\n\ts, _ :" +
+                    "= this.readInt16()\r\n\tms,_ := this.readInt16()\r\n\tvalue = time.Date(int(Y), time.M" +
+                    "onth(int(M)), int(d), int(h), int(m), int(s), int(ms) * 1000000, time.UTC)\r\n\tret" +
+                    "urn\r\n}\r\n\r\n// Reads a value from the underlying buffer.\r\nfunc (this *PacketReader" +
+                    ") readString() (value string, err error) {\r\n\tsize, _ := this.readInt32()\r\n\tbuf  " +
+                    ":= make([]byte, size)\r\n\tbinary.Read(this.buffer, binary.BigEndian, &buf)\r\n\tvalue" +
+                    " = string(buf[:size])\r\n\treturn\r\n}\r\n\r\n\r\n");
+            
+            #line 117 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+ foreach(var type in Model.Types){ 
+            
+            #line default
+            #line hidden
+            this.Write("// Reads a value from the underlying buffer.\r\nfunc (this *PacketReader) readListO" +
+                    "f");
+            
+            #line 119 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            this.Write(this.ToStringHelper.ToStringWithCulture(type));
+            
+            #line default
+            #line hidden
+            this.Write("() (value []");
+            
+            #line 119 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            this.Write(this.ToStringHelper.ToStringWithCulture(GoBuilder.GetNativeType(type)));
+            
+            #line default
+            #line hidden
+            this.Write(", err error)  {\r\n\tsize, _ := this.readInt32()\r\n\tvalue = make([]");
+            
+            #line 121 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            this.Write(this.ToStringHelper.ToStringWithCulture(GoBuilder.GetNativeType(type)));
+            
+            #line default
+            #line hidden
+            this.Write(", size)\r\n\tfor i := 0; i < int(size); i++ {\r\n\t\tvalue[i], _ = this.read");
+            
+            #line 123 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            this.Write(this.ToStringHelper.ToStringWithCulture(type));
+            
+            #line default
+            #line hidden
+            this.Write("()\r\n\t}\r\n\treturn\r\n}\r\n\r\n");
+            
+            #line 128 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+ } 
+            
+            #line default
+            #line hidden
+            this.Write(" ");
+            
+            #line 12 "D:\Workspace\Spike.Build\Spike.Build.Go\GoTemplate.tt"
+ } 
+            
+            #line default
+            #line hidden
             this.Write("\r\n");
             
-            #line 13 "D:\Workspace\Spike.Build\Spike.Build.Go\GoTemplate.tt"
+            #line 14 "D:\Workspace\Spike.Build\Spike.Build.Go\GoTemplate.tt"
  if(Target == null || Target == "TcpChannel") { 
             
             #line default
@@ -496,13 +585,13 @@ func (this *PacketWriter) writeListOfDynamicType(value []interface{}) error {
             #line hidden
             this.Write(" ");
             
-            #line 13 "D:\Workspace\Spike.Build\Spike.Build.Go\GoTemplate.tt"
+            #line 14 "D:\Workspace\Spike.Build\Spike.Build.Go\GoTemplate.tt"
  } 
             
             #line default
             #line hidden
             
-            #line 14 "D:\Workspace\Spike.Build\Spike.Build.Go\GoTemplate.tt"
+            #line 15 "D:\Workspace\Spike.Build\Spike.Build.Go\GoTemplate.tt"
  if(Target == null || Target == "ComplexType") { 
             
             #line default
@@ -577,7 +666,7 @@ func (this *PacketWriter) writeListOfDynamicType(value []interface{}) error {
             #line hidden
             this.Write("}");
             
-            #line 14 "D:\Workspace\Spike.Build\Spike.Build.Go\GoTemplate.tt"
+            #line 15 "D:\Workspace\Spike.Build\Spike.Build.Go\GoTemplate.tt"
  } 
             
             #line default
@@ -586,7 +675,7 @@ func (this *PacketWriter) writeListOfDynamicType(value []interface{}) error {
             return this.GenerationEnvironment.ToString();
         }
         
-        #line 16 "D:\Workspace\Spike.Build\Spike.Build.Go\GoTemplate.tt"
+        #line 17 "D:\Workspace\Spike.Build\Spike.Build.Go\GoTemplate.tt"
  public void Clear(){
 	GenerationEnvironment.Clear();
 } 

@@ -285,6 +285,7 @@
       <LastGenOutput>CLZF.cs</LastGenOutput>
     </None>
     <None Include="Spike.Build.Go\Packet.t4" />
+    <None Include="Spike.Build.Go\PacketReader.t4" />
     <None Include="Spike.Build.Go\PacketWriter.t4" />
     <None Include="Spike.Build.Go\TcpChannel.t4" />
     <None Include="Spike.Build.JavaScript\JavaScriptTemplate.tt">

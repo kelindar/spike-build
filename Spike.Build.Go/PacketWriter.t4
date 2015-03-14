@@ -113,13 +113,11 @@ func (this *PacketWriter) writeDateTime(value time.Time) error {
 	this.writeInt16(int16(value.Nanosecond() / 1000000))
 	return nil
 }
-<# var types = new string[]{
-	"Boolean", "Byte", "SByte", "Int16", "Int32", "Int64", "UInt16", "UInt32", "UInt64", "Single", "Double", "DateTime", "String"
-}; #>
+
 
 // Writes a value to the underlying buffer.
 func (this *PacketWriter) writeDynamicType(value interface{}) error {
-<# foreach(var type in types){ #>
+<# foreach(var type in Model.Types){ #>
 	if v, ok := value.(<#=GoBuilder.GetNativeType(type)#>); ok {
 		this.writeBoolean(true)
 		this.writeString("<#=type#>")
@@ -131,7 +129,7 @@ func (this *PacketWriter) writeDynamicType(value interface{}) error {
    	return errors.New("spike.writeDynamicType: incompatible type")
 }
 
-<# foreach(var type in types){ #>
+<# foreach(var type in Model.Types){ #>
 // Writes a value to the underlying buffer.
 func (this *PacketWriter) writeListOf<#=type#>(value []<#=GoBuilder.GetNativeType(type)#>) error {
 	this.writeInt32(int32(len(value)))
