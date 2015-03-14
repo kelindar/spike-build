@@ -404,9 +404,55 @@ func (this *PacketWriter) writeListOfDynamicType(value []interface{}) error {
                     "urn\r\n}\r\n\r\n// Reads a value from the underlying buffer.\r\nfunc (this *PacketReader" +
                     ") readString() (value string, err error) {\r\n\tsize, _ := this.readInt32()\r\n\tbuf  " +
                     ":= make([]byte, size)\r\n\tbinary.Read(this.buffer, binary.BigEndian, &buf)\r\n\tvalue" +
-                    " = string(buf[:size])\r\n\treturn\r\n}\r\n\r\n\r\n");
+                    " = string(buf[:size])\r\n\treturn\r\n}\r\n\r\n// Reads a value from the underlying buffer" +
+                    ".\r\nfunc (this *PacketReader) readDynamicType() (value interface{}, err error) {\r" +
+                    "\n\tvalid, err := this.readBoolean()\r\n\tif !valid { \r\n\t\treturn nil, err \r\n\t}\r\n\r\n\tna" +
+                    "me, err := this.readString()\r\n\tswitch name {\r\n");
             
-            #line 117 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            #line 125 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+ foreach(var type in Model.Types){ 
+            
+            #line default
+            #line hidden
+            this.Write("\t\tcase \"");
+            
+            #line 126 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            this.Write(this.ToStringHelper.ToStringWithCulture(type));
+            
+            #line default
+            #line hidden
+            this.Write("\": {\r\n\t\t\tvalue, err = this.read");
+            
+            #line 127 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            this.Write(this.ToStringHelper.ToStringWithCulture(type));
+            
+            #line default
+            #line hidden
+            this.Write("()\r\n\t\t\treturn\r\n\t\t}\r\n");
+            
+            #line 130 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+ } 
+            
+            #line default
+            #line hidden
+            this.Write(@"	}
+
+	return nil, err
+}
+
+// Reads a value from the underlying buffer.
+func (this *PacketReader) readListOfDynamicType() (value []interface{}, err error)  {
+	size, _ := this.readInt32()
+	value = make([]interface{}, size)
+	for i := 0; i < int(size); i++ {
+		value[i], _ = this.readDynamicType()
+	}
+	return
+}
+
+");
+            
+            #line 146 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
  foreach(var type in Model.Types){ 
             
             #line default
@@ -414,35 +460,35 @@ func (this *PacketWriter) writeListOfDynamicType(value []interface{}) error {
             this.Write("// Reads a value from the underlying buffer.\r\nfunc (this *PacketReader) readListO" +
                     "f");
             
-            #line 119 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            #line 148 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(type));
             
             #line default
             #line hidden
             this.Write("() (value []");
             
-            #line 119 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            #line 148 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(GoBuilder.GetNativeType(type)));
             
             #line default
             #line hidden
             this.Write(", err error)  {\r\n\tsize, _ := this.readInt32()\r\n\tvalue = make([]");
             
-            #line 121 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            #line 150 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(GoBuilder.GetNativeType(type)));
             
             #line default
             #line hidden
             this.Write(", size)\r\n\tfor i := 0; i < int(size); i++ {\r\n\t\tvalue[i], _ = this.read");
             
-            #line 123 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            #line 152 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(type));
             
             #line default
             #line hidden
             this.Write("()\r\n\t}\r\n\treturn\r\n}\r\n\r\n");
             
-            #line 128 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            #line 157 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
  } 
             
             #line default

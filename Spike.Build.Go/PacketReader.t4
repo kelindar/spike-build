@@ -113,6 +113,35 @@ func (this *PacketReader) readString() (value string, err error) {
 	return
 }
 
+// Reads a value from the underlying buffer.
+func (this *PacketReader) readDynamicType() (value interface{}, err error) {
+	valid, err := this.readBoolean()
+	if !valid { 
+		return nil, err 
+	}
+
+	name, err := this.readString()
+	switch name {
+<# foreach(var type in Model.Types){ #>
+		case "<#=type#>": {
+			value, err = this.read<#=type#>()
+			return
+		}
+<# } #>
+	}
+
+	return nil, err
+}
+
+// Reads a value from the underlying buffer.
+func (this *PacketReader) readListOfDynamicType() (value []interface{}, err error)  {
+	size, _ := this.readInt32()
+	value = make([]interface{}, size)
+	for i := 0; i < int(size); i++ {
+		value[i], _ = this.readDynamicType()
+	}
+	return
+}
 
 <# foreach(var type in Model.Types){ #>
 // Reads a value from the underlying buffer.
