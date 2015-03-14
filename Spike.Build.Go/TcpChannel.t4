@@ -1,0 +1,157 @@
+﻿import (
+	"net"
+	"fmt"
+	"io"
+	"crypto/tls"
+	"sync"
+	"time"
+) 
+
+type ChannelState int
+const (
+	Closed ChannelState = iota
+	Open
+)
+
+// Represents a TCP/IP Channel to a Spike Engine server.
+type TcpChannel struct {
+	state ChannelState
+	conn net.Conn
+	pipe chan []byte
+	guard *sync.Mutex
+}
+
+
+// Connects to the address on the named network.
+func (this *TcpChannel) Connect(address string, bufferSize int) (net.Conn, error) {
+	// Default is 8K
+	if (bufferSize == 0){
+		bufferSize = 8192
+	}
+
+	// Dial the TCP/IP
+	conn, err := net.Dial("tcp", address)
+	if err != nil {
+		return nil, err
+	}
+
+	this.state = Open
+	this.conn = conn
+	this.guard = new(sync.Mutex)
+
+	// Listen
+	go this.listen(bufferSize)
+	return conn, nil
+}
+
+// Dial connects to the given network address using net.Dial
+// and then initiates a TLS handshake, returning the resulting
+// TLS connection.
+func (this *TcpChannel) ConnectTLS(address string, bufferSize int, config *tls.Config) (net.Conn, error) {
+	// Default is 8K
+	if (bufferSize == 0){
+		bufferSize = 8192
+	}
+
+	// Dial the TCP/IP
+	conn, err := tls.Dial("tcp", address, config)
+	if err != nil {
+		return nil, err
+	}
+
+	this.state = Open
+	this.conn = conn
+
+	// Listen
+	go this.listen(bufferSize)
+	return conn, nil
+}
+
+
+// Disconnects from the remote endpoint
+func (this *TcpChannel) Disconnect() (error){
+	if (this.state != Open || this.conn == nil){
+		return nil
+	}
+
+	return this.conn.Close()
+}
+
+
+// Reads from the remote server
+func (this *TcpChannel) listen(bufferSize int) error {
+	buffer := make([]byte, bufferSize)
+
+	for {
+
+		// Read and close the connection on error
+        n, err := this.conn.Read(buffer)
+        if err != nil {
+            if err != io.EOF {
+                this.conn.Close()
+        		this.state = Closed
+        		return err
+            }
+            
+            time.Sleep(time.Millisecond * 10)
+        }
+        
+        
+		if (n > 0){
+			data := buffer[:n]
+			fmt.Println(data)
+			fmt.Println("got", n, "bytes.")
+			//buf = append(buf, tmp[:n]...)
+		}
+
+    }
+
+    return nil
+}
+
+
+
+// Sends a packet using the writer
+func (this *TcpChannel) sendPacket(key uint32, writer *PacketWriter){
+	len := writer.buffer.Len() + 4
+
+	header := make([]byte, 8)
+	header[0] = byte(len >> 24)
+	header[1] = byte(len >> 16)
+	header[2] = byte(len >> 8)
+	header[3] = byte(len)
+	header[4] = byte(key >> 24)
+	header[5] = byte(key >> 16)
+	header[6] = byte(key >> 8)
+	header[7] = byte(key)
+
+	// Make sure this part is synchronized
+	this.guard.Lock()
+	defer this.guard.Unlock()
+	this.conn.Write(header)
+	writer.buffer.WriteTo(this.conn)
+}
+
+
+<# foreach(var send in Model.Sends){ #>		
+func (this *TcpChannel) <#= send.Name #>(<#	
+	var first = true;
+	foreach(var member in send.Members){
+		if(!first){
+			Write(", ");
+		}
+
+		Write(member.Name.CamelCase());
+		Write(" ");
+		Write(GoBuilder.GetNativeType(member));
+		first = false;
+	}
+#>){
+	writer := NewPacketWriter()
+<# foreach(var member in send.Members){ #>
+	writer.write<#= member.Type #>(<#= member.Name.CamelCase() #>)
+<# } #>
+	// Compress: <#= send.Compressed ? "true" : "false" #>
+	this.sendPacket(0x<#= send.Id.ToString("X")#> , writer)
+}		 
+<# } #>

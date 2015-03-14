@@ -29,6 +29,7 @@ using Spike.Build.CSharp5;
 using Spike.Build.Java;
 using System.IO;
 using Spike.Build.JavaScript;
+using Spike.Build.Go;
 
 
 namespace Spike.Build
@@ -66,7 +67,8 @@ namespace Spike.Build
             { "Java", new JavaBuilder() },
             { "WinRT", new WinRTBuilder() },
             { "Xamarin", new XamarinBuilder() },
-            { "JavaScript", new JavaScriptBuilder()}
+            { "JavaScript", new JavaScriptBuilder() },
+            { "Go", new GoBuilder() }
         };
 
         static void Main(string[] args)

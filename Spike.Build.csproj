@@ -78,6 +78,12 @@
     </Compile>
     <None Include="Spike.Build.CSharp5\PacketReader.t4" />
     <None Include="Spike.Build.CSharp5\PacketWriter.t4" />
+    <Compile Include="Spike.Build.Go\GoTemplate.cs">
+      <DependentUpon>GoTemplate.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Spike.Build.Go\GoBuilder.cs" />
     <Compile Include="Spike.Build.JavaScript\JavaScriptBuilder.cs" />
     <Compile Include="Spike.Build.JavaScript\JavaScriptTemplate.cs">
       <DependentUpon>JavaScriptTemplate.tt</DependentUpon>
@@ -269,6 +275,18 @@
     <None Include="Spike.Build.CSharp5\Packet.t4" />
     <None Include="Spike.Build.CSharp5\TcpChannelBase.t4" />
     <None Include="Spike.Build.CSharp5\TcpChannel.t4" />
+    <None Include="Spike.Build.Go\ComplexType.t4" />
+    <None Include="Spike.Build.Go\GoTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>GoTemplate.cs</LastGenOutput>
+      <CustomToolNamespace>Spike.Build.Go</CustomToolNamespace>
+    </None>
+    <None Include="Spike.Build.Go\PacketCompressor.t4">
+      <LastGenOutput>CLZF.cs</LastGenOutput>
+    </None>
+    <None Include="Spike.Build.Go\Packet.t4" />
+    <None Include="Spike.Build.Go\PacketWriter.t4" />
+    <None Include="Spike.Build.Go\TcpChannel.t4" />
     <None Include="Spike.Build.JavaScript\JavaScriptTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>JavaScriptTemplate.cs</LastGenOutput>

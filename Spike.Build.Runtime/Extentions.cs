@@ -28,6 +28,28 @@ namespace Spike.Build
 {
     internal static class Extentions
     {
+        /// <summary>
+        /// Sets the formatting convention style.
+        /// </summary>
+        /// <param name="text">The text to apply the formatting to.</param>
+        /// <param name="format">The type of the formatting to apply.</param>
+        /// <returns>The formatted string.</returns>
+        public static string Convention(this string text, ConventionType format)
+        {
+            switch (format)
+            {
+                case ConventionType.PascalCase: return text.PascalCase();
+                case ConventionType.CamelCase: return text.CamelCase();
+                case ConventionType.Underscore: return text.Underscore();
+                default: return text;
+            }
+        }
+
+        public static string Underscore(this string text)
+        {
+            return string.Concat(text.Select((x, i) => i > 0 && char.IsUpper(x) ? "_" + x.ToString() : x.ToString())).ToLower();
+        }
+
         public static string CamelCase(this string text)
         {
             if (text != null && text.Length > 0 && char.IsUpper(text[0]))
@@ -39,6 +61,7 @@ namespace Spike.Build
             return text;
         }
 
+        
         public static string PascalCase(this string text)
         {
             if (text != null && text.Length > 0 && char.IsLower(text[0]))

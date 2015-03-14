@@ -91,11 +91,11 @@ namespace Spike.Build
         /// <param name="target">The target name.</param>
         /// <param name="outputDirectory">The output directory for the file.</param>
         /// <param name="template">The template to use.</param>
-        protected void BuildTarget(string target, string outputDirectory, ITemplate template)
+        protected void BuildTarget(string target, string outputDirectory, ITemplate template, ConventionType format = ConventionType.PascalCase )
         {
             template.Target = target;
             File.WriteAllText(
-                Path.Combine(outputDirectory, target + this.Extension),
+                Path.Combine(outputDirectory, target.Convention(format) + this.Extension),
                 template.AsText(this.Indent)
                 );
             template.Clear();
@@ -107,11 +107,11 @@ namespace Spike.Build
         /// <param name="operation">The target operation.</param>
         /// <param name="outputDirectory">The output directory for the file.</param>
         /// <param name="template">The template to use.</param>
-        protected void BuildOperation(Operation operation, string outputDirectory, ITemplate template)
+        protected void BuildOperation(Operation operation, string outputDirectory, ITemplate template, ConventionType format = ConventionType.PascalCase)
         {
             template.TargetOperation = operation;
             File.WriteAllText(
-                Path.Combine(outputDirectory, operation.Name + this.Extension),
+                Path.Combine(outputDirectory, operation.Name.Convention(format) + this.Extension),
                 template.AsText(this.Indent)
                 );
             template.Clear();
@@ -123,14 +123,35 @@ namespace Spike.Build
         /// <param name="type">The target type.</param>
         /// <param name="outputDirectory">The output directory for the file.</param>
         /// <param name="template">The template to use.</param>
-        protected void BuildType(CustomType type, string outputDirectory, ITemplate template)
+        protected void BuildType(CustomType type, string outputDirectory, ITemplate template, ConventionType format = ConventionType.PascalCase)
         {
             template.TargetType = type;
             File.WriteAllText(
-                Path.Combine(outputDirectory, type.Name + this.Extension),
+                Path.Combine(outputDirectory, type.Name.Convention(format) + this.Extension),
                 template.AsText(this.Indent)
                 );
             template.Clear();
         }
+    }
+
+    /// <summary>
+    /// Represents the name formatting to apply
+    /// </summary>
+    public enum ConventionType
+    {
+        /// <summary>
+        /// String formatting for "PascalCase"
+        /// </summary>
+        PascalCase,
+
+        /// <summary>
+        /// String formatting for "camelCase"
+        /// </summary>
+        CamelCase,
+
+        /// <summary>
+        /// String formatting for "under_score"
+        /// </summary>
+        Underscore
     }
 }
