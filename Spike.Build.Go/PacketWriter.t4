@@ -18,6 +18,11 @@ func NewPacketWriter() *PacketWriter {
 	return writer
 }
 
+// Compresses the packet body
+func (this *PacketWriter) Compress(){
+	this.buffer = bytes.NewBuffer(Compress(this.buffer.Bytes()))
+}
+
 
 // ------------------ Types ------------------------
 

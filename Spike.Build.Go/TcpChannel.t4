@@ -151,7 +151,9 @@ func (this *TcpChannel) <#= send.Name #>(<#
 <# foreach(var member in send.Members){ #>
 	writer.write<#= member.Type #>(<#= member.Name.CamelCase() #>)
 <# } #>
-	// Compress: <#= send.Compressed ? "true" : "false" #>
+<# if(send.Compressed){ #>
+	writer.Compress()
+<# } #>
 	this.sendPacket(0x<#= send.Id.ToString("X")#> , writer)
 }		 
 <# } #>
