@@ -155,3 +155,25 @@ func (this *PacketWriter) writeListOfDynamicType(value []interface{}) error {
 	}
 	return nil
 }
+
+<# foreach(var customType in Model.CustomTypes) { #>
+// Writes a value to the underlying buffer.
+func (this *PacketWriter) write<#= customType.Name #>(value <#= customType.Name #>) error {
+<# foreach(var member in customType.Members){ #>
+	this.write<#=member.Type#>(value.<#= member.Name.CamelCase() #>);
+<# } #>
+	return nil
+}
+
+// Writes a value to the underlying buffer.
+func (this *PacketWriter) writeListOf<#= customType.Name #>(value []<#= customType.Name #>) error {
+	this.writeInt32(int32(len(value)))
+	for _, v := range value{
+		err := this.write<#= customType.Name #>(v)
+		if (err != nil){
+			return err
+		}
+	}
+	return nil
+}
+<# } #>
