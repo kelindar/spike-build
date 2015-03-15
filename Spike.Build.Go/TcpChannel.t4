@@ -5,6 +5,9 @@
 	"crypto/tls"
 	"sync"
 	"time"
+	"encoding/binary"
+	"bytes"
+	"errors"
 ) 
 
 type ChannelState int
@@ -19,6 +22,11 @@ type TcpChannel struct {
 	conn net.Conn
 	pipe chan []byte
 	guard *sync.Mutex
+
+<# foreach(var receive in Model.Receives) { #>		
+	// Channel for <#= receive.Name #> messages
+	On<#=receive.Name.Replace("Inform", String.Empty)#> chan *<#= receive.Name #> 
+<#} #>
 }
 
 
@@ -79,7 +87,7 @@ func (this *TcpChannel) Disconnect() (error){
 
 
 // Reads from the remote server
-func (this *TcpChannel) listen(bufferSize int) error {
+func (this *TcpChannel) listen(bufferSize int) (err error) {
 	buffer := make([]byte, bufferSize)
 
 	for {
@@ -95,12 +103,44 @@ func (this *TcpChannel) listen(bufferSize int) error {
             
             time.Sleep(time.Millisecond * 10)
         }
-        
-        
+
+
 		if (n > 0){
-			data := buffer[:n]
-			fmt.Println(data)
-			fmt.Println("got", n, "bytes.")
+			// We should have at least 8 bytes available for the read
+			//data := buffer[:n]
+			if (n < 8){
+				this.conn.Close()
+        		this.state = Closed
+        		return err
+			}
+
+			// Get the header
+			head := bytes.NewBuffer(buffer[:8])
+			
+			// Read the length
+			var length int32
+			err = binary.Read(head, binary.BigEndian, &length)
+			if err != nil{
+
+				fmt.Println("err:", err)
+				this.conn.Close()
+        		this.state = Closed
+        		return err
+			}
+
+			length -= 4
+
+			// Read the key
+			var key uint32
+			err = binary.Read(head, binary.BigEndian, &key)
+			if err != nil{
+				this.conn.Close()
+        		this.state = Closed
+        		return err
+			}
+
+			fmt.Println("Operation", key, "with payload of", length, "bytes")
+			
 			//buf = append(buf, tmp[:n]...)
 		}
 
@@ -109,7 +149,27 @@ func (this *TcpChannel) listen(bufferSize int) error {
     return nil
 }
 
+// Occurs when a packet is received
+func (this *TcpChannel) onReceive(key uint32, buffer []byte) error{
+	reader := NewPacketReader(buffer)
+	switch (key) {
+<# foreach(var receive in Model.Receives) { #>	
+		case 0x<#= receive.Id.ToString("X") #>: {
+<# if (receive.Compressed){ #>
+			reader.Decompress()
+<# } #>
+			packet := new(<#= receive.Name #>)
+<# foreach(var member in receive.Members){ #>
+			packet.<#= member.Name.CamelCase() #>, _ = reader.Read<#= member.IsList ? "ListOf" : string.Empty #><#= member.Type #>()
+<# } #>	
+			this.On<#=receive.Name.Replace("Inform", String.Empty)#> <- packet
+			return nil
+		}
+<# } #>
+	}
 
+	return errors.New("spike.onReceive: Unknown packet received")
+}
 
 // Sends a packet using the writer
 func (this *TcpChannel) sendPacket(key uint32, writer *PacketWriter){
@@ -149,7 +209,7 @@ func (this *TcpChannel) <#= send.Name #>(<#
 #>){
 	writer := NewPacketWriter()
 <# foreach(var member in send.Members){ #>
-	writer.write<#= member.Type #>(<#= member.Name.CamelCase() #>)
+	writer.Write<#= member.Type #>(<#= member.Name.CamelCase() #>)
 <# } #>
 <# if(send.Compressed){ #>
 	writer.Compress()
@@ -157,3 +217,4 @@ func (this *TcpChannel) <#= send.Name #>(<#
 	this.sendPacket(0x<#= send.Id.ToString("X")#> , writer)
 }		 
 <# } #>
+
