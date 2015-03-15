@@ -1,0 +1,8 @@
+﻿package spike
+{
+    public final class UInt64 
+	{
+		public var high:uint;
+		public var low:uint;
+    }
+}

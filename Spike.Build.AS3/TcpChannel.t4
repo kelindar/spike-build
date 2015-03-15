@@ -1,0 +1,144 @@
+﻿package spike 
+{
+	import flash.errors.IOError;
+	import flash.events.*;
+	import flash.utils.ByteArray;
+    
+	import mx.controls.Alert;
+	import mx.events.*;
+	import mx.messaging.channels.amfx.*;
+    
+	import spike.events.ConnectionEvent;
+	import spike.events.SocketReceiveEvent;
+
+<# foreach(var receive in Model.Receives){ #>	[Event(name="<#=receive.Name#>", type="network.events.PacketReceiveEvent")]
+<# } #>
+	[Event(name="connected", type="network.events.ConnectionEvent")]
+	[Event(name="disconnected", type="network.events.ConnectionEvent")]
+	[Event(name="ioError", type="flash.events.IOErrorEvent")]
+	[Event(name="securityError", type="flash.events.SecurityErrorEvent")]
+	[Event(name="progress", type="flash.events.ProgressEvent")]
+	public class TcpChannel 
+	{    	
+		// Socket configuration
+		private var _socket:TcpSocket;
+		private var _hostName:String = "localhost";
+		private var _port:uint = 8002;
+        
+		// Public properties
+		[Bindable]
+		public function set hostName(value:String) :void { _hostName = value; }
+		public function get hostName() : String { return _hostName; }
+        
+		[Bindable]
+		public function set port(value:uint) :void { _port = value; }
+		public function get port() : uint { return _port; }
+        
+		/**
+		* Gets whether the connection was established or not
+		*/
+		public function get isConnected() :Boolean { return _socket.connected; }
+        
+		public function TcpChannel() 
+		{
+			if(_socket == null)
+				_socket = new TcpSocket(this);
+			configureListeners(_socket);
+		}
+        
+		/**
+		* Connects the channel to the remote end-point.
+		*/
+		public function connect():void
+		{
+			if(_socket.connected != true)
+				_socket.connect(hostName, port);
+		}
+        
+		/**
+		* Disconnects the channel from the remote end-point.
+		*/
+		public function disconnect():void 
+		{
+			_socket.close();
+		}  
+
+		/**
+		* Invoked when the data is received
+		*/
+		protected function onReceive(event:SocketReceiveEvent):void
+		{
+			switch(event.Operation)
+			{
+<# foreach(var receive in Model.Receives){ #>
+				case "<#= receive.Id.ToString("X").ToUpper()#>": {
+					var packet:<#=receive.Name#> = new <#=receive.Name#>();
+					packet.read(event.Reader);
+					dispatchEvent(new PacketReceiveEvent("<#= receive.Name.CamelCase()#>", packet));
+					break;
+				}
+<# } #>
+			}
+		}
+   
+		private function configureListeners(dispatcher:IEventDispatcher):void 
+		{
+			dispatcher.addEventListener("socketReceive", onReceive);
+			dispatcher.addEventListener(Event.CLOSE, closeHandler);
+			dispatcher.addEventListener(Event.CONNECT, connectHandler);
+			dispatcher.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
+			dispatcher.addEventListener(ProgressEvent.PROGRESS, progressHandler);
+			dispatcher.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
+		}
+		   
+		private function closeHandler(event:Event):void {
+			dispatchEvent(new network.events.ConnectionEvent("disconnected"));
+		}
+   
+		private function connectHandler(event:Event):void {
+			dispatchEvent(new network.events.ConnectionEvent("connected"));
+		}
+   
+		private function ioErrorHandler(event:IOErrorEvent):void {
+			dispatchEvent(event);
+		}
+   
+		private function progressHandler(event:ProgressEvent):void {
+			dispatchEvent(event);
+		}
+   
+		private function securityErrorHandler(event:SecurityErrorEvent):void {
+			dispatchEvent(event);
+		}
+
+
+		
+<# foreach(var send in Model.Sends){ #>		
+		public function <#= send.Name.CamelCase() #>(<#	
+	var first = true;
+	foreach(var member in send.Members){
+		if(!first){
+			Write(", ");
+		}
+
+		Write(member.Name.CamelCase());
+		Write(":");
+		Write(AS3Builder.GetNativeType(member));
+		first = false;
+	}
+#>):void {
+			var writer:PacketWriter = new PacketWriter();
+<# foreach(var member in send.Members){ #>
+			writer.Write<#= member.Type #>(<#= member.Name.CamelCase() #>)
+<# } #>
+<# if(send.Compressed){ #>
+			writer.compress();
+<# } #>
+
+			_socket.send("<#= send.Id.ToString("X").ToUpper()#>", writer);
+		}
+<# } #>
+
+
+    }
+}

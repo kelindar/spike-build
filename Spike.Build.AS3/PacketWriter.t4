@@ -1,0 +1,472 @@
+﻿package spike
+{
+	import flash.utils.ByteArray;
+	
+	public class PacketWriter
+	{
+		// internal buffer
+		public var buffer:ByteArray = new ByteArray();
+		
+		public function PacketWriter()
+		{
+			
+		}
+
+		/*
+		 * Compresse le packet
+		 */
+		public function compress():void
+		{			
+			buffer = LZF.instance.compress(buffer, buffer.length);
+		}	
+
+		/*
+		 * Ecrit un octet (l'ID du packet) dans le packet à envoyer
+		 */
+		public function WriteOperation(value:int):void
+		{
+			buffer.writeShort(value);
+		}
+		
+		/*
+		 * Ecrit un entier 16bit dans le packet à envoyer
+		 */
+		public function WriteInt16(value:Number):void
+		{
+			buffer.writeShort(value);
+		}
+
+		/*
+		 * Ecrit un entier 16bit dans le packet à envoyer
+		 */
+		public function WriteUInt16(value:Number):void
+		{
+			buffer.writeShort(value);
+		}
+		
+		
+		/*
+		 * Ecrit un entier dans le packet à envoyer
+		 */
+		public function WriteInt32(value:int):void
+		{
+			buffer.writeInt(value);
+		}
+
+		/*
+		 * Ecrit un octet dans le packet à envoyer
+		 */
+		public function WriteByte(value:uint):void
+		{
+			buffer.writeByte(value);
+		}
+
+		/*
+		 * Ecrit un octet dans le packet à envoyer
+		 */
+		public function WriteSByte(value:int):void
+		{
+			buffer.writeByte(value);
+		}
+		
+		/*
+		 * Ecrit un entier dans le packet à envoyer
+		 */
+		public function WriteNumber(value:Number):void
+		{
+			buffer.writeInt(value);
+		}
+
+		/*
+		 * Ecrit un double dans le packet à envoyer
+		 */
+		public function WriteDouble(value:Number):void
+		{
+			buffer.writeDouble(value);
+		}
+
+		/*
+		 * Ecrit un double dans le packet à envoyer
+		 */
+		public function WriteSingle(value:Number):void
+		{
+			buffer.writeFloat(value);
+		}
+		
+		/*
+		 * Ecrit une valeur booleene dans le packet à envoyer
+		 */
+		public function WriteBoolean(value:Boolean):void
+		{
+			buffer.writeBoolean(value);
+		}
+		
+		/*
+		 * Ecrit une entier non-signé dans le packet à envoyer
+		 */
+		public function WriteUInt32(value:uint):void
+		{
+			buffer.writeUnsignedInt(value);
+		}
+
+		/**
+		 * Writes a 64-bit signed integer to the buffer
+		 */
+		public function WriteInt64(value:Int64):void
+		{
+			WriteUInt32(value.low);
+			WriteInt32(value.high);
+		}
+
+		/**
+		 * Writes a 64-bit unsigned integer to the buffer
+		 */
+		public function WriteUInt64(value:UInt64):void
+		{
+			WriteUInt32(value.low);
+			WriteUInt32(value.high);
+		}
+
+
+		/**
+		 * Writes a dynamic member to the buffer
+		 */
+		public function WriteDynamic(value:Object):void
+		{
+			if(value is Int64)
+			{
+				WriteByte(1);
+				WriteString("Int64");
+				WriteInt64(value as Int64);
+			} 
+			else if(value is UInt64)
+			{
+				WriteByte(1);
+				WriteString("UInt64");
+				WriteUInt64(value as UInt64);
+			}
+			else if(value is int)
+			{
+				WriteByte(1);
+				WriteString("Int32");
+				WriteInt32(value as int);
+			}
+			else if(value is uint)
+			{
+				WriteByte(1);
+				WriteString("UInt32");
+				WriteUInt32(value as uint);
+			}
+			else if(value is Number)
+			{
+				WriteByte(1);
+				WriteString("Double");
+				WriteDouble(value as Number);
+			}
+			else if(value is Boolean)
+			{
+				WriteByte(1);
+				WriteString("Boolean");
+				WriteBoolean(value as Boolean);
+			}
+			else if(value is Date)
+			{
+				WriteByte(1);
+				WriteString("DateTime");
+				WriteDateTime(value as Date);
+			}
+			else if(value is String)
+			{
+				WriteByte(1);
+				WriteString("String");
+				WriteString(value as String);
+			}
+			else
+			{
+				WriteByte(0);
+				//throw new Error("WriteDynamic is not yet implemented");
+			}
+			
+		}		
+
+		/*
+		 * Ecrit une date dans le packet à envoyer
+		 */
+		public function WriteDateTime(value:Date):void
+		{
+			buffer.writeShort(value.fullYearUTC);
+			buffer.writeShort(value.monthUTC);
+			buffer.writeShort(value.dateUTC);
+			buffer.writeShort(value.hoursUTC);
+			buffer.writeShort(value.minutesUTC);
+			buffer.writeShort(value.secondsUTC);
+			buffer.writeShort(value.millisecondsUTC);
+		}
+		
+		/*
+		 * Ecrit une chaîne UTF8 dans le packet à envoyer
+		 */
+		public function WriteString(value:String):void
+		{
+			if(value == null || value == "")
+			{
+				WriteInt32(0);
+			}
+			else
+			{
+				var stringBuffer:ByteArray = new ByteArray();
+				stringBuffer.writeUTFBytes(value);
+				WriteInt32(stringBuffer.length);
+				buffer.writeBytes(stringBuffer,0, stringBuffer.length);
+			}
+		}
+
+
+		/*
+		 * Ecrit un IPacket dans le packet à envoyer
+		 */
+		public function WritePacket(value:IPacket):void
+		{
+			value.write(this);
+		}
+
+		/*
+		 * Ecrit un byte array dans le packet à envoyer
+		 */
+		public function WriteByteArray(value:ByteArray):void
+		{
+			buffer.writeInt(value.length);
+			buffer.writeBytes(value,0, value.length);
+		}
+		
+		/*
+		 * Ecrit un IEntity dans le packet à envoyer
+		 */
+		public function WriteEntity(value:IEntity):void
+		{
+			value.write(this);
+		}
+
+		/*
+		 * Ecrit un array de float dans le packet à envoyer
+		 */
+		public function WriteArrayOfUInt16(value:Array):void
+		{
+			WriteInt32(value.length);
+			
+			if(value.length == 0)
+				return;
+				
+			for(var i:int = 0; i < value.length; ++i)
+			{
+				WriteUInt16(value[i] as uint);
+			}
+		}
+		
+		/*
+		 * Ecrit un array de float dans le packet à envoyer
+		 */
+		public function WriteArrayOfInt16(value:Array):void
+		{
+			WriteInt32(value.length);
+			
+			if(value.length == 0)
+				return;
+				
+			for(var i:int = 0; i < value.length; ++i)
+			{
+				WriteInt16(value[i] as int);
+			}
+		}
+
+		/*
+		 * Ecrit un array d'entiers dans le packet à envoyer
+		 */
+		public function WriteArrayOfInt32(value:Array):void
+		{
+			WriteInt32(value.length);
+			
+			if(value.length == 0)
+				return;
+				
+			for(var i:int = 0; i < value.length; ++i)
+			{
+				WriteInt32(value[i] as int);
+			}
+		}
+
+		/*
+		 * Ecrit un array d'entiers dans le packet à envoyer
+		 */
+		public function WriteArrayOfUInt32(value:Array):void
+		{
+			WriteInt32(value.length);
+			
+			if(value.length == 0)
+				return;
+				
+			for(var i:int = 0; i < value.length; ++i)
+			{
+				WriteUInt32(value[i] as uint);
+			}
+		}
+
+		/**
+		 * Ecrit un array d'entiers dans le packet à envoyer
+		 */
+		public function WriteArrayOfInt64(value:Array):void
+		{
+			WriteInt32(value.length);
+			
+			if(value.length == 0)
+				return;
+				
+			for(var i:int = 0; i < value.length; ++i)
+			{
+				WriteInt64(value[i] as Int64);
+			}
+		}
+
+		/*
+		 * Ecrit un array d'entiers dans le packet à envoyer
+		 */
+		public function WriteArrayOfUInt64(value:Array):void
+		{
+			WriteInt32(value.length);
+			
+			if(value.length == 0)
+				return;
+				
+			for(var i:int = 0; i < value.length; ++i)
+			{
+				WriteUInt64(value[i] as UInt64);
+			}
+		}
+
+		/*
+		 * Ecrit un array de double dans le packet à envoyer
+		 */
+		public function WriteArrayOfDouble(value:Array):void
+		{
+			WriteInt32(value.length);
+			
+			if(value.length == 0)
+				return;
+				
+			for(var i:int = 0; i < value.length; ++i)
+			{
+				WriteSingle(value[i] as Number);
+			}
+		}
+		
+		/*
+		 * Ecrit un array de float dans le packet à envoyer
+		 */
+		public function WriteArrayOfSingle(value:Array):void
+		{
+			WriteInt32(value.length);
+			
+			if(value.length == 0)
+				return;
+				
+			for(var i:int = 0; i < value.length; ++i)
+			{
+				WriteSingle(value[i] as Number);
+			}
+		}
+
+		/*
+		 * Ecrit un array de float dans le packet à envoyer
+		 */
+		public function WriteArrayOfDateTime(value:Array):void
+		{
+			WriteInt32(value.length);
+			
+			if(value.length == 0)
+				return;
+				
+			for(var i:int = 0; i < value.length; ++i)
+			{
+				WriteDateTime(value[i] as Date);
+			}
+		}
+
+		/*
+		 * Ecrit un array de float dans le packet à envoyer
+		 */
+		public function WriteArrayOfString(value:Array):void
+		{
+			WriteInt32(value.length);
+			
+			if(value.length == 0)
+				return;
+				
+			for(var i:int = 0; i < value.length; ++i)
+			{
+				WriteString(value[i] as String);
+			}
+		}
+
+		/*
+		 * Ecrit un array de float dans le packet à envoyer
+		 */
+		public function WriteArrayOfBoolean(value:Array):void
+		{
+			WriteInt32(value.length);
+			
+			if(value.length == 0)
+				return;
+				
+			for(var i:int = 0; i < value.length; ++i)
+			{
+				WriteBoolean(value[i] as Boolean);
+			}
+		}
+
+		/**
+		 * Writes an array of dynamic members to the buffer
+		 */
+		public function WriteArrayOfDynamic(value:Array):void
+		{
+			WriteInt32(value.length);
+			
+			if(value.length == 0)
+				return;
+				
+			for(var i:int = 0; i < value.length; ++i)
+			{
+				WriteDynamic(value[i] as Object);
+			}
+		}
+
+		/*
+		 * Ecrit un array dans le packet à envoyer
+		 */
+		public function WriteArray(value:Array):void
+		{
+			WriteInt32(value.length);
+			
+			if(value.length == 0)
+				return;
+				
+			for(var i:int = 0; i < value.length; ++i)
+			{
+				var obj:Object = value[i];
+				if(obj is IPacket )
+				{
+					(obj as IPacket).write(this)	
+				}
+				else if(obj is IEntity )
+				{
+					(obj as IEntity).write(this)	
+				}
+				else 
+				{
+					throw new Error("Unable to write, the array contains unknown elements");
+				}
+			}
+		}
+		
+
+	}
+}

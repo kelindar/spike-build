@@ -1,0 +1,35 @@
+﻿package spike.mxml
+{
+	import mx.core.IMXMLObject;
+	import mx.core.mx_internal;
+	import mx.resources.IResourceManager;
+	import mx.resources.ResourceManager;
+	import mx.rpc.mxml.IMXMLSupport;
+	
+	import spike.TcpChannel;
+	
+	use namespace mx_internal;
+
+	public class MxmlChannel extends spike.TcpChannel implements IMXMLObject
+	{
+	    private var resourceManager:IResourceManager = ResourceManager.getInstance();
+		private var document:Object; //keep the document for validation
+		private var id:String; //need to know our own id for validation
+
+		public function MxmlChannel()
+		{
+		}
+		
+
+		/**
+		 * Called after the implementing object has been created and all component
+		 * properties specified on the MXML tag have been initialized. 
+		 */
+		public function initialized(document:Object, id:String):void
+		{
+		    this.id = id;
+		    this.document = document;
+		}
+		
+	}
+}

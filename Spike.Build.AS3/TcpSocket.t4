@@ -1,0 +1,174 @@
+﻿package spike
+{
+    import flash.errors.*;
+    import flash.events.*;
+    import flash.events.TimerEvent;
+    import flash.net.Socket;
+    import flash.utils.ByteArray;
+    import flash.utils.Timer;
+    
+    import mx.controls.Alert;
+    
+    import spike.events.SocketReceiveEvent;
+
+	[Event(name="socketReceive", type="ResultEvent")]
+	public class TcpSocket extends Socket 
+	{
+		// Private members
+		private var channel:TcpChannel;
+		private var buffer:ByteArray = new ByteArray();
+		private var partialRecord:Boolean = false;
+
+
+
+	    public function TcpSocket(channel:TcpChannel) 
+	    {
+	        super();
+			this.channel = channel;
+			this.addEventListener(ProgressEvent.SOCKET_DATA, receive);
+	    }
+	    
+
+	    public function send(operationKey:String, packet:PacketWriter):void 
+	    {
+			// Compile the packet to a stream
+			var stream:ByteArray = new ByteArray();
+			writeLength(stream, packet.buffer.length + Packet.HEADER_KEY_SIZE);
+			writeKey(stream, operationKey);
+
+			// Write the data
+            stream.writeBytes(packet.buffer,0, packet.buffer.length);
+			
+			// Encode it if there is a specific encoder
+			if(channel.packetEncoder != null)
+				stream = channel.packetEncoder.encodeOutgoingPacket(channel, stream, stream.length);
+			
+			// Send
+			this.writeBytes(stream, 0, stream.length);
+            flush(); 
+	    }
+	    
+		public function receive(event:ProgressEvent):void 
+		{
+			var data:ByteArray = new ByteArray();
+			if(partialRecord)
+			{
+				buffer.readBytes(data, 0, buffer.length);
+				partialRecord = false;
+			}
+			
+			if(channel.packetEncoder == null)
+			{
+				this.readBytes(data, data.length, this.bytesAvailable);
+			}
+			else
+			{
+				var rawRecv:ByteArray = new ByteArray();
+				this.readBytes(rawRecv, 0, this.bytesAvailable);
+				var decoded:ByteArray = this.channel.packetEncoder.decodeIncomingPacket(this.channel, rawRecv, rawRecv.length);
+				if(decoded != null)
+					data.writeBytes(decoded, data.length, decoded.length);
+				data.position = 0;
+			}
+			
+			// While we have data to read
+			while(data.position < data.length)
+			{
+				if(data.length - data.position < Packet.HEADER_LENGTH_SIZE)
+				{
+					// Bad situation, we don't even have the full packet here.
+					// Read the partial packet (few bytes)
+			        buffer = new ByteArray();
+			        data.readBytes(buffer, 0, data.length - data.position);
+			        partialRecord = true;
+			        break;
+				} 
+				
+			    var Length:int = data.readInt() + Packet.HEADER_LENGTH_SIZE;
+				data.position -= Packet.HEADER_LENGTH_SIZE;
+				
+			    // If we have enough data to form a full packet.
+			    if(Length <= (data.length - data.position))
+			    {
+			        // Read the operation and read the actual message into a new buffer
+			        var messageLength:int = readLength(data); // UNUSED
+			        var operation:String  = readKey(data);
+			        
+			        // New buffer for the packet
+			        var packet:ByteArray = new ByteArray();
+			        data.readBytes(packet,0, Length - Packet.HEADER_SIZE);
+			        packet.position = 0;
+			
+					// Create the reader and fire the event
+			    	var reader:PacketReader = new PacketReader(packet);
+			    	dispatchEvent(new SocketReceiveEvent("socketReceive", operation, reader ));
+			    }
+			    else 
+			    {
+			        // Read the partial packet
+			        buffer = new ByteArray();
+			        data.readBytes(buffer,0,data.length - data.position);
+			        partialRecord = true;
+			    }
+			
+			}
+
+		}
+
+		
+		/**
+		 * Writes an ASCII string to the underlying socket
+		 */
+		public function writeAsciiString(value:String):void
+		{
+			// Naive ASCII conversion for Linux compatibility
+			for(var i:int=0; i<value.length; ++i)
+				this.writeByte(value.charCodeAt(i));	
+		}
+		 
+		 /**
+		  * Writes the packet length to the stream.
+		  */  
+		private function writeLength(stream:ByteArray, value:int):void
+		{
+			stream.writeUnsignedInt(value);
+		}
+
+		/**
+		  * Writes the packet operation identifier to the stream.
+		  */  
+		private function writeKey(stream:ByteArray, value:String):void
+		{
+			var buffer:ByteArray = new ByteArray();
+			for(var i:int=0; i<value.length; i+=2)
+				buffer[i / 2] = parseInt(value.substr(i,2), 16);
+
+			stream.writeBytes(buffer,0, buffer.length);
+		}
+
+		 /**
+		  * Reads the packet length from the stream.
+		  */  
+		private function readLength(stream:ByteArray):int
+		{
+			return stream.readInt();
+		}
+
+		 /**
+		  * Reads the packet operation identifier from the stream.
+		  */  
+		private function readKey(stream:ByteArray):String
+		{
+            var s:String = "";
+            for (var i:uint=0; i < Packet.HEADER_KEY_SIZE; i++)
+			{
+				var byte:uint = stream.readByte();
+                s += ("0" + byte.toString(16)).substr(-2,2);
+			}
+			s = s.toUpperCase();
+            return s;
+		}
+
+
+	}
+}

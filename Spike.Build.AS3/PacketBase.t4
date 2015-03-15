@@ -1,0 +1,33 @@
+﻿package spike
+{
+	public class Packet
+	{
+	    /**
+         * The number of bytes in the packet header
+         */     
+        public static const HEADER_SIZE : Number = 8;
+
+        /**
+         * The number of bytes in the length number of the header
+         */     
+        public static const HEADER_LENGTH_SIZE : Number = 4;
+
+        /**
+         * The number of bytes in the operation identifier of the header
+         */     
+        public static const HEADER_KEY_SIZE : Number = 4;
+
+
+
+		private var _operation:String;
+
+		public function set operation(value:String) :void { _operation = value; }
+        public function get operation() : String { return _operation; }
+        
+		public function Packet(operation:String)
+		{
+			_operation = operation;
+		}
+
+	}
+}

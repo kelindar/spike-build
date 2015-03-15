@@ -30,6 +30,7 @@ using Spike.Build.Java;
 using System.IO;
 using Spike.Build.JavaScript;
 using Spike.Build.Go;
+using Spike.Build.AS3;
 
 
 namespace Spike.Build
@@ -63,6 +64,7 @@ namespace Spike.Build
 
         static private Dictionary<string, IBuilder> Builders = new Dictionary<string, IBuilder>(StringComparer.CurrentCultureIgnoreCase) 
         {
+            { "AS3" , new AS3Builder() },
             { "CSharp5", new CSharp5Builder() },
             { "Java", new JavaBuilder() },
             { "WinRT", new WinRTBuilder() },

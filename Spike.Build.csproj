@@ -69,6 +69,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Spike.Build.AS3\AS3Builder.cs" />
+    <Compile Include="Spike.Build.AS3\AS3Template.cs">
+      <DependentUpon>AS3Template.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Spike.Build.CSharp5\CSharp5BuilderBase.cs" />
     <Compile Include="Spike.Build.CSharp5\CSharp5Builder.cs" />
     <Compile Include="Spike.Build.CSharp5\CSharp5Template.cs">
@@ -76,6 +82,28 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CSharp5Template.tt</DependentUpon>
     </Compile>
+    <None Include="Spike.Build.AS3\AS3Template.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>AS3Template.cs</LastGenOutput>
+      <CustomToolNamespace>Spike.Build.AS3</CustomToolNamespace>
+    </None>
+    <None Include="Spike.Build.AS3\Packet.t4" />
+    <None Include="Spike.Build.AS3\TcpChannel.t4" />
+    <None Include="Spike.Build.AS3\ConnectionEvent.t4" />
+    <None Include="Spike.Build.AS3\IEntity.t4" />
+    <None Include="Spike.Build.AS3\IPacket.t4" />
+    <None Include="Spike.Build.AS3\PacketBase.t4" />
+    <None Include="Spike.Build.AS3\MxmlChannel.t4" />
+    <None Include="Spike.Build.AS3\PacketReceiveEvent.t4" />
+    <None Include="Spike.Build.AS3\SocketReceiveEvent.t4" />
+    <None Include="Spike.Build.AS3\UInt64.t4" />
+    <None Include="Spike.Build.AS3\PacketCompressor.t4">
+      <LastGenOutput>CLZF.cs</LastGenOutput>
+    </None>
+    <None Include="Spike.Build.AS3\PacketReader.t4" />
+    <None Include="Spike.Build.AS3\Int64.t4" />
+    <None Include="Spike.Build.AS3\TcpSocket.t4" />
+    <None Include="Spike.Build.AS3\PacketWriter.t4" />
     <None Include="Spike.Build.CSharp5\PacketReader.t4" />
     <None Include="Spike.Build.CSharp5\PacketWriter.t4" />
     <Compile Include="Spike.Build.Go\GoTemplate.cs">

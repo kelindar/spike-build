@@ -1,0 +1,21 @@
+package spike.events
+{
+	import flash.events.Event;
+	
+	import spike.PacketReader;
+	
+	public class SocketReceiveEvent extends Event
+	{
+		public var Reader:PacketReader;
+		public var Operation:String;
+		public var Handled:Boolean = false;
+		
+		public function SocketReceiveEvent(type:String, operation:String, reader:PacketReader)
+		{
+			Reader = reader;
+			Operation = operation;
+			super(type);
+		}
+
+	}
+}	

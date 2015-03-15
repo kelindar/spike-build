@@ -1,0 +1,15 @@
+package spike.events
+{
+	import flash.events.Event;
+	
+	public class PacketReceiveEvent extends Event
+	{
+		public var data:Object;
+		public function PacketReceiveEvent( type:String, dataReceived:Object )
+		{
+			data = dataReceived;
+			super(type);
+		}
+
+	}
+}	

@@ -1,0 +1,10 @@
+﻿package spike
+{
+	import flash.utils.ByteArray;
+	
+	public interface IEntity
+	{
+		function write(writer:PacketWriter):void;
+		function read(reader:PacketReader):void;
+	}
+}

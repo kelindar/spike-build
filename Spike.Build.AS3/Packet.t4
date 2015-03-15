@@ -1,0 +1,43 @@
+﻿package spike.packets
+{
+	import flash.utils.ByteArray;
+	import spike.*;
+	import spike.packets.*;
+
+	[RemoteClass(alias="<#=TargetOperation.Name#>")]
+	public class <#=TargetOperation.Name#> extends Packet implements IPacket
+	{
+		public function <#=TargetOperation.Name#>()
+		{
+			super("<#=TargetOperation.Id.ToString("X").ToUpper()#>");
+		}
+
+<# foreach(var member in TargetOperation.Members){ #>
+		private var _<#= member.Name #>:<#=AS3Builder.GetNativeType(member)#>;
+		[Bindable]
+		public function set <#= member.Name.CamelCase() #>(value:<#=AS3Builder.GetNativeType(member)#>):void { _<#= member.Name #> = value; }
+		public function get <#= member.Name.CamelCase() #>():<#=AS3Builder.GetNativeType(member)#> { return _<#= member.Name #>; }
+
+<# } #>		
+
+		/**
+		* Writes (serializes) the packet to the specified packet writer.
+		*/
+		public function write(writer:PacketWriter):void
+		{
+<# foreach(var member in TargetOperation.Members){ #>
+			writer.Write<#= member.Type #>(_<#= member.Name #>);
+<# } #>
+		}
+
+		/**
+		* Reads (deserializes) the packet from the specified packet reader.
+		*/
+		public function read(reader:PacketReader):void
+		{
+<# foreach(var member in TargetOperation.Members){ #>
+			_<#= member.Name #> = reader.Read<#= member.Type #>();
+<# } #>
+		}
+	}
+}
