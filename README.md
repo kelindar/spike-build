@@ -11,4 +11,5 @@ Currently supported platforms:
  * Xamarin for .NET on Android & iOS
  * Java and Java Android
  * WinRT that supports Windows 8+ and Windows Phone 8+
-
+ * JavaScript (browsers) powered by engine.io for transport fallback
+ * Go with support for channels
