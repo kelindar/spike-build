@@ -27,7 +27,13 @@ func (this *PacketReader) Decompress(){
 
 // Reads a value from the underlying buffer.
 func (this *PacketReader) ReadBoolean() (value bool, err error) {
-	err = binary.Read(this.buffer, binary.BigEndian, &value)
+	var b byte
+	err = binary.Read(this.buffer, binary.BigEndian, &b)
+	if b == 1 {
+		value = true
+	}else{
+		value = false
+	}
 	return
 }
 

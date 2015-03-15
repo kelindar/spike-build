@@ -40,8 +40,11 @@ func (this *TcpChannel) Connect(address string, bufferSize int) (net.Conn, error
 		return nil, err
 	}
 
+	// The number of pending events per channel
+	slots := 2048
+
 	// Create the necessary channels
-	<# foreach(var receive in Model.Receives) { #>this.On<#=receive.Name.Replace("Inform", String.Empty)#> = make(chan *<#= receive.Name #>)
+	<# foreach(var receive in Model.Receives) { #>this.On<#=receive.Name.Replace("Inform", String.Empty)#> = make(chan *<#= receive.Name #>, slots)
 	<#} #>
 
 	this.state = Open

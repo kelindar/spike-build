@@ -451,66 +451,67 @@ func (this *PacketWriter) WriteListOfDynamicType(value []interface{}) error {
                     "ody\r\nfunc (this *PacketReader) Decompress(){\r\n\tthis.buffer = bytes.NewBuffer(Dec" +
                     "ompress(this.buffer.Bytes()))\r\n}\r\n\r\n// ------------------ Types ----------------" +
                     "--------\r\n\r\n\r\n// Reads a value from the underlying buffer.\r\nfunc (this *PacketRe" +
-                    "ader) ReadBoolean() (value bool, err error) {\r\n\terr = binary.Read(this.buffer, b" +
-                    "inary.BigEndian, &value)\r\n\treturn\r\n}\r\n\r\n// Reads a value from the underlying buf" +
-                    "fer.\r\nfunc (this *PacketReader) ReadByte() (value byte, err error) {\r\n\terr = bin" +
-                    "ary.Read(this.buffer, binary.BigEndian, &value)\r\n\treturn\r\n}\r\n\r\n// Reads a value " +
-                    "from the underlying buffer.\r\nfunc (this *PacketReader) ReadSByte() (value int8, " +
-                    "err error) {\r\n\terr = binary.Read(this.buffer, binary.BigEndian, &value)\r\n\treturn" +
-                    "\r\n}\r\n\r\n// Reads a value from the underlying buffer.\r\nfunc (this *PacketReader) R" +
-                    "eadInt16() (value int16, err error) {\r\n\terr = binary.Read(this.buffer, binary.Bi" +
-                    "gEndian, &value)\r\n\treturn\r\n}\r\n\r\n// Reads a value from the underlying buffer.\r\nfu" +
-                    "nc (this *PacketReader) ReadInt32() (value int32, err error) {\r\n\terr = binary.Re" +
-                    "ad(this.buffer, binary.BigEndian, &value)\r\n\treturn\r\n}\r\n\r\n// Reads a value from t" +
-                    "he underlying buffer.\r\nfunc (this *PacketReader) ReadInt64() (value int64, err e" +
-                    "rror) {\r\n\terr = binary.Read(this.buffer, binary.BigEndian, &value)\r\n\treturn\r\n}\r\n" +
-                    "\r\n// Reads a value from the underlying buffer.\r\nfunc (this *PacketReader) ReadUI" +
-                    "nt16() (value uint16, err error) {\r\n\terr = binary.Read(this.buffer, binary.BigEn" +
-                    "dian, &value)\r\n\treturn\r\n}\r\n\r\n// Reads a value from the underlying buffer.\r\nfunc " +
-                    "(this *PacketReader) ReadUInt32() (value uint32, err error) {\r\n\terr = binary.Rea" +
-                    "d(this.buffer, binary.BigEndian, &value)\r\n\treturn\r\n}\r\n\r\n// Reads a value from th" +
-                    "e underlying buffer.\r\nfunc (this *PacketReader) ReadUInt64() (value uint64, err " +
-                    "error) {\r\n\terr = binary.Read(this.buffer, binary.BigEndian, &value)\r\n\treturn\r\n}\r" +
-                    "\n\r\n// Reads a value from the underlying buffer.\r\nfunc (this *PacketReader) ReadS" +
-                    "ingle() (value float32, err error) {\r\n\terr = binary.Read(this.buffer, binary.Big" +
-                    "Endian, &value)\r\n\treturn\r\n}\r\n\r\n// Reads a value from the underlying buffer.\r\nfun" +
-                    "c (this *PacketReader) ReadDouble() (value float64, err error) {\r\n\terr = binary." +
-                    "Read(this.buffer, binary.BigEndian, &value)\r\n\treturn\r\n}\r\n\r\n// Reads a value from" +
-                    " the underlying buffer.\r\nfunc (this *PacketReader) ReadDateTime() (value time.Ti" +
-                    "me, err error) {\r\n\tY, _ := this.ReadInt16()\r\n\tM, _ := this.ReadInt16()\r\n\td, _ :=" +
-                    " this.ReadInt16()\r\n\th, _ := this.ReadInt16()\r\n\tm, _ := this.ReadInt16()\r\n\ts, _ :" +
-                    "= this.ReadInt16()\r\n\tms,_ := this.ReadInt16()\r\n\tvalue = time.Date(int(Y), time.M" +
-                    "onth(int(M)), int(d), int(h), int(m), int(s), int(ms) * 1000000, time.UTC)\r\n\tret" +
-                    "urn\r\n}\r\n\r\n// Reads a value from the underlying buffer.\r\nfunc (this *PacketReader" +
-                    ") ReadString() (value string, err error) {\r\n\tsize, _ := this.ReadInt32()\r\n\tbuf  " +
-                    ":= make([]byte, size)\r\n\tbinary.Read(this.buffer, binary.BigEndian, &buf)\r\n\tvalue" +
-                    " = string(buf[:size])\r\n\treturn\r\n}\r\n\r\n// Reads a value from the underlying buffer" +
-                    ".\r\nfunc (this *PacketReader) ReadDynamicType() (value interface{}, err error) {\r" +
-                    "\n\tvalid, err := this.ReadBoolean()\r\n\tif !valid { \r\n\t\treturn nil, err \r\n\t}\r\n\r\n\tna" +
-                    "me, err := this.ReadString()\r\n\tswitch name {\r\n");
+                    "ader) ReadBoolean() (value bool, err error) {\r\n\tvar b byte\r\n\terr = binary.Read(t" +
+                    "his.buffer, binary.BigEndian, &b)\r\n\tif b == 1 {\r\n\t\tvalue = true\r\n\t}else{\r\n\t\tvalu" +
+                    "e = false\r\n\t}\r\n\treturn\r\n}\r\n\r\n// Reads a value from the underlying buffer.\r\nfunc " +
+                    "(this *PacketReader) ReadByte() (value byte, err error) {\r\n\terr = binary.Read(th" +
+                    "is.buffer, binary.BigEndian, &value)\r\n\treturn\r\n}\r\n\r\n// Reads a value from the un" +
+                    "derlying buffer.\r\nfunc (this *PacketReader) ReadSByte() (value int8, err error) " +
+                    "{\r\n\terr = binary.Read(this.buffer, binary.BigEndian, &value)\r\n\treturn\r\n}\r\n\r\n// R" +
+                    "eads a value from the underlying buffer.\r\nfunc (this *PacketReader) ReadInt16() " +
+                    "(value int16, err error) {\r\n\terr = binary.Read(this.buffer, binary.BigEndian, &v" +
+                    "alue)\r\n\treturn\r\n}\r\n\r\n// Reads a value from the underlying buffer.\r\nfunc (this *P" +
+                    "acketReader) ReadInt32() (value int32, err error) {\r\n\terr = binary.Read(this.buf" +
+                    "fer, binary.BigEndian, &value)\r\n\treturn\r\n}\r\n\r\n// Reads a value from the underlyi" +
+                    "ng buffer.\r\nfunc (this *PacketReader) ReadInt64() (value int64, err error) {\r\n\te" +
+                    "rr = binary.Read(this.buffer, binary.BigEndian, &value)\r\n\treturn\r\n}\r\n\r\n// Reads " +
+                    "a value from the underlying buffer.\r\nfunc (this *PacketReader) ReadUInt16() (val" +
+                    "ue uint16, err error) {\r\n\terr = binary.Read(this.buffer, binary.BigEndian, &valu" +
+                    "e)\r\n\treturn\r\n}\r\n\r\n// Reads a value from the underlying buffer.\r\nfunc (this *Pack" +
+                    "etReader) ReadUInt32() (value uint32, err error) {\r\n\terr = binary.Read(this.buff" +
+                    "er, binary.BigEndian, &value)\r\n\treturn\r\n}\r\n\r\n// Reads a value from the underlyin" +
+                    "g buffer.\r\nfunc (this *PacketReader) ReadUInt64() (value uint64, err error) {\r\n\t" +
+                    "err = binary.Read(this.buffer, binary.BigEndian, &value)\r\n\treturn\r\n}\r\n\r\n// Reads" +
+                    " a value from the underlying buffer.\r\nfunc (this *PacketReader) ReadSingle() (va" +
+                    "lue float32, err error) {\r\n\terr = binary.Read(this.buffer, binary.BigEndian, &va" +
+                    "lue)\r\n\treturn\r\n}\r\n\r\n// Reads a value from the underlying buffer.\r\nfunc (this *Pa" +
+                    "cketReader) ReadDouble() (value float64, err error) {\r\n\terr = binary.Read(this.b" +
+                    "uffer, binary.BigEndian, &value)\r\n\treturn\r\n}\r\n\r\n// Reads a value from the underl" +
+                    "ying buffer.\r\nfunc (this *PacketReader) ReadDateTime() (value time.Time, err err" +
+                    "or) {\r\n\tY, _ := this.ReadInt16()\r\n\tM, _ := this.ReadInt16()\r\n\td, _ := this.ReadI" +
+                    "nt16()\r\n\th, _ := this.ReadInt16()\r\n\tm, _ := this.ReadInt16()\r\n\ts, _ := this.Read" +
+                    "Int16()\r\n\tms,_ := this.ReadInt16()\r\n\tvalue = time.Date(int(Y), time.Month(int(M)" +
+                    "), int(d), int(h), int(m), int(s), int(ms) * 1000000, time.UTC)\r\n\treturn\r\n}\r\n\r\n/" +
+                    "/ Reads a value from the underlying buffer.\r\nfunc (this *PacketReader) ReadStrin" +
+                    "g() (value string, err error) {\r\n\tsize, _ := this.ReadInt32()\r\n\tbuf  := make([]b" +
+                    "yte, size)\r\n\tbinary.Read(this.buffer, binary.BigEndian, &buf)\r\n\tvalue = string(b" +
+                    "uf[:size])\r\n\treturn\r\n}\r\n\r\n// Reads a value from the underlying buffer.\r\nfunc (th" +
+                    "is *PacketReader) ReadDynamicType() (value interface{}, err error) {\r\n\tvalid, er" +
+                    "r := this.ReadBoolean()\r\n\tif !valid { \r\n\t\treturn nil, err \r\n\t}\r\n\r\n\tname, err := " +
+                    "this.ReadString()\r\n\tswitch name {\r\n");
             
-            #line 125 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            #line 131 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
  foreach(var type in Model.Types){ 
             
             #line default
             #line hidden
             this.Write("\t\tcase \"");
             
-            #line 126 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            #line 132 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(type));
             
             #line default
             #line hidden
             this.Write("\": {\r\n\t\t\tvalue, err = this.Read");
             
-            #line 127 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            #line 133 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(type));
             
             #line default
             #line hidden
             this.Write("()\r\n\t\t\treturn\r\n\t\t}\r\n");
             
-            #line 130 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            #line 136 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
  } 
             
             #line default
@@ -532,7 +533,7 @@ func (this *PacketReader) ReadListOfDynamicType() (value []interface{}, err erro
 
 ");
             
-            #line 146 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            #line 152 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
  foreach(var type in Model.Types){ 
             
             #line default
@@ -540,90 +541,90 @@ func (this *PacketReader) ReadListOfDynamicType() (value []interface{}, err erro
             this.Write("// Reads a value from the underlying buffer.\r\nfunc (this *PacketReader) ReadListO" +
                     "f");
             
-            #line 148 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            #line 154 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(type));
             
             #line default
             #line hidden
             this.Write("() (value []");
             
-            #line 148 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            #line 154 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(GoBuilder.GetNativeType(type)));
             
             #line default
             #line hidden
             this.Write(", err error)  {\r\n\tsize, _ := this.ReadInt32()\r\n\tvalue = make([]");
             
-            #line 150 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            #line 156 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(GoBuilder.GetNativeType(type)));
             
             #line default
             #line hidden
             this.Write(", size)\r\n\tfor i := 0; i < int(size); i++ {\r\n\t\tvalue[i], _ = this.Read");
             
-            #line 152 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            #line 158 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(type));
             
             #line default
             #line hidden
             this.Write("()\r\n\t}\r\n\treturn\r\n}\r\n\r\n");
             
-            #line 157 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            #line 163 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
  } 
             
             #line default
             #line hidden
             this.Write("\r\n");
             
-            #line 159 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            #line 165 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
  foreach(var customType in Model.CustomTypes) { 
             
             #line default
             #line hidden
             this.Write("// Reads a value from the underlying buffer.\r\nfunc (this *PacketReader) Read");
             
-            #line 161 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            #line 167 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
             #line hidden
             this.Write("() (value ");
             
-            #line 161 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            #line 167 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
             #line hidden
             this.Write(", err error) {\r\n");
             
-            #line 162 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            #line 168 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
  foreach(var member in customType.Members) { 
             
             #line default
             #line hidden
             this.Write("\tvalue.");
             
-            #line 163 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            #line 169 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
             
             #line default
             #line hidden
             this.Write(", err = this.Read");
             
-            #line 163 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            #line 169 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "ListOf" : string.Empty));
             
             #line default
             #line hidden
             
-            #line 163 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            #line 169 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Type));
             
             #line default
             #line hidden
             this.Write("()\r\n");
             
-            #line 164 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            #line 170 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
  } 
             
             #line default
@@ -631,35 +632,35 @@ func (this *PacketReader) ReadListOfDynamicType() (value []interface{}, err erro
             this.Write("\treturn\r\n}\r\n\r\n// Reads a value from the underlying buffer.\r\nfunc (this *PacketRea" +
                     "der) ReadListOf");
             
-            #line 169 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            #line 175 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
             #line hidden
             this.Write("() (value []");
             
-            #line 169 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            #line 175 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
             #line hidden
             this.Write(", err error)  {\r\n\tsize, _ := this.ReadInt32()\r\n\tvalue = make([]");
             
-            #line 171 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            #line 177 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
             #line hidden
             this.Write(", size)\r\n\tfor i := 0; i < int(size); i++ {\r\n\t\tvalue[i], _ = this.Read");
             
-            #line 173 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            #line 179 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(customType.Name));
             
             #line default
             #line hidden
             this.Write("()\r\n\t}\r\n\treturn\r\n}\r\n");
             
-            #line 177 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
+            #line 183 "D:\Workspace\Spike.Build\Spike.Build.Go\PacketReader.t4"
  } 
             
             #line default
@@ -752,31 +753,34 @@ func (this *TcpChannel) Connect(address string, bufferSize int) (net.Conn, error
 		return nil, err
 	}
 
+	// The number of pending events per channel
+	slots := 2048
+
 	// Create the necessary channels
 	");
             
-            #line 44 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 47 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
  foreach(var receive in Model.Receives) { 
             
             #line default
             #line hidden
             this.Write("this.On");
             
-            #line 44 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 47 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name.Replace("Inform", String.Empty)));
             
             #line default
             #line hidden
             this.Write(" = make(chan *");
             
-            #line 44 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 47 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name));
             
             #line default
             #line hidden
-            this.Write(")\r\n\t");
+            this.Write(", slots)\r\n\t");
             
-            #line 45 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 48 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
 } 
             
             #line default
@@ -791,103 +795,107 @@ func (this *TcpChannel) Connect(address string, bufferSize int) (net.Conn, error
                     "l, err\r\n\t}\r\n\r\n\tthis.state = Open\r\n\tthis.conn = conn\r\n\r\n\t// Listen\r\n\tgo this.list" +
                     "en(bufferSize)\r\n\treturn conn, nil\r\n}\r\n\r\n\r\n// Disconnects from the remote endpoin" +
                     "t\r\nfunc (this *TcpChannel) Disconnect() (error){\r\n\tif (this.state != Open || thi" +
-                    "s.conn == nil){\r\n\t\treturn nil\r\n\t}\r\n\r\n\treturn this.conn.Close()\r\n}\r\n\r\n\r\n// Reads " +
-                    "from the remote server\r\nfunc (this *TcpChannel) listen(bufferSize int) (err erro" +
-                    "r) {\r\n\tbuffer := make([]byte, bufferSize)\r\n\r\n\tfor {\r\n\r\n\t\t// Read and close the c" +
-                    "onnection on error\r\n        n, err := this.conn.Read(buffer)\r\n        if err != " +
-                    "nil {\r\n            if err != io.EOF {\r\n                this.conn.Close()\r\n      " +
-                    "  \t\tthis.state = Closed\r\n        \t\treturn err\r\n            }\r\n            \r\n    " +
-                    "        time.Sleep(time.Millisecond * 10)\r\n        }\r\n\r\n\r\n\t\tif (n > 0){\r\n\t\t\t// W" +
-                    "e should have at least 8 bytes available for the read\r\n\t\t\tif (n < 8){\r\n\t\t\t\tthis." +
-                    "conn.Close()\r\n        \t\tthis.state = Closed\r\n        \t\treturn err\r\n\t\t\t}\r\n\r\n\t\t\t//" +
-                    " Get the header\r\n\t\t\thead := bytes.NewBuffer(buffer[:8])\r\n\t\t\t\r\n\t\t\t// Read the len" +
-                    "gth\r\n\t\t\tvar length int32\r\n\t\t\terr = binary.Read(head, binary.BigEndian, &length)\r" +
-                    "\n\t\t\tif err != nil{\r\n\t\t\t\tthis.conn.Close()\r\n        \t\tthis.state = Closed\r\n      " +
-                    "  \t\treturn err\r\n\t\t\t}\r\n\r\n\t\t\tlength -= 4\r\n\r\n\t\t\t// Read the key\r\n\t\t\tvar key uint32\r" +
-                    "\n\t\t\terr = binary.Read(head, binary.BigEndian, &key)\r\n\t\t\tif err != nil{\r\n\t\t\t\tthis" +
-                    ".conn.Close()\r\n        \t\tthis.state = Closed\r\n        \t\treturn err\r\n\t\t\t}\r\n\r\n\t\t\t/" +
-                    "/ Forward to receive\r\n\t\t\tthis.onReceive(key, buffer[8:n])\r\n\t\t}\r\n\r\n    }\r\n\r\n    r" +
-                    "eturn nil\r\n}\r\n\r\n// Occurs when a packet is received\r\nfunc (this *TcpChannel) onR" +
-                    "eceive(key uint32, buffer []byte) error{\r\n\treader := NewPacketReader(buffer)\r\n\ts" +
-                    "witch (key) {\r\n");
+                    "s.conn == nil){\r\n\t\treturn nil\r\n\t}\r\n\r\n\treturn this.conn.Close()\r\n}\r\n\r\n// Reads fr" +
+                    "om the remote server\r\nfunc (this *TcpChannel) listen(bufferSize int) (err error)" +
+                    " {\r\n\tbuffer := make([]byte, bufferSize)\r\n\r\n\tfor {\r\n\r\n\t\t// Read and close the con" +
+                    "nection on error\r\n        n, err := this.conn.Read(buffer)\r\n        if err != ni" +
+                    "l {\r\n            if err != io.EOF {\r\n                this.conn.Close()\r\n        " +
+                    "\t\tthis.state = Closed\r\n        \t\treturn err\r\n            }\r\n            \r\n      " +
+                    "      time.Sleep(time.Millisecond * 10)\r\n        }\r\n\r\n        // Reading offset," +
+                    " as there might be several packets inside\r\n        offset := 0\r\n        for{\r\n  " +
+                    "      \t// If we don\'t have any bytes, break the loop and go to the read() again\r" +
+                    "\n        \tif ((n - offset) == 0){\r\n        \t\tbreak;\r\n        \t}\r\n\r\n        \t// W" +
+                    "e should have at least 8 bytes available for the read\r\n\t\t\tif ((n - offset) < 8){" +
+                    "\r\n\t\t\t\tthis.conn.Close()\r\n        \t\tthis.state = Closed\r\n        \t\treturn err\r\n\t\t" +
+                    "\t}\r\n\r\n\t\t\t// Get the header\r\n\t\t\thead := bytes.NewBuffer(buffer[offset:offset + 8]" +
+                    ")\r\n\r\n\t\t\t// Read the length\r\n\t\t\tvar length int32\r\n\t\t\terr = binary.Read(head, bina" +
+                    "ry.BigEndian, &length)\r\n\t\t\tif err != nil{\r\n\t\t\t\tthis.conn.Close()\r\n        \t\tthis" +
+                    ".state = Closed\r\n        \t\treturn err\r\n\t\t\t}\r\n\r\n\t\t\tlength -= 4\r\n\r\n\t\t\t// Read the " +
+                    "key\r\n\t\t\tvar key uint32\r\n\t\t\terr = binary.Read(head, binary.BigEndian, &key)\r\n\t\t\ti" +
+                    "f err != nil{\r\n\t\t\t\tthis.conn.Close()\r\n        \t\tthis.state = Closed\r\n        \t\tr" +
+                    "eturn err\r\n\t\t\t}\r\n\r\n\t\r\n\t\t\t// Forward to receive\r\n\t\t\toffset += 8\r\n\t\t\tthis.onReceiv" +
+                    "e(key, buffer[offset:offset + int(length)])\r\n\t\t\toffset += int(length)\r\n        }" +
+                    "\r\n    }\r\n\r\n    return nil\r\n}\r\n\r\n// Occurs when a packet is received\r\nfunc (this " +
+                    "*TcpChannel) onReceive(key uint32, buffer []byte) error{\r\n\treader := NewPacketRe" +
+                    "ader(buffer)\r\n\tswitch (key) {\r\n");
             
-            #line 153 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 163 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
  foreach(var receive in Model.Receives) { 
             
             #line default
             #line hidden
             this.Write("\t\r\n\t\tcase 0x");
             
-            #line 154 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 164 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Id.ToString("X")));
             
             #line default
             #line hidden
             this.Write(": {\r\n");
             
-            #line 155 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 165 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
  if (receive.Compressed){ 
             
             #line default
             #line hidden
             this.Write("\t\t\treader.Decompress()\r\n");
             
-            #line 157 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 167 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
  } 
             
             #line default
             #line hidden
             this.Write("\t\t\tpacket := new(");
             
-            #line 158 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 168 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name));
             
             #line default
             #line hidden
             this.Write(")\r\n");
             
-            #line 159 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 169 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
  foreach(var member in receive.Members){ 
             
             #line default
             #line hidden
             this.Write("\t\t\tpacket.");
             
-            #line 160 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 170 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
             
             #line default
             #line hidden
             this.Write(", _ = reader.Read");
             
-            #line 160 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 170 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "ListOf" : string.Empty));
             
             #line default
             #line hidden
             
-            #line 160 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 170 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Type));
             
             #line default
             #line hidden
             this.Write("()\r\n");
             
-            #line 161 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 171 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
  } 
             
             #line default
             #line hidden
             this.Write("\t\r\n\t\t\tselect {\r\n    \t\t\tcase this.On");
             
-            #line 163 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 173 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name.Replace("Inform", String.Empty)));
             
             #line default
             #line hidden
             this.Write(" <- packet:\r\n    \t\t\tdefault:\r\n    \t\t}\r\n\t\t\treturn nil\r\n\t\t}\r\n");
             
-            #line 168 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 178 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
  } 
             
             #line default
@@ -924,21 +932,21 @@ func (this *TcpChannel) sendPacket(key uint32, writer *PacketWriter){
 
 ");
             
-            #line 199 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 209 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
  foreach(var send in Model.Sends){ 
             
             #line default
             #line hidden
             this.Write("\t\t\r\nfunc (this *TcpChannel) ");
             
-            #line 200 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 210 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(send.Name));
             
             #line default
             #line hidden
             this.Write("(");
             
-            #line 200 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 210 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
 	
 	var first = true;
 	foreach(var member in send.Members){
@@ -957,55 +965,55 @@ func (this *TcpChannel) sendPacket(key uint32, writer *PacketWriter){
             #line hidden
             this.Write("){\r\n\twriter := NewPacketWriter()\r\n");
             
-            #line 214 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 224 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
  foreach(var member in send.Members){ 
             
             #line default
             #line hidden
             this.Write("\twriter.Write");
             
-            #line 215 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 225 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Type));
             
             #line default
             #line hidden
             this.Write("(");
             
-            #line 215 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 225 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name));
             
             #line default
             #line hidden
             this.Write(")\r\n");
             
-            #line 216 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 226 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
  } 
             
             #line default
             #line hidden
             
-            #line 217 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 227 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
  if(send.Compressed){ 
             
             #line default
             #line hidden
             this.Write("\twriter.Compress()\r\n");
             
-            #line 219 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 229 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
  } 
             
             #line default
             #line hidden
             this.Write("\tthis.sendPacket(0x");
             
-            #line 220 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 230 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(send.Id.ToString("X")));
             
             #line default
             #line hidden
             this.Write(" , writer)\r\n}\t\t \r\n");
             
-            #line 222 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 232 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
  } 
             
             #line default
