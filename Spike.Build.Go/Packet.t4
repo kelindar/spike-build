@@ -7,6 +7,6 @@ type <#= TargetOperation.Name #> struct {
 <# foreach(var member in TargetOperation.Members){ #>
 
 	// Gets or sets the member '<#= member.Name #>' of the packet.
-	<#= member.Name.CamelCase() #> <#= member.IsList ? "[]" : string.Empty #><#= GoBuilder.GetNativeType(member) #>
+	<#= member.Name #> <#= member.IsList ? "[]" : string.Empty #><#= GoBuilder.GetNativeType(member) #>
 <# } #>
 }

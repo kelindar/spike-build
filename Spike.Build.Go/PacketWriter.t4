@@ -160,7 +160,7 @@ func (this *PacketWriter) WriteListOfDynamicType(value []interface{}) error {
 // Writes a value to the underlying buffer.
 func (this *PacketWriter) Write<#= customType.Name #>(value <#= customType.Name #>) error {
 <# foreach(var member in customType.Members){ #>
-	this.Write<#=member.Type#>(value.<#= member.Name.CamelCase() #>);
+	this.Write<#=member.Type#>(value.<#= member.Name #>);
 <# } #>
 	return nil
 }

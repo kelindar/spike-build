@@ -160,7 +160,7 @@ func (this *PacketReader) ReadListOf<#=type#>() (value []<#=GoBuilder.GetNativeT
 // Reads a value from the underlying buffer.
 func (this *PacketReader) Read<#=customType.Name#>() (value <#=customType.Name#>, err error) {
 <# foreach(var member in customType.Members) { #>
-	value.<#= member.Name.CamelCase() #>, err = this.Read<#= member.IsList ? "ListOf" : string.Empty #><#= member.Type #>()
+	value.<#= member.Name #>, err = this.Read<#= member.IsList ? "ListOf" : string.Empty #><#= member.Type #>()
 <# } #>
 	return
 }

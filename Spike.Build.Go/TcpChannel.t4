@@ -19,7 +19,6 @@ const (
 type TcpChannel struct {
 	state ChannelState
 	conn net.Conn
-	pipe chan []byte
 	guard *sync.Mutex
 
 <# foreach(var receive in Model.Receives) { #>		
@@ -27,7 +26,6 @@ type TcpChannel struct {
 	On<#=receive.Name.Replace("Inform", String.Empty)#> chan *<#= receive.Name #> 
 <#} #>
 }
-
 
 // Connects to the address on the named network.
 func (this *TcpChannel) Connect(address string, bufferSize int) (net.Conn, error) {
@@ -41,6 +39,10 @@ func (this *TcpChannel) Connect(address string, bufferSize int) (net.Conn, error
 	if err != nil {
 		return nil, err
 	}
+
+	// Create the necessary channels
+	<# foreach(var receive in Model.Receives) { #>this.On<#=receive.Name.Replace("Inform", String.Empty)#> = make(chan *<#= receive.Name #>)
+	<#} #>
 
 	this.state = Open
 	this.conn = conn
@@ -84,7 +86,6 @@ func (this *TcpChannel) Disconnect() (error){
 	return this.conn.Close()
 }
 
-
 // Reads from the remote server
 func (this *TcpChannel) listen(bufferSize int) (err error) {
 	buffer := make([]byte, bufferSize)
@@ -103,18 +104,24 @@ func (this *TcpChannel) listen(bufferSize int) (err error) {
             time.Sleep(time.Millisecond * 10)
         }
 
+        // Reading offset, as there might be several packets inside
+        offset := 0
+        for{
+        	// If we don't have any bytes, break the loop and go to the read() again
+        	if ((n - offset) == 0){
+        		break;
+        	}
 
-		if (n > 0){
-			// We should have at least 8 bytes available for the read
-			if (n < 8){
+        	// We should have at least 8 bytes available for the read
+			if ((n - offset) < 8){
 				this.conn.Close()
         		this.state = Closed
         		return err
 			}
 
 			// Get the header
-			head := bytes.NewBuffer(buffer[:8])
-			
+			head := bytes.NewBuffer(buffer[offset:offset + 8])
+
 			// Read the length
 			var length int32
 			err = binary.Read(head, binary.BigEndian, &length)
@@ -135,10 +142,12 @@ func (this *TcpChannel) listen(bufferSize int) (err error) {
         		return err
 			}
 
+	
 			// Forward to receive
-			this.onReceive(key, buffer[8:n])
-		}
-
+			offset += 8
+			this.onReceive(key, buffer[offset:offset + int(length)])
+			offset += int(length)
+        }
     }
 
     return nil
@@ -155,7 +164,7 @@ func (this *TcpChannel) onReceive(key uint32, buffer []byte) error{
 <# } #>
 			packet := new(<#= receive.Name #>)
 <# foreach(var member in receive.Members){ #>
-			packet.<#= member.Name.CamelCase() #>, _ = reader.Read<#= member.IsList ? "ListOf" : string.Empty #><#= member.Type #>()
+			packet.<#= member.Name #>, _ = reader.Read<#= member.IsList ? "ListOf" : string.Empty #><#= member.Type #>()
 <# } #>	
 			select {
     			case this.On<#=receive.Name.Replace("Inform", String.Empty)#> <- packet:
@@ -172,6 +181,9 @@ func (this *TcpChannel) onReceive(key uint32, buffer []byte) error{
 // Sends a packet using the writer
 func (this *TcpChannel) sendPacket(key uint32, writer *PacketWriter){
 	len := writer.buffer.Len() + 4
+	if (this.state != Open){
+		panic("spike.sendPacket: socket is not connected")
+	}
 
 	header := make([]byte, 8)
 	header[0] = byte(len >> 24)
@@ -199,7 +211,7 @@ func (this *TcpChannel) <#= send.Name #>(<#
 			Write(", ");
 		}
 
-		Write(member.Name.CamelCase());
+		Write(member.Name);
 		Write(" ");
 		Write(GoBuilder.GetNativeType(member));
 		first = false;
@@ -207,7 +219,7 @@ func (this *TcpChannel) <#= send.Name #>(<#
 #>){
 	writer := NewPacketWriter()
 <# foreach(var member in send.Members){ #>
-	writer.Write<#= member.Type #>(<#= member.Name.CamelCase() #>)
+	writer.Write<#= member.Type #>(<#= member.Name #>)
 <# } #>
 <# if(send.Compressed){ #>
 	writer.Compress()

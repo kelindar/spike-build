@@ -6,6 +6,6 @@ import "time"
 type <#= TargetType.Name #> struct {
 <# foreach(var member in TargetType.Members){ #>	
 	// Gets or sets the property '<#= member.Name #>' of the complex type.
-	<#= member.Name.CamelCase() #> <#= member.IsList ? "[]" : string.Empty #><#= GoBuilder.GetNativeType(member) #>
+	<#= member.Name #> <#= member.IsList ? "[]" : string.Empty #><#= GoBuilder.GetNativeType(member) #>
 <# } #>
 }
