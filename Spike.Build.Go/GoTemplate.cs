@@ -681,7 +681,6 @@ func (this *PacketReader) ReadListOfDynamicType() (value []interface{}, err erro
             this.Write(" ");
             this.Write(@"import (
 	""net""
-	""fmt""
 	""io""
 	""crypto/tls""
 	""sync""
@@ -706,35 +705,35 @@ type TcpChannel struct {
 
 ");
             
-            #line 26 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 25 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
  foreach(var receive in Model.Receives) { 
             
             #line default
             #line hidden
             this.Write("\t\t\r\n\t// Channel for ");
             
-            #line 27 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 26 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name));
             
             #line default
             #line hidden
             this.Write(" messages\r\n\tOn");
             
-            #line 28 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 27 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name.Replace("Inform", String.Empty)));
             
             #line default
             #line hidden
             this.Write(" chan *");
             
-            #line 28 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 27 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name));
             
             #line default
             #line hidden
             this.Write(" \r\n");
             
-            #line 29 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 28 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
 } 
             
             #line default
@@ -760,97 +759,96 @@ type TcpChannel struct {
                     "\n            if err != io.EOF {\r\n                this.conn.Close()\r\n        \t\tth" +
                     "is.state = Closed\r\n        \t\treturn err\r\n            }\r\n            \r\n          " +
                     "  time.Sleep(time.Millisecond * 10)\r\n        }\r\n\r\n\r\n\t\tif (n > 0){\r\n\t\t\t// We shou" +
-                    "ld have at least 8 bytes available for the read\r\n\t\t\t//data := buffer[:n]\r\n\t\t\tif " +
-                    "(n < 8){\r\n\t\t\t\tthis.conn.Close()\r\n        \t\tthis.state = Closed\r\n        \t\treturn" +
-                    " err\r\n\t\t\t}\r\n\r\n\t\t\t// Get the header\r\n\t\t\thead := bytes.NewBuffer(buffer[:8])\r\n\t\t\t\r" +
-                    "\n\t\t\t// Read the length\r\n\t\t\tvar length int32\r\n\t\t\terr = binary.Read(head, binary.B" +
-                    "igEndian, &length)\r\n\t\t\tif err != nil{\r\n\r\n\t\t\t\tfmt.Println(\"err:\", err)\r\n\t\t\t\tthis." +
-                    "conn.Close()\r\n        \t\tthis.state = Closed\r\n        \t\treturn err\r\n\t\t\t}\r\n\r\n\t\t\tle" +
-                    "ngth -= 4\r\n\r\n\t\t\t// Read the key\r\n\t\t\tvar key uint32\r\n\t\t\terr = binary.Read(head, b" +
-                    "inary.BigEndian, &key)\r\n\t\t\tif err != nil{\r\n\t\t\t\tthis.conn.Close()\r\n        \t\tthis" +
-                    ".state = Closed\r\n        \t\treturn err\r\n\t\t\t}\r\n\r\n\t\t\tfmt.Println(\"Operation\", key, " +
-                    "\"with payload of\", length, \"bytes\")\r\n\t\t\t\r\n\t\t\t//buf = append(buf, tmp[:n]...)\r\n\t\t" +
-                    "}\r\n\r\n    }\r\n\r\n    return nil\r\n}\r\n\r\n// Occurs when a packet is received\r\nfunc (th" +
-                    "is *TcpChannel) onReceive(key uint32, buffer []byte) error{\r\n\treader := NewPacke" +
-                    "tReader(buffer)\r\n\tswitch (key) {\r\n");
+                    "ld have at least 8 bytes available for the read\r\n\t\t\tif (n < 8){\r\n\t\t\t\tthis.conn.C" +
+                    "lose()\r\n        \t\tthis.state = Closed\r\n        \t\treturn err\r\n\t\t\t}\r\n\r\n\t\t\t// Get t" +
+                    "he header\r\n\t\t\thead := bytes.NewBuffer(buffer[:8])\r\n\t\t\t\r\n\t\t\t// Read the length\r\n\t" +
+                    "\t\tvar length int32\r\n\t\t\terr = binary.Read(head, binary.BigEndian, &length)\r\n\t\t\tif" +
+                    " err != nil{\r\n\t\t\t\tthis.conn.Close()\r\n        \t\tthis.state = Closed\r\n        \t\tre" +
+                    "turn err\r\n\t\t\t}\r\n\r\n\t\t\tlength -= 4\r\n\r\n\t\t\t// Read the key\r\n\t\t\tvar key uint32\r\n\t\t\ter" +
+                    "r = binary.Read(head, binary.BigEndian, &key)\r\n\t\t\tif err != nil{\r\n\t\t\t\tthis.conn." +
+                    "Close()\r\n        \t\tthis.state = Closed\r\n        \t\treturn err\r\n\t\t\t}\r\n\r\n\t\t\t// Forw" +
+                    "ard to receive\r\n\t\t\tthis.onReceive(key, buffer[8:n])\r\n\t\t}\r\n\r\n    }\r\n\r\n    return " +
+                    "nil\r\n}\r\n\r\n// Occurs when a packet is received\r\nfunc (this *TcpChannel) onReceive" +
+                    "(key uint32, buffer []byte) error{\r\n\treader := NewPacketReader(buffer)\r\n\tswitch " +
+                    "(key) {\r\n");
             
-            #line 156 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 151 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
  foreach(var receive in Model.Receives) { 
             
             #line default
             #line hidden
             this.Write("\t\r\n\t\tcase 0x");
             
-            #line 157 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 152 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Id.ToString("X")));
             
             #line default
             #line hidden
             this.Write(": {\r\n");
             
-            #line 158 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 153 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
  if (receive.Compressed){ 
             
             #line default
             #line hidden
             this.Write("\t\t\treader.Decompress()\r\n");
             
-            #line 160 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 155 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
  } 
             
             #line default
             #line hidden
             this.Write("\t\t\tpacket := new(");
             
-            #line 161 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 156 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name));
             
             #line default
             #line hidden
             this.Write(")\r\n");
             
-            #line 162 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 157 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
  foreach(var member in receive.Members){ 
             
             #line default
             #line hidden
             this.Write("\t\t\tpacket.");
             
-            #line 163 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 158 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name.CamelCase()));
             
             #line default
             #line hidden
             this.Write(", _ = reader.Read");
             
-            #line 163 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 158 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.IsList ? "ListOf" : string.Empty));
             
             #line default
             #line hidden
             
-            #line 163 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 158 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Type));
             
             #line default
             #line hidden
             this.Write("()\r\n");
             
-            #line 164 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 159 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
  } 
             
             #line default
             #line hidden
-            this.Write("\t\r\n\t\t\tthis.On");
+            this.Write("\t\r\n\t\t\tselect {\r\n    \t\t\tcase this.On");
             
-            #line 165 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 161 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(receive.Name.Replace("Inform", String.Empty)));
             
             #line default
             #line hidden
-            this.Write(" <- packet\r\n\t\t\treturn nil\r\n\t\t}\r\n");
+            this.Write(" <- packet:\r\n    \t\t\tdefault:\r\n    \t\t}\r\n\t\t\treturn nil\r\n\t\t}\r\n");
             
-            #line 168 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 166 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
  } 
             
             #line default
@@ -884,21 +882,21 @@ func (this *TcpChannel) sendPacket(key uint32, writer *PacketWriter){
 
 ");
             
-            #line 196 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 194 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
  foreach(var send in Model.Sends){ 
             
             #line default
             #line hidden
             this.Write("\t\t\r\nfunc (this *TcpChannel) ");
             
-            #line 197 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 195 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(send.Name));
             
             #line default
             #line hidden
             this.Write("(");
             
-            #line 197 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 195 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
 	
 	var first = true;
 	foreach(var member in send.Members){
@@ -917,55 +915,55 @@ func (this *TcpChannel) sendPacket(key uint32, writer *PacketWriter){
             #line hidden
             this.Write("){\r\n\twriter := NewPacketWriter()\r\n");
             
-            #line 211 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 209 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
  foreach(var member in send.Members){ 
             
             #line default
             #line hidden
             this.Write("\twriter.Write");
             
-            #line 212 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 210 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Type));
             
             #line default
             #line hidden
             this.Write("(");
             
-            #line 212 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 210 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(member.Name.CamelCase()));
             
             #line default
             #line hidden
             this.Write(")\r\n");
             
-            #line 213 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 211 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
  } 
             
             #line default
             #line hidden
             
-            #line 214 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 212 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
  if(send.Compressed){ 
             
             #line default
             #line hidden
             this.Write("\twriter.Compress()\r\n");
             
-            #line 216 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 214 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
  } 
             
             #line default
             #line hidden
             this.Write("\tthis.sendPacket(0x");
             
-            #line 217 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 215 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
             this.Write(this.ToStringHelper.ToStringWithCulture(send.Id.ToString("X")));
             
             #line default
             #line hidden
             this.Write(" , writer)\r\n}\t\t \r\n");
             
-            #line 219 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
+            #line 217 "D:\Workspace\Spike.Build\Spike.Build.Go\TcpChannel.t4"
  } 
             
             #line default

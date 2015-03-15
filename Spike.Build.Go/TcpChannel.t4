@@ -1,6 +1,5 @@
 ﻿import (
 	"net"
-	"fmt"
 	"io"
 	"crypto/tls"
 	"sync"
@@ -107,7 +106,6 @@ func (this *TcpChannel) listen(bufferSize int) (err error) {
 
 		if (n > 0){
 			// We should have at least 8 bytes available for the read
-			//data := buffer[:n]
 			if (n < 8){
 				this.conn.Close()
         		this.state = Closed
@@ -121,8 +119,6 @@ func (this *TcpChannel) listen(bufferSize int) (err error) {
 			var length int32
 			err = binary.Read(head, binary.BigEndian, &length)
 			if err != nil{
-
-				fmt.Println("err:", err)
 				this.conn.Close()
         		this.state = Closed
         		return err
@@ -139,9 +135,8 @@ func (this *TcpChannel) listen(bufferSize int) (err error) {
         		return err
 			}
 
-			fmt.Println("Operation", key, "with payload of", length, "bytes")
-			
-			//buf = append(buf, tmp[:n]...)
+			// Forward to receive
+			this.onReceive(key, buffer[8:n])
 		}
 
     }
@@ -162,7 +157,10 @@ func (this *TcpChannel) onReceive(key uint32, buffer []byte) error{
 <# foreach(var member in receive.Members){ #>
 			packet.<#= member.Name.CamelCase() #>, _ = reader.Read<#= member.IsList ? "ListOf" : string.Empty #><#= member.Type #>()
 <# } #>	
-			this.On<#=receive.Name.Replace("Inform", String.Empty)#> <- packet
+			select {
+    			case this.On<#=receive.Name.Replace("Inform", String.Empty)#> <- packet:
+    			default:
+    		}
 			return nil
 		}
 <# } #>
