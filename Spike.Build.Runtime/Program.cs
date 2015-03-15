@@ -227,23 +227,36 @@ namespace Spike.Build
         private static void PromptUsage()
         {
             var currentAssembly = Assembly.GetExecutingAssembly();
-            Console.WriteLine("Usage: Spike.Build <options>");
+            Console.WriteLine("Usage: SBuild [OPTIONS]");
             Console.WriteLine(currentAssembly.GetCustomAttribute<AssemblyDescriptionAttribute>().Description);
             Console.WriteLine();
-            Console.WriteLine("options : ");
+            Console.WriteLine("Options: ");
 
-            Console.WriteLine("\t-h, --help");
-            Console.WriteLine("\t-i, --input <source>");
-            Console.WriteLine("\t-p, --platform <{0}>", Builders.Keys.Aggregate((platform1, platform2) => { return platform1 + '|' + platform2; }));
-            Console.WriteLine("\t-o, --output <path>");
-            Console.WriteLine("\t-f, --format <single>");
+            Console.WriteLine("  -h, --help             Prints out this usage help documentation");
+            Console.WriteLine();
+
+            Console.WriteLine("  -i, --input <source>   Specifies the input protocol definition location as:");
+            Console.WriteLine("                         - (URL) ex: http://127.0.0.1:8002/spml/MyProtocol or");
+            Console.WriteLine("                                     http://127.0.0.1:8002/spml/all");
+            Console.WriteLine("                         - (FILE) ex: MyProtocol.spml");
+            Console.WriteLine();
+
+            Console.WriteLine("  -p, --platform <type>  Sets the output platform for which the source code");
+            Console.WriteLine("                         should be generated. Available generators:");
+            foreach (var builder in Builders.Keys)
+                Console.WriteLine("                         - \"" + builder.ToLower() + "\": for " + builder + " code generator");
+            Console.WriteLine();
+
+            Console.WriteLine("  -o, --output <path>    Specify the output path (directory) where the");
+            Console.WriteLine("                         generated source code should be placed");
+            Console.WriteLine();
+
+            Console.WriteLine("  -f, --format <single>  Specifies the format of the code generation,");
+            Console.WriteLine("                         currently only \"single\" is available for ");
+            Console.WriteLine("                         JavaScript builder");
             //Console.WriteLine("\t-n, --namespace");
             //Console.WriteLine("\t-v, --verbose");
 
-            Console.WriteLine();
-            Console.WriteLine(" sources could be either: ");
-            Console.WriteLine("  URL ( ex: http://www.spike-engine.com/spml/MyChatProtocol or http://www.spike-engine.com/spml/all )");
-            Console.WriteLine("  File ( ex: test.spml )");
         }
     }
 }
