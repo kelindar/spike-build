@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -118,7 +118,53 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Spike.Build.Java\CustomTypeTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CustomTypeTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Spike.Build.Java\JavaBuilder.cs" />
+    <Compile Include="Spike.Build.Java\PacketTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PacketTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Spike.Build.Java\AbstractTcpChannelTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AbstractTcpChannelTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Spike.Build.Java\CLZFTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CLZFTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Spike.Build.Java\ConnectionHandlerTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ConnectionHandlerTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Spike.Build.Java\DisconnectionHandlerTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DisconnectionHandlerTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Spike.Build.Java\PacketHandlerTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PacketHandlerTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Spike.Build.Java\TcpChannelTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TcpChannelTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Spike.Build.Runtime\BuilderBase.cs" />
+    <Compile Include="Spike.Build.Runtime\CustomType.cs" />
+    <Compile Include="Spike.Build.Runtime\Exceptions.cs" />
+    <Compile Include="Spike.Build.Runtime\Extentions.cs" />
+    <Compile Include="Spike.Build.Runtime\Member.cs" />
     <Compile Include="Spike.Build.Runtime\Minifiers\CssEncoderFallback.cs" />
     <Compile Include="Spike.Build.Runtime\Minifiers\Css\CssColorName.cs" />
     <Compile Include="Spike.Build.Runtime\Minifiers\Css\CssErrorCode.cs" />
@@ -232,55 +278,9 @@
     <Compile Include="Spike.Build.Runtime\Minifiers\MinifierParser.cs" />
     <Compile Include="Spike.Build.Runtime\Minifiers\MinifierResourceStrings.cs" />
     <Compile Include="Spike.Build.Runtime\Minifiers\MinifierSettings.cs" />
-    <Compile Include="Spike.Build.Java\CustomTypeTemplate.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CustomTypeTemplate.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Spike.Build.Java\JavaBuilder.cs" />
-    <Compile Include="Spike.Build.Java\PacketTemplate.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>PacketTemplate.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Spike.Build.Java\AbstractTcpChannelTemplate.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>AbstractTcpChannelTemplate.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Spike.Build.Java\CLZFTemplate.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CLZFTemplate.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Spike.Build.Java\ConnectionHandlerTemplate.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ConnectionHandlerTemplate.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Spike.Build.Java\DisconnectionHandlerTemplate.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DisconnectionHandlerTemplate.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Spike.Build.Java\PacketHandlerTemplate.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>PacketHandlerTemplate.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Spike.Build.Runtime\CustomType.cs" />
-    <Compile Include="Spike.Build.Runtime\Exceptions.cs" />
-    <Compile Include="Spike.Build.Runtime\Extentions.cs" />
-    <Compile Include="Spike.Build.Java\TcpChannelTemplate.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>TcpChannelTemplate.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Spike.Build.Runtime\Member.cs" />
+    <Compile Include="Spike.Build.Runtime\Model.cs" />
     <Compile Include="Spike.Build.Runtime\Operation.cs" />
     <Compile Include="Spike.Build.Runtime\Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Spike.Build.Runtime\Model.cs" />
     <Compile Include="Spike.Build.WinRT\WinRTTemplate.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
