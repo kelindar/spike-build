@@ -1,0 +1,555 @@
+﻿if(typeof spike === 'undefined')
+	spike = new Object();
+
+// Whether we should or not use native binary support
+spike.binarySupport = ((typeof Uint8Array !== 'undefined') && (typeof DataView !== 'undefined'));
+spike.ByteArray = function(){
+	this.position = 0;
+	this.bigEndian = true;
+	this.allowExceptions = true;
+
+	if(spike.binarySupport)
+	{
+		this.data  = new ArrayBuffer(0);
+		this._size = this._maxSize = this.data.byteLength;
+		this.view  = new DataView(this.data);
+	}
+	else
+	{
+		this.data = [];
+	}
+};
+with({p: spike.ByteArray.prototype}){
+
+	/* Ensures the capacity for n bytes in this array, resizes if necessary */
+	p.ensureCapacity = function(length) {
+		if(this._maxSize > this.position + length)
+			return;
+
+		// Resize by 1024 and build a data view
+		var baseArrayBuffer = this.data;
+		var newByteSize = this._maxSize + Math.max(1024, length);
+		var resizedArrayBuffer = new ArrayBuffer(newByteSize),
+			len = baseArrayBuffer.byteLength,
+			resizeLen = (len > newByteSize)? newByteSize : len;
+
+			(new Uint8Array(resizedArrayBuffer, 0, resizeLen)).set(new Uint8Array(baseArrayBuffer, 0, resizeLen));
+
+		this.data = resizedArrayBuffer;
+		this.view = new DataView(this.data);
+		this._maxSize = newByteSize; 
+	};
+
+
+	/* Writes a floating-point value to the underlying buffer. */
+	p.string_writeFloat = function(number, precisionBits, exponentBits){
+		var bias = Math.pow(2, exponentBits - 1) - 1, minExp = -bias + 1, maxExp = bias, minUnnormExp = minExp - precisionBits,
+		status = isNaN(n = parseFloat(number)) || n == -Infinity || n == +Infinity ? n : 0,
+		exp = 0, len = 2 * bias + 1 + precisionBits + 3, bin = new Array(len),
+		signal = (n = status !== 0 ? 0 : n) < 0, n = Math.abs(n), intPart = Math.floor(n), floatPart = n - intPart,
+		i, lastBit, rounded, j, result;
+		for(i = len; i; bin[--i] = 0);
+		for(i = bias + 2; intPart && i; bin[--i] = intPart % 2, intPart = Math.floor(intPart / 2));
+		for(i = bias + 1; floatPart > 0 && i; (bin[++i] = ((floatPart *= 2) >= 1) - 0) && --floatPart);
+		for(i = -1; ++i < len && !bin[i];);
+		if(bin[(lastBit = precisionBits - 1 + (i = (exp = bias + 1 - i) >= minExp && exp <= maxExp ? i + 1 : bias + 1 - (exp = minExp - 1))) + 1]){
+			if(!(rounded = bin[lastBit]))
+				for(j = lastBit + 2; !rounded && j < len; rounded = bin[j++]);
+			for(j = lastBit + 1; rounded && --j >= 0; (bin[j] = !bin[j] - 0) && (rounded = 0));
+		}
+		for(i = i - 2 < 0 ? -1 : i - 3; ++i < len && !bin[i];);
+
+		(exp = bias + 1 - i) >= minExp && exp <= maxExp ? ++i : exp < minExp &&
+			(exp != bias + 1 - len && exp < minUnnormExp && this.warn('encodeFloat::float underflow'), i = bias + 1 - (exp = minExp - 1));
+		(intPart || status !== 0) && (this.warn(intPart ? 'encodeFloat::float overflow' : 'encodeFloat::' + status),
+			exp = maxExp + 1, i = bias + 2, status == -Infinity ? signal = 1 : isNaN(status) && (bin[i] = 1));
+		for(n = Math.abs(exp + bias), j = exponentBits + 1, result = ''; --j; result = (n % 2) + result, n = n >>= 1);
+		for(n = 0, j = 0, i = (result = (signal ? '1' : '0') + result + bin.slice(i, i + precisionBits).join('')).length, r = [];
+			i; n += (1 << j) * result.charAt(--i), j == 7 && (r[r.length] = String.fromCharCode(n), n = 0), j = (j + 1) % 8);
+		r[r.length] = n ? String.fromCharCode(n) : '';
+		this.data += (this.bigEndian ? r.reverse() : r).join('');
+	};
+
+	/* Writes a floating-point value to the underlying buffer. */
+	p.native_writeFloat = function(number, precisionBits, exponentBits){
+		var bits = precisionBits + exponentBits + 1;
+		this.ensureCapacity(bits / 8);
+		switch(bits)
+		{
+			case 32:
+				this.view.setFloat32(this.position, number, !this.bigEndian);
+				this.position += 4;
+				this._size += 4;
+				return;
+
+			case 64:
+				this.view.setFloat64(this.position, number, !this.bigEndian);
+				this.position += 8;
+				this._size += 8;
+				return;
+		}
+	};
+
+	/* Writes a floating-point value to the underlying buffer. */
+	p.writeFloat = spike.binarySupport ? p.native_writeFloat : p.string_writeFloat;
+
+	/* Writes a integral value to the underlying buffer. */
+	p.string_writeInt = function(number, bits, signed){
+		if(bits == 64){
+			this.write64(number);
+			return;
+		};
+
+	    var max = Math.pow(2, bits), r = [];
+	    var maxs = Math.pow(2, bits - 1);
+		(signed && (number >= maxs || number < -maxs)) && this.warn('writeInt::overflow with value' + number) && (number = 0);
+		(!signed && (number >= max || (number < -(max >> 1)))) && this.warn('writeUInt::overflow with value' + number) && (number = 0);
+		number < 0 && (number += max);
+		for(; number; r[r.length] = String.fromCharCode(number % 256), number = Math.floor(number / 256));
+		for(bits = -(-bits >> 3) - r.length; bits--; r[r.length] = '\0');
+		this.data += (this.bigEndian ? r.reverse() : r).join('');
+	};
+
+	/* Writes a integral value to the underlying buffer. */
+	p.native_writeInt = function(number, bits, signed){
+		this.ensureCapacity(bits / 8);
+		if(signed)
+		{
+			switch(bits)
+			{
+				case 8:
+					this.view.setInt8(this.position, number);
+					this.position += 1;
+					this._size += 1;
+					return;
+
+				case 16:
+					this.view.setInt16(this.position, number, !this.bigEndian);
+					this.position += 2;
+					this._size += 2;
+					return;
+
+				case 32:
+					this.view.setInt32(this.position, number, !this.bigEndian);
+					this.position += 4;
+					this._size += 4;
+					return;
+
+				case 64:
+					this.write64(number);
+					return;
+			}
+		}
+		else
+		{
+			switch(bits)
+			{
+				case 8:
+					this.view.setUint8(this.position, number);
+					this.position += 1;
+					this._size += 1;
+					return;
+
+				case 16:
+					this.view.setUint16(this.position, number, !this.bigEndian);
+					this.position += 2;
+					this._size += 2;
+					return;
+
+				case 32:
+					this.view.setUint32(this.position, number, !this.bigEndian);
+					this.position += 4;
+					this._size += 4;
+					return;
+
+				case 64:
+					this.write64(number);
+					return;
+			}
+		}
+	};
+	
+	/* Writes a integral value to the underlying buffer. */
+	p.writeInt = spike.binarySupport ? p.native_writeInt : p.string_writeInt;
+
+	/* Writes an unsigned byte value to the underlying buffer. */
+	p.writeByte = function(number){
+		this.writeInt(number, 8, false);
+	};
+
+	/* Writes bytes to the underlying buffer. */
+	p.string_writeBytes = function(bytes){
+		this.data += bytes;
+	};
+
+	/* Writes bytes to the underlying buffer. */
+	p.native_writeBytes = function(bytes){
+		this.ensureCapacity(bytes.length);
+		var v = new Uint8Array(this.data, this.position, bytes.length);
+		v.set(bytes, 0);
+		this.position += bytes.length;
+		this._size += bytes.length;
+	};
+
+	/* Writes bytes to the underlying buffer. */
+	p.writeBytes = spike.binarySupport ? p.native_writeBytes : p.string_writeBytes;
+
+	
+	/* Writes a series of hex bytes and presents it as a 0x.. formatted string */
+	p.write64 = function(hex){
+		if(hex.length != 20)
+			throw new Error('UInt64 or Int16 must be a string of exactly 20 bytes');
+		var type = hex.substring(0, 4);
+		if(type != '-64x' && type != '+64x')
+			throw new Error('UInt64 or Int16 must start with +64x or -64x');
+		
+		hex = hex.slice(4);
+		for (var i = 0; i < 16; i+=2){
+			var v = parseInt('' + hex[i] + hex[i + 1], 16);
+			this.writeByte(v);
+		}
+	};
+
+
+	/* Reads a floating-point value from the underlying buffer. */
+	p.string_readFloat = function(precisionBits, exponentBits){
+		var blen = (precisionBits + exponentBits + 1) / 8;
+		var data = this.data.slice(this.position, this.position + blen);
+		this.position += blen;
+		var b = ((b = new this.Buffer(this.bigEndian, data)).checkBuffer(precisionBits + exponentBits + 1), b),
+			bias = Math.pow(2, exponentBits - 1) - 1, signal = b.readBits(precisionBits + exponentBits, 1),
+			exponent = b.readBits(precisionBits, exponentBits), significand = 0,
+			divisor = 2, curByte = b.buffer.length + (-precisionBits >> 3) - 1,
+			byteValue, startBit, mask;
+		do
+			for(byteValue = b.buffer[ ++curByte ], startBit = precisionBits % 8 || 8, mask = 1 << startBit;
+				mask >>= 1; (byteValue & mask) && (significand += 1 / divisor), divisor *= 2);
+		while(precisionBits -= startBit);
+		return exponent == (bias << 1) + 1 ? significand ? NaN : signal ? -Infinity : +Infinity
+			: (1 + signal * -2) * (exponent || significand ? !exponent ? Math.pow(2, -bias + 1) * significand
+			: Math.pow(2, exponent - bias) * (1 + significand) : 0);
+	};
+
+	/* Reads a floating-point value from the underlying buffer. */
+	p.native_readFloat = function(precisionBits, exponentBits){
+		var bits = (precisionBits + exponentBits + 1);
+		var value = 0;
+		switch(bits)
+		{
+			case 32:
+				value = this.view.getFloat32(this.position, !this.bigEndian);
+				this.position += 4;
+				return value;
+
+			case 64:
+				value = this.view.getFloat64(this.position, !this.bigEndian);
+				this.position += 8;
+				return value;
+		}
+	};
+
+	/* Reads a floating-point value from the underlying buffer. */
+	p.readFloat = spike.binarySupport ? p.native_readFloat : p.string_readFloat;
+
+	/* Reads an integral value from the underlying buffer. */
+	p.string_readInt = function(bits, signed){
+		if(bits == 64) return this.read64(signed);
+		var blen = bits / 8;
+		var data = this.data.slice(this.position, this.position + blen);
+		this.position += blen;
+		var b = new this.Buffer(this.bigEndian, data), x = b.readBits(0, bits), max = Math.pow(2, bits);
+		return signed && x >= max / 2 ? x - max : x;
+	};
+
+	/* Reads an integral value from the underlying buffer. */
+	p.native_readInt = function(bits, signed){
+		var value = 0;
+		if(signed)
+		{
+			switch(bits)
+			{
+				case 8:
+					value = this.view.getInt8(this.position);
+					this.position += 1;
+					return value < 0x80 ? value : value - 0x100;
+
+				case 16:
+					value = this.view.getInt16(this.position, !this.bigEndian);
+					this.position += 2;
+					return value;
+
+				case 32:
+					value = this.view.getInt32(this.position, !this.bigEndian);
+					this.position += 4;
+					return value;
+
+				case 64:
+					value = this.read64(signed);
+					//console.log('Int64 is not supported in JavaScript, decoded ' + value + ' as a string.');
+					return value;
+			}
+		}
+		else
+		{
+			switch(bits)
+			{
+				case 8:
+					value =  this.view.getUint8(this.position);
+					this.position += 1;
+					return value;
+
+				case 16:
+					value = this.view.getUint16(this.position, !this.bigEndian);
+					this.position += 2;
+					return value;
+
+				case 32:
+					value = this.view.getUint32(this.position, !this.bigEndian);
+					this.position += 4;
+					return value;
+
+				case 64:
+					value = this.read64(signed);
+					//console.log('UInt64 is not supported in JavaScript, decoded ' + value + ' as a string.');
+					return value;
+			}
+		}
+	}
+
+	/* Reads an integral value from the underlying buffer. */
+	p.readInt = spike.binarySupport ? p.native_readInt : p.string_readInt;
+
+	/* Reads an unsigned byte value from the underlying buffer. */
+	p.readByte = function(){
+		return this.readInt(8, false);
+	};
+
+	/* Reads bytes from the underlying buffer. */
+	p.string_readBytes = function(count){
+		var r = this.data.slice(this.position, this.position + count);
+		this.position += count;
+		return r;
+	};
+
+	/* Reads bytes from the underlying buffer. */
+	p.native_readBytes = function(count){
+		var r = new Uint8Array(this.data, this.position, count);
+		this.position += count;
+		return r;
+	};
+
+	/* Reads bytes from the underlying buffer. */
+	p.readBytes = spike.binarySupport ? p.native_readBytes : p.string_readBytes;
+
+	/* Private padding of a string for HEX encoding */
+	p._padN = function(str, width) {
+	  return str.length >= width ? str : new Array(width - str.length + 1).join('0') + str;
+	};
+
+	/* Private padding of a string for HEX encoding */
+	p._pad2 = function(str) {
+		return (str.length < 2) ? "0" + str : str;
+	};
+
+	/* Reads a series of hex bytes and presents it as a 0x.. formatted string */
+	p.read64 = function(signed){
+		var b16 = '';
+		for(var i = 0; i < 8; ++i){
+			b16 += this._pad2(this.getAt(this.position).toString(16));
+			this.position++;
+		}
+		return (signed ? '-64x' : '+64x') + b16;
+	};
+
+	/* Gets a byte value on a specified position */
+	p.string_getAt = function(index){
+		return this.data.charCodeAt(index) & 0xff;
+	};
+
+	/* Gets a byte value on a specified position */
+	p.native_getAt = function(index){
+		return this.view.getUint8(index);
+	};
+
+	/* Reads bytes from the underlying buffer. */
+	p.getAt = spike.binarySupport ? p.native_getAt : p.string_getAt;
+
+	/* Appends the underlying buffer data to the specified buffer. */
+	p.readBytesTo = function(targetBuffer, count){
+		targetBuffer.writeBytes( this.readBytes(count) );
+	};
+
+
+	/* Appends the underlying buffer data to the specified buffer. */
+	p.string_getSize = function(){
+		return this.data.length;
+	};
+
+	/* Appends the underlying buffer data to the specified buffer. */
+	p.native_getSize = function(){
+		return this._size;
+	};
+
+	/* Appends the underlying buffer data to the specified buffer. */
+	p.getSize = spike.binarySupport ? p.native_getSize : p.string_getSize;
+
+	/* Gets the byte array data as base64 encoded string */
+	p.string_toBase64 = function(){
+		var cleanBuffer = new Array();
+		var result = "";
+
+	   	for(var i=0; i<this.getSize(); ++i)
+			cleanBuffer.push(this.getAt(i));
+		for (var i = 0; i < cleanBuffer.length; i++)
+			result += String.fromCharCode(cleanBuffer[i]);	
+
+		if (typeof(btoa) === 'function') {
+			return btoa(result);
+		} else {
+			return this._btoa(result);
+		}
+	};
+
+	/* Gets the byte array data as base64 encoded string */
+	p.native_toBase64 = function(){
+		//var array = (new Uint8Array(this.data)).subarray(0, this._size);
+		var array = new Uint8Array(this.data, 0, this._size);
+		var text  = String.fromCharCode.apply(null, array);
+
+		return (typeof(btoa) === 'function') 
+			? btoa(text) 
+			: this._btoa(text);
+	};
+
+	/* Gets the byte array data as base64 encoded string */
+	p.toBase64 = spike.binarySupport ? p.native_toBase64 : p.string_toBase64;
+
+	/* Gets the underlying buffer slice */
+	p.toBuffer = function(){
+		var p = this.position;
+		this.position = 0;
+		var b = this.readBytes(this.getSize());
+		this.position = p;
+		return b;
+	};
+
+	/* Writes base 64 encoded string to the buffer after decoding it */
+	p.string_writeBase64 = function(input){
+		if (typeof(atob) === 'function') {
+			this.writeBytes(atob(input));
+		} else {
+			this.writeBytes(this._atob(input));
+		}
+	};
+
+	/* Writes base 64 encoded string to the buffer after decoding it */
+	p.native_writeBase64 = function(input){
+		var array = new Uint8Array(atob(input).split("").map(function(c) { return c.charCodeAt(0); }));
+		this.writeBytes(array);
+	};
+
+	/* Writes base 64 encoded string to the buffer after decoding it */
+	p.writeBase64 = spike.binarySupport ? p.native_writeBase64 : p.string_writeBase64;
+
+
+     /* btoa() for Internet Explorer */
+     p._btoa = function(str) {
+          var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+          var encoded = [];
+          var c = 0;
+          while (c < str.length) {
+              var b0 = str.charCodeAt(c++);
+              var b1 = str.charCodeAt(c++);
+              var b2 = str.charCodeAt(c++);
+              var buf = (b0 << 16) + ((b1 || 0) << 8) + (b2 || 0);
+              var i0 = (buf & (63 << 18)) >> 18;
+              var i1 = (buf & (63 << 12)) >> 12;
+              var i2 = isNaN(b1) ? 64 : (buf & (63 << 6)) >> 6;
+              var i3 = isNaN(b2) ? 64 : (buf & 63);
+              encoded[encoded.length] = chars.charAt(i0);
+              encoded[encoded.length] = chars.charAt(i1);
+              encoded[encoded.length] = chars.charAt(i2);
+              encoded[encoded.length] = chars.charAt(i3);
+          }
+          return encoded.join('');
+      };
+
+	/* atob() for Internet Explorer */
+	p._atob = function(input) {
+	    var b64array = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+	    var output = "";
+	    var hex = "";
+	    var chr1, chr2, chr3 = "";
+	    var enc1, enc2, enc3, enc4 = "";
+	    var i = 0;
+	
+	    input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+	
+	    do {
+	        enc1 = b64array.indexOf(input.charAt(i++));
+	        enc2 = b64array.indexOf(input.charAt(i++));
+	        enc3 = b64array.indexOf(input.charAt(i++));
+	        enc4 = b64array.indexOf(input.charAt(i++));
+	        
+	        chr1 = (enc1 << 2) | (enc2 >> 4);
+	        chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+	        chr3 = ((enc3 & 3) << 6) | enc4;
+	        
+	        output = output + String.fromCharCode(chr1);
+	        
+	        if (enc3 != 64) {
+	            output = output + String.fromCharCode(chr2);
+	        }
+	        if (enc4 != 64) {
+	            output = output + String.fromCharCode(chr3);
+	        }
+	    
+	        chr1 = chr2 = chr3 = "";
+	        enc1 = enc2 = enc3 = enc4 = "";
+	    
+	    } while (i < input.length);
+
+	    return output;
+	};
+
+
+	with({p: (p.Buffer = function(bigEndian, buffer){
+		this.bigEndian = bigEndian || 0, this.buffer = [], this.setBuffer(buffer);
+	}).prototype}){
+		p.readBits = function(start, length){
+			function shl(a, b){
+				for(++b; --b; a = ((a %= 0x7fffffff + 1) & 0x40000000) == 0x40000000 ? a * 2 : (a - 0x40000000) * 2 + 0x7fffffff + 1);
+				return a;
+			}
+			if(start < 0 || length <= 0)
+				return 0;
+			this.checkBuffer(start + length);
+			for(var offsetLeft, offsetRight = start % 8, curByte = this.buffer.length - (start >> 3) - 1,
+				lastByte = this.buffer.length + (-(start + length) >> 3), diff = curByte - lastByte,
+				sum = ((this.buffer[ curByte ] >> offsetRight) & ((1 << (diff ? 8 - offsetRight : length)) - 1))
+				+ (diff && (offsetLeft = (start + length) % 8) ? (this.buffer[ lastByte++ ] & ((1 << offsetLeft) - 1))
+				<< (diff-- << 3) - offsetRight : 0); diff; sum += shl(this.buffer[ lastByte++ ], (diff-- << 3) - offsetRight)
+			);
+			return sum;
+		};
+		p.setBuffer = function(data){
+			if(data){
+				for(var l, i = l = data.length, b = this.buffer = new Array(l); i; b[l - i] = data.charCodeAt(--i));
+				this.bigEndian && b.reverse();
+			}
+		};
+		p.hasNeededBits = function(neededBits){
+			return this.buffer.length >= -(-neededBits >> 3);
+		};
+		p.checkBuffer = function(neededBits){
+			if(!this.hasNeededBits(neededBits))
+				throw new Error('checkBuffer::missing bytes');
+		};
+	}
+	p.warn = function(msg){
+		if(this.allowExceptions)
+			throw new Error(msg);
+		return 1;
+	};
+
+}

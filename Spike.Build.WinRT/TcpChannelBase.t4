@@ -1,0 +1,243 @@
+﻿	/// <summary>
+    /// Represents a connection error.
+    /// </summary>
+    public enum ConnectionError
+    {
+        /// <summary>
+        /// Unknown connection error has occured.
+        /// </summary>
+        Unknown,
+
+        /// <summary>
+        /// Represents a manual disconnection error.
+        /// </summary>
+        Manual,
+
+        /// <summary>
+        /// Represents a connection error during a connect.
+        /// </summary>
+        Connection,
+
+        /// <summary>
+        /// Represents a connection error during the receive.
+        /// </summary>
+        Receive,
+
+        /// <summary>
+        /// Represents a connection error during the send.
+        /// </summary>
+        Send
+    }
+
+    /// <summary>
+    /// Represents a TCP Channel.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public abstract class TcpChannelBase<T> where T : TcpChannelBase<T>
+    {
+        private StreamSocket Socket;
+        private DataWriter SocketWriter;
+        private DataReader SocketReader;
+
+        private object Lock = new object();
+        private bool Disposed = false;
+
+        /// <summary>
+        /// An event that occurs when the channel is connected to the remote endpoint.
+        /// </summary>
+        public event Action<T> Connected;
+
+        /// <summary>
+        /// An event that occurs when the channel is disconnected to the remote endpoint.
+        /// </summary>
+        public event Action<T, ConnectionError> Disconnected;
+
+        /// <summary>
+        /// Gets the max capacity buffer size.
+        /// </summary>
+        public int BufferCapacity
+        {
+            get;
+            protected set;
+        }
+
+        /// <summary>
+        /// Whether this channel is secured with TLS/SSL.
+        /// </summary>
+        public bool TlsSecure
+        {
+            get;
+            protected set;
+        }
+
+        /// <summary>
+        /// This packet writer is used to serialize packets. We need to maintain
+        /// the state for each thread, hence this is thread static.
+        /// </summary>
+        [ThreadStatic]
+        private static PacketWriter PacketWriter;
+
+        /// <summary>
+        /// Gets a packet writer for the current thread.
+        /// </summary>
+        protected PacketWriter Writer
+        {
+            get
+            {
+                if (PacketWriter == null)
+                PacketWriter = new PacketWriter(this.BufferCapacity);
+                return PacketWriter;
+            }
+        }
+
+        /// <summary>
+        /// Gets a packet reader for the current channel.
+        /// </summary>
+        protected PacketReader Reader
+        {
+            get;
+            private set;
+        }
+
+
+        /// <summary>
+        /// Constructs a new instance of a channel.
+        /// </summary>
+        /// <param name="bufferCapacity">The buffer capacity to allocate.</param>
+        /// <param name="tls">Whether SSL/TLS should be used or not.</param>
+        public TcpChannelBase(int bufferCapacity, bool tls)
+        {
+            this.BufferCapacity = bufferCapacity;
+            this.TlsSecure = tls;
+        }
+
+        /// <summary>
+        /// Connects to the specified hostname and port and start listening to it.
+        /// </summary>
+        /// <param name="host">The host to connect to.</param>
+        /// <param name="port">The port to connect to.</param>
+        /// <returns>The result of the connection.</returns>
+        public async Task Connect(string host, int port)
+        {
+            try
+            {
+                Socket = new StreamSocket();
+                await Socket.ConnectAsync(new HostName(host), port.ToString());
+
+                SocketWriter = new DataWriter(Socket.OutputStream);
+                SocketReader = new DataReader(Socket.InputStream);
+                SocketReader.InputStreamOptions = InputStreamOptions.Partial;
+
+                // Allocate a reader that will wrap the buffer and handle receive
+                this.Reader = new PacketReader(BufferCapacity);
+
+                if (this.Connected != null)
+                {
+                    // If we are connected, invoke the connected event
+                    this.Connected((T)this);
+                }
+            }
+            catch (Exception)
+            {
+                Disconnect(ConnectionError.Connection);
+                return;
+            }
+
+            try
+            {
+                while (true)
+                {
+                    // First we need to read the size
+                    this.Reader.Offset = 0;
+                    this.Reader.Length = (int) await SocketReader.LoadAsync(sizeof(int));
+                    if (!this.Reader.CheckAvailable(sizeof(int)))
+                    {
+                        // If we don't have at least 4 bytes, we can disconnect
+                        Disconnect(ConnectionError.Receive);
+                        return;
+                    }
+
+                    for (int index = 0; index < this.Reader.Length; index++)
+                    {
+                        this.Reader.Buffer[index] = SocketReader.ReadByte();
+                    }
+
+                    //read packet data
+                    this.Reader.Offset = 0;
+                    var expect = (uint)this.Reader.ReadInt32();
+                    this.Reader.Length = (int)await SocketReader.LoadAsync(expect);
+                    if (this.Reader.Length != expect)
+                    {
+                        // If we did not receive the expected amout of bytes, disconnect
+                        Disconnect(ConnectionError.Receive);
+                        return;
+                    }
+
+                    this.Reader.Length += sizeof(int);
+                    for (int index = sizeof(int); index < this.Reader.Length; index++)
+                    {
+                        this.Reader.Buffer[index] = SocketReader.ReadByte();
+                    }
+
+                    OnReceive(this.Reader.ReadUInt32());
+                }
+            }
+            catch (Exception)
+            {
+                Disconnect(ConnectionError.Receive);
+            }
+        }
+
+        /// <summary>
+        /// Disconnects the channel from the remote endpoint.
+        /// </summary>
+        public void Disconnect()
+        {
+            Disconnect(ConnectionError.Manual);
+        }
+
+
+        #region Receive Members
+        protected abstract void OnReceive(uint key);
+        #endregion
+
+        #region Private/Protected Members
+
+        protected async Task SendPacket(PacketWriter writer, bool compressed)
+        {
+            try
+            {
+                // Get the final buffer we should send and write it down to the writer
+                SocketWriter.WriteBytes(
+                writer.Flush(compressed)
+                );
+                await SocketWriter.StoreAsync();
+            }
+            catch (Exception)
+            {
+                Disconnect(ConnectionError.Send);
+            }
+        }
+
+        private void Disconnect(ConnectionError error)
+        {
+            if (Socket != null)
+            {
+                var mustRaise = false;
+                lock (Socket)
+                {
+                    if (!Disposed)
+                    {
+                        mustRaise = true;
+                        Disposed = true;
+                        Socket.Dispose();
+                    }
+                }
+
+                if (mustRaise && Disconnected != null)
+                Disconnected((T)this, error);
+            }
+        }
+
+        #endregion
+    }

@@ -1,0 +1,18 @@
+﻿<#@ template language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+
+
+<# if(Target == null || Target == "ByteArray") { #> <#@ include file="ByteArray.t4"#><# } #><##>
+<# if(Target == null || Target == "PacketCompressor") { #> <#@ include file="PacketCompressor.t4"#><# } #><##>
+<# if(Target == null || Target == "PacketWriter") { #> <#@ include file="PacketWriter.t4"#> <# } #><##>
+<# if(Target == null || Target == "PacketReader") { #> <#@ include file="PacketReader.t4"#> <# } #><##>
+<# if(Target == null || Target == "TcpEngine") { #> <#@ include file="TcpEngine.t4"#> <# } #><##>
+<# if(Target == null || Target == "TcpChannel") { #> <#@ include file="TcpChannel.t4"#> <# } #><##>
+
+<#+ public void Clear(){
+	GenerationEnvironment.Clear();
+} #>

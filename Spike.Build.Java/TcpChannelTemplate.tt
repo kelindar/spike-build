@@ -1,0 +1,115 @@
+﻿<#@ template language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ parameter type="Spike.Build.Model" name="Model" #>
+package com.misakai.spike.network;
+
+import java.util.ArrayList;
+<#	if(Model.CustomTypes.Any((customType) => customType.Members.Any((member) => member.Type == "DateTime")))
+	{ #>
+import java.util.Date;
+<#	} #>
+
+public final class TcpChannel extends AbstractTcpChannel {
+	//EventHandlers	
+<#	foreach(var receive in Model.Receives)
+	{ #>		
+	public final ArrayList<PacketHandler<<#= receive.Name #>>> <#= receive.Name.CamelCase() #> = new ArrayList<PacketHandler<<#= receive.Name #>>>(); 
+<#	} #>
+
+
+	//Sends			       
+<#	foreach(var send in Model.Sends)
+		{ #>		
+	public void <#= send.Name.CamelCase() #>(<#	
+		var first = true;
+		foreach(var member in send.Members){
+			if(!first)
+				Write(", ");
+
+			Write(JavaBuilder.GetNativeType(member));
+			Write(" ");
+			Write(member.Name.CamelCase());
+			first = false;
+		}
+		#>){
+		beginNewPacket(0x<#= send.Id.ToString("X") #>);
+<#		foreach(var member in send.Members)
+		{ #>
+		packetWrite(<#= member.Name.CamelCase() #>);
+<#		} #>
+		sendPacket(<#= send.Compressed ? "true" : "false" #>);
+		}		 
+<#	} #>
+
+
+	//Dispatcher
+	@Override
+	protected void onReceive(int key){
+		switch(key){
+			
+<#	foreach(var receive in Model.Receives)
+	{ #>				
+			case 0x<#= receive.Id.ToString("X") #> : {
+				<#= receive.Name #> packet = new <#= receive.Name #>();
+				beginReadPacket(<#= receive.Compressed ? "true" : "false" #>);
+					
+<#		foreach(var member in receive.Members){ #>
+				packet.<#= member.Name.CamelCase() #> = packetRead<#= member.IsList ? "ListOf" : string.Empty #><#= member.Type #>();
+<#		} #>
+
+				//Now Call event
+				for (PacketHandler<<#= receive.Name #>> handler : <#= receive.Name.CamelCase() #>)
+					handler.onReceive(packet);
+				return;
+			}
+<#	} #>
+
+			default:
+				System.out.println("Unknow packet : "+ key);
+				return;
+		}
+	}
+
+
+
+	//Custom Types
+<#	foreach(var customType in Model.CustomTypes)
+	{ #>
+	protected <#= customType.Name #> packetRead<#= customType.Name #>() {
+		<#= customType.Name #> value = new <#= customType.Name #>();
+<#		foreach(var member in customType.Members)
+		{ #>
+		value.<#= member.Name.CamelCase() #> = packetRead<#= member.IsList ? "ListOf" : string.Empty #><#= member.Type #>();
+<#		} #>
+		return value;
+    }
+
+    protected void packetWrite(<#= customType.Name #> value)
+    {
+<#		foreach(var member in customType.Members)
+	{ #>
+		packetWrite(value.<#= member.Name.CamelCase() #>);
+<#		} #>
+	}
+
+    protected <#= customType.Name #>[] packetReadListOf<#= customType.Name #>()
+    {
+        var value = new <#= customType.Name #>[packetReadInt32()];
+        for (int index = 0; index < value.Length; index++)
+            value[index] = packetRead<#= customType.Name #>();
+        return value;
+    }
+
+    protected void packetWrite(<#= customType.Name #>[] value)
+    {
+        packetWrite(value.Length);
+        foreach (var element in value)
+            packetWrite(element);
+    }
+<#	} #>
+
+	
+}

@@ -1,0 +1,12 @@
+﻿<# if (TargetOperation.Members.Any(m => m.Type == "DateTime")) { #>
+import "time"
+
+<# } #>
+// Represents a serializable packet of type <#= TargetOperation.Name #>.
+type <#= TargetOperation.Name #> struct {
+<# foreach(var member in TargetOperation.Members){ #>
+
+	// Gets or sets the member '<#= member.Name #>' of the packet.
+	<#= member.Name #> <#= member.IsList ? "[]" : string.Empty #><#= GoBuilder.GetNativeType(member) #>
+<# } #>
+}

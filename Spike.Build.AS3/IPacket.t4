@@ -1,0 +1,9 @@
+﻿package spike
+{
+	import flash.utils.ByteArray;
+	
+	public interface IPacket extends IEntity
+	{
+
+	}
+}

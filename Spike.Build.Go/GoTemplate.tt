@@ -1,0 +1,19 @@
+﻿<#@ template language="C#" #>
+<#@ output extension=".go" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+package spike
+
+<# if(Target == null || Target == "PacketCompressor") { #><#@ include file="PacketCompressor.t4"#><# } #><##>
+<# if(Target == null || Target == "Packet") { #><#@ include file="Packet.t4"#><# } #><##>
+<# if(Target == null || Target == "PacketWriter") { #> <#@ include file="PacketWriter.t4"#> <# } #><##>
+<# if(Target == null || Target == "PacketReader") { #> <#@ include file="PacketReader.t4"#> <# } #><##>
+
+<# if(Target == null || Target == "TcpChannel") { #> <#@ include file="TcpChannel.t4"#> <# } #><##>
+<# if(Target == null || Target == "ComplexType") { #><#@ include file="ComplexType.t4"#><# } #><##>
+
+<#+ public void Clear(){
+	GenerationEnvironment.Clear();
+} #>

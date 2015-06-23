@@ -1,0 +1,410 @@
+﻿spike.PacketWriter = function(bufferTowrite){
+	this.buffer = new spike.ByteArray();
+}
+
+/* Compresses the packet */
+spike.PacketWriter.prototype.compress = function()
+{			
+	this.buffer = new spike.PacketCompressor().compress(this.buffer, this.buffer.getSize());
+}	
+	
+spike.PacketWriter.prototype.writeBoolean = function(value){
+	if(value){
+		this.buffer.writeInt(1, 8, false);
+	}else{
+		this.buffer.writeInt(0, 8, false);
+	}
+}
+	
+spike.PacketWriter.prototype.writeKey = function(value){
+	for(var i=0; i < 8; i+=2)
+	{
+		var s = value.charAt(i) + value.charAt(i + 1);
+		var b = parseInt(s, 16);
+		this.buffer.writeInt(b, 8, false);
+	}
+}
+
+spike.PacketWriter.prototype.writeByte = function(value){
+	this.buffer.writeInt(value, 8, false);
+}
+	
+spike.PacketWriter.prototype.writeSByte = function(value){
+	this.buffer.writeInt(value, 8, true);
+}
+	
+spike.PacketWriter.prototype.writeInt16 = function(value){
+	this.buffer.writeInt(value, 16, true);
+}
+	
+spike.PacketWriter.prototype.writeInt32 = function(value){
+	this.buffer.writeInt(value, 32, true);
+}
+	
+spike.PacketWriter.prototype.writeInt64 = function(value){
+	this.buffer.writeInt(value, 64, true);
+}
+	
+spike.PacketWriter.prototype.writeUInt16 = function(value){
+	this.buffer.writeInt(value, 16, false);
+}
+	
+spike.PacketWriter.prototype.writeUInt32 = function(value){
+	this.buffer.writeInt(value, 32, false);
+}
+	
+spike.PacketWriter.prototype.writeUInt64 = function(value){
+	this.buffer.writeInt(value, 64, false);
+}
+
+spike.PacketWriter.prototype.writeDateTime = function(value){
+	this.writeInt16(value.getFullYear());
+	this.writeInt16(value.getMonth() + 1);
+	this.writeInt16(value.getDate());
+	this.writeInt16(value.getHours());
+	this.writeInt16(value.getMinutes());
+	this.writeInt16(value.getSeconds());
+	this.writeInt16(value.getMilliseconds());
+}
+
+spike.PacketWriter.prototype.writeSingle = function(value){
+	this.buffer.writeFloat(value, 23, 8);
+}
+	
+spike.PacketWriter.prototype.writeDouble = function(value){
+	this.buffer.writeFloat(value, 52, 11);
+}
+	
+spike.PacketWriter.prototype.writeString = function(value){
+	if(value == 'undefined' || value == null || value.length == 0){
+		this.writeInt32(0);		
+	}else{
+		value = unescape(encodeURIComponent(value));
+
+		if(spike.binarySupport){
+			var buf = new ArrayBuffer(value.length);
+			var u8  = new Uint8Array(buf);
+			for (var i=0, len=value.length; i<len; ++i)
+				u8[i] = value.charCodeAt(i);
+			value = u8;
+		}
+
+		this.writeInt32(value.length);
+		this.buffer.writeBytes(value);
+	}
+}
+
+spike.PacketWriter.prototype.writeDynamicType = function(value){
+	var type = typeof(value);
+	if(type == "number")
+	{
+		this.writeByte(1);
+
+		var isInt = ((value | 0) == value) || (((+value).toFixed(20)).replace(/^-?\d*\.?|0+$/g, '').length == 0);
+		if (isInt)
+		{
+			if(value > 0x7FFFFFFF && value <= 0xFFFFFFFF)
+			{
+				this.writeString("UInt32");
+				this.writeUInt32(value);
+				return;
+			}
+			else if(-255 <= value && value <= +255)
+			{
+				this.writeString("Byte");
+				this.writeByte(value | 0);
+				return;
+			}
+			else if (-32768 <= value && value <= +32768)
+			{
+				this.writeString("Int16");
+				this.writeInt16(value | 0);
+				return;
+			}
+			else if (-2147483648 <= value && value <= +2147483648)
+			{
+				this.writeString("Int32");
+				this.writeInt32(value | 0);
+				return;
+			}
+		}
+
+		if(-3.40282347E+38 <= value && value <= 3.40282347E+38)
+		{
+			this.writeString("Single");
+			this.writeSingle(value);
+			return;
+		}
+
+		this.writeString("Double");
+		this.writeDouble(value);
+		return;
+	}
+	else if(type == "boolean")
+	{
+		this.writeByte(1);
+		this.writeString("Boolean");
+		this.writeBoolean(value);
+		return;
+	}
+	else if(type == "string")
+	{
+		if (value.length == 20)
+		{
+			if (value.substring(0, 4) == '+64x')
+			{
+				this.writeByte(1);
+				this.writeString("UInt64");
+				this.writeUInt64(value);
+				return;
+			}
+			else if(value.substring(0, 4) == '-64x')
+			{
+				this.writeByte(1);
+				this.writeString("Int64");
+				this.writeInt64(value);
+				return;
+			}
+
+		}
+		else
+		{
+			this.writeByte(1);
+			this.writeString("String");
+			this.writeString(value);
+			return;
+		}
+
+		this.writeByte(0);
+		return;
+	}
+	else if(type == "object" && value instanceof Date)
+	{
+		this.writeByte(1);
+		this.writeString("DateTime");
+		this.writeDateTime(value);
+		return;
+	}
+	else
+	{
+		this.writeByte(0);
+		return;
+	}
+}
+
+spike.PacketWriter.prototype.writeArrayOfByte = function(value){
+	var type = typeof(value);
+	if(type == "object" && value instanceof ByteArray){
+		this.writeInt32(value.getSize());
+		this.buffer.writeBytes(value.data);
+	}else{
+		this.writeInt32(value.length);
+		this.buffer.writeBytes(value);
+	}
+}
+
+spike.PacketWriter.prototype.writeArrayOfUInt16 = function(value){
+	var type = typeof(value);
+	if(type == "object" && value instanceof Array){
+		this.writeInt32(value.length);
+		if(value.length == 0)
+			return;
+		for(var i=0; i<value.length; ++i){
+			this.writeUInt16(value[i]);
+		}
+	}else{
+		this.writeInt32(0);
+	}
+}
+
+spike.PacketWriter.prototype.writeArrayOfInt16 = function(value){
+	var type = typeof(value);
+	if(type == "object" && value instanceof Array){
+		this.writeInt32(value.length);
+		if(value.length == 0)
+			return;
+		for(var i=0; i<value.length; ++i){
+			this.writeInt16(value[i]);
+		}
+	}else{
+		this.writeInt32(0);
+	}
+}
+
+spike.PacketWriter.prototype.writeArrayOfInt32 = function(value){
+	var type = typeof(value);
+	if(type == "object" && value instanceof Array){
+		this.writeInt32(value.length);
+		if(value.length == 0)
+			return;
+		for(var i=0; i<value.length; ++i){
+			this.writeInt32(value[i]);
+		}
+	}else{
+		this.writeInt32(0);
+	}
+}
+
+spike.PacketWriter.prototype.writeArrayOfUInt32 = function(value){
+	var type = typeof(value);
+	if(type == "object" && value instanceof Array){
+		this.writeInt32(value.length);
+		if(value.length == 0)
+			return;
+		for(var i=0; i<value.length; ++i){
+			this.writeUInt32(value[i]);
+		}
+	}else{
+		this.writeInt32(0);
+	}
+}
+
+spike.PacketWriter.prototype.writeArrayOfInt64 = function(value){
+	var type = typeof(value);
+	if(type == "object" && value instanceof Array){
+		this.writeInt32(value.length);
+		if(value.length == 0)
+			return;
+		for(var i=0; i<value.length; ++i){
+			this.writeInt64(value[i]);
+		}
+	}else{
+		this.writeInt32(0);
+	}
+}
+
+spike.PacketWriter.prototype.writeArrayOfUInt64 = function(value){
+	var type = typeof(value);
+	if(type == "object" && value instanceof Array){
+		this.writeInt32(value.length);
+		if(value.length == 0)
+			return;
+		for(var i=0; i<value.length; ++i){
+			this.writeUInt64(value[i]);
+		}
+	}else{
+		this.writeInt32(0);
+	}
+}
+
+spike.PacketWriter.prototype.writeArrayOfDouble = function(value){
+	var type = typeof(value);
+	if(type == "object" && value instanceof Array){
+		this.writeInt32(value.length);
+		if(value.length == 0)
+			return;
+		for(var i=0; i<value.length; ++i){
+			this.writeDouble(value[i]);
+		}
+	}else{
+		this.writeInt32(0);
+	}
+}
+
+spike.PacketWriter.prototype.writeArrayOfSingle = function(value){
+	var type = typeof(value);
+	if(type == "object" && value instanceof Array){
+		this.writeInt32(value.length);
+		if(value.length == 0)
+			return;
+		for(var i=0; i<value.length; ++i){
+			this.writeSingle(value[i]);
+		}
+	}else{
+		this.writeInt32(0);
+	}
+}
+
+spike.PacketWriter.prototype.writeArrayOfDateTime = function(value){
+	var type = typeof(value);
+	if(type == "object" && value instanceof Array){
+		this.writeInt32(value.length);
+		if(value.length == 0)
+			return;
+		for(var i=0; i<value.length; ++i){
+			this.writeDateTime(value[i]);
+		}
+	}else{
+		this.writeInt32(0);
+	}
+}
+
+spike.PacketWriter.prototype.writeArrayOfString = function(value){
+	var type = typeof(value);
+	if(type == "object" && value instanceof Array){
+		this.writeInt32(value.length);
+		if(value.length == 0)
+			return;
+		for(var i=0; i<value.length; ++i){
+			this.writeString(value[i]);
+		}
+	}else{
+		this.writeInt32(0);
+	}
+}
+
+spike.PacketWriter.prototype.writeArrayOfBoolean = function(value){
+	var type = typeof(value);
+	if(type == "object" && value instanceof Array){
+		this.writeInt32(value.length);
+		if(value.length == 0)
+			return;
+		for(var i=0; i<value.length; ++i){
+			this.writeBoolean(value[i]);
+		}
+	}else{
+		this.writeInt32(0);
+	}
+}
+
+spike.PacketWriter.prototype.writeArrayOfDynamicType = function(value){
+	var type = typeof(value);
+	if(type == "object" && value instanceof Array){
+		this.writeInt32(value.length);
+		if(value.length == 0)
+			return;
+		for(var i=0; i<value.length; ++i){
+			this.writeDynamicType(value[i]);
+		}
+	}else{
+		this.writeInt32(0);
+	}
+}
+
+spike.PacketWriter.prototype.writeArray = function(value){
+	var type = typeof(value);
+	if(type == "object" && value instanceof Array){
+		this.writeInt32(value.length);
+		if(value.length == 0)
+			return;
+		for(var i=0; i<value.length; ++i){
+			if(value[i].write != 'undefined'){
+				value[i].write(this);
+			}else{
+				throw "Unable to write, the array contains unknown elements";
+			}
+		}
+	}else{
+		this.writeInt32(0);
+	}
+}
+
+
+<# foreach(var customType in Model.CustomTypes) { #>
+spike.PacketWriter.prototype.write<#= customType.Name #> = function(value)
+{
+    <# foreach(var member in customType.Members){ #>
+		this.write<#= member.IsList ? "ArrayOf" : string.Empty #><#= member.Type #>(value.<#= member.Name.CamelCase() #>);
+    <# } #>
+}
+
+spike.PacketWriter.prototype.writeArrayOf<#= customType.Name #> = function(value)
+{
+	if(Object.prototype.toString.call(value) !== '[object Array]')
+		throw new Error("Attempted to write an invalid array.");
+
+    this.writeInt32(value.length);
+    for (var i = 0; i < value.length; ++i)
+        this.write<#= customType.Name #>(value[i]);
+}
+<# } #>

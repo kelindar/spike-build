@@ -1,0 +1,9 @@
+package spike.events
+{
+	import flash.events.Event;
+ 
+	public class ConnectionEvent extends Event
+	{
+		public function ConnectionEvent( type:String ) { super(type); }   
+	}
+}

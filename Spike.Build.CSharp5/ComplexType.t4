@@ -1,0 +1,12 @@
+﻿    /// <summary>
+    /// Represents a serializable complex type <#= TargetType.Name #>.
+    /// </summary>
+	public partial struct <#= TargetType.Name #>
+    {
+<#		foreach(var member in TargetType.Members){ #>	
+		/// <summary>
+		/// Gets or sets the property '<#= member.Name #>' of the complex type.
+		/// </summary>
+		public <#= CSharp5Builder.GetNativeType(member) #><#= member.IsList ? "[]" : string.Empty #> <#= member.Name #>;
+<#		} #>
+    }

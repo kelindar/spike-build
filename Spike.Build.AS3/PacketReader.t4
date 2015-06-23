@@ -1,0 +1,445 @@
+﻿package spike
+{
+	import spike.*;
+	import spike.packets.*;
+	import flash.utils.ByteArray;
+	import flash.utils.getDefinitionByName;
+	
+	public class PacketReader
+	{
+		// internal buffer
+		public var buffer:ByteArray;
+		
+		public function PacketReader(bufferToRead:ByteArray)
+		{
+			buffer = bufferToRead;
+		}
+
+		/*
+		 * Décompresse le reste de buffer
+		 */
+		public function decompress():void
+		{	
+			buffer = LZF.instance.decompress(buffer, buffer.length);
+			buffer.position = 0;		
+		}
+
+		/*
+		 * Lit l'opération (le ID de packet)
+		 */
+		public function ReadOperation():int
+		{
+			return buffer.readShort();
+		}
+
+		/*
+		 * Lit un entier 16bit dans le packet à envoyer
+		 */
+		public function ReadUInt16():Number
+		{
+			return buffer.readShort();
+		}
+		
+		/*
+		 * Lit un entier 16bit dans le packet à envoyer
+		 */
+		public function ReadInt16():Number
+		{
+			return buffer.readShort();
+		}
+		
+
+		/*
+		 * Lit un entier dans le packet à envoyer
+		 */
+		public function ReadInt32():int
+		{
+			return buffer.readInt();
+		}
+		
+		/*
+		 * Lit un octet dans le packet à envoyer
+		 */
+		public function ReadByte():uint
+		{
+			return buffer.readUnsignedByte();
+		}
+		
+		/*
+		 * Lit un octet dans le packet à envoyer
+		 */
+		public function ReadSByte():int
+		{
+			return buffer.readByte();
+		}
+		
+		/*
+		 * Lit un entier dans le packet à envoyer
+		 */
+		public function ReadNumber():Number
+		{
+			return buffer.readInt();
+		}
+
+		/*
+		 * Lit un double dans le packet à envoyer
+		 */
+		public function ReadDouble():Number
+		{
+			return buffer.readDouble();
+		}
+
+		/*
+		 * Lit un single dans le packet à envoyer
+		 */
+		public function ReadSingle():Number
+		{
+			return buffer.readFloat();
+		}
+
+		/*
+		 * Lit un single dans le packet à envoyer
+		 */
+		public function ReadInt64():Int64
+		{
+			var result:Int64 = new Int64();
+			result.low  = ReadUInt32();
+			result.high = ReadInt32();
+			return result;
+		}
+
+		/*
+		 * Reads a 64-bit unsigned integer
+		 */
+		public function ReadUInt64():UInt64
+		{
+			var result:UInt64 = new UInt64();
+			result.low  = ReadUInt32();
+			result.high = ReadUInt32();
+			return result;
+		}
+		
+		
+		/*
+		 * Lit une valeur booleene dans le packet à envoyer
+		 */
+		public function ReadBoolean():Boolean
+		{
+			return buffer.readBoolean();
+		}
+		
+		/*
+		 * Lit une entier non-signé dans le packet à envoyer
+		 */
+		public function ReadUInt32():uint
+		{
+			return buffer.readUnsignedInt();
+		}
+		
+		/*
+		 * Lit une date dans le packet à envoyer
+		 */
+		public function ReadDateTime():Date
+		{
+			var year:int = buffer.readShort();
+			var month:int = buffer.readShort();
+			var date:int = buffer.readShort();
+			var hour:int = buffer.readShort();
+			var minute:int = buffer.readShort();
+			var second:int = buffer.readShort();
+			var millisecond:int = buffer.readShort();
+			
+			return new Date(year,month,date,hour,minute,second, millisecond);
+		}
+		
+		/*
+		 * Lit une chaîne UTF8 dans le packet à envoyer
+		 */
+		public function ReadString():String
+		{
+			var stringBuffer:ByteArray = new ByteArray();
+			var length:int = buffer.readInt();
+			
+			if(length > 0)
+			{
+				buffer.readBytes(stringBuffer,0,length);
+				return stringBuffer.readUTFBytes(length);
+			}
+			else
+			{
+				return "";
+			}
+		}
+
+		/**
+		 * Reads a dynamic value (of the supported types)
+		 */
+		public function ReadDynamic():Object
+		{
+            if (ReadByte() == 1)
+            {
+                var type:String = ReadString();
+                switch (type)
+                {
+                    case "Byte": return ReadByte();
+                    case "Int16": return ReadInt16();
+                    case "Int32": return ReadInt32();
+                    case "Int64": return ReadInt64();
+                    case "UInt16": return ReadUInt16();
+                    case "UInt32": return ReadUInt32();
+                    case "UInt64": return ReadUInt64();
+                    case "Boolean": return ReadBoolean();
+                    case "Single": return ReadSingle();
+                    case "Double": return ReadDouble();
+                    case "DateTime": return ReadDateTime();
+                    case "String": return ReadString();
+                    default: return null;
+                }
+            }
+            return null;
+        }
+
+		
+		/**
+		 * Lit et remplit l'instance de IPacket de données (renvoit le même packet)
+		 *  Utilisation:  var packet:MonPacket = reader.ReadPacket(new MonPacket());
+		 */
+		public function ReadPacket(value:IPacket):IPacket
+		{
+			value.read(this);
+			return value;
+		}
+		
+				
+		/**
+		 * Lit et remplit l'instance de IEntity de données (renvoit le même packet)
+		 *  Utilisation:  var packet:MonPacket = reader.ReadPacket(new MonPacket());
+		 */
+		public function ReadEntity(value:IEntity):IEntity
+		{
+			value.read(this);
+			return value;
+		}
+		
+		/**
+		 * Reads a byte array from the buffer
+		 */
+		public function ReadByteArray():ByteArray
+		{
+			var len:int = buffer.readInt();
+			var result:ByteArray = new ByteArray();
+			buffer.readBytes(result,0,len);
+			return result;
+		}
+		
+		/**
+		 * Reads an array from the buffer
+		 */
+		public function ReadArrayOfEntity(className:String):Array
+		{
+			var length:int = ReadInt32();
+			var classType:Class = Class(getDefinitionByName(className));
+			
+			var resultArray:Array = new Array();
+			
+			if(length == 0)
+				return resultArray;  // vide
+				
+			for(var i:int = 0; i < length; ++i)
+			{
+				var entityInstance:IEntity = new classType();
+				resultArray.push( ReadEntity(entityInstance) );
+				
+			}
+			return resultArray;
+		}
+		
+		/**
+		 * Reads an array from the buffer
+		 */
+		public function ReadArrayOfNumber():Array
+		{
+			var length:int = ReadInt32();
+			var resultArray:Array = new Array();
+				
+			for(var i:int = 0; i < length; ++i)
+				resultArray.push( ReadNumber() );
+			
+			return resultArray;
+		}
+
+		/**
+		 * Reads an array from the buffer
+		 */
+		public function ReadArrayOfUInt16():Array
+		{
+			var length:int = ReadInt32();
+			var resultArray:Array = new Array();
+				
+			for(var i:int = 0; i < length; ++i)
+				resultArray.push( ReadUInt16() );
+			
+			return resultArray;
+		}
+
+		/**
+		 * Reads an array from the buffer
+		 */
+		public function ReadArrayOfInt16():Array
+		{
+			var length:int = ReadInt32();
+			var resultArray:Array = new Array();
+				
+			for(var i:int = 0; i < length; ++i)
+				resultArray.push( ReadInt16() );
+			
+			return resultArray;
+		}
+
+		
+		/**
+		 * Reads an array from the buffer
+		 */
+		public function ReadArrayOfUInt32():Array
+		{
+			var length:int = ReadInt32();
+			var resultArray:Array = new Array();
+				
+			for(var i:int = 0; i < length; ++i)
+				resultArray.push( ReadUInt32() );	
+			
+			return resultArray;
+		}
+
+
+		/**
+		 * Reads an array from the buffer
+		 */
+		public function ReadArrayOfInt32():Array
+		{
+			var length:int = ReadInt32();
+			var resultArray:Array = new Array();
+				
+			for(var i:int = 0; i < length; ++i)
+				resultArray.push( ReadInt32() );
+			
+			return resultArray;
+		}
+
+		
+		/**
+		 * Reads an array from the buffer
+		 */
+		public function ReadArrayOfUInt64():Array
+		{
+			var length:int = ReadInt32();
+			var resultArray:Array = new Array();
+				
+			for(var i:int = 0; i < length; ++i)
+				resultArray.push( ReadUInt64() );	
+			
+			return resultArray;
+		}
+
+		
+		/**
+		 * Reads an array from the buffer
+		 */
+		public function ReadArrayOfInt64():Array
+		{
+			var length:int = ReadInt32();
+			var resultArray:Array = new Array();
+				
+			for(var i:int = 0; i < length; ++i)
+				resultArray.push( ReadInt64() );	
+			
+			return resultArray;
+		}
+
+		/**
+		 * Reads an array from the buffer
+		 */
+		public function ReadArrayOfSingle():Array
+		{
+			var length:int = ReadInt32();
+			var resultArray:Array = new Array();
+				
+			for(var i:int = 0; i < length; ++i)
+				resultArray.push( ReadSingle() );
+			
+			return resultArray;
+		}
+
+		/**
+		 * Reads an array from the buffer
+		 */
+		public function ReadArrayOfDouble():Array
+		{
+			var length:int = ReadInt32();
+			var resultArray:Array = new Array();
+				
+			for(var i:int = 0; i < length; ++i)
+				resultArray.push( ReadDouble() );
+			
+			return resultArray;
+		}
+
+		/**
+		 * Reads an array from the buffer
+		 */
+		public function ReadArrayOfBoolean():Array
+		{
+			var length:int = ReadInt32();
+			var resultArray:Array = new Array();
+				
+			for(var i:int = 0; i < length; ++i)
+				resultArray.push( ReadBoolean() );
+			
+			return resultArray;
+		}
+		
+		/**
+		 * Reads an array from the buffer
+		 */
+		public function ReadArrayOfDateTime():Array
+		{
+			var length:int = ReadInt32();
+			var resultArray:Array = new Array();
+				
+			for(var i:int = 0; i < length; ++i)
+				resultArray.push( ReadDateTime() );
+			
+			return resultArray;
+		}
+		
+		/**
+		 * Reads an array from the buffer
+		 */
+		public function ReadArrayOfString():Array
+		{
+			var length:int = ReadInt32();
+			var resultArray:Array = new Array();
+				
+			for(var i:int = 0; i < length; ++i)
+				resultArray.push( ReadString() );
+			
+			return resultArray;
+		}
+
+		/**
+		 * Reads an array from the buffer
+		 */
+		public function ReadArrayOfDynamic():Array
+		{
+			var length:int = ReadInt32();
+			var resultArray:Array = new Array();
+				
+			for(var i:int = 0; i < length; ++i)
+				resultArray.push( ReadDynamic() );
+			
+			return resultArray;
+		}
+		
+		
+	}
+}

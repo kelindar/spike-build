@@ -1,0 +1,272 @@
+﻿/* The packet reader which is used for reading binary buffer */
+spike.PacketReader = function(byteArray){
+    this.buffer = byteArray;
+}
+
+spike.PacketReader.prototype.decompress = function(){
+	this.buffer = new spike.PacketCompressor().decompress(this.buffer, this.buffer.getSize());
+	this.buffer.position = 0;
+}
+
+spike.PacketReader.prototype.readBoolean = function(){
+	return this.buffer.readInt(8, false) == 1;
+}
+
+spike.PacketReader.prototype.readByte = function(){
+    return this.buffer.readInt(8, false);
+}
+
+spike.PacketReader.prototype.readSByte = function(){
+    return this.buffer.readInt(8, true);
+}
+
+spike.PacketReader.prototype.readInt16 = function(){
+    return this.buffer.readInt(16, true);
+}
+
+spike.PacketReader.prototype.readInt32 = function(){
+    return this.buffer.readInt(32, true);
+}
+
+spike.PacketReader.prototype.readInt64 = function(){
+    return this.buffer.readInt(64, true);
+}
+
+spike.PacketReader.prototype.readUInt16 = function(){
+    return this.buffer.readInt(16, false);
+}
+
+spike.PacketReader.prototype.readUInt32 = function(){
+    return this.buffer.readInt(32, false);
+}
+
+spike.PacketReader.prototype.readUInt64 = function(){
+    return this.buffer.readInt(64, false);
+}
+
+spike.PacketReader.prototype.readDateTime = function(){
+	var year = this.readInt16();
+	var month = this.readInt16() - 1;
+	var date = this.readInt16();
+	var hour = this.readInt16();
+	var minute = this.readInt16();
+	var second = this.readInt16();
+	var millisecond = this.readInt16();
+			
+	return new Date(year,month,date,hour,minute,second,millisecond);
+}
+
+spike.PacketReader.prototype.readSingle = function(){
+    return this.buffer.readFloat(23, 8);
+}
+
+spike.PacketReader.prototype.readDouble = function(){
+    return this.buffer.readFloat(52, 11);
+}
+
+spike.PacketReader.prototype.readString = function(){
+	var length = this.readInt32();
+	if(length > 0){
+		var s = this.buffer.readBytes(length);
+		return spike.binarySupport
+			? decodeURIComponent(escape(String.fromCharCode.apply(null, s)))
+			: decodeURIComponent(escape(s));
+	}
+	else{
+		return '';
+	}
+}
+
+spike.PacketReader.prototype.readDynamicType = function(){
+if(this.readByte()  == 1){
+	var type = this.readString();
+	switch (type){
+		case 'Byte': return this.readByte();
+		case 'Int16': return this.readInt16();
+		case 'Int32': return this.readInt32();
+		case 'Int64': return this.readInt64();
+		case 'UInt16': return this.readUInt16();
+		case 'UInt32': return this.readUInt32();
+		case 'UInt64': return this.readUInt64();
+		case 'Boolean': return this.readBoolean();
+		case 'Single': return this.readSingle();
+		case 'Double': return this.readDouble();
+		case 'DateTime': return this.readDateTime();
+		case 'String': return this.readString();
+		default: return null;
+	}
+}
+return null;
+}
+
+spike.PacketReader.prototype.readPacket = function(value){
+	value.read(this);
+	return value;
+}
+
+spike.PacketReader.prototype.readEntity = function(value){
+	value.read(this);
+	return value;
+}
+
+spike.PacketReader.prototype.readArrayOfByte = function(){
+	var len = this.readInt32();
+	var arr = new spike.ByteArray();
+	arr.writeBytes(this.buffer.readBytes(len));
+	arr.position = 0;
+	return arr;
+}
+
+spike.PacketReader.prototype.readArrayOfEntity = function(className){
+	var length = this.readInt32();
+	var classCtor = 'new ' + className + '()';		
+	var resultArray = new Array();
+	if(length == 0){
+		return resultArray;
+	}
+				
+	for(var i = 0; i < length; ++i){
+		var entityInstance = eval(classCtor);
+		resultArray.push( this.readEntity(entityInstance) );	
+	}
+	return resultArray;
+}
+
+spike.PacketReader.prototype.readArrayOfUInt16 = function(){
+	var length = this.readInt32();
+	var resultArray = new Array();
+		
+	for(var i = 0; i < length; ++i)
+		resultArray.push( this.readUInt16() );
+			
+	return resultArray;
+}
+
+spike.PacketReader.prototype.readArrayOfInt16 = function(){
+	var length = this.readInt32();
+	var resultArray = new Array();
+		
+	for(var i = 0; i < length; ++i)
+		resultArray.push( this.readInt16() );
+			
+	return resultArray;
+}
+
+spike.PacketReader.prototype.readArrayOfUInt32 = function(){
+	var length = this.readInt32();
+	var resultArray = new Array();
+		
+	for(var i = 0; i < length; ++i)
+		resultArray.push( this.readUInt32() );
+			
+	return resultArray;
+}
+
+spike.PacketReader.prototype.readArrayOfInt32 = function(){
+	var length = this.readInt32();
+	var resultArray = new Array();
+		
+	for(var i = 0; i < length; ++i)
+		resultArray.push( this.readInt32() );
+			
+	return resultArray;
+}
+
+spike.PacketReader.prototype.readArrayOfUInt64 = function(){
+	var length = this.readInt32();
+	var resultArray = new Array();
+		
+	for(var i = 0; i < length; ++i)
+		resultArray.push( this.readUInt64() );
+			
+	return resultArray;
+}
+
+spike.PacketReader.prototype.readArrayOfInt64 = function(){
+	var length = this.readInt32();
+	var resultArray = new Array();
+		
+	for(var i = 0; i < length; ++i)
+		resultArray.push( this.readInt64() );
+			
+	return resultArray;
+}
+
+spike.PacketReader.prototype.readArrayOfSingle = function(){
+	var length = this.readInt32();
+	var resultArray = new Array();
+		
+	for(var i = 0; i < length; ++i)
+		resultArray.push( this.readSingle() );
+			
+	return resultArray;
+}
+
+spike.PacketReader.prototype.readArrayOfDouble = function(){
+	var length = this.readInt32();
+	var resultArray = new Array();
+		
+	for(var i = 0; i < length; ++i)
+		resultArray.push( this.readDouble() );
+			
+	return resultArray;
+}
+
+spike.PacketReader.prototype.readArrayOfBoolean = function(){
+	var length = this.readInt32();
+	var resultArray = new Array();
+		
+	for(var i = 0; i < length; ++i)
+		resultArray.push( this.readBoolean() );
+			
+	return resultArray;
+}
+
+spike.PacketReader.prototype.readArrayOfDateTime = function(){
+	var length = this.readInt32();
+	var resultArray = new Array();
+		
+	for(var i = 0; i < length; ++i)
+		resultArray.push( this.readDateTime() );
+			
+	return resultArray;
+}
+
+spike.PacketReader.prototype.readArrayOfString = function(){
+	var length = this.readInt32();
+	var resultArray = new Array();
+		
+	for(var i = 0; i < length; ++i)
+		resultArray.push( this.readString() );
+			
+	return resultArray;
+}
+
+spike.PacketReader.prototype.readArrayOfDynamicType = function(){
+	var length = this.readInt32();
+	var resultArray = new Array();
+		
+	for(var i = 0; i < length; ++i)
+		resultArray.push( this.readDynamicType() );
+			
+	return resultArray;
+}
+
+
+<# foreach(var customType in Model.CustomTypes) { #>
+spike.PacketReader.prototype.read<#= customType.Name #> = function(){
+    var value = new Object();
+	<# foreach(var member in customType.Members) { #>
+	value.<#= member.Name.CamelCase() #> = this.read<#= member.IsList ? "ArrayOf" : string.Empty #><#= member.Type #>();	
+	<# } #>
+	return value;
+}
+
+spike.PacketReader.prototype.readArrayOf<#= customType.Name #> = function(){
+	var length = this.readInt32();
+    var value  = [];
+    for (var i = 0; i < length; ++i)
+        value[i] = this.read<#= customType.Name #>();
+    return value;
+}
+<# } #>

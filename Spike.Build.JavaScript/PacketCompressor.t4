@@ -1,0 +1,249 @@
+﻿/*
+* JavaScript LibLZF Port:
+* Copyright (c) 2011 Roman Atachiants <kelindar@gmail.com>
+* 
+* Original CLZF C# Port:
+* Copyright (c) 2005 Oren J. Maurice <oymaurice@hazorea.org.il>
+* 
+* Original LibLZF Library & Algorithm:
+* Copyright (c) 2000-2008 Marc Alexander Lehmann <schmorp@schmorp.de>
+* 
+* Redistribution and use in source and binary forms, with or without modifica-
+* tion, are permitted provided that the following conditions are met:
+* 
+*   1.  Redistributions of source code must retain the above copyright notice,
+*       this list of conditions and the following disclaimer.
+* 
+*   2.  Redistributions in binary form must reproduce the above copyright
+*       notice, this list of conditions and the following disclaimer in the
+*       documentation and/or other materials provided with the distribution.
+* 
+*   3.  The name of the author may not be used to endorse or promote products
+*       derived from this software without specific prior written permission.
+* 
+* THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
+* WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MER-
+* CHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO
+* EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPE-
+* CIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+* PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+* OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+* WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTH-
+* ERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+* OF THE POSSIBILITY OF SUCH DAMAGE.
+*
+* Alternatively, the contents of this file may be used under the terms of
+* the GNU General Public License version 2 (the "GPL"), in which case the
+* provisions of the GPL are applicable instead of the above. If you wish to
+* allow the use of your version of this file only under the terms of the
+* GPL and not to allow others to use your version of this file under the
+* BSD license, indicate your decision by deleting the provisions above and
+* replace them with the notice and other provisions required by the GPL. If
+* you do not delete the provisions above, a recipient may use your version
+* of this file under either the BSD or the GPL.
+*/
+
+spike.PacketCompressor = function()
+{
+	this.HLOG = 14;
+	this.HSIZE = (1 << 14);
+	this.MAX_LIT = (1 << 5);
+	this.MAX_OFF = (1 << 13);
+	this.MAX_REF = ((1 << 8) + (1 << 3));
+
+	//private var HashTable:Array = new Array(this.HSIZE);		
+	this.HashTable = new Array(this.HSIZE);		
+	
+	/* Compresses the data using LibLZF algorithm */
+	this.compress = function(input, inputLength)
+	{
+		this.HashTable.splice(0, this.HSIZE);
+		
+		var output = new spike.ByteArray();
+		
+		var hslot;
+		var iidx = 0;
+		var oidx = 0;
+		var reference;
+		
+		var hval = (((input.getAt(iidx)) << 8) | input.getAt(iidx + 1)); // FRST(in_data, iidx);
+		var off;
+		var lit = 0;
+		
+		for (; ; )
+		{
+			if (iidx < inputLength - 2)
+			{
+				hval = (hval << 8) | input.getAt(iidx + 2);
+				hslot = ((hval ^ (hval << 5)) >> (((3 * 8 - this.HLOG)) - hval * 5) & (this.HSIZE - 1));
+				reference = this.HashTable[hslot];
+				this.HashTable[hslot] = iidx;
+				
+				
+				if ((off = iidx - reference - 1) < this.MAX_OFF
+					&& iidx + 4 < inputLength
+					&& reference > 0
+					&& input.getAt(reference + 0) == input.getAt(iidx + 0)
+					&& input.getAt(reference + 1) == input.getAt(iidx + 1)
+					&& input.getAt(reference + 2) == input.getAt(iidx + 2)
+				)
+				{
+					/* match found at *reference++ */
+					var len = 2;
+					var maxlen = inputLength - iidx - len;
+					maxlen = maxlen > this.MAX_REF ? this.MAX_REF : maxlen;
+					
+					do
+						len++;
+					while (len < maxlen && input.getAt(reference + len) == input.getAt(iidx + len));
+					
+					if (lit != 0)
+					{
+						oidx++;
+						output.writeByte(lit - 1);
+						lit = -lit;
+						do
+						{
+							oidx++;
+							output.writeByte(input.getAt(iidx + lit));
+						}
+						while ((++lit) != 0);
+					}
+					
+					len -= 2;
+					iidx++;
+					
+					if (len < 7)
+					{
+						oidx++;
+						output.writeByte((off >> 8) + (len << 5));
+					}
+					else
+					{
+						oidx++;
+						oidx++;
+						output.writeByte((off >> 8) + (7 << 5));
+						output.writeByte(len - 7);
+					}
+					
+					oidx++;
+					output.writeByte(off);
+					
+					iidx += len - 1;
+					hval = (((input.getAt(iidx)) << 8) | input.getAt(iidx + 1)); 
+					
+					hval = (hval << 8) | input.getAt(iidx + 2);
+					this.HashTable[((hval ^ (hval << 5)) >> (((3 * 8 - this.HLOG)) - hval * 5) & (this.HSIZE - 1))] = iidx;
+					iidx++;
+					
+					hval = (hval << 8) | input.getAt(iidx + 2);
+					this.HashTable[((hval ^ (hval << 5)) >> (((3 * 8 - this.HLOG)) - hval * 5) & (this.HSIZE - 1))] = iidx;
+					iidx++;
+					continue;
+				}
+			}
+			else if (iidx == inputLength)
+				break;
+			
+			/* one more literal byte we must copy */
+			lit++;
+			iidx++;
+			
+			if (lit == this.MAX_LIT)
+			{
+				oidx++;
+				output.writeByte((this.MAX_LIT - 1));
+				lit = -lit;
+				do
+				{
+					oidx++;
+					output.writeByte(input.getAt(iidx + lit));
+				}
+				while ((++lit) != 0);
+			}
+		}
+		
+		if (lit != 0)
+		{
+			oidx++;
+			output.writeByte((lit - 1));
+			lit = -lit;
+			do
+			{
+				oidx++;
+				output.writeByte(input.getAt(iidx + lit));
+			}
+			while ((++lit) != 0);
+		}
+		
+		output.length = oidx;
+		return output;
+	}
+	
+	/* Decompresses the data using LibLZF algorithm */
+	this.decompress = function(input, inputLength)
+	{
+		var iidx = 0 | 0;
+		var oidx = 0 | 0;
+		var output = new spike.ByteArray();
+
+		do
+		{
+			var ctrl = input.getAt(iidx);
+			iidx++;
+			
+			if (ctrl < (1 << 5)) /* literal run */
+			{
+				ctrl++;
+				
+				do
+				{
+					output.writeByte(input.getAt(iidx));
+					iidx++;
+					oidx++;
+				}
+				while ((--ctrl) != 0);
+			}
+			else /* back reference */
+			{
+				var len = ctrl >> 5;
+				var reference = (oidx - ((ctrl & 0x1f) << 8) - 1);
+				
+				if (len == 7){
+					len += input.getAt(iidx);
+					iidx++;
+				}
+				
+				reference -= input.getAt(iidx);
+				iidx++;
+				
+				if (reference < 0)
+				{
+					//SET_ERRNO (EINVAL);
+					output.length = 0;
+					return output;
+				}
+
+				output.writeByte(output.getAt(reference));
+				reference++;
+				oidx++;
+				output.writeByte(output.getAt(reference));
+				reference++;
+				oidx++;
+				
+				do
+				{
+					output.writeByte(output.getAt(reference));
+					reference++;
+					oidx++;
+				}
+				while ((--len) != 0);
+			}
+		}
+		while (iidx < inputLength);
+		
+		output.length = oidx;
+		return output;
+	}
+	
+};

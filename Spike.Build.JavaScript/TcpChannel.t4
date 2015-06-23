@@ -1,0 +1,388 @@
+﻿spike.Channel = function(uri, opts){
+	if (!(this instanceof spike.Channel)) 
+		return new spike.Channel(uri, opts);
+
+	if (uri && ('object' == typeof uri)) {
+		opts = uri;
+		uri = undefined;
+	}
+	opts = opts || {};
+
+	// Make sure we have a correct path
+	opts.path = '/engine.io';
+	var self = this;
+
+	// Main properties
+	this.opts = opts;
+	this.subs = [];
+	this.endPoint = uri;
+	this.buffer = new spike.ByteArray();
+	this.readyState = 'closed';
+	this.socket = null;
+	this.transport = "";
+	this.autoConnect = opts.autoConnect !== false;
+	this._partialRecord = false;
+
+	// Reconnection options
+	this.reconnection(opts.reconnection !== false);
+	this.reconnectionAttempts(opts.reconnectionAttempts || Infinity);
+	this.reconnectionDelay(opts.reconnectionDelay || 1000);
+	this.reconnectionDelayMax(opts.reconnectionDelayMax || 10000);
+	this.randomizationFactor(opts.randomizationFactor || 0.5);
+	this.timeout(null == opts.timeout ? 20000 : opts.timeout);
+	this.backoff = new spike.Backoff({
+		min: this.reconnectionDelay(),
+		max: this.reconnectionDelayMax(),
+		jitter: this.randomizationFactor()
+	});
+
+	// We need to close every time the window is unloading
+	window.addEventListener("beforeunload", function( event ) {
+		try {
+			self.disconnect();
+			self.socket.transport.ws.onclose = function () {};
+			self.socket.transport.ws.close();
+		} catch(err) {}
+	});
+
+	// Event: occurs when the client is connected to the server.
+	this.onConnect = null;
+
+	// Event: occurs when the client is disconnected from the server.
+	this.onDisconnect = null;
+<# foreach(var receive in Model.Receives){ #>
+	// Event: occurs when the <#= receive.Name #> inform is received from the server. 
+	this.<#= receive.Name.CamelCase() #> = null; 
+
+<# } #>
+	
+	// Attempt to auto-connect if specified (default behavior)
+	if (this.autoConnect) this.open();
+};
+		    
+	// Send Methods    
+<# foreach(var send in Model.Sends) { #>
+	/* Sends a <#= send.Name #> request to the remote server. */	
+spike.Channel.prototype.<#= send.Name.CamelCase() #> = function(<#	
+		var first = true;
+		foreach(var member in send.Members){
+			if(!first) Write(", ");
+			Write(member.Name.CamelCase());
+			first = false;
+		}
+	#>){
+		
+	var writer = new spike.PacketWriter();
+<#		foreach(var member in send.Members) { #>
+	writer.write<#= member.IsList ? "ArrayOf" : string.Empty #><#= member.Type #>(<#= member.Name.CamelCase() #>);
+<#		} #>
+		
+	<#= send.Compressed ? "writer.compress();" : "" #>
+	this.send("<#= send.Id.ToString("X") #>", writer);
+};
+
+<# } #>
+
+// Dispatcher
+spike.Channel.prototype.onReceive = function(key, reader){
+	switch (key){
+<#			foreach(var receive in Model.Receives){ #>
+			
+		// <#= receive.Name #> 	
+		case "<#= receive.Id.ToString("X") #>": {
+			<#= receive.Compressed ? "reader.decompress();" : "" #>
+			var packet = new Object();
+<#				foreach(var member in receive.Members){ #>
+			packet.<#= member.Name.CamelCase() #> = reader.read<#= member.IsList ? "ArrayOf" : string.Empty #><#= member.Type #>();
+<#				} #>
+
+			if (this.<#= receive.Name.CamelCase() #> != null)
+				this.<#= receive.Name.CamelCase() #>(packet, this);
+			this.emit('<#= receive.Name.CamelCase() #>', packet);
+			this.emit('<#= receive.Name.WithoutInform().CamelCase() #>', packet);
+
+		} break;
+
+<#				} #>
+
+		default: throw new Error("Received an unknown packet with '" + key + "' key.");
+	}
+};
+
+/**
+ * Sends the data to the remote endpoint 
+ *
+ * @param {String} the operation id to send
+ * @param {spike.PacketWriter} the packet writer containing the buffer
+ * @api private
+ */
+spike.Channel.prototype.send = function(operationKey, writer) {
+	if(typeof operationKey === 'undefined' )
+		throw new Error("Attempting to send without specifying the operation.")
+	if(typeof writer === 'undefined')
+		throw new Error("Attempting to send an undefined buffer.")
+
+	// Initialize size variables
+	var sizeOfKey = 4;
+	var sizeOfLen = 4;
+	var sizeTotal = 8;
+
+	// Writes the length of the packet, the operation and the data
+	var length   = writer == null ? 0 : writer.buffer.getSize();
+	var compiled = new spike.PacketWriter();
+
+	// Write the length of the packet
+	compiled.writeUInt32(length + sizeOfKey);
+
+	// Write the key of the packet
+	compiled.writeKey(operationKey);
+	
+	// Write the body
+	if(length > 0){
+		// Write the body to our compiled buffer
+		writer.buffer.position = 0;
+		compiled.buffer.writeBytes(writer.buffer.readBytes(length));
+	}
+
+	// Send the payload in base64
+	var data = spike.binarySupport 
+		? compiled.buffer.toBuffer()
+		: compiled.buffer.toBase64();
+	
+	//spike.debug('Sending buffer: %s (%s)', data, (typeof data).toString());
+	this.socket.send(data);
+};
+
+
+/**
+* Sets the current transport `socket`.
+*
+* @param {Function} optional, callback
+* @return {Channel} self
+* @api public
+*/
+spike.Channel.prototype.open =
+spike.Channel.prototype.connect = function(fn){
+	if (~this.readyState.indexOf('open')) return this;
+	
+	// Create a new socket and try to connect
+	this.socket = eio.Socket(this.endPoint);
+	this.socket._channel = this;
+
+	// Set the 'opening' state
+	var self = this;
+	var socket = this.socket;
+	this.readyState = 'opening';
+	this.skipReconnect = false;
+
+	// Hook socket 'open' event 
+	var openSub = this.socket.on('open', function(){
+		spike.debug('socket opened');
+		this._channel.onopen();
+		fn && fn();
+	});
+
+	// Hook the error on connection
+	var errorSub = this.socket.on('error', function(data){
+		spike.debug('socket error: %s', data);
+		self.cleanup();
+		self.readyState = 'closed';
+		self.emit('connect_error', data);
+		if (fn) {
+			var err = new Error('Connection error');
+			err.data = data;
+			fn(err);
+		} else {
+			// Only do this if there is no fn to handle the error
+			self.maybeReconnectOnOpen();
+		}
+	});
+
+	// emit `connect_timeout`
+	if (false !== this._timeout) {
+		var timeout = this._timeout;
+		spike.debug('connect attempt will timeout after %d', timeout);
+
+		// set timer
+		var timer = setTimeout(function(){
+			if(self.readyState == 'open') return;
+
+			spike.debug('connect attempt timed out after %d', timeout);
+			socket.close();
+			socket.emit('error', 'timeout');
+			self.emit('connect_timeout', timeout);
+		}, timeout);
+
+		this.subs.push({
+	    	destroy: function(){ clearTimeout(timer); }
+	    });
+	}
+
+	// Hook socket 'close' event 
+	this.socket.on('close', function(reason){
+		spike.debug('socket closed: ' + reason);
+		self.transport = null;
+		if (self.onDisconnect != null)
+			self.onDisconnect();
+		self.emit('disconnect');
+		self.onclose(reason);
+	});
+
+	// Invoked when the socked receives incoming data 
+	this.socket.on('message', function(payload) {
+
+		// Initialize size variables
+		var sizeOfKey = 4;
+		var sizeOfLen = 4;
+		var sizeTotal = 8;
+
+		var data = new spike.ByteArray();
+		var channel = this._channel;
+		if (channel._partialRecord)
+		{
+			channel.buffer.readBytesTo(data, channel.buffer.getSize());
+			channel._partialRecord = false;
+		}			
+
+		//spike.debug('Received buffer: %s', payload);
+
+		// Read received data and reset (SEEK)
+		if ((typeof payload) == 'string') {
+			data.writeBase64(payload);
+		} else if(spike.binarySupport) {
+			data.writeBytes(new Uint8Array(payload));
+		} else {
+			var buff = new Uint8Array(payload);
+			for(var i=0; i<buff.byteLength; ++i)
+				data.writeByte(buff[i]);
+		}
+		
+		data.position = 0;
+		
+		// While we have data to read
+		while(data.position < data.getSize())
+		{
+			if(data.getSize() - data.position < sizeOfLen)
+			{
+				// Read the partial packet 
+				channel.buffer = new spike.ByteArray();
+				data.readBytesTo(channel.buffer, data.getSize() - data.position);
+				channel._partialRecord = true;
+				break;
+			} 
+			
+			var length = data.readInt(32, false) + sizeOfLen;
+			data.position -= sizeOfLen;
+			
+		    // If we have enough data to form a full packet.
+		    if(length <= (data.getSize() - data.position))
+		    {
+				// Read the operation and read the actual message into a new buffer
+				var messageLength = data.readInt(32, false); // UNUSED
+				var operation = "";
+				for (var i=0; i < sizeOfKey; i++)
+				{
+					var byte = data.readInt(8, false);
+					var sbyte = byte.toString(16);
+					if(sbyte.length == 1)
+						sbyte = "0" + sbyte;
+					operation += sbyte;
+				}
+				operation = operation.toUpperCase();
+				//spike.debug('Operation #%s received', operation);
+
+				// New buffer for the packet
+				var packet = new spike.ByteArray();
+				data.readBytesTo(packet, length - sizeTotal);
+				packet.position = 0;
+		
+				// Create the reader and fire the event
+				var reader = new spike.PacketReader(packet);
+				channel.onReceive(operation, reader);
+	
+		    }
+		    else 
+		    {
+		     	// Read the partial packet
+				channel.buffer = new spike.ByteArray();
+				data.readBytesTo(channel.buffer, data.getSize() - data.position);
+				channel._partialRecord = true;
+		    }
+		
+		}
+	});
+
+
+	this.subs.push(openSub);
+	this.subs.push(errorSub);
+
+	return this;
+};
+
+
+/**
+* Close the current socket.
+*
+* @api public
+*/
+spike.Channel.prototype.close = 
+spike.Channel.prototype.disconnect = function(){
+	this.skipReconnect = true;
+	this.readyState = 'closed';
+	this.socket && this.socket.close();
+};
+
+/**
+* Called upon transport open.
+*
+* @api private
+*/
+spike.Channel.prototype.onopen = function(){
+	// clear old subs and mark as open
+	this.cleanup();
+	this.readyState = 'open';
+
+	// Invoke connection events
+	if (this.onConnect != null)
+		this.onConnect();
+	this.emit('connect');
+	this.emit('open');
+};
+
+/**
+* Clean up transport subscriptions.
+*
+* @api private
+*/
+spike.Channel.prototype.cleanup = function(){
+  var sub;
+  while (sub = this.subs.shift()){
+  	if (typeof sub.destroy !== 'undefined')
+  		sub.destroy();
+  }
+};
+
+/**
+* Called upon engine close.
+*
+* @api private
+*/
+spike.Channel.prototype.onclose = function(reason){
+	spike.debug('socket closed: %s', reason);
+	this.cleanup();
+	this.backoff.reset();
+	this.readyState = 'closed';
+	this.emit('close', reason);
+	if (this._reconnection && !this.skipReconnect) {
+		this.reconnect();
+	}
+};
+
+<#@ include file="TcpReconnect.t4"#>
+
+/* Mix in 'Emitter' */
+spike.Emitter(spike.Channel.prototype);
+
+/* Backwards compatibility and alias*/
+spike.ServerChannel = spike.Channel;
+spike.TcpChannel = spike.Channel;

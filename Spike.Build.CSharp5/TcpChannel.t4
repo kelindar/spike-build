@@ -1,0 +1,69 @@
+﻿	public class TcpChannel : TcpChannelBase<TcpChannel>
+	{
+		public TcpChannel(int bufferSize = 8096, bool useSSL=false) : base(bufferSize, useSSL)
+		{
+		}
+
+		//Events
+<#		foreach(var receive in Model.Receives)
+		{ #>		
+		public event Action<TcpChannel, <#= receive.Name #>> <#= receive.Name #>; 
+<#		} #>
+		    
+		//Sends        
+<#		foreach(var send in Model.Sends)
+		{ #>		
+		public async Task <#= send.Name #>(<#	
+			var first = true;
+			foreach(var member in send.Members){
+				if(!first)
+					Write(", ");
+
+				Write(CSharp5Builder.GetNativeType(member));
+				Write(" ");
+				Write(member.Name);
+				first = false;
+			}
+		#>)
+		{
+			this.Writer.Begin(0x<#= send.Id.ToString("X") #>u);
+<#			foreach(var member in send.Members)
+			{ #>
+			this.Writer.Write(<#= member.Name #>);
+<#			} #>
+			await SendPacket(this.Writer, <#= send.Compressed ? "true" : "false" #>);
+		}		 
+<#		} #>
+
+		//Dispatcher
+		protected override void OnReceive(uint key)
+		{
+			switch (key)
+			{
+<#				foreach(var receive in Model.Receives)
+				{ #>				
+				case 0x<#= receive.Id.ToString("X") #>u:
+				{
+					var packet = new <#= receive.Name #>();
+					this.Reader.Begin(<#= receive.Compressed ? "true" : "false" #>);
+					
+<#					foreach(var member in receive.Members){ #>
+					packet.<#= member.Name #> = this.Reader.Read<#= member.IsList ? "ListOf" : string.Empty #><#= member.Type #>();
+<#					} #>
+
+					//Now Call event
+					if (<#= receive.Name #> != null)
+						<#= receive.Name #>(this, packet);
+
+					break;
+				}
+<#				} #>
+
+				default:
+					Debug.WriteLine("Unknow packet : {0:X}", key);
+					return;
+			}
+		}
+
+
+	}
